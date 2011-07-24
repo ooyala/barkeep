@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "bundler/setup"
+
+require "sinatra/base"
+require "sequel"
+require "grit"
+require "irb"
+
+$LOAD_PATH.push(".")
+
+require "lib/git_helper"
+
+include Grit
+
+$db = Sequel.sqlite("dev.db")
+$repo = Repo.new(File.join(File.dirname(__FILE__), "../"))
+
+def reload!
+  Dir.glob("lib/*.rb").each do |file|
+    load(file)
+  end
+  nil
+end
+
+IRB.start(__FILE__)
