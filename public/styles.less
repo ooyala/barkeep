@@ -3,8 +3,14 @@ body {
   font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 header {
   position: relative;
+  margin-bottom: 20px;
   #logo {
     border: 1px solid #ccc;
     background-color: #ddd;
@@ -63,9 +69,9 @@ table.commitsList {
   }
 }
 
-#commitFilter {
+#commitSearch {
   table { border-collapse: collapse; }
-
+  td { padding: 0 3px; }
   td:first-of-type { padding-left: 0; }
 
   input[name=filter_value] {
