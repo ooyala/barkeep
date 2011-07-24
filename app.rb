@@ -40,7 +40,11 @@ class CodeReviewServer < Sinatra::Base
 
   get "/" do
     refresh_commits
-    erb :"index.html"
+    erb :index
+  end
+
+  get "/commits" do
+    erb :commits, :locals => { :commits => list_of_commits }
   end
 
   # Serve CSS written in the "Less" DSL by first compiling it. We cache the output of the compilation and only
@@ -58,6 +62,20 @@ class CodeReviewServer < Sinatra::Base
     content_type "text/css", :charset => "utf-8"
     last_modified File.mtime(asset_path)
     cached_asset[:contents]
+  end
+
+  # A temporary list of commits to use to power the /commits page.
+  # TODO(philc): Switch to whatever the diff viewer is using.
+  def list_of_commits
+    require "ostruct"
+    author = "philc"
+    lines = `git log --oneline`.chomp.split("\n")
+    lines.map do |line|
+      tokens = line.split(" ")
+      id = tokens[0]
+      subject = tokens[1..-1].join(" ")
+      OpenStruct.new(:id => id, :author => author, :subject => subject)
+    end
   end
 
   def compile_less_css(filename) `lessc #{filename}`.chomp end

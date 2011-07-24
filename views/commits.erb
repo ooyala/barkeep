@@ -1,0 +1,49 @@
+<div id="dateSelection">
+  <select name="date_selection">
+    <option value="three_days">Last 3 days</option>
+    <option value="one_week">Last 1 week</option>
+    <option value="one_week">Last 2 weeks</option>
+    <option value="one_week" selected>Last 1 month</option>
+    <option value="one_week">Last 6 months</option>
+    <option value="all_time">All time</option>
+  </select>
+</div>
+
+<h3>Commits</h3>
+
+<div id="commitFilter">
+  <table>
+    <tr>
+      <td>Search by</td>
+      <td>
+        <select name="filter_type">
+          <option value="authors">authors</option>
+          <option value="directories">directories</option>
+          <option value="repository">repository</option>
+        </select>
+      </td>
+      <td>
+        <input type="text" name="filter_value" value="" />
+      </td>
+      <td><button class="submit">Search</button></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td><div class="example">separate authors by commas</div></td>
+      <td></td>
+    </tr>
+  </table>
+</div>
+
+<h4>Saved search: commits by philc</h4>
+<table class="commitsList">
+  <% commits.each do |commit| %>
+    <tr>
+      <td><a href="#"><div class="avatar"></div></a></td>
+      <td><a href="#"><%= commit.author %></a></td>
+      <td class="commitId"><a href="#"><%= commit.id %></a></td>
+      <td><a href="#"><%= commit.subject %></a></td>
+    </tr>
+  <% end %>
+</table>

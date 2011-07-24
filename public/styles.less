@@ -1,4 +1,82 @@
-
 body {
-  background-color: #eee;
+  background-color: #white;
+  font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+}
+
+header {
+  position: relative;
+  #logo {
+    border: 1px solid #ccc;
+    background-color: #ddd;
+    width: 200px;
+    height: 40px;
+    text-align: center;
+  }
+
+  #signInBox {
+    position: absolute;
+    right: 10px;
+    top: 2px;
+    font-size: 13px;
+  }
+}
+
+#body {
+  width: 930px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/*
+ * Styles for list of commits
+ */
+table.commitsList {
+  .avatar {
+    display: inline-block;
+    border: 1px solid #bbb;
+    background-color: #eee;
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+  td { padding-right: 5px; }
+  td:first-of-type { padding-right: 0 }
+  a {
+    text-decoration: none;
+    color: black;
+  }
+  a:hover { text-decoration: underline; }
+  .commitId a { color: #777; }
+  }
+
+/*
+ * Layout ofr the commits dashboard page.
+ */
+#dateSelection {
+  position: absolute;
+  right: 0;
+}
+
+#commitFilter {
+  table { border-collapse: collapse; }
+
+  td:first-of-type { padding-left: 0; }
+
+  input[name=filter_value] {
+    padding: 2px;
+    width: 200px;
+    font-size: 14px;
+  }
+  select {
+    font-size: 16px;
+  }
+  button.submit {
+    font-size: 16px;
+    padding: 4px 8px;
+  }
+  .example {
+    color: #999;
+    font-size: 12px;
+  }
 }
