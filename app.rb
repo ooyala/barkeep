@@ -17,6 +17,8 @@ class CodeReviewServer < Sinatra::Base
   # We compile our css using LESS. When in development, only compile it when it has changed.
   $css_cache = {}
 
+  set :public, "public"
+
   configure :development do
     enable :logging
     set :show_exceptions, false
