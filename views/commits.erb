@@ -1,4 +1,5 @@
-<div id="dateSelection">
+<!-- These options apply to all commit lists shown on the page. -->
+<div id="filterControls">
   <select name="date_selection">
     <option value="three_days">Last 3 days</option>
     <option value="one_week">Last 1 week</option>
@@ -7,6 +8,11 @@
     <option value="one_week">Last 6 months</option>
     <option value="all_time">All time</option>
   </select>
+  <br/>
+  <span id="showUnreviewedOnly">
+    <input type="checkbox" id="unreviewedOnlyCheckbox"></input>
+    <label for="unreviewedOnlyCheckbox">Unreviewed only</label>
+  </span>
 </div>
 
 <h3>Commits</h3>
@@ -36,7 +42,7 @@
   </table>
 </div>
 
-<h4>Saved search: commits by philc</h4>
+<h4>Commits by philc</h4>
 <table class="commitsList">
   <% commits[0..8].each do |commit| %>
     <tr>
@@ -44,6 +50,7 @@
       <td><a href="#"><%= commit.author %></a></td>
       <td class="commitId"><a href="#"><%= commit.id %></a></td>
       <td><a href="#"><%= commit.subject %></a></td>
+      <!-- TODO(philc): Add commit date. -->
     </tr>
   <% end %>
 </table>
