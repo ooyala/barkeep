@@ -9,8 +9,10 @@ require "grit"
 
 class CodeReviewServer < Sinatra::Base
   include Grit
+
   # We compile our css using LESS. When in development, only compile it when it has changed.
   $css_cache = {}
+
   configure :development do
     enable :logging
     set :show_exceptions, false

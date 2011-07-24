@@ -38,7 +38,7 @@
 
 <h4>Saved search: commits by philc</h4>
 <table class="commitsList">
-  <% commits.each do |commit| %>
+  <% commits[0..8].each do |commit| %>
     <tr>
       <td><a href="#"><div class="avatar"></div></a></td>
       <td><a href="#"><%= commit.author %></a></td>
