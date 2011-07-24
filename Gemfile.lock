@@ -21,8 +21,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  rerun
   grit
+  rerun
   sequel
   sinatra
   sqlite3-ruby

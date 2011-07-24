@@ -4,14 +4,20 @@ require "rubygems"
 require "bundler/setup"
 
 require "sinatra/base"
+require "sequel"
+require "grit"
 
 class CodeReviewServer < Sinatra::Base
+  include Grit
   # We compile our css using LESS. When in development, only compile it when it has changed.
   $css_cache = {}
   configure :development do
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
+
+    @@db = Sequel.sqlite("dev.db")
+    @@repo = Repo.new(File.dirname(__FILE__))
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -33,6 +39,7 @@ class CodeReviewServer < Sinatra::Base
   end
 
   get "/" do
+    refresh_commits
     erb :"index.html"
   end
 
@@ -61,5 +68,25 @@ class CodeReviewServer < Sinatra::Base
     stop_at = backtrace_lines.index { |line| line.include?("sinatra") }
     backtrace_lines[0...stop_at]
   end
-end
 
+  def refresh_commits
+    commits = @@repo.commits
+    commits.each do |commit|
+      if @@db[:commits].filter(:sha => commit.id).empty?
+        commit.author
+        @@db[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
+            :user_id => get_user(commit.author)[:id])
+      end
+    end
+  end
+
+  def get_user(grit_actor)
+    dataset = @@db[:users].filter(:email => grit_actor.email)
+    if dataset.empty?
+      id = @@db[:users].insert(:name => grit_actor.name, :email => grit_actor.email)
+      @@db[:users].filter(:id => id).first
+    else
+      dataset.first
+    end
+  end
+end

@@ -1,4 +1,4 @@
-urce :rubygems
+source :rubygems
 
 gem "sinatra"
 gem "rerun"
