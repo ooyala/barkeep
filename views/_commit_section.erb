@@ -1,0 +1,23 @@
+<%#
+  View arguments:
+  - commits: a list of commits to render.
+  - title: title of this list of commits, e.g. "Commits by kle".
+ %>
+<div class="commitSection">
+  <a href="#" class="delete">x</a>
+  <div class="metaControls">
+    <label><input type="checkbox" name="email_me" />email me for new commits</label>
+  </div>
+  <h4><%= title %></h4>
+  <table class="commitsList">
+    <% commits[0..8].each do |commit| %>
+      <tr>
+        <td><a href="#"><div class="avatar"></div></a></td>
+        <td><a href="#"><%= commit.author %></a></td>
+        <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>
+        <td><a href="#"><%= commit.short_message %></a></td>
+        <!-- TODO(philc): Add commit date. -->
+      </tr>
+    <% end %>
+  </table>
+</div>
