@@ -1,3 +1,5 @@
+@pageWidth: 930px;
+
 body {
   background-color: #white;
   font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
@@ -8,15 +10,39 @@ body {
   padding: 0;
 }
 
+a:visited { color: blue; }
+
 header {
   position: relative;
+  width: @pageWidth;
+  margin: 0 auto;
+  margin-top: 10px;
   margin-bottom: 20px;
+  height: 50px;
+
   #logo {
+    border: 1px solid orange;
+    float: left;
     border: 1px solid #ccc;
     background-color: #ddd;
-    width: 200px;
+    width: 80px;
     height: 40px;
     text-align: center;
+  }
+
+  nav {
+    margin-left: 50px;
+    float: left;
+    ul li {
+      list-style-type: none;
+      display: inline-block;
+    }
+
+    button {
+      font-size: 18px;
+      height: 42px;
+      padding: 0 8px;
+    }
   }
 
   #signInBox {
@@ -28,9 +54,40 @@ header {
 }
 
 #body {
+  clear: both;
   width: 930px;
   margin: 0 auto;
+  margin-bottom: 40px;
   position: relative;
+}
+
+.commitSection {
+  position: relative;
+  h4 {
+    margin-bottom: 5px;
+    padding-bottom: 2px;
+    border-bottom: 1px dashed #d0d0d0;
+  }
+
+  a.delete {
+    position: absolute;
+    right: 0px;
+    text-decoration: none;
+    color: orange;
+    font-weight: bold;
+    padding: 0 3px;
+    font-size: 18px;
+  }
+
+  a.delete:hover { color: red; }
+
+  .metaControls {
+    font-size: 13px;
+    position: absolute;
+    right: 0;
+    top: 26px;
+    input { margin-right: 4px; }
+  }
 }
 
 /*
@@ -54,7 +111,7 @@ table.commitsList {
   }
   a:hover { text-decoration: underline; }
   .commitId a { color: #777; }
-  }
+}
 
 /*
  * Layout ofr the commits dashboard page.
@@ -70,9 +127,16 @@ table.commitsList {
 }
 
 #commitSearch {
+  background-color: #fbfbfb;
+  border: 1px solid #e0e0e0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 5px;
+  width: 80%;
   table { border-collapse: collapse; }
   td { padding: 0 3px; }
   td:first-of-type { padding-left: 0; }
+  margin-bottom: 20px;
 
   input[name=filter_value] {
     padding: 2px;
