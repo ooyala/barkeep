@@ -102,7 +102,6 @@ class CodeReviewServer < Sinatra::Base
       dataset.first
     end
   end
-end
 
   def apply_diff(data, diff)
     data_lines = data.split("\n")
