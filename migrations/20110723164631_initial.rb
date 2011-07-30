@@ -20,6 +20,8 @@ Sequel.migration do
   end
 
   down do
-
+    drop_table(:commits)
+    drop_table(:files)
+    drop_table(:users)
   end
 end
