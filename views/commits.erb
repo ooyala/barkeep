@@ -5,6 +5,8 @@
   var KEY_RETURN = 13;
   var KEY_ESC = 27;
   var KEY_SLASH =  191;
+  var KEY_J =  74;
+  var KEY_K =  75;
 
   CommitSearch = {
     init: function() {
@@ -24,22 +26,51 @@
 
     onSearchSaved: function(responseHtml) {
       $("#savedSearches").append(responseHtml);
+      $(".selected").removeClass("selected");
+      $(".savedSearch:last-of-type .commitsList tr:first-of-type").addClass("selected");
     },
 
     onKeydownInSearchbox: function(event) {
       event.stopPropagation();
       if (event.which == KEY_RETURN)
         this.onSearchClick();
-      if (event.which == KEY_ESC)
+      else if (event.which == KEY_ESC)
         $("#commitSearch input[name=filter_value]").blur();
     },
 
     onKeydown: function(event) {
+      //console.log(event.which);
       event.stopPropagation();
       if (event.which == KEY_SLASH) {
         $("#commitSearch input[name=filter_value]").focus();
         return false;
+      } else if (event.which == KEY_J) {
+        this.selectNextDiff();
+      } else if (event.which == KEY_K) {
+        this.selectPreviousDiff();
       }
+    },
+
+    selectNextDiff: function() {
+      // TODO(dmac): If a savedSearch group has no diffs, navigation won't skip over it.
+      var newlySelected = $(".selected").next();
+      if (newlySelected.size() == 0) {
+        newlySelected = $(".selected").parents(".savedSearch").next().find("tr:first-of-type");
+        newlySelected = newlySelected.size() > 0 ? newlySelected : $(".selected");
+      }
+      $(".selected").removeClass("selected");
+      newlySelected.addClass("selected");
+    },
+
+    selectPreviousDiff: function() {
+      // TODO(dmac): If a savedSearch group has no diffs, navigation won't skip over it.
+      var newlySelected = $(".selected").prev();
+      if (newlySelected.size() == 0) {
+        newlySelected = $(".selected").parents(".savedSearch").prev().find("tr:last-of-type");
+        newlySelected = newlySelected.size() > 0 ? newlySelected : $(".selected");
+      }
+      $(".selected").removeClass("selected");
+      newlySelected.addClass("selected");
     }
   }
 

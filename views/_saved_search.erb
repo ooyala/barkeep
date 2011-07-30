@@ -12,6 +12,7 @@
   <table class="commitsList">
     <% commits.each do |commit| %>
       <tr>
+        <td class="selectArrow"></td>
         <td><a href="#"><div class="avatar"></div></a></td>
         <td><a href="#"><%= commit.author %></a></td>
         <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>

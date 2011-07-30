@@ -104,15 +104,18 @@ table.commitsList {
     height: 25px;
     vertical-align: middle;
     margin-right: 4px;
+    padding-right: 0px;
   }
   td { padding-right: 5px; }
-  td:first-of-type { padding-right: 0 }
   a {
     text-decoration: none;
     color: black;
   }
   a:hover { text-decoration: underline; }
   .commitId a { color: #777; }
+
+  .selectArrow { width: 10px; }
+  .selected .selectArrow { background: yellow; }
 }
 
 /*
