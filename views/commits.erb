@@ -1,13 +1,21 @@
 <script>
   Function.prototype.proxy = function(thisObject) { return jQuery.proxy(this, thisObject); };
 
+  // TODO(dmac): Put these constants in a common js file.
+  var KEY_RETURN = 13;
+  var KEY_ESC = 27;
+  var KEY_SLASH =  191;
+
   CommitSearch = {
     init: function() {
       $("#commitSearch .submit").click(this.onSearchClick.proxy(this));
       $("#commitSearch input[name=filter_value]").focus();
+      $("#commitSearch input[name=filter_value]").keydown(this.onKeydownInSearchbox.proxy(this));
+      $(document).keydown(this.onKeydown.proxy(this));
     },
 
     onSearchClick: function() {
+      $("#commitSearch input[name=filter_value]").blur();
       var authors = $("#commitSearch input[name=filter_value]").val();
       if (!authors) return;
       var queryParams = { authors: authors };
@@ -16,6 +24,22 @@
 
     onSearchSaved: function(responseHtml) {
       $("#savedSearches").append(responseHtml);
+    },
+
+    onKeydownInSearchbox: function(event) {
+      event.stopPropagation();
+      if (event.which == KEY_RETURN)
+        this.onSearchClick();
+      if (event.which == KEY_ESC)
+        $("#commitSearch input[name=filter_value]").blur();
+    },
+
+    onKeydown: function(event) {
+      event.stopPropagation();
+      if (event.which == KEY_SLASH) {
+        $("#commitSearch input[name=filter_value]").focus();
+        return false;
+      }
     }
   }
 
