@@ -37,29 +37,41 @@ class GitHelper
       chunk_starts << { :index => index, :line => Integer(match[1]), :length => Integer(match[2]) } if match
     end
 
-    current_line = 1
+    orig_line_number = 0
+    diff_line_number = 0
     chunk_starts.each_with_index do |chunk, index|
-      if chunk[:line] > current_line
-        tagged_lines += data_lines[current_line-1...chunk[:line]-1].map do |data|
-          { :tag => :same, :data => data }
+      if chunk[:line] > orig_line_number
+        tagged_lines += data_lines[orig_line_number-1...chunk[:line]-1].map do |data|
+          diff_line_number+=1
+          orig_line_number+=1
+          { :tag => :same, :data => data, :orig_line => orig_line_number, :diff_line => diff_line_number }
         end
       end
       next_chunk_start = chunk_starts[index+1] || diff_lines.count
       (chunk[:index]+1...next_chunk_start).each do |diff_index|
         case diff_lines[diff_index][0]
-        when " " then tag = :same
-        when "+" then tag = :added
-        when "-" then tag = :removed
+          when " "
+            tag = :same
+            diff_line_number+=1
+            orig_line_number+=1
+          when "+"
+            tag = :added
+            diff_line_number+=1
+          when "-"
+            tag = :removed
+            orig_line_number+=1
         end
-        tagged_lines << { :tag => tag, :data => diff_lines[diff_index][1..-1] }
+        tagged_lines << { :tag => tag, :data => diff_lines[diff_index][1..-1],
+                          :orig_line => orig_line_number, :diff_line => diff_line_number }
       end
-      current_line += chunk[:length]
     end
     last_chunk = chunk_starts[-1]
     remaining_line_number = last_chunk[:line] + last_chunk[:length]
     if remaining_line_number <= data_lines.count
       tagged_lines += data_lines[remaining_line_number..data_lines.count].map do |data|
-        { :tag => :same, :data => data }
+        diff_line_number+=1
+        orig_line_number+=1
+        { :tag => :same, :data => data, :orig_line => orig_line_number, :diff_line => diff_line_number }
       end
     end
     tagged_lines
