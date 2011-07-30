@@ -25,7 +25,7 @@
     },
 
     onSearchSaved: function(responseHtml) {
-      $("#savedSearches").append(responseHtml);
+      $("#savedSearches").prepend(responseHtml);
       $(".selected").removeClass("selected");
       $(".savedSearch:last-of-type .commitsList tr:first-of-type").addClass("selected");
     },
