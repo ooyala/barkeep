@@ -6,4 +6,6 @@
 
 class SearchFilter < Sequel::Model
   many_to_one :saved_searches
+
+  AUTHORS_FILTER = "authors"
 end

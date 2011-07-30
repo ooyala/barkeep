@@ -61,10 +61,13 @@ class CodeReviewServer < Sinatra::Base
   end
 
   post "/saved_searches" do
-    authors = params[:authors].split(",").map(&:strip)
-    commits = GitHelper.commits_by_authors(@@repo, authors, 16)
+    authors = params[:authors].split(",").map(&:strip).join(",")
+    saved_search = SavedSearch.create(:user_id => current_user.id)
+    # TODO(philc): For now, we're assuming they're always filtering by author.
+    SearchFilter.create(:filter_type => SearchFilter::AUTHORS_FILTER, :filter_value => params[:authors],
+        :saved_search_id => saved_search.id)
     erb :_saved_search, :layout => false,
-      :locals => { :commits => commits, :title => saved_search_title(:authors => authors) }
+      :locals => { :commits => saved_search.commits(@@repo), :title => saved_search.title }
   end
 
   # Based on the given saved search parameters, generates a reasonable title.
