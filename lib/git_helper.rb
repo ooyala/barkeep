@@ -4,14 +4,18 @@ class GitHelper
   MAX_SEARCH_DEPTH = 1_000
 
   # A list of commits matching any one of the given authors in reverse chronological order.
-  def self.commits_by_authors(repo, authors, count)
+  def self.commits_by_authors(repo, authors, count, offset = 0)
     # TODO(philc): We should use Grit's paging API here.
     commits = repo.commits("master", MAX_SEARCH_DEPTH)
     commits_by_author = []
     commits.each do |commit|
       if authors.find { |author| author_search_matches?(author, commit) }
-        commits_by_author.push(commit)
-        break if commits_by_author.size >= count
+        if offset > 0
+          offset = offset - 1
+        else
+          commits_by_author.push(commit)
+          break if commits_by_author.size >= count
+        end
       end
     end
     commits_by_author

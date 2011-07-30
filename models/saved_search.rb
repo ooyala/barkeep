@@ -3,11 +3,14 @@ class SavedSearch < Sequel::Model
   one_to_many :search_filters
   many_to_one :users
 
+  PAGE_SIZE = 5
+
   add_association_dependencies :search_filters => :destroy
 
   # The list of commits this saved search represents.
-  def commits(repo)
-    GitHelper.commits_by_authors(repo, authors, 16)
+  def commits(repo, page_number = 0)
+    page_number = 0 if page_number < 0
+    GitHelper.commits_by_authors(repo, authors, PAGE_SIZE, page_number * PAGE_SIZE)
   end
 
   def authors

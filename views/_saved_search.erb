@@ -2,19 +2,20 @@
   View arguments:
   - saved_search: a SavedSearch object.
   - repo: the repo object.
+  - page_number: the page number to load
  %>
-<div class="savedSearch">
+ <div class="savedSearch" page-number="<%= page_number %>" saved-search-id="<%= saved_search.id %>">
   <a href="#" class="delete">x</a>
   <h4 class="handle"><%= saved_search.title %></h4>
   <div class="metaControls">
     <label><input type="checkbox" name="email_me" />email me with new commits</label>
   </div>
   <table class="commitsList">
-    <% commits = saved_search.commits(repo) %>
+    <% commits = saved_search.commits(repo, page_number) %>
     <% if commits.empty? %>
       <span class="noResults">No search results.</span>
     <% else %>
-      <% saved_search.commits(repo).each do |commit| %>
+      <% saved_search.commits(repo, page_number).each do |commit| %>
         <tr>
           <td class="selectArrow"></td>
           <td><a href="#"><div class="avatar"></div></a></td>

@@ -56,6 +56,10 @@ window.CommitSearch =
         @selectDiff(true)
       when Constants.KEY_K
         @selectDiff(false)
+      when Constants.KEY_H
+        @pageSearch(true)
+      when Constants.KEY_L
+        @pageSearch(false)
 
   # Swap the current selection for a new one
   selectNewDiff: (next) ->
@@ -112,5 +116,19 @@ window.CommitSearch =
       @scrollWithContext()
       return true
     @selectNewGroup(next)
+
+  pageSearch: (reverse = false) ->
+    savedSearchId = $(".selected").parents(".savedSearch").attr("saved-search-id")
+    pageNumber = (Number) $(".selected").parents(".savedSearch").attr("page-number")
+    pageNumber = if reverse then pageNumber - 1 else pageNumber + 1
+    console.log "page saved_search with id " + savedSearchId + " to page " + pageNumber
+    $.ajax({
+      url: "/saved_searches/" + savedSearchId + "?page_number=" + pageNumber,
+      success: (html) ->
+        # only update if there are commits for the requested page number
+        if $(html).find(".noResults").size() == 0
+          $(".savedSearch[saved-search-id=" + savedSearchId + "]").replaceWith(html)
+          $(".savedSearch[saved-search-id=" + savedSearchId + "] .commitsList tr:first").addClass("selected")
+    })
 
 $(document).ready(-> CommitSearch.init())

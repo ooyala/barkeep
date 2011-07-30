@@ -76,7 +76,15 @@ class CodeReviewServer < Sinatra::Base
     SearchFilter.create(:filter_type => SearchFilter::AUTHORS_FILTER, :filter_value => params[:authors],
         :saved_search_id => saved_search.id)
     erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :repo => @@repo }
+      :locals => { :saved_search => saved_search, :repo => @@repo, :page_number => 0 }
+  end
+
+  get"/saved_searches/:id" do
+    saved_search = SavedSearch[params[:id]]
+    page_number = params[:page_number].to_i || 0
+    page_number = 0 if page_number < 0
+    erb :_saved_search, :layout => false,
+        :locals => { :saved_search => saved_search, :repo => @@repo, :page_number => page_number }
   end
 
   # Based on the given saved search parameters, generates a reasonable title.
