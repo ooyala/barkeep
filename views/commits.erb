@@ -14,6 +14,7 @@
       $("#commitSearch input[name=filter_value]").focus();
       $("#commitSearch input[name=filter_value]").keydown(this.onKeydownInSearchbox.proxy(this));
       $(document).keydown(this.onKeydown.proxy(this));
+      $(".savedSearch:first-of-type .commitsList tr:first-of-type").addClass("selected");
     },
 
     onSearchClick: function() {
@@ -27,7 +28,7 @@
     onSearchSaved: function(responseHtml) {
       $("#savedSearches").prepend(responseHtml);
       $(".selected").removeClass("selected");
-      $(".savedSearch:last-of-type .commitsList tr:first-of-type").addClass("selected");
+      $(".savedSearch:first-of-type .commitsList tr:first-of-type").addClass("selected");
     },
 
     onKeydownInSearchbox: function(event) {
