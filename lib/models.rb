@@ -7,6 +7,9 @@ DB = Sequel.sqlite("dev.db")
 # destroyed when the current model gets destroyed, e.g. when you delete a provider, also delete its movies.
 Sequel::Model.plugin :association_dependencies
 
+# Auto-populate "created_at" and "updated_at" fields.
+Sequel::Model.plugin :timestamps
+
 require "models/user"
 require "models/saved_search"
 require "models/search_filter"
