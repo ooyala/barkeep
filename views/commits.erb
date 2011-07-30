@@ -120,4 +120,7 @@
 </div>
 
 <div id="savedSearches">
+  <% saved_searches.each do |saved_search| %>
+    <%= erb :_saved_search, :layout => false, :locals => { :saved_search => saved_search, :repo => repo } %>
+  <% end %>
 </div>

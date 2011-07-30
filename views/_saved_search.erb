@@ -1,16 +1,16 @@
 <%#
   View arguments:
-  - commits: a list of commits to render.
-  - title: title of this list of commits, e.g. "Commits by kle".
+  - saved_search: a SavedSearch object.
+  - repo: the repo object.
  %>
 <div class="savedSearch">
   <a href="#" class="delete">x</a>
   <div class="metaControls">
     <label><input type="checkbox" name="email_me" />email me with new commits</label>
   </div>
-  <h4><%= title %></h4>
+  <h4><%= saved_search.title %></h4>
   <table class="commitsList">
-    <% commits.each do |commit| %>
+    <% saved_search.commits(repo).each do |commit| %>
       <tr>
         <td class="selectArrow"></td>
         <td><a href="#"><div class="avatar"></div></a></td>
