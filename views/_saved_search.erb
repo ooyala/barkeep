@@ -14,9 +14,9 @@
       <tr>
         <td class="selectArrow"></td>
         <td><a href="#"><div class="avatar"></div></a></td>
-        <td><a href="#"><%= commit.author %></a></td>
+        <td class="author"><a href="#"><%= commit.author.to_s[0..25] %></a></td>
         <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>
-        <td><a href="#"><%= commit.short_message %></a></td>
+        <td class="commitMessage"><a href="#"><%= commit.short_message %></a></td>
         <!-- TODO(philc): Add commit date. -->
       </tr>
     <% end %>

@@ -107,6 +107,18 @@ table.commitsList {
     padding-right: 0px;
   }
   td { padding-right: 5px; }
+  td.author { white-space: nowrap; }
+
+  td.commitMessage {
+    /* Commit messages can be very long. Truncate them just by not letting them flow out of the container. */
+    a {
+      display:block;
+      width: 100%;
+      overflow: hidden;
+      line-height: 100%;
+      height: 1.1em;
+    }
+  }
   a {
     text-decoration: none;
     color: black;
