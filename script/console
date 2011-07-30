@@ -1,20 +1,15 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
-require "bundler/setup"
 
-require "sinatra/base"
-require "sequel"
-require "grit"
-require "irb"
-
-$LOAD_PATH.push(".")
-
+$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "lib/script_environment"
 require "lib/git_helper"
+
+require "irb"
 
 include Grit
 
-$db = Sequel.sqlite("dev.db")
 $repo = Repo.new(File.join(File.dirname(__FILE__), "../"))
 
 def reload!

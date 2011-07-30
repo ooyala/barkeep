@@ -4,11 +4,10 @@ require "rubygems"
 require "bundler/setup"
 
 require "sinatra/base"
-require "sequel"
-require "grit"
 
-$LOAD_PATH.push(".")
+$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
+require "lib/script_environment"
 require "lib/git_helper"
 
 class CodeReviewServer < Sinatra::Base
@@ -24,7 +23,6 @@ class CodeReviewServer < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    @@db = Sequel.sqlite("dev.db")
     @@repo = Repo.new(File.dirname(__FILE__))
 
     error do
@@ -98,19 +96,19 @@ class CodeReviewServer < Sinatra::Base
   def refresh_commits
     commits = @@repo.commits
     commits.each do |commit|
-      if @@db[:commits].filter(:sha => commit.id).empty?
+      if DB[:commits].filter(:sha => commit.id).empty?
         commit.author
-        @@db[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
+        DB[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
             :user_id => get_user(commit.author)[:id])
       end
     end
   end
 
   def get_user(grit_actor)
-    dataset = @@db[:users].filter(:email => grit_actor.email)
+    dataset = DB[:users].filter(:email => grit_actor.email)
     if dataset.empty?
-      id = @@db[:users].insert(:name => grit_actor.name, :email => grit_actor.email)
-      @@db[:users].filter(:id => id).first
+      id = DB[:users].insert(:name => grit_actor.name, :email => grit_actor.email)
+      DB[:users].filter(:id => id).first
     else
       dataset.first
     end
