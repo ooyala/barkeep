@@ -13,6 +13,8 @@ require "lib/git_helper"
 class CodeReviewServer < Sinatra::Base
   include Grit
 
+  attr_accessor :current_user
+
   # We compile our css using LESS. When in development, only compile it when it has changed.
   $css_cache = {}
 
@@ -42,6 +44,10 @@ class CodeReviewServer < Sinatra::Base
 
   configure :production do
     enable :logging
+  end
+
+  before do
+    self.current_user = User.first # Pretend a user has been logged in.
   end
 
   get "/" do
