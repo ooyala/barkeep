@@ -1,3 +1,27 @@
+<script>
+  Function.prototype.proxy = function(thisObject) { return jQuery.proxy(this, thisObject); };
+
+  CommitSearch = {
+    init: function() {
+      $("#commitSearch .submit").click(this.onSearchClick.proxy(this));
+      $("#commitSearch input[name=filter_value]").focus();
+    },
+
+    onSearchClick: function() {
+      var authors = $("#commitSearch input[name=filter_value]").val();
+      if (!authors) return;
+      var queryParams = { authors: authors };
+      jQuery.post("/saved_searches", queryParams, this.onSearchSaved.proxy(this));
+    },
+
+    onSearchSaved: function(responseHtml) {
+      $("#savedSearches").append(responseHtml);
+    }
+  }
+
+  $(document).ready(function() { CommitSearch.init(); });
+</script>
+
 <!-- These options apply to all commit lists shown on the page. -->
 <div id="filterControls">
   <select name="date_selection">
@@ -40,4 +64,5 @@
   </table>
 </div>
 
-<%= erb :_commit_section, :locals => { :commits => commits, :title => "Commits by philc" } %>
+<div id="savedSearches">
+</div>

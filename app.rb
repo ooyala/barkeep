@@ -56,6 +56,19 @@ class CodeReviewServer < Sinatra::Base
     erb :commits, :locals => { :commits => commits }
   end
 
+  post "/saved_searches" do
+    authors = params[:authors].split(",").map(&:strip)
+    commits = GitHelper.commits_by_authors(@@repo, authors, 16)
+    erb :_saved_search, :layout => false,
+      :locals => { :commits => commits, :title => saved_search_title(:authors => authors) }
+  end
+
+  # Based on the given saved search parameters, generates a reasonable title.
+  # TODO(philc): Objectivity saved_searches, and don't assume we're always searching by authors.
+  def saved_search_title(search_params)
+    "Commits by #{search_params[:authors].join(", ")}"
+  end
+
   # Serve CSS written in the "Less" DSL by first compiling it. We cache the output of the compilation and only
   # recompile it the source CSS file has changed.
   get "/css/:filename.css" do

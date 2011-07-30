@@ -10,7 +10,7 @@
   </div>
   <h4><%= title %></h4>
   <table class="commitsList">
-    <% commits[0..8].each do |commit| %>
+    <% commits.each do |commit| %>
       <tr>
         <td><a href="#"><div class="avatar"></div></a></td>
         <td><a href="#"><%= commit.author %></a></td>
