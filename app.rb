@@ -15,8 +15,9 @@ class CodeReviewServer < Sinatra::Base
 
   attr_accessor :current_user
 
-  # We compile our css using LESS. When in development, only compile it when it has changed.
-  $css_cache = {}
+  # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
+  # files have changed.
+  $compiled_cache = Hash.new { |hash, key| hash[key] = {} }
 
   set :public, "public"
 
@@ -80,19 +81,19 @@ class CodeReviewServer < Sinatra::Base
   get "/css/:filename.css" do
     next if params[:filename].include?(".")
     asset_path = "public/#{params[:filename]}.less"
-    # TODO(philc): We should not check the file's md5 more than once when we're running in production mode.
-    md5 = Digest::MD5.hexdigest(File.read(asset_path))
-    cached_asset = $css_cache[asset_path] ||= {}
-    if md5 != cached_asset[:md5]
-      cached_asset[:contents] = compile_less_css(asset_path)
-      cached_asset[:md5] = md5
-    end
     content_type "text/css", :charset => "utf-8"
     last_modified File.mtime(asset_path)
-    cached_asset[:contents]
+    compile_asset_from_cache(asset_path) { |filename| `lessc #{filename}`.chomp }
   end
 
-  def compile_less_css(filename) `lessc #{filename}`.chomp end
+  # Render and cache coffeescript when we request the JS of the same name
+  get "/js/:filename.js" do
+    next if params[:filename].include?(".")
+    asset_path = "public/#{params[:filename]}.coffee"
+    content_type "application/javascript", :charset => "utf-8"
+    last_modified File.mtime(asset_path)
+    compile_asset_from_cache(asset_path) { |filename| `coffee -cp #{filename}`.chomp }
+  end
 
   def cleanup_backtrace(backtrace_lines)
     # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like
@@ -120,5 +121,21 @@ class CodeReviewServer < Sinatra::Base
     else
       dataset.first
     end
+  end
+
+  private
+
+  # Fetch a file from the cache unless its MD5 has changed. Use a block to specify a transformation to be
+  # performed on the asset before caching (e.g. compiling LESS css).
+  def compile_asset_from_cache(asset_path, &block)
+    # TODO(philc): We should not check the file's md5 more than once when we're running in production mode.
+    contents = File.read(asset_path)
+    md5 = Digest::MD5.hexdigest(contents)
+    cached_asset = $compiled_cache[asset_path]
+    if md5 != cached_asset[:md5]
+      cached_asset[:contents] = block_given? ? block.yield(asset_path) : File.read(contents)
+      cached_asset[:md5] = md5
+    end
+    cached_asset[:contents]
   end
 end
