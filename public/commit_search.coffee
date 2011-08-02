@@ -1,12 +1,18 @@
 # import common.coffee and jquery
 
-CommitSearch =
+window.CommitSearch =
   init: ->
     $("#commitSearch .submit").click @onSearchClick.proxy(@)
     $("#commitSearch input[name=filter_value]").focus()
     $("#commitSearch input[name=filter_value]").keydown @onKeydownInSearchbox.proxy(@)
     $(document).keydown @onKeydown.proxy(@)
-    $(".savedSearch:first-of-type .commitsList tr:first-of-type").addClass "selected"
+    selectedGroup = $(".savedSearch:first-of-type")
+    while selectedGroup.size() > 0
+      selected = selectedGroup.find(".commitsList tr:first-of-type")
+      if selected.size() > 0
+        selected.addClass "selected"
+        break
+      selectedGroup = selectedGroup.next()
 
   onSearchClick: ->
     $("#commitSearch input[name=filter_value]").blur()
@@ -35,26 +41,19 @@ CommitSearch =
         $("#commitSearch input[name=filter_value]").focus()
         return false
       when Constants.KEY_J
-        @selectNextDiff()
+        @selectDiff(true)
       when Constants.KEY_K
-        @selectPreviousDiff()
+        @selectDiff(false)
 
-  selectNextDiff: ->
-    # TODO(dmac): If a savedSearch group has no diffs, navigation won't skip over it.
-    newlySelected = $(".selected").next()
-    if newlySelected.size() == 0
-      newlySelected = $(".selected").parents(".savedSearch").next().find("tr:first-of-type")
-      newlySelected = if newlySelected.size() > 0 then newlySelected else $(".selected")
-    $(".selected").removeClass "selected"
-    newlySelected.addClass "selected"
-
-  selectPreviousDiff: ->
-    # TODO(dmac): If a savedSearch group has no diffs, navigation won't skip over it.
-    newlySelected = $(".selected").prev()
-    if newlySelected.size() == 0
-      newlySelected = $(".selected").parents(".savedSearch").prev().find("tr:last-of-type")
-      newlySelected = if newlySelected.size() > 0 then newlySelected else $(".selected")
-    $(".selected").removeClass "selected"
+  selectDiff: (next = true) ->
+    selected = $(".selected")
+    group = selected.parents(".savedSearch")
+    newlySelected = if next then selected.next() else selected.prev()
+    while newlySelected.size() == 0
+      group = if next then group.next() else group.prev()
+      return if group.size() == 0
+      newlySelected = if next then group.find("tr:first-of-type") else group.find("tr:last-of-type")
+    selected.removeClass "selected"
     newlySelected.addClass "selected"
 
 $(document).ready(-> CommitSearch.init())
