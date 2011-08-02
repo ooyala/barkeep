@@ -66,6 +66,7 @@ window.CommitSearch =
   # Keep some amount of context on-screen to pad the selection position
   scrollWithContext: ->
     selection = $(".selected")
+    return unless selection.size() > 0
     selectionTop = selection.offset().top
     selectionBottom = selectionTop + selection.height()
     windowTop = $(window).scrollTop()
