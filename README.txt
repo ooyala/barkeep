@@ -3,4 +3,4 @@ Getting started
 ===============
 gem install bundler
 bundle install
-port install nodejs
+port install nodejs # or brew install node
