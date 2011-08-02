@@ -10,6 +10,8 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/script_environment"
 require "lib/git_helper"
 
+NODE_MODULES_BIN_PATH = "./node_modules/.bin"
+
 class CodeReviewServer < Sinatra::Base
   include Grit
 
@@ -83,7 +85,7 @@ class CodeReviewServer < Sinatra::Base
     asset_path = "public/#{params[:filename]}.less"
     content_type "text/css", :charset => "utf-8"
     last_modified File.mtime(asset_path)
-    compile_asset_from_cache(asset_path) { |filename| `lessc #{filename}`.chomp }
+    compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/lessc #{filename}`.chomp }
   end
 
   # Render and cache coffeescript when we request the JS of the same name
@@ -92,7 +94,7 @@ class CodeReviewServer < Sinatra::Base
     asset_path = "public/#{params[:filename]}.coffee"
     content_type "application/javascript", :charset => "utf-8"
     last_modified File.mtime(asset_path)
-    compile_asset_from_cache(asset_path) { |filename| `coffee -cp #{filename}`.chomp }
+    compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/coffee -cp #{filename}`.chomp }
   end
 
   def cleanup_backtrace(backtrace_lines)
