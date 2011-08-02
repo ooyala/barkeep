@@ -88,9 +88,8 @@ header {
     color: orange;
     font-weight: bold;
     font-size: 18px;
+    &:hover { color: red; }
   }
-
-  a.delete:hover { color: red; }
 
   .metaControls {
     font-size: 13px;
@@ -120,24 +119,25 @@ table.commitsList {
     margin-right: 4px;
     padding-right: 0px;
   }
-  td { padding-right: 5px; }
-  td.author { white-space: nowrap; }
-
-  td.commitMessage {
-    /* Commit messages can be very long. Truncate them just by not letting them flow out of the container. */
-    a {
-      display:block;
-      width: 100%;
-      overflow: hidden;
-      line-height: 100%;
-      height: 1.1em;
+  td {
+    padding-right: 5px;
+    &.author { white-space: nowrap; }
+    &.commitMessage {
+      /* Commit messages can be very long. Truncate them just by not letting them flow out of the container. */
+      a {
+        display:block;
+        width: 100%;
+        overflow: hidden;
+        line-height: 100%;
+        height: 1.1em;
+      }
     }
   }
   a {
     text-decoration: none;
     color: black;
+    &:hover { text-decoration: underline; }
   }
-  a:hover { text-decoration: underline; }
   .commitId a { color: #777; }
 
   .selectArrow {
