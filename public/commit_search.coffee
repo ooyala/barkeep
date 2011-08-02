@@ -8,7 +8,7 @@ window.CommitSearch =
     $(document).keydown (e) => @onKeydown e
     $("#savedSearches").sortable(
       placeholder: "savedSearchPlaceholder"
-      forcePlaceholderSize: true
+      forcePlaceholderSize: false
       handle: ".handle"
     )
     $("#savedSearches").disableSelection()
