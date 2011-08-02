@@ -6,6 +6,7 @@ window.CommitSearch =
     $("#commitSearch input[name=filter_value]").focus()
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $(document).keydown (e) => @onKeydown e
+    $("#savedSearches .savedSearch .delete").click (e) => @onSavedSearchDelete e
     @selectFirstDiff()
 
   onSearchClick: ->
@@ -13,11 +14,22 @@ window.CommitSearch =
     authors = $("#commitSearch input[name=filter_value]").val()
     return unless authors
     queryParams = { authors: authors }
-    $.post("/saved_searches", queryParams, @onSearchSaved)
+    $.post("/saved_searches", queryParams, (e) => @onSearchSaved e)
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
+    $("#savedSearches .savedSearch:first-of-type .delete").click (e) => @onSavedSearchDelete e
     @selectFirstDiff()
+
+  onSavedSearchDelete: (event) ->
+    target = $(event.target).parents(".savedSearch")
+    if $(".selected").parents(".savedSearch").is(target)
+      @selectNewGroup(false) unless @selectNewGroup(true)
+      removedSelected = true
+    target.remove()
+    @scrollWithContext() if removedSelected
+    # TODO(caleb): save state to the server afterwards (deletes aren't persisted at the moment).
+    false
 
   onKeydownInSearchbox: (event) ->
     event.stopPropagation()
@@ -26,6 +38,7 @@ window.CommitSearch =
         @onSearchClick()
       when Constants.KEY_ESC
         $("#commitSearch input[name=filter_value]").blur()
+        @scrollWithContext()
 
   onKeydown: (event) ->
     event.stopPropagation()
@@ -39,36 +52,59 @@ window.CommitSearch =
       when Constants.KEY_K
         @selectDiff(false)
 
-  selectFirstDiff: ->
+  # Swap the current selection for a new one
+  selectNewDiff: (next) ->
     $(".selected").removeClass "selected"
-    selectedGroup = $(".savedSearch:first-of-type")
+    next.addClass "selected"
+
+  # Keep some amount of context on-screen to pad the selection position
+  scrollWithContext: ->
+    selection = $(".selected")
+    selectionTop = selection.offset().top
+    selectionBottom = selectionTop + selection.height()
+    windowTop = $(window).scrollTop()
+    windowBottom = windowTop + $(window).height()
+    # If the selection if off-screen, center on it
+    if selectionBottom < windowTop or selectionTop > windowBottom
+      window.scroll(0, (selectionTop + selectionBottom) / 2 - $(window).height() / 2)
+    # Otherwise ensure there is enough buffer
+    else if selectionTop - windowTop < Constants.CONTEXT_BUFFER_PIXELS
+      window.scroll(0, selectionTop - Constants.CONTEXT_BUFFER_PIXELS)
+    else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS
+      window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
+
+  # If next = false then move to the previous group instead
+  selectNewGroup: (next = true) ->
+    selected = $(".selected")
+    newlySelected = $()
+    group = selected.parents(".savedSearch")
+    while newlySelected.size() == 0
+      group = if next then group.next() else group.prev()
+      return false if group.size() == 0
+      newlySelected = if next then group.find("tr:first-of-type") else group.find("tr:last-of-type")
+    @selectNewDiff(newlySelected)
+    @scrollWithContext()
+    true
+
+  selectFirstDiff: ->
+    selectedGroup = $("#savedSearches .savedSearch:first-of-type")
     while selectedGroup.size() > 0
       selected = selectedGroup.find(".commitsList tr:first-of-type")
       if selected.size() > 0
-        selected.addClass "selected"
+        @selectNewDiff(selected)
+        @scrollWithContext()
         break
       selectedGroup = selectedGroup.next()
 
   # If true then next; else previous
+  # Returns true on success
   selectDiff: (next = true) ->
     selected = $(".selected")
-    group = selected.parents(".savedSearch")
     newlySelected = if next then selected.next() else selected.prev()
-    while newlySelected.size() == 0
-      group = if next then group.next() else group.prev()
-      return if group.size() == 0
-      newlySelected = if next then group.find("tr:first-of-type") else group.find("tr:last-of-type")
-    selected.removeClass "selected"
-    newlySelected.addClass "selected"
-
-    # Keep some amount of context on-screen to pad the selection position
-    selectionTop = newlySelected.offset().top
-    selectionBottom = selectionTop + newlySelected.height()
-    windowTop = $(window).scrollTop()
-    windowBottom = windowTop + $(window).height()
-    if selectionTop - windowTop < Constants.CONTEXT_BUFFER_PIXELS
-      window.scroll(0, selectionTop - Constants.CONTEXT_BUFFER_PIXELS)
-    else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS
-      window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
+    if newlySelected.size() > 0
+      @selectNewDiff(newlySelected)
+      @scrollWithContext()
+      return true
+    @selectNewGroup(next)
 
 $(document).ready(-> CommitSearch.init())
