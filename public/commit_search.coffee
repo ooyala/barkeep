@@ -55,5 +55,9 @@ window.CommitSearch =
       newlySelected = if next then group.find("tr:first-of-type") else group.find("tr:last-of-type")
     selected.removeClass "selected"
     newlySelected.addClass "selected"
+    # TODO(caleb): This is a temporory (OK, but not great) solution to keeping the selected element on-screen.
+    # A better (but more complicated) solution would be to copy the way gmail does it, and scroll about half a
+    # page at a time when necessary.
+    window.scroll(0, newlySelected.offset().top)
 
 $(document).ready(-> CommitSearch.init())
