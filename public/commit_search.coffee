@@ -6,13 +6,7 @@ window.CommitSearch =
     $("#commitSearch input[name=filter_value]").focus()
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $(document).keydown (e) => @onKeydown e
-    selectedGroup = $(".savedSearch:first-of-type")
-    while selectedGroup.size() > 0
-      selected = selectedGroup.find(".commitsList tr:first-of-type")
-      if selected.size() > 0
-        selected.addClass "selected"
-        break
-      selectedGroup = selectedGroup.next()
+    @selectFirstDiff()
 
   onSearchClick: ->
     $("#commitSearch input[name=filter_value]").blur()
@@ -23,8 +17,7 @@ window.CommitSearch =
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
-    $(".selected").removeClass "selected"
-    $(".savedSearch:first-of-type .commitsList tr:first-of-type").addClass "selected"
+    @selectFirstDiff()
 
   onKeydownInSearchbox: (event) ->
     event.stopPropagation()
@@ -38,6 +31,7 @@ window.CommitSearch =
     event.stopPropagation()
     switch event.which
       when Constants.KEY_SLASH
+        window.scroll(0, 0)
         $("#commitSearch input[name=filter_value]").focus()
         return false
       when Constants.KEY_J
@@ -45,6 +39,17 @@ window.CommitSearch =
       when Constants.KEY_K
         @selectDiff(false)
 
+  selectFirstDiff: ->
+    $(".selected").removeClass "selected"
+    selectedGroup = $(".savedSearch:first-of-type")
+    while selectedGroup.size() > 0
+      selected = selectedGroup.find(".commitsList tr:first-of-type")
+      if selected.size() > 0
+        selected.addClass "selected"
+        break
+      selectedGroup = selectedGroup.next()
+
+  # If true then next; else previous
   selectDiff: (next = true) ->
     selected = $(".selected")
     group = selected.parents(".savedSearch")
