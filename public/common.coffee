@@ -1,5 +1,3 @@
-Function::proxy = (thisObject) -> jQuery.proxy(@, thisObject)
-
 window.Constants =
   KEY_RETURN            : 13
   KEY_ESC               : 27

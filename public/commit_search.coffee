@@ -2,10 +2,10 @@
 
 window.CommitSearch =
   init: ->
-    $("#commitSearch .submit").click @onSearchClick.proxy(@)
+    $("#commitSearch .submit").click (e) => @onSearchClick e
     $("#commitSearch input[name=filter_value]").focus()
-    $("#commitSearch input[name=filter_value]").keydown @onKeydownInSearchbox.proxy(@)
-    $(document).keydown @onKeydown.proxy(@)
+    $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
+    $(document).keydown (e) => @onKeydown e
     selectedGroup = $(".savedSearch:first-of-type")
     while selectedGroup.size() > 0
       selected = selectedGroup.find(".commitsList tr:first-of-type")
@@ -19,7 +19,7 @@ window.CommitSearch =
     authors = $("#commitSearch input[name=filter_value]").val()
     return unless authors
     queryParams = { authors: authors }
-    $.post("/saved_searches", queryParams, @onSearchSaved.proxy(@))
+    $.post("/saved_searches", queryParams, @onSearchSaved)
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
