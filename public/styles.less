@@ -55,29 +55,37 @@ header {
 
 #body {
   clear: both;
-  width: 930px;
+  width: @pageWidth;
   margin: 0 auto;
   margin-bottom: 40px;
   position: relative;
 }
 
+.savedSearchPlaceholder {
+  border: 2px dashed #ccc;
+  margin-bottom: 17px;
+}
+
+.handle { cursor: move; }
+
 .savedSearch {
   position: relative;
+  background-color: #f7f7f7;
+  padding-bottom: 5px;
   margin-bottom: 16px;
 
   h4 {
+    background-color: #f0f0f0;
     margin-bottom: 5px;
-    padding-bottom: 2px;
-    border-bottom: 1px dashed #d0d0d0;
+    padding: 2px 5px 5px 5px;
   }
 
   a.delete {
-    position: absolute;
-    right: 0px;
+    padding-right: 5px;
+    float: right;
     text-decoration: none;
     color: orange;
     font-weight: bold;
-    padding: 0 3px;
     font-size: 18px;
   }
 
@@ -85,10 +93,15 @@ header {
 
   .metaControls {
     font-size: 13px;
-    position: absolute;
-    right: 0;
-    top: 26px;
+    float: right;
+    padding-right: 5px;
     input { margin-right: 4px; }
+  }
+
+  .noResults {
+    font-size: 13px;
+    font-style: italic;
+    padding-left: 5px;
   }
 }
 

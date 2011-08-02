@@ -5,20 +5,25 @@
  %>
 <div class="savedSearch">
   <a href="#" class="delete">x</a>
+  <h4 class="handle"><%= saved_search.title %></h4>
   <div class="metaControls">
     <label><input type="checkbox" name="email_me" />email me with new commits</label>
   </div>
-  <h4><%= saved_search.title %></h4>
   <table class="commitsList">
-    <% saved_search.commits(repo).each do |commit| %>
-      <tr>
-        <td class="selectArrow"></td>
-        <td><a href="#"><div class="avatar"></div></a></td>
-        <td class="author"><a href="#"><%= commit.author.to_s[0..25] %></a></td>
-        <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>
-        <td class="commitMessage"><a href="#"><%= commit.short_message %></a></td>
-        <!-- TODO(philc): Add commit date. -->
-      </tr>
+    <% commits = saved_search.commits(repo) %>
+    <% if commits.empty? %>
+      <span class="noResults">No search results.</span>
+    <% else %>
+      <% saved_search.commits(repo).each do |commit| %>
+        <tr>
+          <td class="selectArrow"></td>
+          <td><a href="#"><div class="avatar"></div></a></td>
+          <td class="author"><a href="#"><%= commit.author.to_s[0..25] %></a></td>
+          <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>
+          <td class="commitMessage"><a href="#"><%= commit.short_message %></a></td>
+          <!-- TODO(philc): Add commit date. -->
+        </tr>
+      <% end %>
     <% end %>
   </table>
 </div>

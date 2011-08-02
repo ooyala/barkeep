@@ -1,4 +1,4 @@
-# import common.coffee and jquery
+# import common.coffee, jquery, and jquery UI
 
 window.CommitSearch =
   init: ->
@@ -6,6 +6,12 @@ window.CommitSearch =
     $("#commitSearch input[name=filter_value]").focus()
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $(document).keydown (e) => @onKeydown e
+    $("#savedSearches").sortable(
+      placeholder: "savedSearchPlaceholder"
+      forcePlaceholderSize: true
+      handle: ".handle"
+    )
+    $("#savedSearches").disableSelection()
     $("#savedSearches .savedSearch .delete").click (e) => @onSavedSearchDelete e
     @selectFirstDiff()
 
