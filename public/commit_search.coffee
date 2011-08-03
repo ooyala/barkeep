@@ -6,11 +6,10 @@ window.CommitSearch =
     $("#commitSearch input[name=filter_value]").focus()
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $(document).keydown (e) => @onKeydown e
-    $("#savedSearches").sortable(
+    $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
-      handle: ".dragHandle",
+      handle: ".dragHandle"
       axis: "y"
-    )
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(e, true)
