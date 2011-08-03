@@ -7,6 +7,7 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
 require "lib/script_environment"
 require "lib/git_helper"
+require "lib/grit_extensions"
 require "lib/string_helper"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
