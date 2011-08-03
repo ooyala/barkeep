@@ -1,5 +1,10 @@
 @pageWidth: 930px;
 
+// Colors
+// TODO(caleb): Get more consistency by creating a named color palette
+@highlightBlue: #8dbcd5;
+@highlightOrange: #e98;
+
 body {
   background-color: #white;
   font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
@@ -12,6 +17,103 @@ body {
 
 a:visited { color: blue; }
 
+// A namespace to store some common functionality
+#global {
+  .flexbox {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+  }
+
+  .horizontalFlexbox {
+    #global > .flexbox;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    box-orient: horizontal;
+  }
+
+  .verticalFlexbox {
+    #global > .flexbox;
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
+    box-orient: vertical;
+  }
+
+  .boxFlex (@flex: 1) {
+    -webkit-box-flex: @flex;
+    -moz-box-flex: @flex;
+    box-flex: @flex;
+  }
+
+  .boxAlign (@align) {
+    -webkit-box-align: @align;
+    -moz-box-align: @align;
+    box-align: @align;
+  }
+
+  .verticalGradient(@start, @stop) {
+    background: -webkit-gradient(linear, left top, left bottom, from(@start), to(@stop));
+    background: -webkit-linear-gradient(@start, @stop);
+    background: -moz-linear-gradient(center top, @start 0%, @stop 100%);
+    background: -moz-gradient(center top, @start 0%, @stop 100%);
+  }
+
+  .insetBoxShadow (@x: 0, @y: 0, @blur: 1px, @color) {
+    @val: @x @y @blur @color;
+    box-shadow:inset @val;
+    -webkit-box-shadow:inset @val;
+    -moz-box-shadow:inset @val;
+  }
+
+  .disableBoxShadow {
+    box-shadow:inset none;
+    -webkit-box-shadow:inset none;
+    -moz-box-shadow:inset none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+  }
+
+  .button(@size) {
+    font-size: @size;
+    padding: 0 8px;
+    #global > .verticalGradient(#eee, #ccc);
+    border: 1px solid #aaa;
+    text-shadow: white 1px 1px 0;
+    &:hover, &.hover {
+      border-color: @highlightBlue;
+      #global > .insetBoxShadow(0, 0, 8px, @highlightBlue);
+    }
+    &:active, &.active {
+      border-color: @highlightBlue;
+      #global > .verticalGradient(#ccc, #eee);
+    }
+    &.depressed {
+      @baseColor: darken(@highlightBlue, 10%);
+      #global > .verticalGradient(darken(@baseColor, 30%), @baseColor);
+      color: #eee;
+      text-shadow: darken(@baseColor, 30%) -1px -1px 0;
+      &:hover, &.hover {
+        #global > .insetBoxShadow(0, 0, 8px, white);
+      }
+      &:active, &.active {
+        #global > .verticalGradient(#ccc, #eee);
+        color: black;
+        text-shadow: white 1px 1px 0;
+        border-color: @highlightBlue;
+        #global > .insetBoxShadow(0, 0, 8px, @highlightBlue);
+      }
+    }
+    &.disabled {
+      border-color: #ccc;
+      color: #666;
+      #global > .verticalGradient(#eee, #eee);
+      &:hover, &.hover { #global > .disableBoxShadow; }
+      &:active, &.active { #global > .disableBoxShadow; }
+    }
+  }
+}
+
 header {
   position: relative;
   width: @pageWidth;
@@ -21,7 +123,7 @@ header {
   height: 50px;
 
   #logo {
-    border: 1px solid orange;
+    border: 1px solid @highlightOrange;
     float: left;
     border: 1px solid #ccc;
     background-color: #ddd;
@@ -39,9 +141,8 @@ header {
     }
 
     button {
-      font-size: 18px;
+      #global > .button(18px);
       height: 42px;
-      padding: 0 8px;
     }
   }
 
@@ -61,64 +162,62 @@ header {
   position: relative;
 }
 
+@savedSearchMargin: 20px;
+
 .savedSearchPlaceholder {
   border: 0;
   border-top: 4px dashed #ccc;
-  margin-bottom: 17px;
+  margin-bottom: @savedSearchMargin;
 }
 
 .handle { cursor: move; }
 
 .savedSearch {
-  position: relative;
-  background-color: #f7f7f7;
-  padding-bottom: 5px;
-  margin-bottom: 16px;
+  @background: #f7f7f7;
+  @bars: darken(@background, 10%);
+  background-color: @background;
+  margin-bottom: @savedSearchMargin;
 
-  h4 {
-    background-color: #f0f0f0;
-    margin-bottom: 5px;
-    padding: 2px 5px 5px 5px;
+  .topBar, .bottomBar {
+    #global > .horizontalFlexbox;
+    padding: 5px;
+    background-color: @bars;
   }
 
+  .bottomBar { font-size: 12px; }
+
+  .title {
+    #global > .horizontalFlexbox;
+    #global > .boxFlex(1);
+  }
+  .delete {
+    text-align: right;
+  }
+  .pagingButtons {
+    #global > .horizontalFlexbox;
+    #global > .boxFlex(1);
+    text-align: center;
+    button {
+      #global > .button(14px);
+      height: 20px;
+    }
+  }
+  .email {
+    button {
+      #global > .button(12px);
+      height: 20px;
+      margin-left: 5px;
+      width: 35px;
+      padding-right: 0;
+      padding-left: 0;
+      text-align: center;
+    }
+  }
   a.delete {
-    padding-right: 5px;
-    float: right;
     text-decoration: none;
-    color: orange;
+    color: @highlightOrange;
     font-weight: bold;
-    font-size: 18px;
-    &:hover { color: red; }
-  }
-
-  .pageNumber {
-    float: right;
-    font-size: 0.8em;
-    padding: 5px 20px 0px 0px;
-  }
-
-  .pageButton {
-    float: right;
-    font-size: 1.0em;
-    padding: 2px 5px;
-    font-weight: bold;
-    color: green;
-    text-decoration: none;
-
-    &:hover { color: #339966; }
-  }
-
-  .metaControls {
-    font-size: 13px;
-    float: right;
-    padding-right: 5px;
-    input { margin-right: 4px; }
-  }
-
-  .noResults {
-    font-size: 13px;
-    font-style: italic;
-    padding-left: 5px;
+    &:hover { color: darken(@highlightOrange, 10%); }
   }
 }
 
@@ -126,6 +225,7 @@ header {
  * Styles for list of commits
  */
 table.commitsList {
+  width: 100%;
   .avatar {
     display: inline-block;
     border: 1px solid #bbb;
@@ -138,8 +238,17 @@ table.commitsList {
   }
   td {
     padding-right: 5px;
-    &.author { white-space: nowrap; }
+    &.author {
+      width: 150px;
+      white-space: nowrap;
+    }
+    &.commitId a {
+      text-align: right;
+      width: 95px;
+      color: #777;
+    }
     &.commitMessage {
+      width: 550px;
       /* Commit messages can be very long. Truncate them just by not letting them flow out of the container. */
       a {
         display:block;
@@ -149,13 +258,17 @@ table.commitsList {
         height: 1.1em;
       }
     }
+    &.commitDate {
+      width: 100px;
+      text-align: right;
+      a { color: #777; }
+    }
   }
   a {
     text-decoration: none;
     color: black;
     &:hover { text-decoration: underline; }
   }
-  .commitId a { color: #777; }
 
   .selectArrow {
     width: 10px;
@@ -187,12 +300,15 @@ table.commitsList {
   padding: 10px 5px;
   width: 80%;
   table { border-collapse: collapse; }
-  td { padding: 0 3px; }
-  td:first-of-type { padding-left: 0; }
+  td {
+    height: 16px;
+    padding: 0 3px;
+    &:first-of-type { padding-left: 0; }
+  }
   margin-bottom: 20px;
 
   input[name=filter_value] {
-    padding: 2px;
+    height: 100%;
     width: 200px;
     font-size: 14px;
   }
@@ -200,8 +316,10 @@ table.commitsList {
     font-size: 16px;
   }
   button.submit {
+    #global > .button(16px);
+    height: 100%;
     font-size: 16px;
-    padding: 4px 8px;
+    margin: 4px;
   }
   .example {
     color: #999;

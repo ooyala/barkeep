@@ -10,10 +10,11 @@ window.CommitSearch =
       placeholder: "savedSearchPlaceholder"
       handle: ".handle"
     )
-    $("#savedSearches").disableSelection()
     $("#savedSearches .savedSearch .delete").click (e) => @onSavedSearchDelete e
+    $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(e, true)
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @pageSearch(e, false)
+    $("#savedSearches .savedSearch .emailMe").live "click", (e) => @emailMe(e)
     @selectFirstDiff()
 
   onSearchClick: ->
@@ -124,21 +125,43 @@ window.CommitSearch =
     @searching = true
     if event.type == "keydown"
       savedSearch = $(".selected").parents(".savedSearch")
+      keypress = true
     else # event.type == "click"
       savedSearch = $(event.target).parents(".savedSearch")
+      keypress = false
     savedSearchId = savedSearch.attr("saved-search-id")
+    # Do a click effect on the button
+    buttons = $("#savedSearches .savedSearch[saved-search-id=#{savedSearchId}] .pagingButtons")
+    button = if reverse then buttons.find(".pageLeftButton") else buttons.find(".pageRightButton")
+    if keypress
+      button.addClass("active")
+      timeout 10, =>
+        button.removeClass("active")
+
     pageNumber = (Number) savedSearch.attr("page-number")
     pageNumber = if reverse then pageNumber - 1 else pageNumber + 1
-    console.log "page saved_search with id " + savedSearchId + " to page " + pageNumber
+    console.log "page saved_search with id #{savedSearchId} to page #{pageNumber}"
     $.ajax({
       url: "/saved_searches/" + savedSearchId + "?page_number=" + pageNumber,
       success: (html) =>
         # only update if there are commits for the requested page number
-        if $(html).find(".noResults").size() == 0
-          $(".savedSearch[saved-search-id=" + savedSearchId + "]").replaceWith(html)
-          $(".selected").removeClass("selected")
-          $(".savedSearch[saved-search-id=" + savedSearchId + "] .commitsList tr:first").addClass("selected")
+        if $(html).find(".commitsList tr").size() > 0
+          $(".savedSearch[saved-search-id=#{savedSearchId}]").replaceWith html
+          $(".selected").removeClass "selected"
+          $(".savedSearch[saved-search-id=#{savedSearchId}] .commitsList tr:first").addClass "selected"
+          buttons = $(".savedSearch[saved-search-id=#{savedSearchId}] .pagingButtons")
+          if pageNumber <= 0
+            buttons.find(".pageLeftButton").addClass "disabled"
+          # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
+          # that we can know how many pages of results there are and when to stop paging properly.
         @searching = false
     })
+
+  emailMe: (event) ->
+    # TODO(caleb): update server state
+    button = $(event.target)
+    button.html if $(event.target).hasClass("depressed") then "Off" else "On"
+    $(event.target).toggleClass("depressed")
+
 
 $(document).ready(-> CommitSearch.init())

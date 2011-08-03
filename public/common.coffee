@@ -1,3 +1,6 @@
+# A more sane ordering of arguments for setTimeout.
+window.timeout = (milliseconds, callback) -> setTimeout callback, milliseconds
+
 window.Constants =
   KEY_RETURN            : 13
   KEY_ESC               : 27

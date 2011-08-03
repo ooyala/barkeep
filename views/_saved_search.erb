@@ -4,30 +4,33 @@
   - repo: the repo object.
   - page_number: the page number to load
  %>
- <div class="savedSearch" page-number="<%= page_number %>" saved-search-id="<%= saved_search.id %>">
-  <a href="#" class="delete">x</a>
-  <span class="pageNumber">page <%= page_number %></span>
-  <a href="#" class="pageRightButton pageButton">&gt;</a>
-  <a href="#" class="pageLeftButton pageButton">&lt;</a>
-  <h4 class="handle"><%= saved_search.title %></h4>
-  <div class="metaControls">
-    <label><input type="checkbox" name="email_me" />email me with new commits</label>
+<div class="savedSearch" page-number="<%= page_number %>" saved-search-id="<%= saved_search.id %>">
+  <div class="topBar handle">
+    <h4 class="title"><%= saved_search.title %></h4>
+    <a href="#" class="delete">X</a>
   </div>
   <table class="commitsList">
     <% commits = saved_search.commits(repo, page_number) %>
-    <% if commits.empty? %>
-      <span class="noResults">No search results.</span>
-    <% else %>
-      <% saved_search.commits(repo, page_number).each do |commit| %>
-        <tr>
-          <td class="selectArrow"></td>
-          <td><a href="#"><div class="avatar"></div></a></td>
-          <td class="author"><a href="#"><%= commit.author.to_s[0..25] %></a></td>
-          <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>
-          <td class="commitMessage"><a href="#"><%= commit.short_message %></a></td>
-          <!-- TODO(philc): Add commit date. -->
-        </tr>
-      <% end %>
+    <% commits.each do |commit| %>
+      <tr>
+        <td class="selectArrow"></td>
+        <td><a href="#"><div class="avatar"></div></a></td>
+        <td class="author"><a href="#"><%= commit.author.to_s[0..25] %></a></td>
+        <td class="commitId"><a href="#"><%= commit.id_abbrev %></a></td>
+        <td class="commitMessage"><a href="#"><%= commit.short_message %></a></td>
+        <td class="commitDate"><a href="#"><%= StringHelper.smart_date(commit.date) %></a></td>
+      </tr>
     <% end %>
   </table>
+  <div class="bottomBar handle">
+    <div class="pagingButtons">
+      <button class="pageLeftButton pageButton">&laquo;</button>
+      <button class="pageRightButton pageButton">&raquo;</button>
+      <span class="pageNumberText"><%= commits.empty? ? "No results." : "Result page #{page_number + 1}." %>
+      </span>
+    </div>
+    <div class="email">
+      <span>Email me new commits:</span><button class="emailMe">Off</button>
+    </div>
+  </div>
 </div>
