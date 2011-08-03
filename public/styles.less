@@ -1,4 +1,5 @@
 @pageWidth: 930px;
+@linkColor: #FE003C;
 
 // Colors
 // TODO(caleb): Get more consistency by creating a named color palette
@@ -8,6 +9,7 @@
 body {
   background-color: #white;
   font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+  background-image: url(/images/background.png);
 }
 
 * {
@@ -15,7 +17,15 @@ body {
   padding: 0;
 }
 
-a:visited { color: blue; }
+a {
+  color: #FE003C;
+  text-decoration: none;
+  border-bottom: 1px dotted #FE003C;
+}
+a:hover {
+  color: #D20000;
+  border-bottom: 1px solid #D20000;
+}
 
 // A namespace to store some common functionality
 #global {
@@ -151,6 +161,7 @@ header {
     right: 10px;
     top: 2px;
     font-size: 13px;
+    font-weight: bold;
   }
 }
 
@@ -185,6 +196,13 @@ header {
   }
 
   .bottomBar { font-size: 12px; }
+  a.delete {
+    padding-right: 5px;
+    float: right;
+    border: 0;
+    font-weight: bold;
+    font-size: 18px;
+  }
 
   .title {
     #global > .horizontalFlexbox;
@@ -268,7 +286,7 @@ table.commitsList {
   a {
     text-decoration: none;
     color: black;
-    &:hover { text-decoration: underline; }
+    border: 0;
   }
 
   .selectArrow {
