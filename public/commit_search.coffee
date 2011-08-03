@@ -134,7 +134,7 @@ window.CommitSearch =
     button = if reverse then buttons.find(".pageLeftButton") else buttons.find(".pageRightButton")
     if keypress
       button.addClass("active")
-      timeout 10, =>
+      timeout 70, =>
         button.removeClass("active")
 
     pageNumber = (Number) savedSearch.attr("page-number")
