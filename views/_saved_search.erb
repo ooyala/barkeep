@@ -13,21 +13,27 @@
     </div>
     <h4><%= saved_search.title %></h4>
   </div>
-  <table class="commitsList">
-    <% commits = saved_search.commits(repo, page_number - 1) %>
-    <% commits.each do |commit| %>
-      <tr>
-        <td class="selectArrow"></td>
-        <td><a href="#"><div class="avatar"></div></a></td>
-        <td class="author">
-          <a href="#" title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
-        </td>
-        <td class="commitId"><a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a></td>
-        <td class="commitMessage"><a href="<%= commit.link %>"><%= commit.short_message %></a></td>
-        <td class="commitDate"><%= StringHelper.smart_date(commit.date) %></td>
-      </tr>
-    <% end %>
-  </table>
+  <% commits = saved_search.commits(repo, page_number - 1) %>
+  <% if commits.empty? %>
+    <div class="noResults">No search results.</div>
+  <% else %>
+    <table class="commitsList">
+      <% commits.each do |commit| %>
+        <tr>
+          <td class="selectArrow"></td>
+          <td><a href="#"><div class="avatar"></div></a></td>
+          <td class="author">
+            <a href="#" title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
+          </td>
+          <td class="commitId">
+            <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a>
+          </td>
+          <td class="commitMessage"><a href="<%= commit.link %>"><%= commit.short_message %></a></td>
+          <td class="commitDate"><%= StringHelper.smart_date(commit.date) %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
 
   <div class="pageControls" style="<%= commits.empty? ? "display:none" : "" %>">
     <a href="#" class="pageLeftButton pageButton">&laquo;</a>
