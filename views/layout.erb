@@ -14,6 +14,15 @@
       else if (jQuery.browser.mozilla)
         $("body").addClass("gecko");
     });
+
+    var preloadImage = function(url) {
+      var image = new Image();
+      image.src = url;
+    };
+
+    // Preload the icon's on-hover state. Otherwise it flickers for a second while it's loading and you might
+    // not see it... which would be tragic.
+    preloadImage("/images/barkeep_logo_howdy_80px.png");
   </script>
 </head>
 
