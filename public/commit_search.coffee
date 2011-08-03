@@ -10,7 +10,7 @@ window.CommitSearch =
       placeholder: "savedSearchPlaceholder"
       handle: ".handle"
     )
-    $("#savedSearches .savedSearch .delete").click (e) => @onSavedSearchDelete e
+    $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(e, true)
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @pageSearch(e, false)
@@ -26,7 +26,6 @@ window.CommitSearch =
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
-    $("#savedSearches .savedSearch:first-of-type .delete").click (e) => @onSavedSearchDelete e
     @selectFirstDiff()
 
   onSavedSearchDelete: (event) ->
