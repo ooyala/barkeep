@@ -78,7 +78,7 @@ class CodeReviewServer < Sinatra::Base
       :locals => { :saved_search => saved_search, :repo => @@repo, :page_number => 0 }
   end
 
-  get"/saved_searches/:id" do
+  get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
     page_number = params[:page_number].to_i || 0
     page_number = 0 if page_number < 0
