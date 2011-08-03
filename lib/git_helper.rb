@@ -95,6 +95,7 @@ class GitHelper
             tag = :removed
             orig_line += 1
         end
+        next if tag.nil?
         chunk[:tagged_lines] << LineDiff.new(tag, line[1..-1], tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line)
       end
