@@ -8,9 +8,6 @@
   <div class="header">
     <div class="dragHandle"></div>
     <a href="#" class="delete">x</a>
-    <span class="pageNumber">page <%= page_number %></span>
-    <a href="#" class="pageRightButton pageButton">&gt;</a>
-    <a href="#" class="pageLeftButton pageButton">&lt;</a>
     <h4><%= saved_search.title %></h4>
   </div>
   <div class="metaControls">
@@ -31,15 +28,10 @@
       </tr>
     <% end %>
   </table>
-  <div class="bottomBar handle">
-    <div class="pagingButtons">
-      <button class="pageLeftButton pageButton">&laquo;</button>
-      <button class="pageRightButton pageButton">&raquo;</button>
-      <span class="pageNumberText"><%= commits.empty? ? "No results." : "Result page #{page_number + 1}." %>
-      </span>
-    </div>
-    <div class="email">
-      <span>Email me new commits:</span><button class="emailMe">Off</button>
-    </div>
+
+  <div class="pageControls" style="<%= commits.emtpy? ? "display:none" : "" %>">
+    <a href="#" class="pageLeftButton pageButton">&laquo;</a>
+    <span class="pageNumber"><%= page_number %></span>
+    <a href="#" class="pageRightButton pageButton">&raquo;</a>
   </div>
 </div>
