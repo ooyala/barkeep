@@ -8,7 +8,8 @@ window.CommitSearch =
     $(document).keydown (e) => @onKeydown e
     $("#savedSearches").sortable(
       placeholder: "savedSearchPlaceholder"
-      handle: ".handle"
+      handle: ".dragHandle",
+      axis: "y"
     )
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
