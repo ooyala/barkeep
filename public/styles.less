@@ -308,11 +308,9 @@ table.commitsList {
     width: 200px;
     font-size: 14px;
   }
-  select {
-    font-size: 16px;
-  }
+  select { font-size: 14px; }
   button.submit {
-    font-size: 16px;
+    font-size: 14px;
     padding: 4px 8px;
   }
   .example {
@@ -320,3 +318,6 @@ table.commitsList {
     font-size: 12px;
   }
 }
+
+/* For some reason webkit renders this select box smaller than Firefox does. */
+.webkit #commitSearch select { font-size: 16px; }
