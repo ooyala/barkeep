@@ -33,13 +33,13 @@ class GitHelper
       {
         :file_name_before => diff.a_path,
         :file_name_after => diff.b_path,
-        :lines => GitHelper::apply_diff(diff.a_blob.data, diff.diff)
+        :lines => GitHelper::apply_diff(diff.a_blob, diff.diff)
       }
     end
   end
 
-  def self.apply_diff(data, diff)
-    data_lines = data.split("\n")
+  def self.apply_diff(blob, diff)
+    data_lines = blob ? blob.data.split("\n") : []
     tagged_lines = []
     orig_line, diff_line = 0, 0
     chunks = tag_diff(diff)
