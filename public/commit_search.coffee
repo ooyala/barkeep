@@ -62,6 +62,8 @@ window.CommitSearch =
         @pageSearch(event, true)
       when Constants.KEY_L
         @pageSearch(event, false)
+      when Constants.KEY_RETURN
+        window.location.href = $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
 
   # Swap the current selection for a new one
   selectNewDiff: (next) ->
