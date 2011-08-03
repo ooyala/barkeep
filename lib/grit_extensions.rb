@@ -5,7 +5,7 @@ require "grit"
 module Grit
   class Commit
     def link
-      "/commit/#{@id}"
+      "/commits/#{@id}"
     end
   end
 end

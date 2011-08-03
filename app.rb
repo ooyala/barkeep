@@ -62,7 +62,7 @@ class CodeReviewServer < Sinatra::Base
     erb :commits, :locals => { :saved_searches => current_user.saved_searches, :repo => @@repo }
   end
 
-  get "/commit/:commit_id" do
+  get "/commits/:commit_id" do
     commit = @@repo.commit(params[:commit_id])
     files = GitHelper::get_tagged_commit_diffs(commit)
     erb :_diff, :locals => { :files => files }
