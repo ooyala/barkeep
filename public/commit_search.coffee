@@ -142,7 +142,7 @@ window.CommitSearch =
     pageNumber = (Number) savedSearch.attr("page-number")
     pageNumber = if reverse then pageNumber - 1 else pageNumber + 1
     console.log "page saved_search with id #{savedSearchId} to page #{pageNumber}"
-    $.ajax({
+    $.ajax
       url: "/saved_searches/" + savedSearchId + "?page_number=" + pageNumber,
       success: (html) =>
         # only update if there are commits for the requested page number
@@ -156,7 +156,6 @@ window.CommitSearch =
           # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
           # that we can know how many pages of results there are and when to stop paging properly.
         @searching = false
-    })
 
   emailMe: (event) ->
     # TODO(caleb): update server state
