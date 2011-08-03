@@ -7,6 +7,8 @@
  <div class="savedSearch" page-number="<%= page_number %>" saved-search-id="<%= saved_search.id %>">
   <a href="#" class="delete">x</a>
   <span class="pageNumber">page <%= page_number %></span>
+  <a href="#" class="pageRightButton pageButton">&gt;</a>
+  <a href="#" class="pageLeftButton pageButton">&lt;</a>
   <h4 class="handle"><%= saved_search.title %></h4>
   <div class="metaControls">
     <label><input type="checkbox" name="email_me" />email me with new commits</label>

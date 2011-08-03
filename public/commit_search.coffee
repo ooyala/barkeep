@@ -12,6 +12,8 @@ window.CommitSearch =
     )
     $("#savedSearches").disableSelection()
     $("#savedSearches .savedSearch .delete").click (e) => @onSavedSearchDelete e
+    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(true)
+    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @pageSearch(false)
     @selectFirstDiff()
 
   onSearchClick: ->
