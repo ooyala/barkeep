@@ -14,7 +14,7 @@
     <h4><%= saved_search.title %></h4>
   </div>
   <table class="commitsList">
-    <% commits = saved_search.commits(repo, page_number) %>
+    <% commits = saved_search.commits(repo, page_number - 1) %>
     <% commits.each do |commit| %>
       <tr>
         <td class="selectArrow"></td>
@@ -29,7 +29,7 @@
     <% end %>
   </table>
 
-  <div class="pageControls" style="<%= commits.emtpy? ? "display:none" : "" %>">
+  <div class="pageControls" style="<%= commits.empty? ? "display:none" : "" %>">
     <a href="#" class="pageLeftButton pageButton">&laquo;</a>
     <span class="pageNumber"><%= page_number %></span>
     <a href="#" class="pageRightButton pageButton">&raquo;</a>

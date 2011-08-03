@@ -45,6 +45,6 @@
 <div id="savedSearches">
   <% saved_searches.each do |saved_search| %>
     <%= erb :_saved_search, :layout => false,
-        :locals => { :saved_search => saved_search, :repo => repo, :page_number => 0 } %>
+        :locals => { :saved_search => saved_search, :repo => repo, :page_number => 1 } %>
   <% end %>
 </div>
