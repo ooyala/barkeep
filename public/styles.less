@@ -1,10 +1,8 @@
 @pageWidth: 930px;
-@linkColor: #FE003C;
-
-// Colors
-// TODO(caleb): Get more consistency by creating a named color palette
-@highlightBlue: #8dbcd5;
-@highlightOrange: #e98;
+@linkColor: #D20000;
+/* The color of those tan/grey sections of the site which look sunken into the page. */
+@sunkenColor: #F0EEEA;
+@dragHandleWidth: 30px;
 
 body {
   background-color: #white;
@@ -18,150 +16,100 @@ body {
 }
 
 a {
-  color: #FE003C;
+  color: @linkColor;
   text-decoration: none;
   border-bottom: 1px dotted #FE003C;
+  outline: 0; /* This removes the dotted line around links that Firefox adds when they're focused. */
 }
-a:hover {
-  color: #D20000;
-  border-bottom: 1px solid #D20000;
-}
-
-// A namespace to store some common functionality
-#global {
-  .flexbox {
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-  }
-
-  .horizontalFlexbox {
-    #global > .flexbox;
-    -webkit-box-orient: horizontal;
-    -moz-box-orient: horizontal;
-    box-orient: horizontal;
-  }
-
-  .verticalFlexbox {
-    #global > .flexbox;
-    -webkit-box-orient: vertical;
-    -moz-box-orient: vertical;
-    box-orient: vertical;
-  }
-
-  .boxFlex (@flex: 1) {
-    -webkit-box-flex: @flex;
-    -moz-box-flex: @flex;
-    box-flex: @flex;
-  }
-
-  .boxAlign (@align) {
-    -webkit-box-align: @align;
-    -moz-box-align: @align;
-    box-align: @align;
-  }
-
-  .verticalGradient(@start, @stop) {
-    background: -webkit-gradient(linear, left top, left bottom, from(@start), to(@stop));
-    background: -webkit-linear-gradient(@start, @stop);
-    background: -moz-linear-gradient(center top, @start 0%, @stop 100%);
-    background: -moz-gradient(center top, @start 0%, @stop 100%);
-  }
-
-  .insetBoxShadow (@x: 0, @y: 0, @blur: 1px, @color) {
-    @val: @x @y @blur @color;
-    box-shadow:inset @val;
-    -webkit-box-shadow:inset @val;
-    -moz-box-shadow:inset @val;
-  }
-
-  .disableBoxShadow {
-    box-shadow:inset none;
-    -webkit-box-shadow:inset none;
-    -moz-box-shadow:inset none;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-  }
-
-  .button(@size) {
-    font-size: @size;
-    padding: 0 8px;
-    #global > .verticalGradient(#eee, #ccc);
-    border: 1px solid #aaa;
-    text-shadow: white 1px 1px 0;
-    &:hover, &.hover {
-      border-color: @highlightBlue;
-      #global > .insetBoxShadow(0, 0, 8px, @highlightBlue);
-    }
-    &:active, &.active {
-      border-color: @highlightBlue;
-      #global > .verticalGradient(#ccc, #eee);
-    }
-    &.depressed {
-      @baseColor: darken(@highlightBlue, 10%);
-      #global > .verticalGradient(darken(@baseColor, 30%), @baseColor);
-      color: #eee;
-      text-shadow: darken(@baseColor, 30%) -1px -1px 0;
-      &:hover, &.hover {
-        #global > .insetBoxShadow(0, 0, 8px, white);
-      }
-      &:active, &.active {
-        #global > .verticalGradient(#ccc, #eee);
-        color: black;
-        text-shadow: white 1px 1px 0;
-        border-color: @highlightBlue;
-        #global > .insetBoxShadow(0, 0, 8px, @highlightBlue);
-      }
-    }
-    &.disabled {
-      border-color: #ccc;
-      color: #666;
-      #global > .verticalGradient(#eee, #eee);
-      &:hover, &.hover { #global > .disableBoxShadow; }
-      &:active, &.active { #global > .disableBoxShadow; }
-    }
-  }
+a:hover { color: #FD0D00; }
+a:active {
+  background-color: @linkColor;
+  color: white;
 }
 
 header {
   position: relative;
   width: @pageWidth;
   margin: 0 auto;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 28px;
+  margin-bottom: 28px;
   height: 50px;
 
-  #logo {
-    border: 1px solid @highlightOrange;
-    float: left;
-    border: 1px solid #ccc;
-    background-color: #ddd;
+  #icon {
+    opacity: 0.9;
+    background-image: url(/images/barkeep_logo_80px.png);
+    position: absolute;
+    top: -10px;
+    left: -100px;
+    /* NOTE(philc): This logo might look better on the right. */
+    /* right: 0;*/
     width: 80px;
-    height: 40px;
+    height: 80px;
     text-align: center;
   }
 
+  h1 {
+    float: left;
+    margin: 0;
+    font-size: 46px;
+
+    line-height: 100%;
+    margin-top: -6px;
+
+    font-weight: normal;
+    color: #777;
+    text-shadow: 0px 2px 1px white, 0px -1px 0px #888;
+  }
+
   nav {
-    margin-left: 50px;
+    margin-left: 40px;
     float: left;
     ul li {
       list-style-type: none;
       display: inline-block;
-    }
+      padding-bottom: 6px;
+      margin-right: 20px;
 
-    button {
-      #global > .button(18px);
-      height: 42px;
+      /* This extra div is needed to add a white shadow around the <a> tag. */
+      div {
+        box-shadow: 0px 2px 1px white;
+      }
+      a {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        border-top: 0;
+
+        display: block;
+        width: 120px;
+        height: 27px;
+
+        background-color: @sunkenColor;
+        text-align: center;
+        padding-top: 8px;
+        color: #333;
+
+        box-shadow: 0px 1px 1px #999 inset;
+        /* Cancel any border effects that the standard a:hover implements. */
+        &:hover {
+          color: @linkColor;
+          border: 1px solid #ddd;
+          border-top: 0;
+        }
+        &:active { background-color: @sunkenColor; }
+      }
+
+      &.currentPage {
+        border-bottom: 4px solid @linkColor;
+      }
     }
   }
 
   #signInBox {
     position: absolute;
-    right: 10px;
-    top: 2px;
+    right: 0px;
+    top: -24px;
     font-size: 13px;
-    font-weight: bold;
+    a { font-weight: bold; }
   }
 }
 
@@ -173,70 +121,103 @@ header {
   position: relative;
 }
 
-@savedSearchMargin: 20px;
-
 .savedSearchPlaceholder {
   border: 0;
-  border-top: 4px dashed #ccc;
-  margin-bottom: @savedSearchMargin;
+  border: 3px dashed #ccc;
+  margin-bottom: 17px;
+  height: 80px;
 }
 
 .handle { cursor: move; }
 
 .savedSearch {
-  @background: #f7f7f7;
-  @bars: darken(@background, 10%);
-  background-color: @background;
-  margin-bottom: @savedSearchMargin;
+  position: relative;
+  /* We want the background of a saved search to be opaque while we're dragging it around. */
+  background-image: url(/images/background.png);
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+  padding-right: 30px;
+  width: 100%;
 
-  .topBar, .bottomBar {
-    #global > .horizontalFlexbox;
-    padding: 5px;
-    background-color: @bars;
-  }
+  .header {
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #d0d0d0;
 
-  .bottomBar { font-size: 12px; }
-  a.delete {
-    padding-right: 5px;
-    float: right;
-    border: 0;
-    font-weight: bold;
-    font-size: 18px;
-  }
+    .dragHandle {
+      position: absolute;
+      right: 0;
 
-  .title {
-    #global > .horizontalFlexbox;
-    #global > .boxFlex(1);
-  }
-  .delete {
-    text-align: right;
-  }
-  .pagingButtons {
-    #global > .horizontalFlexbox;
-    #global > .boxFlex(1);
-    text-align: center;
-    button {
-      #global > .button(14px);
+      width: @dragHandleWidth;
       height: 20px;
+      background-repeat: no-repeat;
+      opacity: 0.8;
+      background: transparent url(/images/drag_handle.png) no-repeat center bottom;
+      cursor: move;
+      &:hover {
+        background-color: #f1f1f1;
+        opacity: 1.0;
+      }
+    }
+
+    a.delete {
+      padding-right: 5px;
+      float: right;
+      border: 0;
+      font-weight: bold;
+      font-size: 18px;
+      &:active {
+        color: @linkColor;
+        background-color: transparent;
+      }
+    }
+
+    .emailMe {
+      font-size: 12px;
+      position: absolute;
+      right: 0;
+      margin-right: @dragHandleWidth + 28;
+      padding-right: 5px;
+      padding-top: 6px;
+      input { margin-right: 4px; }
     }
   }
-  .email {
-    button {
-      #global > .button(12px);
-      height: 20px;
-      margin-left: 5px;
-      width: 35px;
-      padding-right: 0;
-      padding-left: 0;
+
+  /* NOTE(philc): This class is added to an element that's being dragged. It would be nice if we coud rename
+   * it. */
+  &.ui-sortable-helper { opacity: 0.8; }
+
+  .noResults {
+    font-size: 13px;
+    font-style: italic;
+    padding-left: 5px;
+  }
+
+  /* The controls used for navigating through pages of commits. */
+  .pageControls {
+    font-size: 12px;
+    position: absolute;
+    margin-top: -2px;
+    right: 9px;
+
+    span, a {
+      display: block;
+      float:left;
+      width: 12px;
+      color: #666;
+      cursor: default;
       text-align: center;
     }
+    a {
+      border: 1px solid #ddd;
+      &:hover { background-color: #e0e0e0; }
+    }
+    .pageNumber {
+      border: 1px solid transparent;
+      margin: 0 1px;
+    }
   }
-  a.delete {
-    text-decoration: none;
-    color: @highlightOrange;
-    font-weight: bold;
-    &:hover { color: darken(@highlightOrange, 10%); }
-  }
+
 }
 
 /*
@@ -244,6 +225,7 @@ header {
  */
 table.commitsList {
   width: 100%;
+
   .avatar {
     display: inline-block;
     border: 1px solid #bbb;
@@ -254,21 +236,12 @@ table.commitsList {
     margin-right: 4px;
     padding-right: 0px;
   }
-  // TODO(caleb): Revisit the sketchy width settings in this table
   td {
     padding-right: 5px;
-    &.author {
-      width: 150px;
-      white-space: nowrap;
-    }
-    &.commitId a {
-      text-align: right;
-      width: 95px;
-      color: #777;
-    }
+    &.author { white-space: nowrap; }
     &.commitMessage {
-      width: 550px;
-      /* Commit messages can be very long. Truncate them just by not letting them flow out of the container. */
+      width: 100%;
+      /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
       a {
         display:block;
         width: 100%;
@@ -277,20 +250,17 @@ table.commitsList {
         height: 1.1em;
       }
     }
-    &.commitDate {
-      width: 100px;
-      text-align: right;
-      color: #777;
-    }
   }
   a {
     text-decoration: none;
     color: black;
     border: 0;
   }
+  .commitId a { color: #777; }
 
   .selectArrow {
-    width: 10px;
+    padding-right: 3px;
+    min-width: 10px;
     height: 10px;
   }
   .selected .selectArrow {
@@ -312,22 +282,20 @@ table.commitsList {
 }
 
 #commitSearch {
-  background-color: #fbfbfb;
-  border: 1px solid #e0e0e0;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  padding: 10px 5px;
+  background-color: @sunkenColor;
+  border: 1px solid #ddd;
+  padding: 10px 8px;
   width: 80%;
+  border-radius: 4px;
+  box-shadow: 0px 2px 1px white;
+
   table { border-collapse: collapse; }
-  td {
-    height: 16px;
-    padding: 0 3px;
-    &:first-of-type { padding-left: 0; }
-  }
+  td { padding: 0 3px; }
+  td:first-of-type { padding-left: 0; }
   margin-bottom: 20px;
 
   input[name=filter_value] {
-    height: 100%;
+    padding: 2px;
     width: 200px;
     font-size: 14px;
   }
@@ -335,10 +303,8 @@ table.commitsList {
     font-size: 16px;
   }
   button.submit {
-    #global > .button(16px);
-    height: 100%;
     font-size: 16px;
-    margin: 4px;
+    padding: 4px 8px;
   }
   .example {
     color: #999;
