@@ -1,3 +1,4 @@
+require "cgi"
 # Helper methods used to retrieve information from a Grit repository needed for the view.
 class GitHelper
   MAX_SEARCH_DEPTH = 1_000
@@ -24,7 +25,13 @@ class GitHelper
   end
 
   def self.get_tagged_commit_diffs(commit)
-
+    commit.diffs.map do |diff|
+      {
+        :file_name_before => diff.a_path,
+        :file_name_after => diff.b_path,
+        :lines => GitHelper::apply_diff(diff.a_blob.data, diff.diff)
+      }
+    end
   end
 
   def self.apply_diff(data, diff)
@@ -38,7 +45,7 @@ class GitHelper
         tagged_lines += data_lines[ orig_line..chunk[:orig_line] ].map do |data|
           diff_line += 1
           orig_line += 1
-          { :tag => :same, :data => data, :orig_line => orig_line, :diff_line => diff_line }
+          LineDiff.new(:same, data, orig_line, diff_line)
         end
       end
       tagged_lines += chunk[:tagged_lines]
@@ -49,7 +56,7 @@ class GitHelper
       tagged_lines += data_lines[orig_line..data_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
-        { :tag => :same, :data => data, :orig_line => orig_line, :diff_line => diff_line }
+        LineDiff.new(:same, data, orig_line, diff_line )
       end
     end
     tagged_lines
@@ -84,11 +91,32 @@ class GitHelper
             tag = :removed
             orig_line += 1
         end
-        chunk[:tagged_lines] << { :tag => tag, :data => line[1..-1],
-                                  :orig_line => tag == :added ? "" : orig_line,
-                                  :diff_line => tag == :removed ? "" : diff_line}
+        chunk[:tagged_lines] << LineDiff.new(tag, line[1..-1], tag == :added ? nil : orig_line,
+            tag == :removed ? nil : diff_line)
       end
     end
     chunks
+  end
+end
+
+class LineDiff
+  attr_accessor :tag, :data, :line_num_before, :line_num_after
+  def initialize(tag, data, line_num_before, line_num_after)
+    @tag = tag
+    @data = data
+    @line_num_before = line_num_before
+    @line_num_after = line_num_after
+  end
+
+  def escaped_data
+    CGI::escapeHTML(@data)
+  end
+
+  def line_tag
+    case @tag
+    when :same then " "
+    when :removed then "-"
+    when :added then "+"
+    end
   end
 end
