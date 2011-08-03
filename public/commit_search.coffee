@@ -120,6 +120,8 @@ window.CommitSearch =
     @selectNewGroup(next)
 
   pageSearch: (event, reverse = false) ->
+    return if @searching
+    @searching = true
     if event.type == "keydown"
       savedSearch = $(".selected").parents(".savedSearch")
     else # event.type == "click"
@@ -130,12 +132,13 @@ window.CommitSearch =
     console.log "page saved_search with id " + savedSearchId + " to page " + pageNumber
     $.ajax({
       url: "/saved_searches/" + savedSearchId + "?page_number=" + pageNumber,
-      success: (html) ->
+      success: (html) =>
         # only update if there are commits for the requested page number
         if $(html).find(".noResults").size() == 0
           $(".savedSearch[saved-search-id=" + savedSearchId + "]").replaceWith(html)
           $(".selected").removeClass("selected")
           $(".savedSearch[saved-search-id=" + savedSearchId + "] .commitsList tr:first").addClass("selected")
+        @searching = false
     })
 
 $(document).ready(-> CommitSearch.init())
