@@ -161,9 +161,5 @@ window.CommitSearch =
 
   emailMe: (event) ->
     # TODO(caleb): update server state
-    button = $(event.target)
-    button.html if $(event.target).hasClass("depressed") then "Off" else "On"
-    $(event.target).toggleClass("depressed")
-
 
 $(document).ready(-> CommitSearch.init())
