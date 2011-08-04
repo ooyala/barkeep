@@ -1,12 +1,14 @@
 @pageWidth: 930px;
 @linkColor: #D20000;
+@textColor: #333;
 /* The color of those tan/grey sections of the site which look sunken into the page. */
 @sunkenColor: #F0EEEA;
 @dragHandleWidth: 30px;
 
 body {
-  background-color: #white;
+  background-color: white;
   font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+  color: @textColor;
   background-image: url(/images/background.png);
 }
 
@@ -268,7 +270,7 @@ table.commitsList {
   }
   a {
     text-decoration: none;
-    color: black;
+    color: @textColor;
     border: 0;
   }
   .commitId a { color: #777; }
