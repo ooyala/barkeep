@@ -220,7 +220,7 @@ header {
       &:hover, &.active { background-color: #e0e0e0; }
       &.disabled {
         color: #bbb;
-        &:hover, &.active { background: none; }
+        &:hover, &.active { background-color: transparent; }
       }
     }
     .pageNumber {
@@ -247,12 +247,19 @@ table.commitsList {
     margin-right: 4px;
     padding-right: 0px;
   }
+  a {
+    text-decoration: none;
+    color: @textColor;
+    border: 0;
+  }
   td {
     padding-right: 5px;
-    a {
-      &:active { background-color: transparent; }
-    }
+    a { &:active { background-color: transparent; } }
     &.author { white-space: nowrap; }
+    &.commitId {
+      a { color: @lightTextColor; }
+      text-align: right;
+    }
     &.commitMessage {
       width: 100%;
       /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
@@ -271,13 +278,6 @@ table.commitsList {
       text-align: right;
     }
   }
-  a {
-    text-decoration: none;
-    color: @textColor;
-    border: 0;
-  }
-  .commitId a { color: @lightTextColor; }
-
   .selectArrow {
     padding-right: 3px;
     min-width: 10px;
