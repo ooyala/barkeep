@@ -13,8 +13,6 @@ require "lib/string_helper"
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 
 class CodeReviewServer < Sinatra::Base
-  include Grit
-
   attr_accessor :current_user
 
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
@@ -28,7 +26,7 @@ class CodeReviewServer < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    @@repo = Repo.new(File.dirname(__FILE__))
+    @@repo = Grit::Repo.new(File.dirname(__FILE__))
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -63,9 +61,10 @@ class CodeReviewServer < Sinatra::Base
   end
 
   get "/commits/:commit_id" do
-    commit = @@repo.commit(params[:commit_id])
-    files = GitHelper::get_tagged_commit_diffs(commit)
-    erb :_diff, :locals => { :files => files }
+    repo_commit = @@repo.commit(params[:commit_id])
+    tagged_diff = GitHelper::get_tagged_commit_diffs(repo_commit)
+    commit = Commit[:sha => params[:commit_id]]
+    erb :_diff, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
   # POST because this creates a saved search on the server.
