@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
+require "json"
 require "sinatra/base"
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
@@ -70,7 +71,8 @@ class CodeReviewServer < Sinatra::Base
   # POST because this creates a saved search on the server.
   post "/search" do
     authors = params[:authors].split(",").map(&:strip).join(",")
-    saved_search = SavedSearch.create(:user_id => current_user.id)
+    incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
+    saved_search = SavedSearch.create(:user_id => current_user.id, :user_order => incremented_user_order)
     # TODO(philc): For now, we're assuming they're always filtering by author.
     SearchFilter.create(:filter_type => SearchFilter::AUTHORS_FILTER, :filter_value => params[:authors],
         :saved_search_id => saved_search.id)
@@ -84,6 +86,32 @@ class CodeReviewServer < Sinatra::Base
     page_number = 1 if page_number <= 0
     erb :_saved_search, :layout => false,
         :locals => { :saved_search => saved_search, :repo => @@repo, :page_number => page_number }
+  end
+
+  # Change the order of saved searches.
+  # I'm sure there's a more RESTFUl way to do this call.
+  post "/saved_searches/reorder" do
+    searches = JSON.parse(request.body.read)
+    previous_searches = SavedSearch.filter(:user_id => current_user.id).to_a
+    halt 401, "Mismatch in the number of saved searches" unless searches.size == previous_searches.size
+    previous_searches.each do |search|
+      search.user_order = searches.index(search.id)
+      search.save
+    end
+    "OK"
+  end
+
+  delete "/saved_searches/:id" do
+    id = params[:id].to_i
+    SearchFilter.filter(:saved_search_id => id).delete
+    SavedSearch.filter(:user_id => current_user.id, :id => id).delete
+    "OK"
+  end
+
+  post "/saved_searches/:id/email" do
+    email_changes = JSON.parse(request.body.read)["email_changes"]
+    SavedSearch[:id => params[:id].to_i].update(:email_changes => email_changes)
+    "OK"
   end
 
   # Based on the given saved search parameters, generates a reasonable title.

@@ -9,7 +9,11 @@
     <div class="dragHandle"></div>
     <a href="#" class="delete">x</a>
     <div class="emailMe">
-      <label><input type="checkbox" name="email_me" />email me new commits</label>
+      <% checked = saved_search.email_changes ? "checked" : nil %>
+      <label>
+        <input type="checkbox" name="email_me" class="emailCheckbox" <%= checked %> />
+        email me new commits
+      </label>
     </div>
     <h4><%= saved_search.title %></h4>
   </div>

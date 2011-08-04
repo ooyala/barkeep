@@ -9,10 +9,12 @@ window.CommitSearch =
       placeholder: "savedSearchPlaceholder"
       handle: ".dragHandle"
       axis: "y"
+      stop: => @reorderSearches()
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(e, true)
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @pageSearch(e, false)
+    $("#savedSearches .savedSearch .emailCheckbox").live "click", (e) => @emailUpdate(e)
     @selectFirstDiff()
 
   onSearchClick: ->
@@ -28,12 +30,13 @@ window.CommitSearch =
 
   onSavedSearchDelete: (event) ->
     target = $(event.target).parents(".savedSearch")
+    searchId = (Number) target.attr("saved-search-id")
     if $(".selected").parents(".savedSearch").is(target)
       @selectNewGroup(false) unless @selectNewGroup(true)
       removedSelected = true
     target.remove()
     @scrollWithContext() if removedSelected
-    # TODO(caleb): save state to the server afterwards (deletes aren't persisted at the moment).
+    @deleteSearch(searchId)
     false
 
   onKeydownInSearchbox: (event) ->
@@ -156,5 +159,46 @@ window.CommitSearch =
           # that we can know how many pages of results there are and when to stop paging properly.
         @searching = false
 
+  reorderSearches: ->
+    @beforeSync()
+    state = for savedSearch in $("#savedSearches .savedSearch")
+      (Number) $(savedSearch).attr("saved-search-id")
+    # Store from the bottom up so that adding new saved searches doesn't change all the numbers.
+    state.reverse()
+    window.state = state
+    $.ajax
+      type: "POST"
+      contentTypeType: "application/json"
+      url: "/saved_searches/reorder"
+      data: $.toJSON(state)
+      success: => @afterSync()
+
+  deleteSearch: (id) ->
+    @beforeSync()
+    $.ajax
+      type: "DELETE"
+      url: "/saved_searches/#{id}"
+      success: => @afterSync()
+
+  emailUpdate: (event) ->
+    @beforeSync()
+    data = { email_changes: $(event.target).attr("checked") == "checked" }
+    id = (Number) $(event.target).parents(".savedSearch").attr("saved-search-id")
+    $.ajax
+      type: "POST"
+      contentTypeType: "application/json"
+      url: "/saved_searches/#{id}/email"
+      data: $.toJSON(data)
+      success: => @afterSync()
+
+  beforeSync: ->
+    # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
+    if @synching
+      alert "Another sync in progress...server connection problems?"
+      return
+    @synching = true
+
+  afterSync: ->
+    @synching = false
 
 $(document).ready(-> CommitSearch.init())
