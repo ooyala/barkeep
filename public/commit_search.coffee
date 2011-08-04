@@ -14,7 +14,6 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(e, true)
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @pageSearch(e, false)
-    $("#savedSearches .savedSearch .emailMe").live "click", (e) => @emailMe(e)
     @selectFirstDiff()
 
   onSearchClick: ->
@@ -157,7 +156,5 @@ window.CommitSearch =
           # that we can know how many pages of results there are and when to stop paging properly.
         @searching = false
 
-  emailMe: (event) ->
-    # TODO(caleb): update server state
 
 $(document).ready(-> CommitSearch.init())
