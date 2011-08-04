@@ -119,10 +119,10 @@ class CodeReviewServer < Sinatra::Base
   end
 
   def refresh_commits
-    commits = @@repo.commits
+    # Hack to get all the commits...this refresh commits is itself a hack that's going away at some point.
+    commits = @@repo.commits("master", 9999999)
     commits.each do |commit|
       if DB[:commits].filter(:sha => commit.id).empty?
-        commit.author
         DB[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
             :user_id => get_user(commit.author)[:id])
       end
