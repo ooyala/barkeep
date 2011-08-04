@@ -113,8 +113,13 @@ class LineDiff
     @line_num_after = line_num_after
   end
 
-  def escaped_data
-    CGI::escapeHTML(@data)
+  def formatted
+    line = "<pre>#{self.line_tag + CGI::escapeHTML(@data)}</pre>"
+    case @tag
+    when :removed then line = "<div class='removed'>#{line}</div>"
+    when :added then line = "<div class='added'>#{line}</div>"
+    end
+    return line
   end
 
   def line_tag
