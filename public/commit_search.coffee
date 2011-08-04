@@ -21,7 +21,7 @@ window.CommitSearch =
     authors = $("#commitSearch input[name=filter_value]").val()
     return unless authors
     queryParams = { authors: authors }
-    $.post("/saved_searches", queryParams, (e) => @onSearchSaved e)
+    $.post("/search", queryParams, (e) => @onSearchSaved e)
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml

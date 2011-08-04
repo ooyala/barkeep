@@ -68,7 +68,8 @@ class CodeReviewServer < Sinatra::Base
     erb :_diff, :locals => { :files => files }
   end
 
-  post "/saved_searches" do
+  # POST because this creates a saved search on the server.
+  post "/search" do
     authors = params[:authors].split(",").map(&:strip).join(",")
     saved_search = SavedSearch.create(:user_id => current_user.id)
     # TODO(philc): For now, we're assuming they're always filtering by author.
