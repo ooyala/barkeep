@@ -214,7 +214,11 @@ header {
     }
     a {
       border: 1px solid #ddd;
-      &:hover { background-color: #e0e0e0; }
+      &:hover, &.active { background-color: #e0e0e0; }
+      &.disabled {
+        color: #bbb;
+        &:hover, &.active { background: none; }
+      }
     }
     .pageNumber {
       border: 1px solid transparent;

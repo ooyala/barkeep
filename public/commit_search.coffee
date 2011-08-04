@@ -132,7 +132,7 @@ window.CommitSearch =
       keypress = false
     savedSearchId = savedSearch.attr("saved-search-id")
     # Do a click effect on the button
-    buttons = $("#savedSearches .savedSearch[saved-search-id=#{savedSearchId}] .pagingButtons")
+    buttons = $("#savedSearches .savedSearch[saved-search-id=#{savedSearchId}] .pageControls")
     button = if reverse then buttons.find(".pageLeftButton") else buttons.find(".pageRightButton")
     if keypress
       button.addClass("active")
@@ -150,8 +150,8 @@ window.CommitSearch =
           $(".savedSearch[saved-search-id=#{savedSearchId}]").replaceWith html
           $(".selected").removeClass "selected"
           $(".savedSearch[saved-search-id=#{savedSearchId}] .commitsList tr:first").addClass "selected"
-          buttons = $(".savedSearch[saved-search-id=#{savedSearchId}] .pagingButtons")
-          if pageNumber <= 0
+          buttons = $(".savedSearch[saved-search-id=#{savedSearchId}] .pageControls")
+          if pageNumber <= 1
             buttons.find(".pageLeftButton").addClass "disabled"
           # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
           # that we can know how many pages of results there are and when to stop paging properly.
