@@ -46,7 +46,7 @@ class GitHelper
 
     chunks.each do |chunk|
       if (chunk[:orig_line] > orig_line)
-        tagged_lines += data_lines[ orig_line..chunk[:orig_line] ].map do |data|
+        tagged_lines += data_lines[ orig_line...chunk[:orig_line] ].map do |data|
           diff_line += 1
           orig_line += 1
           LineDiff.new(:same, data, orig_line, diff_line)
@@ -76,8 +76,8 @@ class GitHelper
     diff_lines.each do |line|
       match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@$/.match(line)
       if (match)
-        orig_line = Integer(match[1])
-        diff_line = Integer(match[3])
+        orig_line = Integer(match[1]) - 1
+        diff_line = Integer(match[3]) - 1
         chunk = { :orig_line => orig_line, :orig_length => Integer(match[2]),
                           :diff_line => diff_line, :diff_length => Integer(match[4]), :tagged_lines => [] }
         chunks << chunk
