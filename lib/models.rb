@@ -13,3 +13,6 @@ Sequel::Model.plugin :timestamps
 require "models/user"
 require "models/saved_search"
 require "models/search_filter"
+require "models/commit"
+require "models/commit_file"
+require "models/comment"
