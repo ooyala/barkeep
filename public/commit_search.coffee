@@ -1,4 +1,4 @@
-# import common.coffee, jquery, and jquery UI
+# import common.coffee, jquery, jquery UI, and jquery-json
 
 window.CommitSearch =
   init: ->
