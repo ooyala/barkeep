@@ -1,6 +1,7 @@
 @pageWidth: 930px;
 @linkColor: #D20000;
 @textColor: #333;
+@lightTextColor: #777;
 /* The color of those tan/grey sections of the site which look sunken into the page. */
 @sunkenColor: #F0EEEA;
 @dragHandleWidth: 30px;
@@ -266,6 +267,8 @@ table.commitsList {
     &.commitDate {
       white-space: nowrap;
       font-size: 90%;
+      color: @lightTextColor;
+      text-align: right;
     }
   }
   a {
@@ -273,7 +276,7 @@ table.commitsList {
     color: @textColor;
     border: 0;
   }
-  .commitId a { color: #777; }
+  .commitId a { color: @lightTextColor; }
 
   .selectArrow {
     padding-right: 3px;
