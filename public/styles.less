@@ -18,6 +18,10 @@ body {
   padding: 0;
 }
 
+/*
+ * Standard elements and form control styles.
+ */
+
 a {
   color: @linkColor;
   text-decoration: none;
@@ -28,6 +32,17 @@ a:hover { color: #FD0D00; }
 a:active {
   background-color: @linkColor;
   color: white;
+}
+
+/*
+ * Page chrome styles.
+ */
+#body {
+  clear: both;
+  width: @pageWidth;
+  margin: 0 auto;
+  margin-bottom: 40px;
+  position: relative;
 }
 
 header {
@@ -120,14 +135,9 @@ header {
   }
 }
 
-#body {
-  clear: both;
-  width: @pageWidth;
-  margin: 0 auto;
-  margin-bottom: 40px;
-  position: relative;
-}
-
+/*
+ * Saved searches styles.
+ */
 .savedSearchPlaceholder {
   border: 3px dashed #ccc;
   margin-bottom: 19px;
@@ -333,6 +343,11 @@ table.commitsList {
 
 /* For some reason webkit renders this select box smaller than Firefox does. */
 .webkit #commitSearch select { font-size: 16px; }
+
+
+/*
+ * Diff view styles.
+ */
 
 .line_number {
   background-color: @sunkenColor;
