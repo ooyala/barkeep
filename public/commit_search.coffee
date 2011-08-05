@@ -3,7 +3,6 @@
 window.CommitSearch =
   init: ->
     $("#commitSearch .submit").click (e) => @onSearchClick e
-    $("#commitSearch input[name=filter_value]").focus()
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $(document).keydown (e) => @onKeydown e
     $("#savedSearches").sortable
