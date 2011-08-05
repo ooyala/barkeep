@@ -9,9 +9,13 @@
 @sunkenColor: #F0EEEA;
 @dragHandleWidth: 30px;
 
+// Fonts
+@sansFamily: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serf;
+@monoFamily: "Inconsolata", monospace; /* Using the google web font to guarantee it's available. */
+
 body {
   background-color: white;
-  font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+  font-family: @sansFamily;
   color: @textColor;
   background-image: url(/images/background.png);
 }
@@ -385,34 +389,46 @@ table.commitsList {
  * Diff view styles.
  */
 
-.line_number {
-  background-color: @sunkenColor;
-  color: @lightTextColor;
-  border-right: 1px solid #DDD;
-  text-align: right;
-  padding: 0 .5em;
-}
-
-div.data {
-  border: 1px solid #DDD;
-}
-
-div.data table {
-  border-collapse: collapse;
-  border-spacing: 0px;
-  width: 100%;
-
-  td {
-    height: 18px;
+.commit {
+  .data {
+    background-color: #fdfdfd;
+    overflow-y: auto;
   }
-}
 
-.removed {
-  background-color: #FDD;
-  height: 18px;
-}
+  .filename { margin-bottom: 5px; }
 
-.added {
-  background-color: #DFD;
-  height: 18px;
+  .line_number {
+    font-family: @monoFamily;
+    font-size: 14px;
+    background-color: @sunkenColor;
+    color: @lightTextColor;
+    border-right: 1px solid #ddd;
+    text-align: right;
+    padding: 0 5px;
+  }
+
+  .code {
+    .removed {
+      background-color: #fce2e2;
+    }
+    .added {
+      background-color: #e2fce2;
+    }
+  }
+  pre {
+    font-family: @monoFamily;
+    font-size: 14px;
+    line-height: 120%;
+  }
+
+  div.data {
+    border: 1px solid #ddd;
+  }
+
+  div.data table {
+    border-collapse: collapse;
+    border-spacing: 0px;
+    width: 100%;
+  }
+
 }
