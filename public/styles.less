@@ -1,6 +1,7 @@
 @pageWidth: 930px;
 /* We use this core red in a few places like buttons and links. */
 @coreRed: #D20000;
+@deepRed: #7A0124;
 @linkColor: @coreRed;
 @textColor: #333;
 @lightTextColor: #777;
@@ -38,26 +39,26 @@ a:active {
 
 /* Our standard buttons have a pretty high-profile red gradient. */
 button.standard {
-  border: 1px solid #7A0124;
+  border: 1px solid @deepRed;
   /* This darker border helps distinguish the drop shadow. */
-  border-bottom: 1px solid darken(#7A0124, 5%);
+  border-bottom: 1px solid darken(@deepRed, 5%);
   border-radius: 3px;
   box-shadow: 0 2px 4px #999;
-  text-shadow: 0px 1px 3px black;
+  text-shadow: 0px -1px 1px @deepRed;
   padding: 5px 18px;
   color: white;
 
   background-color: darken(@coreRed, 18%);
 
   background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, lighten(@coreRed, 3%)), color-stop(0.95, darken(@coreRed, 15%)));
+    color-stop(0, lighten(@coreRed, 3%)), color-stop(0.95, darken(@coreRed, 10%)));
   background-image: -moz-linear-gradient(top, lighten(@coreRed, 3%) 0%, darken(@coreRed, 15%) 95%);
 
   &:hover {
     border: 1px solid darken(#890128, 25%);
 
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten(@coreRed, 10%)), color-stop(0.95, darken(@coreRed, 15%)));
+      color-stop(0, lighten(@coreRed, 8%)), color-stop(0.95, darken(@coreRed, 10%)));
     background-image: -moz-linear-gradient(top, lighten(@coreRed, 10%) 0%, darken(@coreRed, 15%) 95%);
   }
   &:active {
