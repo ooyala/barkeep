@@ -51,6 +51,7 @@ window.CommitSearch =
       when Constants.KEY_SLASH
         window.scroll(0, 0)
         $("#commitSearch input[name=filter_value]").focus()
+        $("#commitSearch input[name=filter_value]").select()
         return false
       when Constants.KEY_J
         @selectDiff(true)
