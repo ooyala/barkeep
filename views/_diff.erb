@@ -1,3 +1,14 @@
+<div class="commit">
+  <% if commit %>
+    <div class="comments">
+      <h3 class="title"> comments </h3>
+      <% commit.commit_comments.each do |comment| %>
+        <%= erb :_comment, :locals => {:comment => comment} %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
 <% tagged_diff.each do |file| %>
   <%= file[:file_name_before] %>
   <div class="data">

@@ -1,15 +1,15 @@
 #A file in a commit
 class CommitFile < Sequel::Model
-  many_to_one :commits
+  many_to_one :commit
   one_to_many :comments
 
     #list of general comments for this file
   def file_comments
-    self.comments.filter(:line_number => nil)
+    comments_dataset.filter(:line_number => nil).order(:created_at).all
   end
 
   #list of comments on individual lines
   def line_comments
-    self.comments.exclude(:line_number => nil).order(:line_number)
+    comments_dataset.exclude(:line_number => nil).order(:line_number, :created_at).all
   end
 end
