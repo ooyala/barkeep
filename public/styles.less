@@ -1,5 +1,7 @@
 @pageWidth: 930px;
-@linkColor: #D20000;
+/* We use this core red in a few places like buttons and links. */
+@coreRed: #D20000;
+@linkColor: @coreRed;
 @textColor: #333;
 @lightTextColor: #777;
 /* The color of those tan/grey sections of the site which look sunken into the page. */
@@ -33,6 +35,37 @@ a:active {
   background-color: @linkColor;
   color: white;
 }
+
+/* Our standard buttons have a pretty high-profile red gradient. */
+button.standard {
+  border: 1px solid #7A0124;
+  /* This darker border helps distinguish the drop shadow. */
+  border-bottom: 1px solid darken(#7A0124, 5%);
+  border-radius: 3px;
+  box-shadow: 0 2px 4px #999;
+  text-shadow: 0px 1px 3px black;
+  padding: 5px 18px;
+  color: white;
+
+  background-color: darken(@coreRed, 18%);
+
+  background-image: -webkit-gradient(linear, left top, left bottom,
+    color-stop(0, lighten(@coreRed, 3%)), color-stop(0.95, darken(@coreRed, 15%)));
+  background-image: -moz-linear-gradient(top, lighten(@coreRed, 3%) 0%, darken(@coreRed, 15%) 95%);
+
+  &:hover {
+    border: 1px solid darken(#890128, 25%);
+
+    background-image: -webkit-gradient(linear, left top, left bottom,
+      color-stop(0, lighten(@coreRed, 10%)), color-stop(0.95, darken(@coreRed, 15%)));
+    background-image: -moz-linear-gradient(top, lighten(@coreRed, 10%) 0%, darken(@coreRed, 15%) 95%);
+  }
+  &:active {
+    background-image: none;
+  }
+}
+
+.webkit button.standard { font-weight: bold; }
 
 /*
  * Page chrome styles.
@@ -333,7 +366,9 @@ table.commitsList {
   select { font-size: 14px; }
   button.submit {
     font-size: 14px;
-    padding: 4px 8px;
+    /* Have the submit button be roughly the same height as the text field. */
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
   .example {
     color: #999;
