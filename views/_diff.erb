@@ -30,9 +30,11 @@
                 <td class="code"><%= line.formatted %></td>
               </tr>
               <% #add line comment if there is one
-                 while comment_index < line_comments.length && line_comments[comment_index].line_number == index + 1 %>
-                    <tr><td/><td/><td> <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %> </td></tr>
-                    <% comment_index += 1 %>
+                 while comment_index < line_comments.length &&
+                  line_comments[comment_index].line_number == index + 1 %>
+                  <tr><td/><td/><td>
+                    <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %> </td></tr>
+                  <% comment_index += 1 %>
               <% end %>
             <% end %>
           </tbody>
