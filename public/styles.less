@@ -169,11 +169,18 @@ header {
   }
 
   #signInBox {
-    position: absolute;
-    right: 0px;
-    top: -24px;
+    text-align: right;
     font-size: 13px;
-    a { font-weight: bold; }
+    a {
+      display: inline-block;
+      border-bottom: 0px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type=text] {
+      width: 200px;
+    }
   }
 }
 

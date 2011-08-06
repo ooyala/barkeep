@@ -49,7 +49,8 @@ class CodeReviewServer < Sinatra::Base
   end
 
   before do
-    self.current_user = User.first # Pretend a user has been logged in.
+    # Fallback to first user in db for now
+    self.current_user = User.find(:email => request.cookies["email"]) || User.first
   end
 
   get "/" do
@@ -137,6 +138,22 @@ class CodeReviewServer < Sinatra::Base
     content_type "application/javascript", :charset => "utf-8"
     last_modified File.mtime(asset_path)
     compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/coffee -cp #{filename}`.chomp }
+  end
+
+  post "/login" do
+    response.set_cookie("email", :value => params[:email], :path => "/") if params[:email]
+    redirect "/commits"
+  end
+
+  post "/logout" do
+    response.delete_cookie("email")
+    redirect "/commits"
+  end
+
+  get "/profiles/:id" do
+    user = User[params[:id]]
+    halt 404 unless user
+    erb :profile, :locals => { :user => user }
   end
 
   def cleanup_backtrace(backtrace_lines)
