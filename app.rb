@@ -61,7 +61,7 @@ class CodeReviewServer < Sinatra::Base
 
   get "/" do
     refresh_commits
-    erb :index
+    redirect "/commits"
   end
 
   get "/commits" do
