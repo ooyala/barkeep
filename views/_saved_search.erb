@@ -25,9 +25,9 @@
       <% commits.each do |commit| %>
         <tr>
           <td class="selectArrow"></td>
-          <td><a href="#"><img class="avatar" src="<%= User.find(:email => commit.author.email).gravatar %>"/></a></td>
+          <td><a href="/profile/<%= commit.author.user.id %>"><img class="avatar" src="<%= commit.author.user.gravatar %>"/></a></td>
           <td class="author">
-            <a href="#" title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
+            <a href="/profile/<%= commit.author.user.id %>" title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
           </td>
           <td class="commitId">
             <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a>
