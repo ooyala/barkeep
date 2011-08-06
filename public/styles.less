@@ -316,10 +316,12 @@ table.commitsList {
     a { &:active { background-color: transparent; } }
     &.author { white-space: nowrap; }
     &.commitId {
+      font-family: @monoFamily;
       a { color: @lightTextColor; }
       text-align: right;
     }
     &.commitMessage {
+      font-family: @monoFamily;
       width: 100%;
       /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
       a {
