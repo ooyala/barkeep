@@ -37,8 +37,12 @@
       <nav>
         <ul>
           <!-- These extra divs are needed for styling. -->
-          <li class="currentPage"><div><a href="/commits">Commits</a></div></li>
-          <li><div><a href="#">My Profile</a></div></li>
+          <li class="<%= current_page_if_url("commits") %>">
+            <div><a href="/commits">Commits</a></div>
+          </li>
+          <li class="<%= current_page_if_url("profile") %>">
+            <div><a href="/profiles/<%= current_user.id %>">My Profile</a></div>
+          </li>
         </ul>
       </nav>
 

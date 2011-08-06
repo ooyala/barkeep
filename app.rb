@@ -48,6 +48,12 @@ class CodeReviewServer < Sinatra::Base
     enable :logging
   end
 
+  helpers do
+    def current_page_if_url(text)
+      request.url.include?(text) ? "currentPage" : ""
+    end
+  end
+
   before do
     # Fallback to first user in db for now
     self.current_user = User.find(:email => request.cookies["email"]) || User.first
