@@ -23,7 +23,7 @@ window.Constants =
 window.ShortcutOverlay =
   init: ->
     $.ajax
-      url: "/keyboard_shortcuts/#{location.pathname}"
+      url: "/keyboard_shortcuts#{location.pathname}"
       success: (html) =>
         $("#overlay").html html
         $("#overlay #shortcuts .close a").click (e) => @hide()
@@ -59,6 +59,8 @@ window.KeyboardShortcuts =
     switch @keyCombo(event)
       when "c"
         window.location.href = "/commits"
+      when "p"
+        window.location.href = $("#signInBox a").attr("href")
 
   # This is a hack to get around the fact that it's not possible to detect a ? being pressed using the keydown
   # event in Firefox. This is the only shortcut for which we use this event.
