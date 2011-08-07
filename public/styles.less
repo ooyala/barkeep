@@ -399,28 +399,36 @@ table.commitsList {
 
   .filename { margin-bottom: 5px; }
 
-  .line_number {
-    font-family: @monoFamily;
-    font-size: 14px;
-    background-color: @sunkenColor;
-    color: @lightTextColor;
-    border-right: 1px solid #ddd;
-    text-align: right;
-    padding: 0 5px;
-  }
-
-  .code {
-    .removed {
-      background-color: #fce2e2;
-    }
-    .added {
-      background-color: #e2fce2;
-    }
-  }
-  pre {
-    font-family: @monoFamily;
-    font-size: 14px;
+  .diffLine {
     line-height: 120%;
+
+    .line_number {
+      font-family: @monoFamily;
+      font-size: 14px;
+      background-color: @sunkenColor;
+      color: @lightTextColor;
+      border-right: 1px solid #ddd;
+      text-align: right;
+      padding: 0 5px;
+      width: 4ex;
+      display: inline-block;
+    }
+
+    .code {
+      display: inline-block;
+
+      .removed {
+        background-color: #fce2e2;
+      }
+      .added {
+        background-color: #e2fce2;
+      }
+    }
+
+    pre {
+      font-family: @monoFamily;
+      font-size: 14px;
+    }
   }
 
   div.data {

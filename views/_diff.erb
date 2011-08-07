@@ -10,23 +10,18 @@
     <% end %>
   </div>
   <div class="data">
-    <table>
-      <tbody>
         <% file[:lines].each_with_index do |line, index| %>
-          <tr data-diff-line="<%= index %>">
-            <td class="line_number"><%= line.line_num_before || "" %></td>
-            <td class="line_number"><%= line.line_num_after || "" %></td>
-            <td class="code"><%= line.formatted %></td>
-          </tr>
+          <div class='diffLine' data-diff-line="<%= index %>">
+            <span class="line_number"><%= line.line_num_before || "&nbsp;" %></span>
+            <span class="line_number"><%= line.line_num_after || "&nbsp;" %></span>
+            <span class="code"><%= line.formatted %></span>
+          </div>
           <% #add line comment if there is one
              while comment_index < line_comments.length &&
               line_comments[comment_index].line_number == index + 1 %>
-              <tr><td/><td/><td>
-                <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %> </td></tr>
+                <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %>
               <% comment_index += 1 %>
           <% end %>
         <% end %>
-      </tbody>
-    </table>
   </div>
 </div>
