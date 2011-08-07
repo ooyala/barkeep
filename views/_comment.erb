@@ -2,7 +2,7 @@
   <div class="comment" id="comment_<%=comment.id%>">
     <div class="heading">
       <span class="name"> <%=CGI::escapeHTML(comment.user.name)%></span>
-      <span class="data"> <%= comment.created_at%> </span>
+      <span class="data date"> <%= comment.created_at%> </span>
     </div>
     <div class="text"> <%=CGI::escapeHTML(comment.text)%> </div>
   </div>
