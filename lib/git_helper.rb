@@ -28,13 +28,22 @@ class GitHelper
     commit.author.to_s.downcase.index(author_search) == 0
   end
 
+  def self.blob_binary?(blob)
+    blob && !blob.data.empty? && blob.data.index("\0")
+  end
+
   def self.get_tagged_commit_diffs(commit)
     commit.diffs.map do |diff|
-      {
+      data = {
         :file_name_before => diff.a_path,
         :file_name_after => diff.b_path,
-        :lines => GitHelper::tag_file(diff.a_blob, diff.diff)
       }
+      if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.a_blob)
+        data[:binary] = true
+      else
+        data[:lines] = GitHelper::tag_file(diff.a_blob, diff.diff)
+      end
+      data
     end
   end
 
@@ -82,7 +91,7 @@ class GitHelper
                           :diff_line => diff_line, :diff_length => Integer(match[4]), :tagged_lines => [] }
         chunks << chunk
       elsif (chunk)
-        #normal line after the first @@ line (eg: '-<div class="commitSection">')
+        # normal line after the first @@ line (eg: '-<div class="commitSection">')
         case line[0]
           when " "
             tag = :same

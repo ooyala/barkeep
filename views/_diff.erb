@@ -10,18 +10,22 @@
     <% end %>
   </div>
   <div class="data">
-        <% file[:lines].each_with_index do |line, index| %>
-          <div class="diffLine" diff-line-number="<%= index + 1 %>">
-            <span class="line_number"><%= line.line_num_before || "&nbsp;" %></span>
-            <span class="line_number"><%= line.line_num_after || "&nbsp;" %></span>
-            <span class="code"><%= line.formatted %></span>
-          </div>
-          <% #add line comment if there is one
-             while comment_index < line_comments.length &&
-              line_comments[comment_index].line_number == index + 1 %>
-                <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %>
-              <% comment_index += 1 %>
-          <% end %>
+    <% if file[:binary] %>
+      file is binary!
+    <% else %>
+      <% file[:lines].each_with_index do |line, index| %>
+        <div class="diffLine" diff-line-number="<%= index + 1 %>">
+          <span class="line_number"><%= line.line_num_before || "&nbsp;" %></span>
+          <span class="line_number"><%= line.line_num_after || "&nbsp;" %></span>
+          <span class="code"><%= line.formatted %></span>
+        </div>
+        <% #add line comment if there is one
+           while comment_index < line_comments.length &&
+            line_comments[comment_index].line_number == index + 1 %>
+              <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %>
+            <% comment_index += 1 %>
         <% end %>
+      <% end %>
+    <% end %>
   </div>
 </div>
