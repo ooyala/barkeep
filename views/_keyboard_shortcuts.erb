@@ -1,20 +1,22 @@
 <% global_shortcuts, view_shortcuts = KeyboardShortcuts.shortcuts(view) %>
 <div id="container">
-	<div id="shortcuts">
-		<div class="title">Keyboard Shortcuts</div><div class="close"><a href="#">X</a></div>
-		<% [["left", global_shortcuts], ["right", view_shortcuts]].each do |position, shortcuts| %>
-			<div class="<%= position %> shortcutList">
-				<% if shortcuts %>
-					<div class="label"><%= shortcuts.keys[0] %></div>
-					<table class="shortcutListTable">
-						<% shortcuts.values[0].each do |keys, description| %>
-							<tr><td><%= keys %></td><td><%= description %></td></tr>
-						<% end %>
-					</table>
-				<% else %>
-					<div class="noShortcuts">No shortcuts for this view.</div>
-				<% end %>
-			</div>
-		<% end %>
-	</div>
+  <div id="shortcuts">
+    <div class="title">Keyboard Shortcuts</div><div class="close"><a href="#">X</a></div>
+    <div class="tableWrapper">
+      <% [["left", global_shortcuts], ["right", view_shortcuts]].each do |position, shortcuts| %>
+        <div class="<%= position %> shortcutList">
+          <% if shortcuts %>
+            <div class="label"><%= shortcuts.keys[0] %></div>
+            <table class="shortcutListTable">
+              <% shortcuts.values[0].each do |keys, description| %>
+                <tr><td class="keys"><%= keys %></td><td class="description"><%= description %></td></tr>
+              <% end %>
+            </table>
+          <% else %>
+            <div class="noShortcuts">No shortcuts for this view.</div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
