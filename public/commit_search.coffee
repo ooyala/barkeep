@@ -145,7 +145,7 @@ window.CommitSearch =
     pageNumber = if reverse then pageNumber - 1 else pageNumber + 1
     console.log "page saved_search with id #{savedSearchId} to page #{pageNumber}"
     $.ajax
-      url: "/saved_searches/" + savedSearchId + "?page_number=" + pageNumber,
+      url: "/saved_searches/#{savedSearchId}?page_number=#{pageNumber}",
       success: (html) =>
         # only update if there are commits for the requested page number
         if $(html).find(".commitsList tr").size() > 0
