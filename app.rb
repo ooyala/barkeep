@@ -156,7 +156,7 @@ class CodeReviewServer < Sinatra::Base
     redirect "/commits"
   end
 
-  get "/profiles/:id" do
+  get "/profile/:id" do
     user = User[params[:id]]
     halt 404 unless user
     erb :profile, :locals => { :user => user }
