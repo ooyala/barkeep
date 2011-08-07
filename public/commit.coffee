@@ -42,7 +42,7 @@ window.Commit =
                           Comment: <input class='commentText' type='text' name='text' />
                           <input type='hidden' name='sha' value='#{commitSha}'/>
                           <input type='hidden' name='filename' value='#{filename}' />
-                          <input type='hidden' name='line_number' value='#{lineNumber}' />
+                          <input type='hidden' name='lineNumber' value='#{lineNumber}' />
                           <input class='commentSubmit' type='submit' value='Submit' />
                           <input class='commentCancel' type='button' value='Cancel' />
                       </form>")

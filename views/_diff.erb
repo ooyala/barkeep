@@ -15,8 +15,8 @@
     <% else %>
       <% file[:lines].each_with_index do |line, index| %>
         <div class="diffLine" diff-line-number="<%= index + 1 %>">
-          <span class="line_number"><%= line.line_num_before || "&nbsp;" %></span>
-          <span class="line_number"><%= line.line_num_after || "&nbsp;" %></span>
+          <span class="lineNumber"><%= line.line_num_before || "&nbsp;" %></span>
+          <span class="lineNumber"><%= line.line_num_after || "&nbsp;" %></span>
           <span class="code"><%= line.formatted %></span>
         </div>
         <% #add line comment if there is one
