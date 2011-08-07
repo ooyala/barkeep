@@ -1,4 +1,6 @@
 require "cgi"
+require "albino"
+require "lib/albino_filetype"
 # Helper methods used to retrieve information from a Grit repository needed for the view.
 class GitHelper
   MAX_SEARCH_DEPTH = 1_000
@@ -34,48 +36,60 @@ class GitHelper
 
   def self.get_tagged_commit_diffs(commit)
     commit.diffs.map do |diff|
+      a_path = diff.a_path
+      b_path = diff.b_path
       data = {
-        :file_name_before => diff.a_path,
-        :file_name_after => diff.b_path,
+        :file_name_before => a_path,
+        :file_name_after => b_path,
       }
+      filetype = AlbinoFiletype::detect_filetype(a_path == "dev/null" ? b_path : a_path)
       if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.a_blob)
         data[:binary] = true
       else
-        data[:lines] = GitHelper::tag_file(diff.a_blob, diff.diff)
+        data[:lines] = GitHelper::tag_file(diff.a_blob, diff.b_blob, diff.diff, filetype)
       end
       data
     end
   end
 
-  def self.tag_file(file, diff)
-    data_lines = file ? file.data.split("\n") : []
+  def self.colorize_blob(blob, filetype)
+    return "" if blob.nil?
+    syntaxer = Albino.new(blob.data, filetype, :html)
+    syntaxer.colorize({ :O => "nowrap=true" }).split("\n")
+  end
+
+  def self.tag_file(file, file_after, diff, filetype)
+    before_lines = file ? file.data.split("\n") : []
+    after_lines = file_after ? file_after.data.split("\n") : []
+    before_highlighted = GitHelper::colorize_blob(file, filetype)
+    after_highlighted = GitHelper::colorize_blob(file_after, filetype)
     tagged_lines = []
     orig_line, diff_line = 0, 0
-    chunks = tag_diff(diff)
+    chunks = tag_diff(diff, before_highlighted, after_highlighted)
 
     chunks.each do |chunk|
       if (chunk[:orig_line] > orig_line)
-        tagged_lines += data_lines[ orig_line...chunk[:orig_line] ].map do |data|
+        tagged_lines += before_lines[ orig_line...chunk[:orig_line] ].map do |data|
           diff_line += 1
           orig_line += 1
-          LineDiff.new(:same, data, orig_line, diff_line)
+          LineDiff.new(:same, data, before_highlighted[orig_line-1], orig_line, diff_line)
         end
       end
       tagged_lines += chunk[:tagged_lines]
       orig_line += chunk[:orig_length]
       diff_line += chunk[:diff_length]
     end
-    if orig_line <= data_lines.count
-      tagged_lines += data_lines[orig_line..data_lines.count].map do |data|
+    if orig_line <= before_lines.count
+      tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
-        LineDiff.new(:same, data, orig_line, diff_line )
+        LineDiff.new(:same, data, before_highlighted[orig_line-1], orig_line, diff_line )
       end
     end
     tagged_lines
   end
 
-  def self.tag_diff(diff)
+  def self.tag_diff(diff, before_highlighted, after_highlighted)
     diff_lines = diff_lines = diff.split("\n")
     chunks = []
     chunk = nil
@@ -97,15 +111,18 @@ class GitHelper
             tag = :same
             diff_line += 1
             orig_line += 1
+            highlighted = before_highlighted[orig_line-1]
           when "+"
             tag = :added
             diff_line += 1
+            highlighted = after_highlighted[diff_line-1]
           when "-"
             tag = :removed
             orig_line += 1
+            highlighted = before_highlighted[orig_line-1]
         end
         next if tag.nil?
-        chunk[:tagged_lines] << LineDiff.new(tag, line[1..-1], tag == :added ? nil : orig_line,
+        chunk[:tagged_lines] << LineDiff.new(tag, line[1..-1], highlighted, tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line)
       end
     end
@@ -114,16 +131,17 @@ class GitHelper
 end
 
 class LineDiff
-  attr_accessor :tag, :data, :line_num_before, :line_num_after
-  def initialize(tag, data, line_num_before, line_num_after)
+  attr_accessor :tag, :data, :highlighted_data, :line_num_before, :line_num_after
+  def initialize(tag, data, highlighted_data, line_num_before, line_num_after)
     @tag = tag
     @data = data
+    @highlighted_data = highlighted_data
     @line_num_before = line_num_before
     @line_num_after = line_num_after
   end
 
   def formatted
-    line = "<pre>#{self.line_tag + CGI::escapeHTML(@data)}</pre>"
+    line = "<pre>#{self.line_tag + highlighted_data}</pre>"
     case @tag
     when :removed then line = "<div class='removed'>#{line}</div>"
     when :added then line = "<div class='added'>#{line}</div>"
