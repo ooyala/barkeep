@@ -11,6 +11,7 @@ window.Constants =
     74  : "j"
     75  : "k"
     76  : "l"
+    77  : "m"
     78  : "n"
     80  : "p"
 
@@ -59,7 +60,7 @@ window.KeyboardShortcuts =
     switch @keyCombo(event)
       when "c"
         window.location.href = "/commits"
-      when "p"
+      when "m"
         window.location.href = $("#signInBox a").attr("href")
 
   # This is a hack to get around the fact that it's not possible to detect a ? being pressed using the keydown
