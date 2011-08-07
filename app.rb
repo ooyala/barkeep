@@ -9,6 +9,7 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/script_environment"
 require "lib/git_helper"
 require "lib/grit_extensions"
+require "lib/keyboard_shortcuts"
 require "lib/string_helper"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
@@ -133,6 +134,10 @@ class CodeReviewServer < Sinatra::Base
     email_changes = JSON.parse(request.body.read)["email_changes"]
     SavedSearch[:id => params[:id].to_i].update(:email_changes => email_changes)
     "OK"
+  end
+
+  get %r{/keyboard_shortcuts/(.*)$} do
+    erb :_keyboard_shortcuts, :layout => false, :locals => { :view => params[:captures].first }
   end
 
   # Based on the given saved search parameters, generates a reasonable title.

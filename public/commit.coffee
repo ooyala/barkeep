@@ -6,16 +6,18 @@ window.Commit =
     $(".diffLine").click(Commit.onDiffLineClick)
 
   onKeydown: (event) ->
-    event.stopPropagation()
-    switch event.which
-      when Constants.KEY_J
+    return unless KeyboardShortcuts.beforeKeydown(event)
+    switch KeyboardShortcuts.keyCombo(event)
+      when "j"
         window.scrollBy(0, Constants.SCROLL_DISTANCE_PIXELS)
-      when Constants.KEY_K
+      when "k"
         window.scrollBy(0, Constants.SCROLL_DISTANCE_PIXELS * -1)
-      when Constants.KEY_N
+      when "n"
         @scrollFile(true)
-      when Constants.KEY_P
+      when "p"
         @scrollFile(false)
+      else
+        KeyboardShortcuts.globalOnKeydown(event)
 
   scrollFile: (next = true) ->
     previousPosition = 0

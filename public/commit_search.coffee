@@ -4,6 +4,7 @@ window.CommitSearch =
   init: ->
     $("#commitSearch .submit").click (e) => @onSearchClick e
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
+    $("#commitSearch input[name=filter_value]").keypress (e) => KeyboardShortcuts.beforeKeydown(e)
     $(document).keydown (e) => @onKeydown e
     $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
@@ -40,32 +41,34 @@ window.CommitSearch =
     false
 
   onKeydownInSearchbox: (event) ->
-    event.stopPropagation()
-    switch event.which
-      when Constants.KEY_RETURN
+    return unless KeyboardShortcuts.beforeKeydown(event)
+    switch KeyboardShortcuts.keyCombo(event)
+      when "return"
         @onSearchClick()
-      when Constants.KEY_ESC
+      when "escape"
         $("#commitSearch input[name=filter_value]").blur()
         @scrollWithContext()
 
   onKeydown: (event) ->
-    event.stopPropagation()
-    switch event.which
-      when Constants.KEY_SLASH
+    return unless KeyboardShortcuts.beforeKeydown(event)
+    switch KeyboardShortcuts.keyCombo(event)
+      when "/"
         window.scroll(0, 0)
         $("#commitSearch input[name=filter_value]").focus()
         $("#commitSearch input[name=filter_value]").select()
         return false
-      when Constants.KEY_J
+      when "j"
         @selectDiff(true)
-      when Constants.KEY_K
+      when "k"
         @selectDiff(false)
-      when Constants.KEY_H
+      when "h"
         @pageSearch(event, true)
-      when Constants.KEY_L
+      when "l"
         @pageSearch(event, false)
-      when Constants.KEY_RETURN
+      when "return"
         window.location.href = $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
+      else
+        KeyboardShortcuts.globalOnKeydown(event)
 
   # Swap the current selection for a new one
   selectNewDiff: (next) ->
