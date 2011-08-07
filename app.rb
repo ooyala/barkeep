@@ -58,14 +58,14 @@ class CodeReviewServer < Sinatra::Base
   end
 
   get "/commits" do
-    erb :commits, :locals => { :saved_searches => current_user.saved_searches, :repo => @@repo }
+    erb :commit_search, :locals => { :saved_searches => current_user.saved_searches, :repo => @@repo }
   end
 
   get "/commits/:commit_id" do
     repo_commit = @@repo.commit(params[:commit_id])
     tagged_diff = GitHelper::get_tagged_commit_diffs(repo_commit)
     commit = Commit[:sha => params[:commit_id]]
-    erb :_diff, :locals => { :tagged_diff => tagged_diff, :commit => commit }
+    erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
   # POST because this creates a saved search on the server.

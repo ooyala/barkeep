@@ -1,47 +1,32 @@
-<div class="commit">
-  <% if commit %>
-    <div class="comments">
-      <% commit.commit_comments.each do |comment| %>
+<div class="file">
+  <div class="filename"> <%= file[:file_name_before] %></div>
+  <div class="comments">
+  <% line_comments, comment_index = [], 0%>
+    <% if commit_file = commit ? commit.commit_files_dataset[:filename => file[:file_name_before]] : nil %>
+      <% commit_file.file_comments.each do |comment| %>
         <%= erb :_comment, :locals => {:comment => comment} %>
       <% end %>
-    </div>
-    <br/>
-  <% end %>
-
-  <% tagged_diff.each do |file| %>
-    <div class="file">
-      <div class="filename"> <%= file[:file_name_before] %></div>
-      <div class="comments">
-      <% line_comments, comment_index = [], 0%>
-        <% if commit_file = commit ? commit.commit_files_dataset[:filename => file[:file_name_before]] : nil %>
-          <% commit_file.file_comments.each do |comment| %>
-            <%= erb :_comment, :locals => {:comment => comment} %>
+      <% line_comments = commit_file.line_comments %>
+    <% end %>
+  </div>
+  <div class="data">
+    <table>
+      <tbody>
+        <% file[:lines].each_with_index do |line, index| %>
+          <tr data-diff-line="<%= index %>">
+            <td class="line_number"><%= line.line_num_before || "" %></td>
+            <td class="line_number"><%= line.line_num_after || "" %></td>
+            <td class="code"><%= line.formatted %></td>
+          </tr>
+          <% #add line comment if there is one
+             while comment_index < line_comments.length &&
+              line_comments[comment_index].line_number == index + 1 %>
+              <tr><td/><td/><td>
+                <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %> </td></tr>
+              <% comment_index += 1 %>
           <% end %>
-          <% line_comments = commit_file.line_comments %>
         <% end %>
-      </div>
-      <div class="data">
-        <table>
-          <tbody>
-            <% file[:lines].each_with_index do |line, index| %>
-              <tr data-diff-line="<%= index %>">
-                <td class="line_number"><%= line.line_num_before || "" %></td>
-                <td class="line_number"><%= line.line_num_after || "" %></td>
-                <td class="code"><%= line.formatted %></td>
-              </tr>
-              <% #add line comment if there is one
-                 while comment_index < line_comments.length &&
-                  line_comments[comment_index].line_number == index + 1 %>
-                  <tr><td/><td/><td>
-                    <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %> </td></tr>
-                  <% comment_index += 1 %>
-              <% end %>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <br/>
-  <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
-
