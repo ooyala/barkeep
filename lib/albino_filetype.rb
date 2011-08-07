@@ -8,7 +8,7 @@ class AlbinoFiletype
     ".coffee" => :coffeescript,
     ".sh" => :bash,
     ".css" => :css,
-    ".less" => :sass
+    ".less" => :css
   }
   def self.detect_filetype(filename)
     # if path, separate file from path
