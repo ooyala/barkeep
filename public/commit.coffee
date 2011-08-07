@@ -27,14 +27,17 @@ window.Commit =
         break
     window.scroll(0, if next then currentPosition else previousPosition)
 
-  #Support to add comments
-
+  #Logic to add comments
   onDiffLineClick: (e) ->
-    $(e.currentTarget).after(Commit.createCommentForm('foo','bar','hi'))
+    current = $(e.currentTarget)
+    lineNumber = current.attr("diff-line-number")
+    filename = current.parents(".file").attr("filename")
+    sha = current.parents(".commit").attr("sha")
+    current.after(Commit.createCommentForm(sha,filename,lineNumber))
 
   createCommentForm: (commitSha, filename, lineNumber)->
     commentForm = $(" <form class='commentForm' action='/comment' type='POST'>
-                          Comment: <input class='text' type='text' name='commentText' />
+                          Comment: <input class='commentText' type='text' name='text' />
                           <input type='hidden' name='sha' value='#{commitSha}'/>
                           <input type='hidden' name='filename' value='#{filename}' />
                           <input type='hidden' name='line_number' value='#{lineNumber}' />
@@ -51,10 +54,10 @@ window.Commit =
     data = {}
     $(e.currentTarget).children("input").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
-      type:e.currentTarget.type,
+      type: "POST",
       data: data,
       url: e.currentTarget.action,
-      success: (html) -> Commit.onCommentCancel(html, e.currentTarget)
+      success: (html) -> Commit.onCommentSubmitSuccess(html, e.currentTarget)
 
   onCommentSubmitSuccess: (html, form) ->
     $(form).after(html)

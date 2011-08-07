@@ -1,4 +1,4 @@
-<div class="file">
+<div class="file" filename="<%= file[:file_name_before] %>" >
   <div class="filename"> <%= file[:file_name_before] %></div>
   <div class="comments">
   <% line_comments, comment_index = [], 0%>
@@ -11,7 +11,7 @@
   </div>
   <div class="data">
         <% file[:lines].each_with_index do |line, index| %>
-          <div class='diffLine' data-diff-line="<%= index %>">
+          <div class="diffLine" diff-line-number="<%= index + 1 %>">
             <span class="line_number"><%= line.line_num_before || "&nbsp;" %></span>
             <span class="line_number"><%= line.line_num_after || "&nbsp;" %></span>
             <span class="code"><%= line.formatted %></span>

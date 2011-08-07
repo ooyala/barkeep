@@ -75,6 +75,20 @@ class CodeReviewServer < Sinatra::Base
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
+  post "/comment" do
+    commit = Commit.filter({:sha => params[:sha]}).first
+    return 400 unless commit
+    file = nil
+    if params[:filename] && params[:filename] != ""
+      file = commit.commit_files_dataset.filter(:filename => params[:filename]).first ||
+                CommitFile.new({:filename => params[:filename], :commit => commit}).save
+    end
+    line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number] : nil
+    comment = Comment.new({:commit => commit, :commit_file => file, :line_number => line_number.to_i,
+                           :user => current_user, :text => params[:text]}).save
+    erb :_comment, :layout => false, :locals => { :comment => comment }
+  end
+
   # POST because this creates a saved search on the server.
   post "/search" do
     authors = params[:authors].split(",").map(&:strip).join(",")
