@@ -47,7 +47,7 @@
       </nav>
 
       <div id="signInBox">
-        <a href="/profiles/<%= current_user.id %>"><%= current_user.email %></a>
+        <a href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
         <form action="/login" method="post">
           <input type="text" placeholder="email" name="email" />
           <input type="submit" value="Sign in" />
