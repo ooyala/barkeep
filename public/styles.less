@@ -1,3 +1,8 @@
+/* NOTE(caleb): There is a known issue where our web font flickers in FF. The solution is a JS
+ * workaround:
+ * http://joshuamcginnis.com/2010/08/17/how-to-fix-the-font-face-flicker-issue-in-firefox/
+ * We can drop this in later if we want. It's kind of silly how firefox manages web fonts IMO.
+ */
 @font-face {
   font-family: 'DroidSansMonoSlashedRegular';
   src: url('/droidsansmonoslashed.woff') format('woff');
