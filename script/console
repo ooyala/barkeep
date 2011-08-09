@@ -13,10 +13,26 @@ include Grit
 $repo = Repo.new(File.join(File.dirname(__FILE__), "../"))
 
 def reload!
-  Dir.glob("lib/*.rb").each do |file|
-    load(file)
+  suppress_warnings do
+    Dir.glob("lib/*.rb").each do |file|
+      load(file)
+    end
   end
   nil
 end
+
+# When we reload our files using "reload!", many of our constants get redefined which spews forth many
+# warnings. Hide those warnings because it's a bad UX.
+def suppress_warnings(&block)
+  original_verbosity = $VERBOSE
+  begin
+    $VERBOSE = nil
+    result = yield
+  ensure
+    $VERBOSE = original_verbosity
+  end
+  result
+end
+
 
 IRB.start(__FILE__)
