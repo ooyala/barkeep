@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'DroidSansMonoSlashedRegular';
+  src: url('/droidsansmonoslashed.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @pageWidth: 930px;
 /* We use this core red in a few places like buttons and links. */
 @coreRed: #D20000;
@@ -12,7 +19,7 @@
 
 // Fonts
 @sansFamily: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
-@monoFamily: "Inconsolata", monospace; /* Using the google web font to guarantee it's available. */
+@monoFamily: 12px "DroidSansMonoSlashedRegular", monospace; /* Using the google web font to guarantee it's available. */
 
 body {
   background-color: white;
@@ -364,12 +371,12 @@ table.commitsList {
     a { &:active { background-color: transparent; } }
     &.author { white-space: nowrap; }
     &.commitId {
-      font-family: @monoFamily;
+      font: @monoFamily;
       a { color: @lightTextColor; }
       text-align: right;
     }
     &.commitMessage {
-      font-family: @monoFamily;
+      font: @monoFamily;
       width: 100%;
       /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
       a {
@@ -462,6 +469,7 @@ table.commitsList {
     .lineNumber {
       font-family: @monoFamily;
       font-size: 14px;
+      height: 18px;
       background-color: @sunkenColor;
       color: @lightTextColor;
       border-right: 1px solid #ddd;
@@ -678,8 +686,7 @@ table.commitsList {
     }
 
     pre {
-      font-family: @monoFamily;
-      font-size: 14px;
+      font: @monoFamily;
     }
   }
 
@@ -761,7 +768,7 @@ table.commitsList {
                 line-height: 150%;
 
                 &.keys {
-                  font-family: @monoFamily;
+                  font: @monoFamily;
                   text-align: right;
                   text-shadow: -1px -1px 1px @shadowColor;
                 }
