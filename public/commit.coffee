@@ -34,7 +34,7 @@ window.Commit =
     current = $(e.currentTarget)
     lineNumber = current.attr("diff-line-number")
     filename = current.parents(".file").attr("filename")
-    sha = current.parents(".commit").attr("sha")
+    sha = current.parents("#commit").attr("sha")
     current.after(Commit.createCommentForm(sha,filename,lineNumber))
 
   createCommentForm: (commitSha, filename, lineNumber)->
