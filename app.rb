@@ -4,6 +4,10 @@ require "bundler/setup"
 require "json"
 require "sinatra/base"
 
+require 'openid'
+require 'openid/store/filesystem'
+require 'openid/extensions/ax'
+
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
 require "lib/script_environment"
@@ -53,11 +57,20 @@ class CodeReviewServer < Sinatra::Base
     def current_page_if_url(text)
       request.url.include?(text) ? "currentPage" : ""
     end
+
+    def root_url
+      request.url.match(/(^.*\/{2}[^\/]*)/)[1]
+    end
   end
 
   before do
-    # Fallback to first user in db for now
-    self.current_user = User.find(:email => request.cookies["email"]) || User.first
+    next if request.url =~ /^#{root_url}\/login/
+    self.current_user = User.find(:email => request.cookies["email"])
+    unless self.current_user
+      #save url to return to it after login completes
+      response.set_cookie  "login_started_url", :value => request.url, :path => "/"
+      redirect get_login_redirect
+    end
   end
 
   get "/" do
@@ -136,6 +149,30 @@ class CodeReviewServer < Sinatra::Base
     "OK"
   end
 
+  #handle login complete from openid provider
+  get "/login/complete" do
+    @openid_consumer ||= OpenID::Consumer.new(session,
+                         OpenID::Store::Filesystem.new("#{File.dirname(__FILE__)}/tmp/openid"))
+    openid_response = @openid_consumer.complete(params, request.url)
+    case openid_response.status
+      when OpenID::Consumer::FAILURE
+        "Sorry, we could not authenticate you with this identifier." #{openid_response.display_identifier}"
+
+      when OpenID::Consumer::SETUP_NEEDED
+        "Immediate request failed - Setup Needed"
+
+      when OpenID::Consumer::CANCEL
+        "Login cancelled."
+
+      when OpenID::Consumer::SUCCESS
+        ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
+        email = ax_resp["http://axschema.org/contact/email"][0]
+        response.set_cookie  "email", :value => email, :path => "/"
+        User.new(:email => email, :name => email).save unless User.find :email => email
+        redirect request.cookies["login_started_url"] || "/"
+    end
+  end
+
   get %r{/keyboard_shortcuts/(.*)$} do
     erb :_keyboard_shortcuts, :layout => false, :locals => { :view => params[:captures].first }
   end
@@ -163,16 +200,6 @@ class CodeReviewServer < Sinatra::Base
     content_type "application/javascript", :charset => "utf-8"
     last_modified File.mtime(asset_path)
     compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/coffee -cp #{filename}`.chomp }
-  end
-
-  post "/login" do
-    response.set_cookie("email", :value => params[:email], :path => "/") if params[:email]
-    redirect "/commits"
-  end
-
-  post "/logout" do
-    response.delete_cookie("email")
-    redirect "/commits"
   end
 
   get "/profile/:id" do
@@ -223,5 +250,21 @@ class CodeReviewServer < Sinatra::Base
       cached_asset[:md5] = md5
     end
     cached_asset[:contents]
+  end
+
+  # construct redirect url to google openid
+  def get_login_redirect
+    @openid_consumer ||= OpenID::Consumer.new(session,
+        OpenID::Store::Filesystem.new("#{File.dirname(__FILE__)}/tmp/openid"))
+    begin
+      oidreq = @openid_consumer.begin("google.com/accounts/o8/id")
+    rescue OpenID::DiscoveryFailure => why
+      "Sorry, we couldn't find your identifier #{openid}."
+    else
+      axreq = OpenID::AX::FetchRequest.new
+      axreq.add(OpenID::AX::AttrInfo.new("http://axschema.org/contact/email", nil, true))
+      oidreq.add_extension(axreq)
+      oidreq.redirect_url(root_url,root_url + "/login/complete")
+    end
   end
 end

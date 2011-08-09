@@ -48,11 +48,10 @@
       </nav>
 
       <div id="signInBox">
-        <a href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
-        <form action="/login" method="post">
-          <input type="text" placeholder="email" name="email" />
-          <input type="submit" value="Sign in" />
-        </form>
+        <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
+        [<a class="logoutLink" href="https://www.google.com/accounts/Logout">logout</a>]
+        <% #bullshittery to logout from google without getting stuck on their page %>
+        <iframe id="logoutIFrame" width=0 height=0></iframe>
       </div>
   </header>
 
