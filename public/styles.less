@@ -18,12 +18,12 @@
 @almostWhite: #FDFDFD;
 
 // Fonts
-@sansFamily: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
-@monoFamily: 12px "DroidSansMonoSlashedRegular", monospace; /* Using the google web font to guarantee it's available. */
+@sansFont: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+@monoFont: "DroidSansMonoSlashedRegular", monospace;
 
 body {
   background-color: white;
-  font-family: @sansFamily;
+  font-family: @sansFont;
   color: @textColor;
   background-image: url(/images/background.png);
 }
@@ -371,12 +371,12 @@ table.commitsList {
     a { &:active { background-color: transparent; } }
     &.author { white-space: nowrap; }
     &.commitId {
-      font: @monoFamily;
+      font: 14px @monoFont;
       a { color: @lightTextColor; }
       text-align: right;
     }
     &.commitMessage {
-      font: @monoFamily;
+      font: 14px @monoFont;
       width: 100%;
       /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
       a {
@@ -456,6 +456,8 @@ table.commitsList {
  */
 
 #commit {
+  @commitFontFamily: 12px @monoFont;
+
   .data {
     background-color: @almostWhite;
     overflow-y: auto;
@@ -467,8 +469,7 @@ table.commitsList {
     line-height: 120%;
 
     .lineNumber {
-      font-family: @monoFamily;
-      font-size: 14px;
+      font: @commitFontFamily;
       height: 18px;
       background-color: @sunkenColor;
       color: @lightTextColor;
@@ -686,7 +687,7 @@ table.commitsList {
     }
 
     pre {
-      font: @monoFamily;
+      font: @commitFontFamily;
     }
   }
 
@@ -768,7 +769,7 @@ table.commitsList {
                 line-height: 150%;
 
                 &.keys {
-                  font: @monoFamily;
+                  font: 14px @monoFont;
                   text-align: right;
                   text-shadow: -1px -1px 1px @shadowColor;
                 }
