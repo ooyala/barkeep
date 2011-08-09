@@ -1,0 +1,33 @@
+<%# The email which is sent when someone comments on a commit. It can display multiple comments if we've
+  # batched more than one comment together before sending the notification email.
+  #  - grit_commit
+  #  - comments_grouped_by_file: a hash of file_name => [comments]
+ %>
+<font face="monospace">
+
+<a href="http://barkeep.com/commits/<%= grit_commit.id_abbrev %>"><%= grit_commit.id_abbrev %></a>
+<%= grit_commit.author %> - <%= grit_commit.short_message %><br/>
+<%= StringHelper.short_date(grit_commit.date) %>
+
+
+<br/><br/>
+
+<% comments_grouped_by_file.each do |filename, comments| %>
+  <%= filename %><br/>
+  <%= "-" * filename.size %><br/>
+
+  <%# I'd like to just display the last N lines of the hunk this comment pertains to.
+      The comment's line number is currently not being populated correctly, so fix that first. %>
+  26: TODO(philc): <br/>
+  27: add some real diff information<br/>
+  28: here<br/>
+
+  <br/>
+  <% comments.each do |comment| %>
+    &lt;<%= CGI.escape_html(comment.user.name) %>&gt; <%= CGI.escape_html(comment.text) %><br/><br/>
+  <% end  %>
+<% end %>
+
+</font>
+
+<%# TODO(philc): Make each comment back to the diff view. %>

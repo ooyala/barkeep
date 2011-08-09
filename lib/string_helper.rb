@@ -20,4 +20,10 @@ module StringHelper
     return "The future!!!" if elapsed_time < 0
     time.strftime "%b %d, %Y"
   end
+
+  # A terse date represenation in the form of "Aug 21, 2011". Used by views where relative dates don't work
+  # well, like in our email views.
+  def self.short_date(time)
+    time.strftime "%b %d, %Y"
+  end
 end

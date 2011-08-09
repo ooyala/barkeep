@@ -7,3 +7,4 @@ require "grit"
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/models"
+require "lib/emails"
