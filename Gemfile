@@ -17,3 +17,6 @@ gem "ruby-openid"
 
 # For sending emails.
 gem "pony"
+
+# For rendering erb outside of views.
+gem "tilt"

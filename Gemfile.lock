@@ -59,3 +59,4 @@ DEPENDENCIES
   sinatra
   sqlite3-ruby
   thin
+  tilt
