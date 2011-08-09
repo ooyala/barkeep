@@ -745,14 +745,10 @@ table.commitsList {
       }
 
       .tableWrapper {
-        .flexbox;
         width: 100%;
 
         .shortcutList {
-          /* I want to set this to 50% but I couldn't get it working in FF after multiple hours of trying */
-          width: (@pageWidth - 120px) / 2;
-          /* TODO(caleb): Also, the height of this box is too large in FF for some reason. I spent a lot of
-           * time trying to figure that out but I couldn't get it. */
+          vertical-align: top;
           .label {
             font-size: 18px;
             margin-bottom: 5px;
