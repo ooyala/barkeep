@@ -14,3 +14,6 @@ gem "coffee-script"
 gem "thin"
 gem "albino"
 gem "ruby-openid"
+
+# For sending emails.
+gem "pony"
