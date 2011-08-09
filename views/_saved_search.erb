@@ -2,7 +2,7 @@
   View arguments:
   - saved_search: a SavedSearch object.
   - repo: the repo object.
-  - page_number: the page number to load
+  - page_number: the page number to load.
  %>
 <div class="savedSearch" page-number="<%= page_number %>" saved-search-id="<%= saved_search.id %>">
   <div class="header">
@@ -25,9 +25,11 @@
       <% commits.each do |commit| %>
         <tr>
           <td class="selectArrow"></td>
-          <td><a href="/profile/<%= commit.author.user.id %>"><img class="avatar" src="<%= commit.author.user.gravatar %>"/></a></td>
+          <td><a href="/profile/<%= commit.author.user.id %>">
+              <img class="avatar" src="<%= commit.author.user.gravatar %>"/></a></td>
           <td class="author">
-            <a href="/profile/<%= commit.author.user.id %>" title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
+            <a href="/profile/<%= commit.author.user.id %>"
+                title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
           </td>
           <td class="commitId">
             <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a>
