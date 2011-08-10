@@ -179,6 +179,10 @@ class CodeReviewServer < Sinatra::Base
     erb :_keyboard_shortcuts, :layout => false, :locals => { :view => params[:captures].first }
   end
 
+  get "/stats" do
+    erb :stats
+  end
+
   # Based on the given saved search parameters, generates a reasonable title.
   # TODO(philc): Objectivity saved_searches, and don't assume we're always searching by authors.
   def saved_search_title(search_params)

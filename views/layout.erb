@@ -44,6 +44,9 @@
           <li class="<%= current_page_if_url("profile") %>">
             <div><a href="/profile/<%= current_user.id %>">My Profile</a></div>
           </li>
+          <li class="<%= current_page_if_url("stats") %>">
+            <div><a href="/stats">Stats</a></div>
+          </li>
         </ul>
       </nav>
 

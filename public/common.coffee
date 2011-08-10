@@ -5,7 +5,6 @@ window.Constants =
   KEY_CODES:
     13  : "return"
     27  : "escape"
-    191 : "/"
     67  : "c"
     72  : "h"
     74  : "j"
@@ -14,6 +13,8 @@ window.Constants =
     77  : "m"
     78  : "n"
     80  : "p"
+    83  : "s"
+    191 : "/"
 
     # This is for keypress, not keydown. FF (on Mac only?) doesn't give any keycodes when you press shift-/.
     63  : "?"
@@ -62,6 +63,8 @@ window.KeyboardShortcuts =
         window.location.href = "/commits"
       when "m"
         window.location.href = $("#signInBox a").attr("href")
+      when "s"
+        window.location.href = "/stats"
 
   # This is a hack to get around the fact that it's not possible to detect a ? being pressed using the keydown
   # event in Firefox. This is the only shortcut for which we use this event.
