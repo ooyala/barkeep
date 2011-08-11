@@ -34,6 +34,9 @@ class GitHelper
     blob && !blob.data.empty? && blob.data.index("\0")
   end
 
+  #returns an array of hashes representing the tagged and colorized lines of each file in the diff.
+  # Where :binary indicates if the file is binary, otherwise :lines is the output of tag_file
+  # returns: [ { :binary, :lines}, ... ]
   def self.get_tagged_commit_diffs(commit)
     commit.diffs.map do |diff|
       a_path = diff.a_path
@@ -58,6 +61,8 @@ class GitHelper
     syntaxer.colorize({ :O => "nowrap=true" }).split("\n")
   end
 
+  #parse unified diff and return an array of LineDiff, that has all the lines in the original file and the diffs
+  # returns: [ {:tag, :data, :highlighted_data, :line_num_before, :line_num_after}, ... ]
   def self.tag_file(file, file_after, diff, filetype)
     before_lines = file ? file.data.split("\n") : []
     after_lines = file_after ? file_after.data.split("\n") : []
@@ -89,6 +94,8 @@ class GitHelper
     tagged_lines
   end
 
+  # parses unified diff, into objects so that the rest of the file can be inserted around it.
+  # returns { :orig_line, :orig_length, :diff_line, :diff_length, [ DiffLines... ] }
   def self.tag_diff(diff, before_highlighted, after_highlighted)
     diff_lines = diff_lines = diff.split("\n")
     chunks = []
