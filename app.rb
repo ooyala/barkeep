@@ -17,6 +17,8 @@ require "lib/keyboard_shortcuts"
 require "lib/string_helper"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
+OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"
+OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 
 class CodeReviewServer < Sinatra::Base
   attr_accessor :current_user
@@ -257,12 +259,12 @@ class CodeReviewServer < Sinatra::Base
     @openid_consumer ||= OpenID::Consumer.new(session,
         OpenID::Store::Filesystem.new("#{File.dirname(__FILE__)}/tmp/openid"))
     begin
-      oidreq = @openid_consumer.begin("google.com/accounts/o8/id")
+      oidreq = @openid_consumer.begin(OPENID_DISCOVERY_ENDPOINT)
     rescue OpenID::DiscoveryFailure => why
       "Sorry, we couldn't find your identifier #{openid}."
     else
       axreq = OpenID::AX::FetchRequest.new
-      axreq.add(OpenID::AX::AttrInfo.new("http://axschema.org/contact/email", nil, true))
+      axreq.add(OpenID::AX::AttrInfo.new(OPENID_AX_EMAIL_SCHEMA, nil, true))
       oidreq.add_extension(axreq)
       oidreq.redirect_url(root_url,root_url + "/login/complete")
     end
