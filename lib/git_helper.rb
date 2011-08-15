@@ -58,7 +58,7 @@ class GitHelper
   def self.colorize_blob(blob, filetype)
     return "" if blob.nil?
     syntaxer = Albino.new(blob.data, filetype, :html)
-    syntaxer.colorize({ :O => "nowrap=true" }).split("\n")
+    syntaxer.colorize({ :O => "nowrap=true,stripnl=false,stripall=false" }).split("\n")
   end
 
   #parse unified diff and return an array of LineDiff, that has all the lines in the original file and the diffs
