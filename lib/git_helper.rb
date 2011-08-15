@@ -122,6 +122,15 @@ class GitHelper
         chunks << chunk
         next
       end
+      match_removed_file = /^@@ \-(\d+),(\d+) \+(\d+) @@$/.match(line)
+      if match_removed_file
+        orig_line = Integer(match_removed_file[1]) - 1
+        diff_line = nil
+        chunk = { orig_line => orig_line, :orig_length => Integer(match_removed_file[2]), diff_line => nil,
+            :diff_length => 0, :tagged_lines => [] }
+        chunks << chunk
+        next
+      end
       if chunk
         # normal line after the first @@ line (eg: '-<div class="commitSection">')
         case line[0]
