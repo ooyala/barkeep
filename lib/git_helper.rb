@@ -73,7 +73,7 @@ class GitHelper
     chunks = tag_diff(diff, before_highlighted, after_highlighted)
 
     chunks.each do |chunk|
-      if (chunk[:orig_line] > orig_line)
+      if chunk[:orig_line] && chunk[:orig_line] > orig_line
         tagged_lines += before_lines[ orig_line...chunk[:orig_line] ].map do |data|
           diff_line += 1
           orig_line += 1
@@ -105,13 +105,24 @@ class GitHelper
 
     diff_lines.each do |line|
       match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@$/.match(line)
-      if (match)
+      if match
         orig_line = Integer(match[1]) - 1
         diff_line = Integer(match[3]) - 1
-        chunk = { :orig_line => orig_line, :orig_length => Integer(match[2]),
-                          :diff_line => diff_line, :diff_length => Integer(match[4]), :tagged_lines => [] }
+        chunk = { :orig_line => orig_line, :orig_length => Integer(match[2]), :diff_line => diff_line,
+            :diff_length => Integer(match[4]), :tagged_lines => [] }
         chunks << chunk
-      elsif (chunk)
+        next
+      end
+      match_new_file = /^@@ \-(\d+) \+(\d+),(\d+) @@$/.match(line)
+      if match_new_file
+        orig_line = nil
+        diff_line = Integer(match_new_file[2]) - 1
+        chunk = { orig_line => nil, :orig_length => 0, :diff_line => diff_line,
+            :diff_length => Integer(match_new_file[3]), :tagged_lines => [] }
+        chunks << chunk
+        next
+      end
+      if chunk
         # normal line after the first @@ line (eg: '-<div class="commitSection">')
         case line[0]
           when " "
