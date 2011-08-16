@@ -485,6 +485,40 @@ table.commitsList {
 #commit {
   @commitFontFamily: 12px @monoFont;
 
+  #commitMetadata {
+    background-color: #E0EFF2;
+    border: 1px solid darken(#E0EFF2, 10%);
+    margin: 40px 0px;
+    padding: 10px;
+    font-size: 0.8em;
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+
+    .sha {
+      margin-bottom: 10px;
+      font-family: @monoFont;
+      color: #999999;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      font-family: @monoFont;
+    }
+
+    .authorInfo {
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1.25em;
+
+      .email, .date {
+        color: #999999;
+      }
+    }
+  }
+
   .data {
     background-color: @almostWhite;
     overflow-y: auto;

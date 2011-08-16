@@ -1,5 +1,15 @@
 <script src="/js/commit.js"></script>
-<div id="commit" sha="<%=commit.sha%>">
+<div id="commit" sha="<%= commit.sha %>">
+  <div id="commitMetadata">
+    <p class="sha"><%= commit.sha %></p>
+    <p class="message"><%= commit.message %></p>
+    <img class="avatar" src="<%= commit.user.gravatar %>" />
+    <div class="authorInfo">
+      <p class="author"><%= commit.user.name %></p>
+      <p class="email"><%= commit.user.email %></p>
+      <p class="date"><%= commit.date.to_pretty %></p>
+    </div>
+  </div>
   <% tagged_diff.each do |file| %>
     <%= erb :_diff, :locals => { :commit => commit, :file => file } %>
     <br/>
