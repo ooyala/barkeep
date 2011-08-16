@@ -57,6 +57,7 @@ window.KeyboardShortcuts =
     true
 
   globalOnKeydown: (event) ->
+    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
     @beforeKeydown(event)
     switch @keyCombo(event)
       when "c"
@@ -69,6 +70,7 @@ window.KeyboardShortcuts =
   # This is a hack to get around the fact that it's not possible to detect a ? being pressed using the keydown
   # event in Firefox. This is the only shortcut for which we use this event.
   globalQuestionPress: (event) ->
+    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
     @beforeKeydown(event)
     switch @keyCombo(event)
       when "s_?"
