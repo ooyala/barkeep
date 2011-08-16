@@ -46,7 +46,7 @@ class GitHelper
         :file_name_after => b_path,
       }
       filetype = AlbinoFiletype::detect_filetype(a_path == "dev/null" ? b_path : a_path)
-      if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.a_blob)
+      if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
         data[:binary] = true
       else
         data[:lines] = GitHelper::tag_file(diff.a_blob, diff.b_blob, diff.diff, filetype)
