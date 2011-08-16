@@ -465,12 +465,13 @@ table.commitsList {
   .data {
     background-color: @almostWhite;
     overflow-y: auto;
+    border-collapse: collapse;
+    border: 1px solid #DDDDDD;
   }
 
   .filename { margin-bottom: 5px; }
 
   .diffLine {
-    line-height: 120%;
 
     .lineNumber {
       font: @commitFontFamily;
@@ -481,11 +482,17 @@ table.commitsList {
       text-align: right;
       padding: 0 5px;
       width: 4ex;
-      display: inline-block;
     }
 
     .code {
-      display: inline-block;
+      & > div { height: 18px; }
+
+      .removed {
+        background-color: #fce2e2;
+      }
+      .added {
+        background-color: #e2fce2;
+      }
       .c {
           color: #998;
           font-style: italic;
@@ -681,12 +688,6 @@ table.commitsList {
       }
       .il {
           color: #099;
-      }
-      .removed {
-        background-color: #fce2e2;
-      }
-      .added {
-        background-color: #e2fce2;
       }
     }
 

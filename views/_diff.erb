@@ -9,16 +9,16 @@
       <% line_comments = commit_file.line_comments %>
     <% end %>
   </div>
-  <div class="data">
+  <table class="data">
     <% if file[:binary] %>
       <span class="fileBinary">file is binary!</span>
     <% else %>
       <% file[:lines].each_with_index do |line, index| %>
-        <div class="diffLine" diff-line-number="<%= index + 1 %>">
-          <span class="lineNumber"><%= line.line_num_before || "&nbsp;" %></span>
-          <span class="lineNumber"><%= line.line_num_after || "&nbsp;" %></span>
-          <span class="code"><%= line.formatted %></span>
-        </div>
+        <tr class="diffLine" diff-line-number="<%= index + 1 %>">
+          <td class="lineNumber"><%= line.line_num_before || "&nbsp;" %></td>
+          <td class="lineNumber"><%= line.line_num_after || "&nbsp;" %></td>
+          <td class="code"><%= line.formatted %></td>
+        </tr>
         <% #add line comment if there is one
            while comment_index < line_comments.length &&
             line_comments[comment_index].line_number == index + 1 %>
@@ -27,5 +27,5 @@
         <% end %>
       <% end %>
     <% end %>
-  </div>
+  </table>
 </div>
