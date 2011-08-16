@@ -11,7 +11,7 @@
   </div>
   <div class="data">
     <% if file[:binary] %>
-      file is binary!
+      <span class="fileBinary">file is binary!</span>
     <% else %>
       <% file[:lines].each_with_index do |line, index| %>
         <div class="diffLine" diff-line-number="<%= index + 1 %>">
