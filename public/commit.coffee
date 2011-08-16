@@ -35,27 +35,25 @@ window.Commit =
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
-    codeLine.append(Commit.createCommentForm(sha,filename,lineNumber))
+    Commit.createCommentForm(codeLine, sha, filename, lineNumber)
 
-  createCommentForm: (commitSha, filename, lineNumber)->
-    commentForm = $(" <form class='commentForm' action='/comment' type='POST'>
-                          <div class='heading'>Add a comment</div>
-                          <input type='hidden' name='sha' value='#{commitSha}'/>
-                          <input type='hidden' name='filename' value='#{filename}' />
-                          <input type='hidden' name='line_number' value='#{lineNumber}' />
-                          <div class='body'>
-                            <textarea class='commentText' name='text'></textarea>
-                          </div>
-                          <div class='commentControls'>
-                            <input class='commentSubmit' type='submit' value='Submit' />
-                            <input class='commentCancel' type='button' value='Cancel' />
-                          </div>
-                      </form>")
-    commentForm.click (e) -> e.stopPropagation()
-    commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
-    commentForm.submit Commit.onCommentSubmit
-    commentForm.find(".commentCancel").click Commit.onCommentCancel
-    return commentForm
+  createCommentForm: (codeLine, commitSha, filename, lineNumber) ->
+    $.ajax({
+      type: "get",
+      url: "/comment_form",
+      data: {
+        sha: commitSha,
+        filename: filename,
+        line_number: lineNumber
+      },
+      success: (html) ->
+        commentForm = $(html)
+        commentForm.click (e) -> e.stopPropagation()
+        commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
+        commentForm.submit Commit.onCommentSubmit
+        commentForm.find(".commentCancel").click Commit.onCommentCancel
+        codeLine.append(commentForm)
+    })
 
   onCommentSubmit: (e) ->
     e.preventDefault()

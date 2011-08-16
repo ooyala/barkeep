@@ -91,6 +91,14 @@ class CodeReviewServer < Sinatra::Base
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
+  get "/comment_form" do
+    erb :_comment_form, :layout => false, :locals => {
+      :sha => params[:sha],
+      :filename => params[:filename],
+      :line_number => params[:line_number]
+    }
+  end
+
   post "/comment" do
     commit = Commit.filter({:sha => params[:sha]}).first
     return 400 unless commit
