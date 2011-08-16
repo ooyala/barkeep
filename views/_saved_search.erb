@@ -34,7 +34,7 @@
           <td class="commitId">
             <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a>
           </td>
-          <td class="commitMessage"><a href="<%= commit.link %>"><%= commit.short_message %></a></td>
+          <td class="commitMessage"><a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a></td>
           <td class="commitDate"><%= commit.date.to_pretty %></td>
         </tr>
       <% end %>
