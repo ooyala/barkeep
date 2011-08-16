@@ -32,7 +32,7 @@ window.Commit =
   #Logic to add comments
   onDiffLineClick: (e) ->
     codeLine = $(e.currentTarget).find(".code")
-    lineNumber = codeLine.attr("diff-line-number")
+    lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
     codeLine.append(Commit.createCommentForm(sha,filename,lineNumber))
@@ -43,7 +43,7 @@ window.Commit =
                           <input class='commentText' type='text' name='text' />
                           <input type='hidden' name='sha' value='#{commitSha}'/>
                           <input type='hidden' name='filename' value='#{filename}' />
-                          <input type='hidden' name='lineNumber' value='#{lineNumber}' />
+                          <input type='hidden' name='line_number' value='#{lineNumber}' />
                           <input class='commentSubmit' type='submit' value='Submit' />
                           <input class='commentCancel' type='button' value='Cancel' />
                       </form>")

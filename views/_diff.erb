@@ -17,14 +17,16 @@
         <tr class="diffLine" diff-line-number="<%= index + 1 %>">
           <td class="lineNumber"><%= line.line_num_before || "&nbsp;" %></td>
           <td class="lineNumber"><%= line.line_num_after || "&nbsp;" %></td>
-          <td class="code"><%= line.formatted %></td>
+          <td class="code">
+            <%= line.formatted %>
+            <% # add line comments
+               while comment_index < line_comments.length &&
+                line_comments[comment_index].line_number == index + 1 %>
+                  <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %>
+                <% comment_index += 1 %>
+            <% end %>
+          </td>
         </tr>
-        <% #add line comment if there is one
-           while comment_index < line_comments.length &&
-            line_comments[comment_index].line_number == index + 1 %>
-              <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %>
-            <% comment_index += 1 %>
-        <% end %>
       <% end %>
     <% end %>
   </table>
