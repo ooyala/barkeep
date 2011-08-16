@@ -397,7 +397,10 @@ table.commitsList {
   }
   td {
     padding-right: 5px;
-    a { &:active { background-color: transparent; } }
+    a {
+      &:active { background-color: transparent; }
+      &:hover { text-decoration: underline; }
+    }
     &.author { white-space: nowrap; }
     &.commitId {
       font: 14px @monoFont;
