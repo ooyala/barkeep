@@ -6,6 +6,6 @@
       <span>added a comment</span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
     </div>
-    <div class="body"> <%=CGI::escapeHTML(comment.text)%> </div>
+    <div class="body"> <%= Redcarpet.new(comment.text).to_html %> </div>
   </div>
 <% end %>

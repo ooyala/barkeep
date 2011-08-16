@@ -3,6 +3,7 @@
 require "bundler/setup"
 require "json"
 require "sinatra/base"
+require "redcarpet"
 
 require 'openid'
 require 'openid/store/filesystem'
