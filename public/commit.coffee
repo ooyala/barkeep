@@ -39,13 +39,17 @@ window.Commit =
 
   createCommentForm: (commitSha, filename, lineNumber)->
     commentForm = $(" <form class='commentForm' action='/comment' type='POST'>
-                          <span>Comment:</span>
-                          <input class='commentText' type='text' name='text' />
+                          <div class='heading'>Add a comment</div>
                           <input type='hidden' name='sha' value='#{commitSha}'/>
                           <input type='hidden' name='filename' value='#{filename}' />
                           <input type='hidden' name='line_number' value='#{lineNumber}' />
-                          <input class='commentSubmit' type='submit' value='Submit' />
-                          <input class='commentCancel' type='button' value='Cancel' />
+                          <div class='body'>
+                            <textarea class='commentText' name='text'></textarea>
+                          </div>
+                          <div class='commentControls'>
+                            <input class='commentSubmit' type='submit' value='Submit' />
+                            <input class='commentCancel' type='button' value='Cancel' />
+                          </div>
                       </form>")
     commentForm.click (e) -> e.stopPropagation()
     commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
@@ -56,7 +60,7 @@ window.Commit =
   onCommentSubmit: (e) ->
     e.preventDefault()
     data = {}
-    $(e.currentTarget).children("input").each (i,e) -> data[e.name] = e.value if e.name
+    $(e.currentTarget).find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
       type: "POST",
       data: data,
@@ -69,6 +73,6 @@ window.Commit =
 
   onCommentCancel: (e) ->
     e.stopPropagation()
-    $(e.currentTarget).parent(".commentForm").remove()
+    $(e.currentTarget).parents(".commentForm").remove()
 
 $(document).ready(-> Commit.init())

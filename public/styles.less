@@ -83,6 +83,26 @@ button.standard {
   }
 }
 
+form {
+  input[type=button], input[type=submit] {
+    .roundedCorners(5px);
+    padding: 7px 15px;
+    text-shadow: 0px -1px 1px #EEEEEE;
+    border: 1px solid #AAAAAA;
+    font-weight: bold;
+    cursor: pointer;
+    background-image: -webkit-gradient(linear, left top, left bottom,
+      color-stop(0, #F0EEEA), color-stop(0.95, #DCE1E4));
+    background-image: -moz-linear-gradient(top, #F0F4FF 0%, #DCE1E4 95%);
+
+    &:hover {
+      background-image: -webkit-gradient(linear, left top, left bottom,
+        color-stop(0, #DCE1E4), color-stop(0.95, #F0EEEA));
+      background-image: -moz-linear-gradient(top, #DCE1E4 0%, #F0F4FF 95%);
+    }
+  }
+}
+
 // Close links (Xs)
 .closeLinks {
   border: 0;
@@ -350,6 +370,17 @@ header {
   }
 }
 
+.avatar {
+  display: inline-block;
+  border: 1px solid #bbb;
+  background-color: #eee;
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+  margin-right: 4px;
+  padding-right: 0px;
+}
+
 /*
  * Styles for list of commits
  */
@@ -357,16 +388,6 @@ table.commitsList {
   width: 100%;
 
   font-size: 16px;
-  .avatar {
-    display: inline-block;
-    border: 1px solid #bbb;
-    background-color: #eee;
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-    margin-right: 4px;
-    padding-right: 0px;
-  }
   a {
     text-decoration: none;
     color: @textColor;
@@ -485,14 +506,55 @@ table.commitsList {
       width: 4ex;
     }
 
-    .code {
-      & > div { height: 18px; }
+    .comment, .commentForm {
+      .roundedCorners(5px);
+      border: 3px solid #DDDDDD;
+      margin: 5px;
+      font-size: 0.8em;
 
+      textarea {
+        resize: none;
+        height: 100px;
+        width: 100%;
+        font-size: 1.0em;
+      }
+
+      .heading {
+        color: #999999;
+        padding: 5px;
+
+        background-image: -webkit-gradient(linear, left top, left bottom,
+          color-stop(0, #F0F4FF), color-stop(0.95, #D3E1F6));
+        background-image: -moz-linear-gradient(top, #F0F4FF 0%, #D3E1F6 95%);
+
+        .name {
+          color: #333333;
+          font-weight: bold;
+        }
+
+        .date {
+          color: #666666;
+        }
+      }
+
+      .body {
+        padding: 10px 5px;
+      }
+
+      .commentControls {
+        margin: 0px 10px 10px 10px;
+        text-align: right;
+      }
+    }
+
+    .code {
       .removed {
         background-color: #fce2e2;
+        height: 18px;
       }
       .added {
         background-color: #e2fce2;
+        height: 18px;
       }
       .c {
           color: #998;
