@@ -492,6 +492,47 @@ table.commitsList {
 
   .filename { margin-bottom: 5px; }
 
+  .comment, .commentForm {
+    .roundedCorners(5px);
+    border: 3px solid #DDDDDD;
+    margin: 5px;
+    font-size: 0.8em;
+
+    textarea {
+      resize: none;
+      height: 100px;
+      width: 100%;
+      font-size: 1.0em;
+    }
+
+    .heading {
+      color: #999999;
+      padding: 5px;
+
+      background-image: -webkit-gradient(linear, left top, left bottom,
+        color-stop(0, #F0F4FF), color-stop(0.95, #D3E1F6));
+      background-image: -moz-linear-gradient(top, #F0F4FF 0%, #D3E1F6 95%);
+
+      .name {
+        color: #333333;
+        font-weight: bold;
+      }
+
+      .date {
+        color: #666666;
+      }
+    }
+
+    .body {
+      padding: 10px 5px;
+    }
+
+    .commentControls {
+      margin: 0px 10px 10px 10px;
+      text-align: right;
+    }
+  }
+
   .diffLine {
 
     .lineNumber {
@@ -506,46 +547,6 @@ table.commitsList {
       width: 4ex;
     }
 
-    .comment, .commentForm {
-      .roundedCorners(5px);
-      border: 3px solid #DDDDDD;
-      margin: 5px;
-      font-size: 0.8em;
-
-      textarea {
-        resize: none;
-        height: 100px;
-        width: 100%;
-        font-size: 1.0em;
-      }
-
-      .heading {
-        color: #999999;
-        padding: 5px;
-
-        background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, #F0F4FF), color-stop(0.95, #D3E1F6));
-        background-image: -moz-linear-gradient(top, #F0F4FF 0%, #D3E1F6 95%);
-
-        .name {
-          color: #333333;
-          font-weight: bold;
-        }
-
-        .date {
-          color: #666666;
-        }
-      }
-
-      .body {
-        padding: 10px 5px;
-      }
-
-      .commentControls {
-        margin: 0px 10px 10px 10px;
-        text-align: right;
-      }
-    }
 
     .code {
       .removed {

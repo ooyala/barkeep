@@ -4,6 +4,7 @@ window.Commit =
   init: ->
     $(document).keydown (e) => @onKeydown e
     $(".diffLine").click(Commit.onDiffLineClick)
+    $(".commentForm").live "submit", (e) => @onCommentSubmit e
 
   onKeydown: (event) ->
     return unless KeyboardShortcuts.beforeKeydown(event)
@@ -50,8 +51,6 @@ window.Commit =
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
-        commentForm.submit Commit.onCommentSubmit
-        commentForm.find(".commentCancel").click Commit.onCommentCancel
         codeLine.append(commentForm)
     })
 
@@ -66,11 +65,11 @@ window.Commit =
       success: (html) -> Commit.onCommentSubmitSuccess(html, e.currentTarget)
 
   onCommentSubmitSuccess: (html, form) ->
-    $(form).after(html)
-    $(form).remove()
-
-  onCommentCancel: (e) ->
-    e.stopPropagation()
-    $(e.currentTarget).parents(".commentForm").remove()
+    $(form).before(html)
+    if $(form).parents(".diffLine").size() > 0
+      $(form).remove()
+    else
+      # Don't remove the comment box if it's for a commit-level comment
+      $(form).find("textarea").val("")
 
 $(document).ready(-> Commit.init())

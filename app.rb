@@ -108,8 +108,8 @@ class CodeReviewServer < Sinatra::Base
       file = commit.commit_files_dataset.filter(:filename => params[:filename]).first ||
                 CommitFile.new({:filename => params[:filename], :commit => commit}).save
     end
-    line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number] : nil
-    comment = Comment.new({:commit => commit, :commit_file => file, :line_number => line_number.to_i,
+    line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
+    comment = Comment.new({:commit => commit, :commit_file => file, :line_number => line_number,
                            :user => current_user, :text => params[:text]}).save
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
