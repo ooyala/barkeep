@@ -31,24 +31,26 @@ window.Commit =
 
   #Logic to add comments
   onDiffLineClick: (e) ->
-    current = $(e.currentTarget)
-    lineNumber = current.attr("diff-line-number")
-    filename = current.parents(".file").attr("filename")
-    sha = current.parents("#commit").attr("sha")
-    current.after(Commit.createCommentForm(sha,filename,lineNumber))
+    codeLine = $(e.currentTarget).find(".code")
+    lineNumber = codeLine.attr("diff-line-number")
+    filename = codeLine.parents(".file").attr("filename")
+    sha = codeLine.parents("#commit").attr("sha")
+    codeLine.append(Commit.createCommentForm(sha,filename,lineNumber))
 
   createCommentForm: (commitSha, filename, lineNumber)->
     commentForm = $(" <form class='commentForm' action='/comment' type='POST'>
-                          Comment: <input class='commentText' type='text' name='text' />
+                          <span>Comment:</span>
+                          <input class='commentText' type='text' name='text' />
                           <input type='hidden' name='sha' value='#{commitSha}'/>
                           <input type='hidden' name='filename' value='#{filename}' />
                           <input type='hidden' name='lineNumber' value='#{lineNumber}' />
                           <input class='commentSubmit' type='submit' value='Submit' />
                           <input class='commentCancel' type='button' value='Cancel' />
                       </form>")
-    commentForm.children(".commentText").keydown (e) -> e.stopPropagation()
+    commentForm.click (e) -> e.stopPropagation()
+    commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
     commentForm.submit Commit.onCommentSubmit
-    commentForm.children(".commentCancel").click Commit.onCommentCancel
+    commentForm.find(".commentCancel").click Commit.onCommentCancel
     return commentForm
 
   onCommentSubmit: (e) ->
@@ -66,6 +68,7 @@ window.Commit =
     $(form).remove()
 
   onCommentCancel: (e) ->
+    e.stopPropagation()
     $(e.currentTarget).parent(".commentForm").remove()
 
 $(document).ready(-> Commit.init())
