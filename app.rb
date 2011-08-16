@@ -15,6 +15,7 @@ require "lib/git_helper"
 require "lib/grit_extensions"
 require "lib/keyboard_shortcuts"
 require "lib/string_helper"
+require "lib/pretty_date"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"

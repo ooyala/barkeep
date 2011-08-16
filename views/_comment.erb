@@ -3,8 +3,8 @@
     <div class="heading">
       <img class="avatar" src="<%= comment.user.gravatar %>" />
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
-      <span>added a comment at</span>
-      <span class="date"><%= comment.created_at %> </span>
+      <span>added a comment</span>
+      <span class="date"><%= comment.created_at.to_pretty %> </span>
     </div>
     <div class="body"> <%=CGI::escapeHTML(comment.text)%> </div>
   </div>
