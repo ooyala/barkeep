@@ -14,13 +14,6 @@ module StringHelper
     end
   end
 
-  # TODO(caleb): Give a more intelligent date format (e.g. "12:35pm today" or "about 3 minutes ago", etc).
-  def self.smart_date(time)
-    elapsed_time = Time.now - time
-    return "The future!!!" if elapsed_time < 0
-    time.strftime "%b %d, %Y"
-  end
-
   # A terse date represenation in the form of "Aug 21, 2011". Used by views where relative dates don't work
   # well, like in our email views.
   def self.short_date(time)
