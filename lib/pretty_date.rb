@@ -15,9 +15,9 @@ module PrettyDate
       when 7101..82800 then return ((a+99)/3600).to_i.to_s+' hours ago'
       when 82801..172000 then return 'a day ago' # 86400 = 1 day
       when 172001..518400 then return ((a+800)/(60*60*24)).to_i.to_s+' days ago'
-      when 518400..1036800 then return 'a week ago'
+      when 518400..1036800 then return strftime("%b %d, %Y")
     end
-    return ((a+180000)/(60*60*24*7)).to_i.to_s+' weeks ago'
+    return strftime("%b %d, %Y")
   end
 end
 
