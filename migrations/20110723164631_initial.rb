@@ -2,7 +2,7 @@ Sequel.migration do
   up do
     create_table(:commits) do
       primary_key :id
-      string :sha, :null => false, :unique => true
+      String :sha, :null => false, :unique => true
       text :message
       foreign_key :user_id, :users
       datetime :date
@@ -14,8 +14,8 @@ Sequel.migration do
     end
     create_table(:users) do
       primary_key :id
-      string :name
-      string :email
+      String :name
+      String :email
     end
   end
 

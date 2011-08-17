@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     alter_table :files do
-      add_column :filename, :string
+      add_column :filename, String
       add_index [:filename]
     end
   end

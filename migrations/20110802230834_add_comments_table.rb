@@ -7,7 +7,7 @@ Sequel.migration do
       foreign_key :commit_id, :commits
       text :text
       int :line_number
-      string :file_version
+      String :file_version
       datetime :created_at
       datetime :updated_at
     end

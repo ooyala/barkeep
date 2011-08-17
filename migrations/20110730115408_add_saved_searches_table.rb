@@ -11,9 +11,9 @@ Sequel.migration do
       primary_key :id
       foreign_key :saved_search_id, :saved_searches
       # Filter types are things like "author", "directory".
-      string :filter_type
+      String :filter_type
       # The filter value will be the value of the search, e.g. "dmac" if searching for commits by dmac.
-      strign :filter_value
+      String :filter_value
     end
   end
 
