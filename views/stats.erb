@@ -7,6 +7,33 @@
     <input type="hidden" name="commentedPercent" value="<%= commented_percent %>" />
     <input type="hidden" name="approvedPercent" value="<%= approved_percent %>" />
   </div>
-  <h2>Stats page</h2>
-  <div id="pieGraph" style="width: 500px; height: 500px;"></div>
+  <div id="graphs">
+    <div class="statistic">
+      <h3>Review Coverage</h3>
+      <div id="reviewPercentGraph" class="graph"
+          unreviewedPercent="<%= unreviewed_percent %>"
+          commentedPercent="<%= commented_percent %>"
+          approvedPercent="<%= approved_percent %>">
+      </div>
+    </div>
+    <div class="statistic">
+      <h3>Chatty Commits</h3>
+      <table class="commitsList">
+        <% chatty_commits.each do |commit, count| %>
+          <tr>
+            <td><%= count %></td>
+            <td><a href="/profile/<%= commit.author.user.id %>">
+                <img class="avatar" src="<%= commit.author.user.gravatar %>"/></a></td>
+            <td class="author">
+              <a href="/profile/<%= commit.author.user.id %>"
+                  title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a></td>
+            <td class="commitId">
+              <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a></td>
+            <td class="commitMessage"><a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a></td>
+            <td class="commitDate"><%= commit.date.to_pretty %></td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
 </div>
