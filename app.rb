@@ -17,6 +17,7 @@ require "lib/grit_extensions"
 require "lib/keyboard_shortcuts"
 require "lib/string_helper"
 require "lib/pretty_date"
+require "lib/stats"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"
@@ -190,7 +191,12 @@ class CodeReviewServer < Sinatra::Base
   end
 
   get "/stats" do
-    erb :stats
+    num_commits = Commit.count
+    erb :stats, :locals => {
+      :unreviewed_percent => unreviewed_commits.count.to_f / num_commits,
+      :commented_percent => reviewed_without_lgtm_commits.count.to_f / num_commits,
+      :approved_percent => lgtm_commits.count.to_f / num_commits
+    }
   end
 
   # Based on the given saved search parameters, generates a reasonable title.

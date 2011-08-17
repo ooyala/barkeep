@@ -1,3 +1,12 @@
+<script src="/flot/jquery.flot.min.js"></script>
+<script src="/flot/jquery.flot.pie.min.js"></script>
+<script src="/js/stats.js"></script>
 <div id="stats">
-  Stats page
+  <div id="statValues">
+    <input type="hidden" name="unreviewedPercent" value="<%= unreviewed_percent %>" />
+    <input type="hidden" name="commentedPercent" value="<%= commented_percent %>" />
+    <input type="hidden" name="approvedPercent" value="<%= approved_percent %>" />
+  </div>
+  <h2>Stats page</h2>
+  <div id="pieGraph" style="width: 500px; height: 500px;"></div>
 </div>
