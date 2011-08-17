@@ -5,6 +5,8 @@ window.Commit =
     $(document).keydown (e) => @onKeydown e
     $(".diffLine").click(Commit.onDiffLineClick)
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
+    $(".approveButton").live "click", (e) => @onApproveClicked e
+    $(".disapproveButton").live "click", (e) => @onDisapproveClicked e
 
   onKeydown: (event) ->
     return unless KeyboardShortcuts.beforeKeydown(event)
@@ -71,5 +73,28 @@ window.Commit =
     else
       # Don't remove the comment box if it's for a commit-level comment
       $(form).find("textarea").val("")
+
+  onApproveClicked: (e) ->
+    $.ajax({
+      type: "post",
+      url: "/approve_commit",
+      data: { commit_sha: $("#commit").attr("sha") }
+      success: (name) ->
+        $(".approveButton").replaceWith("
+          <div class='approvedBanner'>
+            <span>This commit was approved by " + name + ".</span>
+            <button class='disapproveButton'>Disapprove?</button>
+          </div>
+        ")
+    })
+
+  onDisapproveClicked: (e) ->
+    $.ajax({
+      type: "post",
+      url: "/disapprove_commit",
+      data: { commit_sha: $("#commit").attr("sha") }
+      success: ->
+        $(".approvedBanner").replaceWith("<button class='approveButton'>Approve Commit</button>")
+    })
 
 $(document).ready(-> Commit.init())

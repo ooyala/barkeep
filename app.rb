@@ -117,6 +117,21 @@ class CodeReviewServer < Sinatra::Base
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
+  post "/approve_commit" do
+    commit = Commit.find(:sha => params[:commit_sha])
+    return 400 unless commit
+    commit.approved_by_user_id = current_user.id
+    commit.save
+    current_user.name
+  end
+
+  post "/disapprove_commit" do
+    commit = Commit.find(:sha => params[:commit_sha])
+    return 400 unless commit
+    commit.approved_by_user_id = nil
+    commit.save
+  end
+
   # POST because this creates a saved search on the server.
   post "/search" do
     authors = params[:authors].split(",").map(&:strip).join(",")

@@ -522,6 +522,79 @@ table.commitsList, table.authorList {
     }
   }
 
+  .approveButton {
+    display: block;
+    margin: 30px auto;
+    width: 800px;
+    height: 50px;
+    color: #FFFFFF;
+    font-size: 1.2em;
+    text-shadow: 1px 1px #333333;
+    .roundedCorners(10px);
+    border: 2px solid #0F5D14;
+    cursor: pointer;
+
+    background-image: -webkit-gradient(linear, left top, left bottom,
+      color-stop(0, #81DF54), color-stop(0.95, #369B3F));
+    background-image: -moz-linear-gradient(top, #81DF54 0%, #369B3F 95%);
+
+    &:hover {
+      background-image: -webkit-gradient(linear, left top, left bottom,
+        color-stop(0, lighten(#81DF54, 5%)), color-stop(0.95, lighten(#369B3F, 5%)));
+      background-image: -moz-linear-gradient(top, lighten(#81DF54, 5%) 0%, lighten(#369B3F, 5%) 95%);
+    }
+
+    &:active {
+      text-shadow: -1px -1px #333333;
+      background-image: -webkit-gradient(linear, left top, left bottom,
+        color-stop(0, #369B3F), color-stop(0.95, #81DF54));
+      background-image: -moz-linear-gradient(top, #369B3F 0%, #81DF54 95%);
+    }
+  }
+
+  .approvedBanner {
+    padding: 10px;
+    font-size: 0.9em;
+    width: 60%;
+    margin: auto;
+    margin-bottom: 30px;
+    height: 28px;
+    line-height: 2.0em;
+    background: #D4EECE;
+    border: 1px solid darken(#D4EECE, 10%);
+    position: relative;
+
+    .disapproveButton {
+      background: red;
+      position: absolute;
+      right: 10px;
+      height: 28px;
+      padding: 0px 15px;
+      .roundedCorners(10px);
+      cursor: pointer;
+      border: 1px solid #0F5D14;
+      color: #FFFFFF;
+      text-shadow: 1px 1px #666666;
+
+      background-image: -webkit-gradient(linear, left top, left bottom,
+        color-stop(0, #FBA0A0), color-stop(0.95, #E47A7A));
+      background-image: -moz-linear-gradient(top, #FBA0A0 0%, #E47A7A 95%);
+
+      &:hover {
+        background-image: -webkit-gradient(linear, left top, left bottom,
+          color-stop(0, lighten(#FBA0A0, 5%)), color-stop(0.95, lighten(#E47A7A , 5%)));
+        background-image: -moz-linear-gradient(top, lighten(#FBA0A0, 5%) 0%, lighten(#E47A7A, 5%) 95%);
+      }
+
+      &:active {
+        text-shadow: -1px -1px #333333;
+        background-image: -webkit-gradient(linear, left top, left bottom,
+          color-stop(0, #E47A7A), color-stop(0.95, #FBA0A0));
+        background-image: -moz-linear-gradient(top, #E47A7A 0%, #FBA0A0 95%);
+      }
+    }
+  }
+
   .data {
     background-color: @almostWhite;
     overflow-y: auto;

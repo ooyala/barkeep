@@ -10,6 +10,9 @@
       <p class="date"><%= commit.date.to_pretty %></p>
     </div>
   </div>
+
+  <button class="approveButton">Approve Commit</button>
+
   <% tagged_diff.each do |file| %>
     <%= erb :_diff, :locals => { :commit => commit, :file => file } %>
     <br/>
