@@ -79,13 +79,8 @@ window.Commit =
       type: "post",
       url: "/approve_commit",
       data: { commit_sha: $("#commit").attr("sha") }
-      success: (name) ->
-        $(".approveButton").replaceWith("
-          <div class='approvedBanner'>
-            <span>This commit was approved by " + name + ".</span>
-            <button class='disapproveButton'>Disapprove?</button>
-          </div>
-        ")
+      success: (bannerHtml) ->
+        $(".approveButton").replaceWith(bannerHtml)
     })
 
   onDisapproveClicked: (e) ->

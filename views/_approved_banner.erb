@@ -1,0 +1,8 @@
+<%
+  # params
+  #  * user: the user to approved this commit
+%>
+<div class="approvedBanner">
+  <span>This commit was approved by <%= user.name %>.</span>
+  <button class="disapproveButton">Disapprove?</button>
+</div>

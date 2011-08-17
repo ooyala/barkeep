@@ -122,7 +122,7 @@ class CodeReviewServer < Sinatra::Base
     return 400 unless commit
     commit.approved_by_user_id = current_user.id
     commit.save
-    current_user.name
+    erb :_approved_banner, :layout => false, :locals => { :user => current_user }
   end
 
   post "/disapprove_commit" do
