@@ -11,7 +11,12 @@
     </div>
   </div>
 
-  <button class="approveButton">Approve Commit</button>
+  <% if commit.approved_by_user_id %>
+    <%= erb :_approved_banner, :layout => false,
+        :locals => { :user => User[commit.approved_by_user_id] } %>
+  <% else %>
+    <button class="approveButton">Approve Commit</button>
+  <% end %>
 
   <% tagged_diff.each do |file| %>
     <%= erb :_diff, :locals => { :commit => commit, :file => file } %>
