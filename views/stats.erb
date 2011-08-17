@@ -17,6 +17,24 @@
       </div>
     </div>
     <div class="statistic">
+      <h3>Top Reviewers</h3>
+      <table class="commitsList">
+        <% top_reviewers.each do |user, count| %>
+          <tr>
+            <td><%= count %></td>
+            <td><a href="/profile/<%= user.id %>">
+                <img class="avatar" src="<%= user.gravatar %>"/></a></td>
+            <td class="author">
+              <a href="/profile/<%= user.id %>"
+                  title="<%= user.email %>"><%= user.name[0..25] %></a></td>
+            <td class="author">
+              <a href="mailto:<%= user.email %>"
+                  title="<%= user.email %>"><%= user.email %></a></td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+    <div class="statistic">
       <h3>Chatty Commits</h3>
       <table class="commitsList">
         <% chatty_commits.each do |commit, count| %>

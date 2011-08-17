@@ -196,7 +196,8 @@ class CodeReviewServer < Sinatra::Base
       :unreviewed_percent => unreviewed_commits.count.to_f / num_commits,
       :commented_percent => reviewed_without_lgtm_commits.count.to_f / num_commits,
       :approved_percent => lgtm_commits.count.to_f / num_commits,
-      :chatty_commits => chatty_commits(@@repo, 10)
+      :chatty_commits => chatty_commits(@@repo, 10),
+      :top_reviewers => top_reviewers(10)
     }
   end
 
