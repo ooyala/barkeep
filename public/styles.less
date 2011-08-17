@@ -386,7 +386,7 @@ header {
 /*
  * Styles for list of commits
  */
-table.commitsList {
+table.commitsList, table.authorList {
   width: 100%;
 
   font-size: 16px;
@@ -913,6 +913,15 @@ table.commitsList {
 
       .commitsList {
         width: 800px;
+      }
+
+      .authorList {
+        width: inherit;
+        td { padding: 0px 10px; }
+        .email {
+          color: #666666;
+          font-size: 0.9em;
+        }
       }
 
       .graph {

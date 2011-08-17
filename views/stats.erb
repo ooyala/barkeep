@@ -18,7 +18,7 @@
     </div>
     <div class="statistic">
       <h3>Top Reviewers</h3>
-      <table class="commitsList">
+      <table class="authorList">
         <% top_reviewers.each do |user, count| %>
           <tr>
             <td><%= count %></td>
@@ -27,7 +27,7 @@
             <td class="author">
               <a href="/profile/<%= user.id %>"
                   title="<%= user.email %>"><%= user.name[0..25] %></a></td>
-            <td class="author">
+            <td class="email">
               <a href="mailto:<%= user.email %>"
                   title="<%= user.email %>"><%= user.email %></a></td>
           </tr>
