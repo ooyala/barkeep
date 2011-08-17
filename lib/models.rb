@@ -1,7 +1,16 @@
 require "rubygems"
 require "sequel"
 
-DB = Sequel.sqlite("dev.db")
+PROTOCOL, DB_TYPE, DB_NAME, DB_HOST = DB_LOCATION.split(":")
+
+case DB_TYPE
+when "Mysql"
+  DB = Sequel.mysql(:host => DB_HOST, :user => DB_USER, :password => DB_PASSWORD, :database => DB_NAME)
+when "SQLite"
+  DB = Sequel.sqlite(DB_NAME)
+else
+  raise "Invalid DB_LOCATION specified in config/environment.rb"
+end
 
 # This plugin gives you the "add_association_dependency" method, which lets you specify other objects to be
 # destroyed when the current model gets destroyed, e.g. when you delete a provider, also delete its movies.

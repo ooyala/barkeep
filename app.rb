@@ -11,6 +11,7 @@ require 'openid/extensions/ax'
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
+require "config/environment"
 require "lib/script_environment"
 require "lib/git_helper"
 require "lib/grit_extensions"
