@@ -28,3 +28,7 @@ group :test do
   gem "rack-test"
   gem "scope"
 end
+
+group :development do
+  gem "fezzik"
+end
