@@ -242,6 +242,13 @@ class CodeReviewServer < Sinatra::Base
     erb :profile, :locals => { :user => user }
   end
 
+  # For development use only -- for testing and styling emails.
+  get "/dev/latest_comment_email_preview" do
+    comment = Comment.order(:id.desc).first
+    commit = @@repo.commit(comment.commit.sha)
+    Emails.comment_email_body(commit, [comment])
+  end
+
   def cleanup_backtrace(backtrace_lines)
     # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like
     # /opt/local/lib/ruby/gems/1.8/gems/sinatra-1.2.0/lib/sinatra/base.rb:1125:in `call'
