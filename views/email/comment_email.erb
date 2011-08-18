@@ -9,8 +9,17 @@
 <%= grit_commit.author %> - <%= grit_commit.short_message %><br/>
 <%= StringHelper.short_date(grit_commit.date) %>
 
-
 <br/><br/>
+
+<% unless general_comments.empty? %>
+  <% title = "General comments" %>
+  <%= title %></br>
+  <%= "-" * "General comments".size %><br/>
+
+  <% general_comments.each do |comment| %>
+    &lt;<%= CGI.escape_html(comment.user.name) %>&gt; <%= CGI.escape_html(comment.text) %><br/><br/>
+  <% end  %>
+<% end %>
 
 <% comments_grouped_by_file.each do |filename, comments| %>
   <%= filename %><br/>

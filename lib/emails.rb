@@ -17,12 +17,14 @@ class Emails
   end
 
   def self.comment_email_body(grit_commit, comments)
-    comments_grouped_by_file = comments.group_by { |comment| comment.commit_file.filename }
+    general_comments, file_comments = comments.partition(&:general_comment?)
+
+    comments_grouped_by_file = file_comments.group_by { |comment| comment.commit_file.filename }
     comments_grouped_by_file.each { |filename, comments| comments.sort_by!(&:line_number) }
 
-
     template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/comment_email.erb"))
-    locals = { :grit_commit => grit_commit, :comments_grouped_by_file => comments_grouped_by_file }
+    locals = { :grit_commit => grit_commit, :comments_grouped_by_file => comments_grouped_by_file,
+        :general_comments => general_comments }
     template.render(self, locals)
   end
 end

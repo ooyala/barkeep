@@ -6,4 +6,10 @@ class Comment < Sequel::Model
   many_to_one :user
   many_to_one :commit_file
   many_to_one :commit
+
+  # Some comments can be about the entire commit, and not about a specific line in a file.
+  def general_comment?() commit_file_id.nil? end
+
+  # True if this comment pertains to a particular file.
+  def file_comment?() !commit_file_id.nil? end
 end
