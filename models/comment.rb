@@ -1,4 +1,8 @@
-#A comment in a commit
+# A comment in a commit.
+# - text
+# - line_number
+# TODO(philc): What is file_version?
+# - file_version
 class Comment < Sequel::Model
   VERSION_BEFORE = "before"
   VERSION_AFTER = "after"
