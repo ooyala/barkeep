@@ -22,8 +22,6 @@ class EmailsTest < Scope::TestCase
       @grit_commit = OpenStruct.new(:short_message => "message", :id_abbrev => "commit_id",
           :author => "commit_author", :date => Time.now)
       GitHelper.stubs(:get_tagged_commit_diffs).returns([])
-      # Correctly calls stub.
-      GitHelper.get_tagged_commit_diffs(1)
     end
 
     should "include general comments when there are some" do
