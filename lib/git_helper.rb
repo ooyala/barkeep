@@ -37,6 +37,7 @@ class GitHelper
   #returns an array of hashes representing the tagged and colorized lines of each file in the diff.
   # Where :binary indicates if the file is binary, otherwise :lines is the output of tag_file
   # returns: [ { :binary, :lines}, ... ]
+  # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(commit)
     commit.diffs.map do |diff|
       a_path = diff.a_path
