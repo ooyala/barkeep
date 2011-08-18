@@ -9,6 +9,6 @@
         <button class="delete standard">Delete</button>
       <% end %>
     </div>
-    <div class="body"> <%= Redcarpet.new(comment.text).to_html %> </div>
+    <div class="body"> <%= replace_shas_with_links(Redcarpet.new(comment.text).to_html) %> </div>
   </div>
 <% end %>

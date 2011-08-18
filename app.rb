@@ -67,6 +67,10 @@ class CodeReviewServer < Sinatra::Base
     def root_url
       request.url.match(/(^.*\/{2}[^\/]*)/)[1]
     end
+
+    def replace_shas_with_links(text)
+      text.gsub(/([a-zA-Z0-9]{40})/) { |sha| "<a href='/commits/#{sha}'>#{sha[0..6]}</a>" }
+    end
   end
 
   before do
