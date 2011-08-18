@@ -22,3 +22,9 @@ gem "pony"
 
 # For rendering erb outside of views.
 gem "tilt"
+
+group :test do
+  gem "mocha"
+  gem "rack-test"
+  gem "scope"
+end
