@@ -117,6 +117,14 @@ class CodeReviewServer < Sinatra::Base
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
+  post "/delete_comment" do
+    comment = Comment[params[:comment_id]]
+    return 400 unless comment
+    return 403 unless comment.user.id == current_user.id
+    comment.destroy
+    nil
+  end
+
   post "/approve_commit" do
     commit = Commit.find(:sha => params[:commit_sha])
     return 400 unless commit

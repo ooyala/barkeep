@@ -7,6 +7,7 @@ window.Commit =
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
     $(".approveButton").live "click", (e) => @onApproveClicked e
     $(".disapproveButton").live "click", (e) => @onDisapproveClicked e
+    $(".delete").live "click", (e) => @onCommentDelete e
 
   onKeydown: (event) ->
     return unless KeyboardShortcuts.beforeKeydown(event)
@@ -73,6 +74,15 @@ window.Commit =
     else
       # Don't remove the comment box if it's for a commit-level comment
       $(form).find("textarea").val("")
+
+  onCommentDelete: (e) ->
+    $.ajax({
+      type: "post",
+      url: "/delete_comment",
+      data: { comment_id: $(e.target).parents(".comment").attr("commentId") },
+      success: ->
+        $(e.target).parents(".comment").remove()
+    })
 
   onApproveClicked: (e) ->
     $.ajax({

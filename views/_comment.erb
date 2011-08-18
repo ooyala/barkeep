@@ -1,10 +1,13 @@
 <% if comment %>
-  <div class="comment" id="comment_<%=comment.id%>">
+  <div class="comment" commentId="<%=comment.id%>">
     <div class="heading">
       <img class="avatar" src="<%= comment.user.gravatar %>" />
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
       <span>added a comment</span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
+      <% if current_user.id == comment.user_id %>
+        <button class="delete standard">Delete</button>
+      <% end %>
     </div>
     <div class="body"> <%= Redcarpet.new(comment.text).to_html %> </div>
   </div>

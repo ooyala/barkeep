@@ -54,8 +54,8 @@ a:active {
   color: white;
 }
 
-/* Our standard buttons have a pretty high-profile red gradient. */
-button.standard {
+/* Our fancy buttons have a pretty high-profile red gradient. */
+button.fancy {
   border: 1px solid @deepRed;
   /* This darker border helps distinguish the drop shadow. */
   border-bottom: 1px solid darken(@deepRed, 5%);
@@ -64,6 +64,7 @@ button.standard {
   text-shadow: 0px -1px 1px @deepRed;
   padding: 5px 18px;
   color: white;
+  cursor: pointer;
 
   background-color: darken(@coreRed, 18%);
 
@@ -83,23 +84,28 @@ button.standard {
   }
 }
 
-form {
-  input[type=button], input[type=submit] {
-    .roundedCorners(5px);
-    padding: 7px 15px;
-    text-shadow: 0px -1px 1px #EEEEEE;
-    border: 1px solid #AAAAAA;
-    font-weight: bold;
-    cursor: pointer;
-    background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, #F0EEEA), color-stop(0.95, #DCE1E4));
-    background-image: -moz-linear-gradient(top, #F0F4FF 0%, #DCE1E4 95%);
+button.standard, input[type=button], input[type=submit] {
+  .roundedCorners(5px);
+  padding: 7px 15px;
+  text-shadow: 0px -1px 1px #EEEEEE;
+  border: 1px solid #AAAAAA;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333333;
+  background-image: -webkit-gradient(linear, left top, left bottom,
+    color-stop(0, #F0EEEA), color-stop(0.95, #DCE1E4));
+  background-image: -moz-linear-gradient(top, #F0F4FF 0%, #DCE1E4 95%);
 
-    &:hover {
-      background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, #DCE1E4), color-stop(0.95, #F0EEEA));
-      background-image: -moz-linear-gradient(top, #DCE1E4 0%, #F0F4FF 95%);
-    }
+  &:hover {
+    background-image: -webkit-gradient(linear, left top, left bottom,
+      color-stop(0, lighten(#F0EEEA, 5%)), color-stop(0.95, lighten(#DCE1E4, 5%)));
+    background-image: -moz-linear-gradient(top, lighten(#F0F4FF, 5%) 0%, lighten(#DCE1E4, 5%) 95%);
+  }
+
+  &:active {
+    background-image: -webkit-gradient(linear, left top, left bottom,
+      color-stop(0, #DCE1E4), color-stop(0.95, #F0EEEA));
+    background-image: -moz-linear-gradient(top, #DCE1E4 0%, #F0F4FF 95%);
   }
 }
 
@@ -621,6 +627,7 @@ table.commitsList, table.authorList {
     .heading {
       color: #999999;
       padding: 5px;
+      position: relative;
 
       background-image: -webkit-gradient(linear, left top, left bottom,
         color-stop(0, #F0F4FF), color-stop(0.95, #D3E1F6));
@@ -633,6 +640,12 @@ table.commitsList, table.authorList {
 
       .date {
         color: #666666;
+      }
+
+      .delete {
+        position: absolute;
+        right: 4px;
+        top: 4px;
       }
     }
 
