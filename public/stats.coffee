@@ -10,7 +10,7 @@ window.Stats =
     $.plot($("#reviewPercentGraph"), [
       { label: "Unreviewed", data: unreviewedPercent, color: "#DD7467" },
       { label: "Commented", data: commentedPercent, color: "#67B6DD" },
-      { label: "LGTM", data: approvedPercent, color: "#1FBF36" }
+      { label: "Approved", data: approvedPercent, color: "#1FBF36" }
     ], {
       series: {
         pie: {
