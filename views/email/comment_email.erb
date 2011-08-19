@@ -40,6 +40,12 @@
       # Do this so there isn't useless whitespace surrounding the diff.
       line_diffs = strip_unchanged_blank_lines(line_diffs)
 
+      # If all of the lines in the diff have some similar amount of leading whitespace, trim it off so the
+      # diff isn't so far indented.
+      non_empty_lines = line_diffs.map(&:data).reject { |content| content.strip.blank? }
+      leading_whitespace = non_empty_lines.map { |content| content.index(/\S/) }.min || 0
+      trim_leading_whitespace = Proc.new { |line| line[leading_whitespace..-1] || "" }
+
       comment_offset = comment.line_number -
           (line_diffs.first.tag == :removed ? line_diffs.first.line_num_before :
            line_diffs.first.line_num_after)
@@ -53,7 +59,7 @@
       output = []
 
       line_diffs.each_with_index do |line_diff, index|
-        output << line_prefix[line_diff.tag] + CGI.escape_html(line_diff.data)
+        output << line_prefix[line_diff.tag] + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
         if (comment_offset == index) || (comment_appears_after_diff && index == line_diffs.size - 1)
           output << "\n&lt;" + CGI.escape_html(comment.user.name) + "&gt; " +
               CGI.escape_html(comment.text) + "\n"

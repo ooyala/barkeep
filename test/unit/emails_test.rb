@@ -2,6 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "../test_helper.rb"))
 require "lib/emails"
 require "lib/git_helper"
 require "ostruct"
+require "nokogiri"
 
 class EmailsTest < Scope::TestCase
   context "strip_unchanged_blank_lines" do
@@ -16,26 +17,55 @@ class EmailsTest < Scope::TestCase
 
   context "email body" do
     setup do
-      @general_comment = Comment.new(:text => "my general comment")
-      user = User.new(:name => "jimbo")
-      @general_comment.stubs(:user).returns(user)
       @grit_commit = OpenStruct.new(:short_message => "message", :id_abbrev => "commit_id",
           :author => "commit_author", :date => Time.now)
       GitHelper.stubs(:get_tagged_commit_diffs).returns([])
+      @user = User.new(:name => "jimbo")
     end
 
-    should "include general comments when there are some" do
-      email = Emails.comment_email_body(@grit_commit, [@general_comment])
-      assert email.include?("General comments")
+    context "general comments" do
+      setup do
+        @general_comment = Comment.new(:text => "my general comment")
+        @general_comment.stubs(:user).returns(@user)
+      end
+
+      should "include general comments when there are some" do
+        email = Emails.comment_email_body(@grit_commit, [@general_comment])
+        assert email.include?("General comments")
+      end
+
+      should "omit general comments when there are none" do
+        email = Emails.comment_email_body(@grit_commit, [])
+        assert_equal false, email.include?("General comments")
+      end
     end
 
-    should "omit general comments when there are none" do
-      email = Emails.comment_email_body(@grit_commit, [])
-      assert_equal false, email.include?("General comments")
-    end
+    context "line comments" do
+      setup do
+        @commit_file = CommitFile.new(:filename => "file.txt")
+        @commit_file.id = 12
+        @line_comment = Comment.new(:text => "my line comment", :line_number => 1,
+            :commit_file_id => @commit_file.id)
+        @line_comment.stubs(:commit_file).returns(@commit_file)
+        @line_comment.stubs(:user).returns(@user)
+      end
 
-    should "include line comments when there are some" do
-      # TODO(philc):
+      should "trim out whitespace that's common to all lines of the diff" do
+        GitHelper.stubs(:get_tagged_commit_diffs).returns(
+            diffs_with_lines(@commit_file, ["  Line 1", "    Line 2"]))
+        email = Nokogiri::HTML(Emails.comment_email_body(@grit_commit, [@line_comment]))
+        diff_lines = email.css("pre").text.split("\n")[0..1]
+        # Both lines had two leading spaces in common. The email should have factored those out.
+        assert_equal ["+ Line 1", "+   Line 2"], diff_lines
+      end
     end
+  end
+
+  # A helper for creating test data
+  def diffs_with_lines(commit_file, lines)
+    [{
+      :file_name_after => commit_file.filename,
+      :lines => lines.each_with_index.map { |line, index| LineDiff.new(:added, line, nil, index, index) }
+    }]
   end
 end
