@@ -4,6 +4,7 @@ require "bundler/setup"
 require "json"
 require "sinatra/base"
 require "redcarpet"
+require "coffee-script"
 
 require 'openid'
 require 'openid/store/filesystem'
@@ -57,6 +58,7 @@ class CodeReviewServer < Sinatra::Base
 
   configure :production do
     enable :logging
+    @@repo = Grit::Repo.new(File.dirname(__FILE__))
   end
 
   helpers do
@@ -245,7 +247,7 @@ class CodeReviewServer < Sinatra::Base
     asset_path = "public/#{params[:filename]}.coffee"
     content_type "application/javascript", :charset => "utf-8"
     last_modified File.mtime(asset_path)
-    compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/coffee -cp #{filename}`.chomp }
+    compile_asset_from_cache(asset_path) { |filename| CoffeeScript.compile(File.read(filename)).chomp }
   end
 
   get "/profile/:id" do
