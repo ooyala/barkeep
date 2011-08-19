@@ -7,6 +7,7 @@ window.Constants =
     27  : "escape"
     67  : "c"
     72  : "h"
+    73  : "i"
     74  : "j"
     75  : "k"
     76  : "l"
@@ -62,10 +63,10 @@ window.KeyboardShortcuts =
     switch @keyCombo(event)
       when "c"
         window.location.href = "/commits"
-      when "m"
-        window.location.href = $("#signInBox a").attr("href")
       when "s"
         window.location.href = "/stats"
+      when "i"
+        window.location.href = "/inspire"
 
   # This is a hack to get around the fact that it's not possible to detect a ? being pressed using the keydown
   # event in Firefox. This is the only shortcut for which we use this event.

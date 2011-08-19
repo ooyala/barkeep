@@ -3,8 +3,8 @@
 module KeyboardShortcuts
 	GLOBAL_SHORTCUTS = {
 		"c" => "Commits",
-		"m" => "My profile",
 		"s" => "Stats",
+		"i" => "Inspire",
 		"?" => "Open shortcut list"
 	}
 

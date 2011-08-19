@@ -5,6 +5,8 @@ require "json"
 require "sinatra/base"
 require "redcarpet"
 require "coffee-script"
+require "nokogiri"
+require "open-uri"
 
 require 'openid'
 require 'openid/store/filesystem'
@@ -254,6 +256,13 @@ class CodeReviewServer < Sinatra::Base
     user = User[params[:id]]
     halt 404 unless user
     erb :profile, :locals => { :user => user }
+  end
+
+  get "/inspire" do
+    doc = Nokogiri::HTML(open("http://inspiregen.appspot.com/"))
+    quote = doc.css("h1").text
+    author = doc.css("h2").text
+    erb :inspire, :locals => { :quote => quote, :author => author }
   end
 
   # For development use only -- for testing and styling emails.
