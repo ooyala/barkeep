@@ -609,7 +609,15 @@ table.commitsList, table.authorList {
     width: 100%;
   }
 
-  .filename { margin-bottom: 5px; }
+  .filename {
+    padding: 5px;
+    background-color: @sunkenColor;
+    border: 1px solid #DDDDDD;
+    border-bottom: none;
+    color: #666666;
+    font-family: @monoFont;
+    font-size: 0.9em;
+  }
 
   .comment, .commentForm {
     .roundedCorners(5px);
@@ -667,6 +675,13 @@ table.commitsList, table.authorList {
     }
   }
 
+  .fileBinary {
+    font-family: @monoFont;
+    font-size: 0.8em;
+    padding: 5px;
+    font-style: italic;
+  }
+
   .diffLine {
 
     .lineNumber {
@@ -680,7 +695,6 @@ table.commitsList, table.authorList {
       padding: 0 5px;
       width: 4ex;
     }
-
 
     .code {
       .removed {

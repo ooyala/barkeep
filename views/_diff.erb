@@ -11,7 +11,9 @@
   </div>
   <table class="data">
     <% if file[:binary] %>
-      <span class="fileBinary">file is binary!</span>
+      <tr>
+        <td class="fileBinary">binary file</td>
+      </tr>
     <% else %>
       <% file[:lines].each_with_index do |line, index| %>
         <tr class="diffLine" diff-line-number="<%= index + 1 %>">
