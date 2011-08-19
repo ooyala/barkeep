@@ -1,8 +1,8 @@
 (function() {
-  var Lexer, RESERVED, compile, fs, lexer, parser, path, vm, _ref;
+  var Lexer, RESERVED, compile, fs, lexer, parser, path, _ref;
+  var __hasProp = Object.prototype.hasOwnProperty;
   fs = require('fs');
   path = require('path');
-  vm = require('vm');
   _ref = require('./lexer'), Lexer = _ref.Lexer, RESERVED = _ref.RESERVED;
   parser = require('./parser').parser;
   if (require.extensions) {
@@ -18,7 +18,7 @@
       return compile(content);
     });
   }
-  exports.VERSION = '1.1.1';
+  exports.VERSION = '1.1.2';
   exports.RESERVED = RESERVED;
   exports.helpers = require('./helpers');
   exports.compile = compile = function(code, options) {
@@ -45,48 +45,76 @@
     }
   };
   exports.run = function(code, options) {
-    var Module, root;
-    root = module;
-    while (root.parent) {
-      root = root.parent;
-    }
-    root.filename = process.argv[1] = options.filename ? fs.realpathSync(options.filename) : '.';
-    if (root.moduleCache) {
-      root.moduleCache = {};
-    }
+    var Module, mainModule;
+    mainModule = require.main;
+    mainModule.filename = process.argv[1] = options.filename ? fs.realpathSync(options.filename) : '.';
+    mainModule.moduleCache && (mainModule.moduleCache = {});
     if (process.binding('natives').module) {
       Module = require('module').Module;
-      root.paths = Module._nodeModulePaths(path.dirname(options.filename));
+      mainModule.paths = Module._nodeModulePaths(path.dirname(options.filename));
     }
-    if (path.extname(root.filename) !== '.coffee' || require.extensions) {
-      return root._compile(compile(code, options), root.filename);
+    if (path.extname(mainModule.filename) !== '.coffee' || require.extensions) {
+      return mainModule._compile(compile(code, options), mainModule.filename);
     } else {
-      return root._compile(code, root.filename);
+      return mainModule._compile(code, mainModule.filename);
     }
   };
   exports.eval = function(code, options) {
-    var g, js, sandbox;
+    var Module, Script, js, k, o, r, sandbox, v, _i, _len, _module, _ref2, _ref3, _ref4, _require;
     if (options == null) {
       options = {};
     }
-    sandbox = options.sandbox;
-    if (!sandbox) {
-      sandbox = {
-        require: require,
-        module: {
-          exports: {}
-        }
-      };
-      for (g in global) {
-        sandbox[g] = global[g];
-      }
-      sandbox.global = sandbox;
-      sandbox.global.global = sandbox.global.root = sandbox.global.GLOBAL = sandbox;
+    if (!(code = code.trim())) {
+      return;
     }
-    sandbox.__filename = options.filename || 'eval';
-    sandbox.__dirname = path.dirname(sandbox.__filename);
-    js = compile("_=(" + (code.trim()) + ")", options);
-    return vm.runInNewContext(js, sandbox, sandbox.__filename);
+    if (_ref2 = require('vm'), Script = _ref2.Script, _ref2) {
+      sandbox = Script.createContext();
+      sandbox.global = sandbox.root = sandbox.GLOBAL = sandbox;
+      if (options.sandbox != null) {
+        if (options.sandbox instanceof sandbox.constructor) {
+          sandbox = options.sandbox;
+        } else {
+          _ref3 = options.sandbox;
+          for (k in _ref3) {
+            if (!__hasProp.call(_ref3, k)) continue;
+            v = _ref3[k];
+            sandbox[k] = v;
+          }
+        }
+      }
+      sandbox.__filename = options.filename || 'eval';
+      sandbox.__dirname = path.dirname(sandbox.__filename);
+      if (!(sandbox.module || sandbox.require)) {
+        Module = require('module');
+        sandbox.module = _module = new Module(options.modulename || 'eval');
+        sandbox.require = _require = function(path) {
+          return Module._load(path, _module);
+        };
+        _module.filename = sandbox.__filename;
+        _ref4 = Object.getOwnPropertyNames(require);
+        for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+          r = _ref4[_i];
+          _require[r] = require[r];
+        }
+        _require.paths = _module.paths = Module._nodeModulePaths(process.cwd());
+        _require.resolve = function(request) {
+          return Module._resolveFilename(request, _module);
+        };
+      }
+    }
+    o = {};
+    for (k in options) {
+      if (!__hasProp.call(options, k)) continue;
+      v = options[k];
+      o[k] = v;
+    }
+    o.bare = true;
+    js = compile(code, o);
+    if (Script) {
+      return Script.runInContext(js, sandbox);
+    } else {
+      return eval(js);
+    }
   };
   lexer = new Lexer;
   parser.lexer = {

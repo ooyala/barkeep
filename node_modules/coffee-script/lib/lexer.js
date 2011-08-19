@@ -48,7 +48,7 @@
       }
       forcedIdentifier = colon || (prev = last(this.tokens)) && (((_ref2 = prev[0]) === '.' || _ref2 === '?.' || _ref2 === '::') || !prev.spaced && prev[0] === '@');
       tag = 'IDENTIFIER';
-      if (__indexOf.call(JS_KEYWORDS, id) >= 0 || !forcedIdentifier && __indexOf.call(COFFEE_KEYWORDS, id) >= 0) {
+      if (!forcedIdentifier && (__indexOf.call(JS_KEYWORDS, id) >= 0 || __indexOf.call(COFFEE_KEYWORDS, id) >= 0)) {
         tag = id.toUpperCase();
         if (tag === 'WHEN' && (_ref3 = this.tag(), __indexOf.call(LINE_BREAK, _ref3) >= 0)) {
           tag = 'LEADING_WHEN';
@@ -194,12 +194,14 @@
       return script.length;
     };
     Lexer.prototype.regexToken = function() {
-      var match, prev, regex, _ref2;
+      var length, match, prev, regex, _ref2;
       if (this.chunk.charAt(0) !== '/') {
         return 0;
       }
       if (match = HEREGEX.exec(this.chunk)) {
-        return this.heregexToken(match);
+        length = this.heregexToken(match);
+        this.line += count(match[0], '\n');
+        return length;
       }
       prev = last(this.tokens);
       if (prev && (_ref2 = prev[0], __indexOf.call((prev.spaced ? NOT_REGEX : NOT_SPACED_REGEX), _ref2) >= 0)) {
@@ -442,6 +444,8 @@
             } else if (tok[0] === '(') {
               tok[0] = 'PARAM_START';
               return this;
+            } else {
+              return this;
             }
         }
       }
@@ -457,7 +461,7 @@
       throw SyntaxError("Reserved word \"" + (this.value()) + "\" on line " + (this.line + 1) + " can't be assigned");
     };
     Lexer.prototype.balancedString = function(str, end) {
-      var i, letter, prev, stack, _ref2;
+      var i, letter, match, prev, stack, _ref2;
       stack = [end];
       for (i = 1, _ref2 = str.length; 1 <= _ref2 ? i < _ref2 : i > _ref2; 1 <= _ref2 ? i++ : i--) {
         switch (letter = str.charAt(i)) {
@@ -474,6 +478,8 @@
         }
         if (end === '}' && (letter === '"' || letter === "'")) {
           stack.push(end = letter);
+        } else if (end === '}' && letter === '/' && (match = HEREGEX.exec(str.slice(i)) || REGEX.exec(str.slice(i)))) {
+          i += match[0].length - 1;
         } else if (end === '}' && letter === '{') {
           stack.push(end = '}');
         } else if (end === '"' && prev === '#' && letter === '{') {
@@ -615,7 +621,7 @@
   JS_FORBIDDEN = JS_KEYWORDS.concat(RESERVED);
   exports.RESERVED = RESERVED.concat(JS_KEYWORDS).concat(COFFEE_KEYWORDS);
   IDENTIFIER = /^([$A-Za-z_\x7f-\uffff][$\w\x7f-\uffff]*)([^\n\S]*:(?!:))?/;
-  NUMBER = /^0x[\da-f]+|^(?:\d+(\.\d+)?|\.\d+)(?:e[+-]?\d+)?/i;
+  NUMBER = /^0x[\da-f]+|^\d*\.?\d+(?:e[+-]?\d+)?/i;
   HEREDOC = /^("""|''')([\s\S]*?)(?:\n[^\n\S]*)?\1/;
   OPERATOR = /^(?:[-=]>|[-+*\/%<>&|^!?=]=|>>>=?|([-+:])\1|([&|<>])\2=?|\?\.|\.{2,3})/;
   WHITESPACE = /^[^\n\S]+/;

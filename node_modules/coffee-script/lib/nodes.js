@@ -1,5 +1,5 @@
 (function() {
-  var Access, Arr, Assign, Base, Block, Call, Class, Closure, Code, Comment, Existence, Extends, For, IDENTIFIER, IS_STRING, If, In, Index, LEVEL_ACCESS, LEVEL_COND, LEVEL_LIST, LEVEL_OP, LEVEL_PAREN, LEVEL_TOP, Literal, NEGATE, NO, Obj, Op, Param, Parens, Push, Range, Return, SIMPLENUM, Scope, Slice, Splat, Switch, TAB, THIS, Throw, Try, UTILITIES, Value, While, YES, compact, del, ends, extend, flatten, last, merge, multident, starts, unfoldSoak, utility, _ref;
+  var Access, Arr, Assign, Base, Block, Call, Class, Closure, Code, Comment, Existence, Extends, For, IDENTIFIER, IDENTIFIER_STR, IS_STRING, If, In, Index, LEVEL_ACCESS, LEVEL_COND, LEVEL_LIST, LEVEL_OP, LEVEL_PAREN, LEVEL_TOP, Literal, METHOD_DEF, NEGATE, NO, Obj, Op, Param, Parens, Push, Range, Return, SIMPLENUM, Scope, Slice, Splat, Switch, TAB, THIS, Throw, Try, UTILITIES, Value, While, YES, compact, del, ends, extend, flatten, last, merge, multident, starts, unfoldSoak, utility, _ref;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -7,7 +7,12 @@
     child.prototype = new ctor;
     child.__super__ = parent.prototype;
     return child;
-  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  };
   Scope = require('./scope').Scope;
   _ref = require('./helpers'), compact = _ref.compact, flatten = _ref.flatten, extend = _ref.extend, merge = _ref.merge, del = _ref.del, starts = _ref.starts, ends = _ref.ends, last = _ref.last;
   exports.extend = extend;
@@ -63,9 +68,9 @@
       }
     };
     Base.prototype.compileLoopReference = function(o, name) {
-      var src, tmp, _ref2;
+      var src, tmp;
       src = tmp = this.compile(o, LEVEL_LIST);
-      if (!((-Infinity < (_ref2 = +src) && _ref2 < Infinity) || IDENTIFIER.test(src) && o.scope.check(src, true))) {
+      if (!((-Infinity < +src && +src < Infinity) || IDENTIFIER.test(src) && o.scope.check(src, true))) {
         src = "" + (tmp = o.scope.freeVariable(name)) + " = " + src;
       }
       return [src, tmp];
@@ -249,7 +254,9 @@
         node = _ref2[_i];
         node = node.unwrapAll();
         node = node.unfoldSoak(o) || node;
-        if (top) {
+        if (node instanceof Block) {
+          codes.push(node.compileNode(o));
+        } else if (top) {
           node.front = true;
           code = node.compile(o);
           codes.push(node.isStatement(o) ? code : this.tab + code + ';');
@@ -280,7 +287,7 @@
       }
     };
     Block.prototype.compileWithDeclarations = function(o) {
-      var code, exp, i, post, rest, scope, _len, _ref2;
+      var assigns, code, declars, exp, i, post, rest, scope, _len, _ref2;
       code = post = '';
       _ref2 = this.expressions;
       for (i = 0, _len = _ref2.length; i < _len; i++) {
@@ -301,10 +308,15 @@
       post = this.compileNode(o);
       scope = o.scope;
       if (scope.expressions === this) {
-        if (o.scope.hasDeclarations()) {
+        declars = o.scope.hasDeclarations();
+        assigns = scope.hasAssignments;
+        if ((declars || assigns) && i) {
+          code += '\n';
+        }
+        if (declars) {
           code += "" + this.tab + "var " + (scope.declaredVariables().join(', ')) + ";\n";
         }
-        if (scope.hasAssignments) {
+        if (assigns) {
           code += "" + this.tab + "var " + (multident(scope.assignedVariables().join(', '), this.tab)) + ";\n";
         }
       }
@@ -492,8 +504,8 @@
       this.base.front = this.front;
       props = this.properties;
       code = this.base.compile(o, props.length ? LEVEL_ACCESS : null);
-      if (props[0] instanceof Access && this.isSimpleNumber()) {
-        code = "(" + code + ")";
+      if ((this.base instanceof Parens || props.length) && SIMPLENUM.test(code)) {
+        code = "" + code + ".";
       }
       for (_i = 0, _len = props.length; _i < _len; _i++) {
         prop = props[_i];
@@ -565,7 +577,7 @@
     Call.prototype.newInstance = function() {
       var base;
       base = this.variable.base || this.variable;
-      if (base instanceof Call) {
+      if (base instanceof Call && !base.isNew) {
         base.newInstance();
       } else {
         this.isNew = true;
@@ -579,11 +591,11 @@
         throw SyntaxError('cannot call super outside of a function.');
       }
       name = method.name;
-      if (!name) {
+      if (name == null) {
         throw SyntaxError('cannot call super on an anonymous function.');
       }
       if (method.klass) {
-        return "" + method.klass + ".__super__." + name;
+        return (new Value(new Literal(method.klass), [new Access(new Literal("__super__")), new Access(new Literal(name))])).compile(o);
       } else {
         return "" + name + ".__super__.constructor";
       }
@@ -650,7 +662,7 @@
         _ref2 = node.base.properties;
         for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
           prop = _ref2[_j];
-          if (prop instanceof Assign) {
+          if (prop instanceof Assign || prop instanceof Comment) {
             if (!obj) {
               nodes.push(obj = new Obj(properties = [], true));
             }
@@ -744,7 +756,7 @@
     Access.prototype.compile = function(o) {
       var name;
       name = this.name.compile(o);
-      return this.proto + (IS_STRING.test(name) ? "[" + name + "]" : "." + name);
+      return this.proto + (IDENTIFIER.test(name) ? "." + name : "[" + name + "]");
     };
     Access.prototype.isComplex = NO;
     return Access;
@@ -773,70 +785,50 @@
       this.equals = this.exclusive ? '' : '=';
     }
     Range.prototype.compileVariables = function(o) {
-      var parts, _ref2, _ref3, _ref4;
+      var step, _ref2, _ref3, _ref4, _ref5;
       o = merge(o, {
         top: true
       });
-      _ref2 = this.from.cache(o, LEVEL_LIST), this.from = _ref2[0], this.fromVar = _ref2[1];
-      _ref3 = this.to.cache(o, LEVEL_LIST), this.to = _ref3[0], this.toVar = _ref3[1];
-      _ref4 = [this.fromVar.match(SIMPLENUM), this.toVar.match(SIMPLENUM)], this.fromNum = _ref4[0], this.toNum = _ref4[1];
-      parts = [];
-      if (this.from !== this.fromVar) {
-        parts.push(this.from);
+      _ref2 = this.from.cache(o, LEVEL_LIST), this.fromC = _ref2[0], this.fromVar = _ref2[1];
+      _ref3 = this.to.cache(o, LEVEL_LIST), this.toC = _ref3[0], this.toVar = _ref3[1];
+      if (step = del(o, 'step')) {
+        _ref4 = step.cache(o, LEVEL_LIST), this.step = _ref4[0], this.stepVar = _ref4[1];
       }
-      if (this.to !== this.toVar) {
-        return parts.push(this.to);
+      _ref5 = [this.fromVar.match(SIMPLENUM), this.toVar.match(SIMPLENUM)], this.fromNum = _ref5[0], this.toNum = _ref5[1];
+      if (this.stepVar) {
+        return this.stepNum = this.stepVar.match(SIMPLENUM);
       }
     };
     Range.prototype.compileNode = function(o) {
-      var cond, condPart, idx, step, stepPart, stepvar, varPart;
-      this.compileVariables(o);
+      var cond, condPart, from, gt, idx, known, lt, stepPart, to, varPart, _ref2, _ref3;
+      if (!this.fromVar) {
+        this.compileVariables(o);
+      }
       if (!o.index) {
         return this.compileArray(o);
       }
-      if (this.fromNum && this.toNum) {
-        return this.compileSimple(o);
-      }
+      known = this.fromNum && this.toNum;
       idx = del(o, 'index');
-      step = del(o, 'step');
-      if (step) {
-        stepvar = o.scope.freeVariable("step");
+      varPart = "" + idx + " = " + this.fromC;
+      if (this.toC !== this.toVar) {
+        varPart += ", " + this.toC;
       }
-      varPart = ("" + idx + " = " + this.from) + (this.to !== this.toVar ? ", " + this.to : '') + (step ? ", " + stepvar + " = " + (step.compile(o)) : '');
-      cond = "" + this.fromVar + " <= " + this.toVar;
-      condPart = "" + cond + " ? " + idx + " <" + this.equals + " " + this.toVar + " : " + idx + " >" + this.equals + " " + this.toVar;
-      stepPart = step ? "" + idx + " += " + stepvar : "" + cond + " ? " + idx + "++ : " + idx + "--";
-      return "" + varPart + "; " + condPart + "; " + stepPart;
-    };
-    Range.prototype.compileSimple = function(o) {
-      var condPart, from, idx, step, stepPart, stepvar, to, varPart, _ref2;
-      _ref2 = [+this.fromNum, +this.toNum], from = _ref2[0], to = _ref2[1];
-      idx = del(o, 'index');
-      step = del(o, 'step');
-      if (step) {
-        stepvar = o.scope.freeVariable("step");
+      if (this.step !== this.stepVar) {
+        varPart += ", " + this.step;
       }
-      varPart = "" + idx + " = " + from;
-      if (step) {
-        varPart += ", " + stepvar + " = " + (step.compile(o));
-      }
-      condPart = from <= to ? "" + idx + " <" + this.equals + " " + to : "" + idx + " >" + this.equals + " " + to;
-      if (step) {
-        stepPart = "" + idx + " += " + stepvar;
-      }
-      if (!step) {
-        stepPart = (from <= to ? "" + idx + "++" : "" + idx + "--");
-      }
+      _ref2 = ["" + idx + " <" + this.equals, "" + idx + " >" + this.equals], lt = _ref2[0], gt = _ref2[1];
+      condPart = this.stepNum ? condPart = +this.stepNum > 0 ? "" + lt + " " + this.toVar : "" + gt + " " + this.toVar : known ? ((_ref3 = [+this.fromNum, +this.toNum], from = _ref3[0], to = _ref3[1], _ref3), condPart = from <= to ? "" + lt + " " + to : "" + gt + " " + to) : (cond = "" + this.fromVar + " <= " + this.toVar, condPart = "" + cond + " ? " + lt + " " + this.toVar + " : " + gt + " " + this.toVar);
+      stepPart = this.stepVar ? "" + idx + " += " + this.stepVar : known ? from <= to ? "" + idx + "++" : "" + idx + "--" : "" + cond + " ? " + idx + "++ : " + idx + "--";
       return "" + varPart + "; " + condPart + "; " + stepPart;
     };
     Range.prototype.compileArray = function(o) {
-      var body, cond, i, idt, post, pre, range, result, vars, _i, _ref2, _ref3, _results;
+      var args, body, cond, hasArgs, i, idt, post, pre, range, result, vars, _i, _ref2, _ref3, _results;
       if (this.fromNum && this.toNum && Math.abs(this.fromNum - this.toNum) <= 20) {
         range = (function() {
           _results = [];
           for (var _i = _ref2 = +this.fromNum, _ref3 = +this.toNum; _ref2 <= _ref3 ? _i <= _ref3 : _i >= _ref3; _ref2 <= _ref3 ? _i++ : _i--){ _results.push(_i); }
           return _results;
-        }).apply(this, arguments);
+        }).apply(this);
         if (this.exclusive) {
           range.pop();
         }
@@ -848,14 +840,22 @@
       pre = "\n" + idt + result + " = [];";
       if (this.fromNum && this.toNum) {
         o.index = i;
-        body = this.compileSimple(o);
+        body = this.compileNode(o);
       } else {
-        vars = ("" + i + " = " + this.from) + (this.to !== this.toVar ? ", " + this.to : '');
+        vars = ("" + i + " = " + this.fromC) + (this.toC !== this.toVar ? ", " + this.toC : '');
         cond = "" + this.fromVar + " <= " + this.toVar;
         body = "var " + vars + "; " + cond + " ? " + i + " <" + this.equals + " " + this.toVar + " : " + i + " >" + this.equals + " " + this.toVar + "; " + cond + " ? " + i + "++ : " + i + "--";
       }
       post = "{ " + result + ".push(" + i + "); }\n" + idt + "return " + result + ";\n" + o.indent;
-      return "(function() {" + pre + "\n" + idt + "for (" + body + ")" + post + "}).apply(this, arguments)";
+      hasArgs = function(node) {
+        return node != null ? node.contains(function(n) {
+          return n instanceof Literal && n.value === 'arguments' && !n.asKey;
+        }) : void 0;
+      };
+      if (hasArgs(this.from) || hasArgs(this.to)) {
+        args = ', arguments';
+      }
+      return "(function() {" + pre + "\n" + idt + "for (" + body + ")" + post + "}).apply(this" + (args != null ? args : '') + ")";
     };
     return Range;
   })();
@@ -1025,14 +1025,14 @@
       });
     };
     Class.prototype.addBoundFunctions = function(o) {
-      var bname, bvar, _i, _len, _ref2, _results;
+      var bvar, lhs, _i, _len, _ref2, _results;
       if (this.boundFuncs.length) {
         _ref2 = this.boundFuncs;
         _results = [];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           bvar = _ref2[_i];
-          bname = bvar.compile(o);
-          _results.push(this.ctor.body.unshift(new Literal("this." + bname + " = " + (utility('bind')) + "(this." + bname + ", this)")));
+          lhs = (new Value(new Literal("this"), [new Access(bvar)])).compile(o);
+          _results.push(this.ctor.body.unshift(new Literal("" + lhs + " = " + (utility('bind')) + "(" + lhs + ", this)")));
         }
         return _results;
       }
@@ -1142,8 +1142,10 @@
       this.context = context;
       this.param = options && options.param;
     }
-    Assign.prototype.METHOD_DEF = /^(?:(\S+)\.prototype\.|\S+?)?\b([$A-Za-z_][$\w\x7f-\uffff]*)$/;
     Assign.prototype.children = ['variable', 'value'];
+    Assign.prototype.isStatement = function(o) {
+      return (o != null ? o.level : void 0) === LEVEL_TOP && (this.context != null) && __indexOf.call(this.context, "?") >= 0;
+    };
     Assign.prototype.assigns = function(name) {
       return this[this.context === 'object' ? 'value' : 'variable'].assigns(name);
     };
@@ -1151,7 +1153,7 @@
       return unfoldSoak(o, this, 'variable');
     };
     Assign.prototype.compileNode = function(o) {
-      var isValue, match, name, val, _ref2;
+      var isValue, match, name, val, _ref2, _ref3, _ref4, _ref5;
       if (isValue = this.variable instanceof Value) {
         if (this.variable.isArray() || this.variable.isObject()) {
           return this.compilePatternMatch(o);
@@ -1174,11 +1176,11 @@
           o.scope.find(name);
         }
       }
-      if (this.value instanceof Code && (match = this.METHOD_DEF.exec(name))) {
-        this.value.name = match[2];
+      if (this.value instanceof Code && (match = METHOD_DEF.exec(name))) {
         if (match[1]) {
           this.value.klass = match[1];
         }
+        this.value.name = (_ref3 = (_ref4 = (_ref5 = match[2]) != null ? _ref5 : match[3]) != null ? _ref4 : match[4]) != null ? _ref3 : match[5];
       }
       val = this.value.compile(o, LEVEL_LIST);
       if (this.context === 'object') {
@@ -1218,7 +1220,9 @@
         acc = IDENTIFIER.test(idx.unwrap().value || 0);
         value = new Value(value);
         value.properties.push(new (acc ? Access : Index)(idx));
-        return new Assign(obj, value).compile(o);
+        return new Assign(obj, value, null, {
+          param: this.param
+        }).compile(o, LEVEL_TOP);
       }
       vvar = value.compile(o, LEVEL_LIST);
       assigns = [];
@@ -1281,6 +1285,9 @@
     Assign.prototype.compileConditional = function(o) {
       var left, rite, _ref2;
       _ref2 = this.variable.cacheReference(o), left = _ref2[0], rite = _ref2[1];
+      if (__indexOf.call(this.context, "?") >= 0) {
+        o.isExistentialEquals = true;
+      }
       return new Op(this.context.slice(0, -1), left, new Assign(rite, this.value, '=')).compile(o);
     };
     Assign.prototype.compileSplice = function(o) {
@@ -1329,7 +1336,7 @@
     };
     Code.prototype.jumps = NO;
     Code.prototype.compileNode = function(o) {
-      var code, exprs, i, idt, lit, p, param, ref, splats, v, val, vars, wasEmpty, _i, _j, _len, _len2, _len3, _ref2, _ref3, _ref4;
+      var code, exprs, i, idt, lit, p, param, ref, splats, v, val, vars, wasEmpty, _i, _j, _k, _len, _len2, _len3, _len4, _ref2, _ref3, _ref4, _ref5;
       o.scope = new Scope(o.scope, this.body, this);
       o.scope.shared = del(o, 'sharedScope');
       o.indent += TAB;
@@ -1340,15 +1347,19 @@
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         param = _ref2[_i];
         if (param.splat) {
-          if (param.name.value) {
-            o.scope.add(param.name.value, 'var');
+          _ref3 = this.params;
+          for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+            p = _ref3[_j];
+            if (p.name.value) {
+              o.scope.add(p.name.value, 'var', true);
+            }
           }
           splats = new Assign(new Value(new Arr((function() {
-            var _j, _len2, _ref3, _results;
-            _ref3 = this.params;
+            var _k, _len3, _ref4, _results;
+            _ref4 = this.params;
             _results = [];
-            for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-              p = _ref3[_j];
+            for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+              p = _ref4[_k];
               _results.push(p.asReference(o));
             }
             return _results;
@@ -1356,9 +1367,9 @@
           break;
         }
       }
-      _ref3 = this.params;
-      for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-        param = _ref3[_j];
+      _ref4 = this.params;
+      for (_k = 0, _len3 = _ref4.length; _k < _len3; _k++) {
+        param = _ref4[_k];
         if (param.isComplex()) {
           val = ref = param.asReference(o);
           if (param.value) {
@@ -1384,10 +1395,10 @@
         exprs.unshift(splats);
       }
       if (exprs.length) {
-        (_ref4 = this.body.expressions).unshift.apply(_ref4, exprs);
+        (_ref5 = this.body.expressions).unshift.apply(_ref5, exprs);
       }
       if (!splats) {
-        for (i = 0, _len3 = vars.length; i < _len3; i++) {
+        for (i = 0, _len4 = vars.length; i < _len4; i++) {
           v = vars[i];
           o.scope.parameter(vars[i] = v.compile(o));
         }
@@ -1590,7 +1601,7 @@
         return call;
       }
       if (op === 'new') {
-        if (first instanceof Call && !first["do"]) {
+        if (first instanceof Call && !first["do"] && !first.isNew) {
           return first.newInstance();
         }
         if (first instanceof Code && first.bound || first["do"]) {
@@ -1616,6 +1627,10 @@
     Op.prototype.isSimpleNumber = NO;
     Op.prototype.isUnary = function() {
       return !this.second;
+    };
+    Op.prototype.isComplex = function() {
+      var _ref2;
+      return !(this.isUnary() && ((_ref2 = this.operator) === '+' || _ref2 === '-')) || this.first.isComplex();
     };
     Op.prototype.isChainable = function() {
       var _ref2;
@@ -1726,11 +1741,21 @@
     In.prototype.children = ['object', 'array'];
     In.prototype.invert = NEGATE;
     In.prototype.compileNode = function(o) {
+      var hasSplat, obj, _i, _len, _ref2;
       if (this.array instanceof Value && this.array.isArray()) {
-        return this.compileOrTest(o);
-      } else {
-        return this.compileLoopTest(o);
+        _ref2 = this.array.base.objects;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          obj = _ref2[_i];
+          if (obj instanceof Splat) {
+            hasSplat = true;
+            break;
+          }
+        }
+        if (!hasSplat) {
+          return this.compileOrTest(o);
+        }
       }
+      return this.compileLoopTest(o);
     };
     In.prototype.compileOrTest = function(o) {
       var cmp, cnj, i, item, ref, sub, tests, _ref2, _ref3;
@@ -1802,7 +1827,7 @@
       var catchPart, errorPart;
       o.indent += TAB;
       errorPart = this.error ? " (" + (this.error.compile(o)) + ") " : ' ';
-      catchPart = this.recovery ? " catch" + errorPart + "{\n" + (this.recovery.compile(o, LEVEL_TOP)) + "\n" + this.tab + "}" : !(this.ensure || this.recovery) ? ' catch (_e) {}' : void 0;
+      catchPart = this.recovery ? (o.scope.add(this.error.value, 'param'), " catch" + errorPart + "{\n" + (this.recovery.compile(o, LEVEL_TOP)) + "\n" + this.tab + "}") : !(this.ensure || this.recovery) ? ' catch (_e) {}' : void 0;
       return ("" + this.tab + "try {\n" + (this.attempt.compile(o, LEVEL_TOP)) + "\n" + this.tab + "}" + (catchPart || '')) + (this.ensure ? " finally {\n" + (this.ensure.compile(o, LEVEL_TOP)) + "\n" + this.tab + "}" : '');
     };
     return Try;
@@ -1829,9 +1854,9 @@
     Existence.prototype.children = ['expression'];
     Existence.prototype.invert = NEGATE;
     Existence.prototype.compileNode = function(o) {
-      var code, sym;
+      var cmp, cnj, code, _ref2;
       code = this.expression.compile(o, LEVEL_OP);
-      code = IDENTIFIER.test(code) && !o.scope.check(code) ? this.negated ? "typeof " + code + " === \"undefined\" || " + code + " === null" : "typeof " + code + " !== \"undefined\" && " + code + " !== null" : (sym = this.negated ? '==' : '!=', "" + code + " " + sym + " null");
+      code = IDENTIFIER.test(code) && !o.scope.check(code) ? ((_ref2 = this.negated ? ['===', '||'] : ['!==', '&&'], cmp = _ref2[0], cnj = _ref2[1], _ref2), "typeof " + code + " " + cmp + " \"undefined\" " + cnj + " " + code + " " + cmp + " null") : "" + code + " " + (this.negated ? '==' : '!=') + " null";
       if (o.level <= LEVEL_COND) {
         return code;
       } else {
@@ -2007,7 +2032,6 @@
         base = new Value(ref);
         if (val.base) {
           _ref7 = [base, val], val.base = _ref7[0], base = _ref7[1];
-          args.unshift(new Literal('this'));
         }
         body.expressions[idx] = new Call(base, expr.args);
         defs += this.tab + new Assign(ref, fn).compile(o, LEVEL_TOP) + ';\n';
@@ -2146,8 +2170,14 @@
       }
     };
     If.prototype.compileStatement = function(o) {
-      var body, child, cond, ifPart;
+      var body, child, cond, exeq, ifPart;
       child = del(o, 'chainChild');
+      exeq = del(o, 'isExistentialEquals');
+      if (exeq) {
+        return new If(this.condition.invert(), this.elseBodyNode(), {
+          type: 'if'
+        }).compile(o);
+      }
       cond = this.condition.compile(o, LEVEL_PAREN);
       o.indent += TAB;
       body = this.ensureBlock(this.body).compile(o);
@@ -2242,8 +2272,10 @@
   LEVEL_OP = 5;
   LEVEL_ACCESS = 6;
   TAB = '  ';
-  IDENTIFIER = /^[$A-Za-z_\x7f-\uffff][$\w\x7f-\uffff]*$/;
+  IDENTIFIER_STR = "[$A-Za-z_\\x7f-\\uffff][$\\w\\x7f-\\uffff]*";
+  IDENTIFIER = RegExp("^" + IDENTIFIER_STR + "$");
   SIMPLENUM = /^[+-]?\d+$/;
+  METHOD_DEF = RegExp("^(?:(" + IDENTIFIER_STR + ")\\.prototype(?:\\.(" + IDENTIFIER_STR + ")|\\[(\"(?:[^\\\\\"\\r\\n]|\\\\.)*\"|'(?:[^\\\\'\\r\\n]|\\\\.)*')\\]|\\[(0x[\\da-fA-F]+|\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)\\]))|(" + IDENTIFIER_STR + ")$");
   IS_STRING = /^['"]/;
   utility = function(name) {
     var ref;

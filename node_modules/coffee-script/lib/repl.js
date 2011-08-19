@@ -1,10 +1,12 @@
 (function() {
-  var ACCESSOR, CoffeeScript, SIMPLEVAR, Script, autocomplete, backlog, completeAttribute, completeVariable, enableColours, error, getCompletions, getPropertyNames, inspect, readline, repl, run, stdin, stdout;
-  var __hasProp = Object.prototype.hasOwnProperty;
+  var ACCESSOR, CoffeeScript, Module, REPL_PROMPT, REPL_PROMPT_CONTINUATION, SIMPLEVAR, Script, autocomplete, backlog, completeAttribute, completeVariable, enableColours, error, g, getCompletions, inspect, nonContextGlobals, readline, repl, run, sandbox, stdin, stdout, _i, _len;
   CoffeeScript = require('./coffee-script');
   readline = require('readline');
   inspect = require('util').inspect;
   Script = require('vm').Script;
+  Module = require('module');
+  REPL_PROMPT = 'coffee> ';
+  REPL_PROMPT_CONTINUATION = '......> ';
   enableColours = false;
   if (process.platform !== 'win32') {
     enableColours = !process.env.NODE_DISABLE_COLORS;
@@ -15,41 +17,45 @@
     return stdout.write((err.stack || err.toString()) + '\n\n');
   };
   backlog = '';
-  run = (function() {
-    var g, sandbox;
-    sandbox = {
-      require: require,
-      module: {
-        exports: {}
-      }
-    };
-    for (g in global) {
-      sandbox[g] = global[g];
+  sandbox = Script.createContext();
+  nonContextGlobals = ['Buffer', 'console', 'process', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'];
+  for (_i = 0, _len = nonContextGlobals.length; _i < _len; _i++) {
+    g = nonContextGlobals[_i];
+    sandbox[g] = global[g];
+  }
+  sandbox.global = sandbox.root = sandbox.GLOBAL = sandbox;
+  run = function(buffer) {
+    var code, returnValue, _;
+    if (!buffer.toString().trim() && !backlog) {
+      repl.prompt();
+      return;
     }
-    sandbox.global = sandbox;
-    sandbox.global.global = sandbox.global.root = sandbox.global.GLOBAL = sandbox;
-    return function(buffer) {
-      var code, val;
-      code = backlog += '\n' + buffer.toString();
-      if (code[code.length - 1] === '\\') {
-        return backlog = backlog.slice(0, backlog.length - 1);
+    code = backlog += buffer;
+    if (code[code.length - 1] === '\\') {
+      backlog = "" + backlog.slice(0, -1) + "\n";
+      repl.setPrompt(REPL_PROMPT_CONTINUATION);
+      repl.prompt();
+      return;
+    }
+    repl.setPrompt(REPL_PROMPT);
+    backlog = '';
+    try {
+      _ = sandbox._;
+      returnValue = CoffeeScript.eval("_=(" + code + "\n)", {
+        sandbox: sandbox,
+        filename: 'repl',
+        modulename: 'repl'
+      });
+      if (returnValue === void 0) {
+        sandbox._ = _;
+      } else {
+        process.stdout.write(inspect(returnValue, false, 2, enableColours) + '\n');
       }
-      backlog = '';
-      try {
-        val = CoffeeScript.eval(code, {
-          sandbox: sandbox,
-          bare: true,
-          filename: 'repl'
-        });
-        if (val !== void 0) {
-          process.stdout.write(inspect(val, false, 2, enableColours) + '\n');
-        }
-      } catch (err) {
-        error(err);
-      }
-      return repl.prompt();
-    };
-  })();
+    } catch (err) {
+      error(err);
+    }
+    return repl.prompt();
+  };
   ACCESSOR = /\s*([\w\.]+)(?:\.(\w*))$/;
   SIMPLEVAR = /\s*(\w*)$/i;
   autocomplete = function(text) {
@@ -60,39 +66,31 @@
     if (match = text.match(ACCESSOR)) {
       all = match[0], obj = match[1], prefix = match[2];
       try {
-        val = Script.runInThisContext(obj);
+        val = Script.runInContext(obj, sandbox);
       } catch (error) {
-        return [[], text];
+        return;
       }
-      completions = getCompletions(prefix, getPropertyNames(val));
+      completions = getCompletions(prefix, Object.getOwnPropertyNames(val));
       return [completions, prefix];
     }
   };
   completeVariable = function(text) {
-    var completions, free, scope, _ref;
+    var completions, free, possibilities, vars, _ref;
     if (free = (_ref = text.match(SIMPLEVAR)) != null ? _ref[1] : void 0) {
-      scope = Script.runInThisContext('this');
-      completions = getCompletions(free, CoffeeScript.RESERVED.concat(getPropertyNames(scope)));
+      vars = Script.runInContext('Object.getOwnPropertyNames(this)', sandbox);
+      possibilities = vars.concat(CoffeeScript.RESERVED);
+      completions = getCompletions(free, possibilities);
       return [completions, free];
     }
   };
   getCompletions = function(prefix, candidates) {
-    var el, _i, _len, _results;
+    var el, _j, _len2, _results;
     _results = [];
-    for (_i = 0, _len = candidates.length; _i < _len; _i++) {
-      el = candidates[_i];
+    for (_j = 0, _len2 = candidates.length; _j < _len2; _j++) {
+      el = candidates[_j];
       if (el.indexOf(prefix) === 0) {
         _results.push(el);
       }
-    }
-    return _results;
-  };
-  getPropertyNames = function(obj) {
-    var name, _results;
-    _results = [];
-    for (name in obj) {
-      if (!__hasProp.call(obj, name)) continue;
-      _results.push(name);
     }
     return _results;
   };
@@ -105,10 +103,21 @@
   } else {
     repl = readline.createInterface(stdin, stdout, autocomplete);
   }
-  repl.setPrompt('coffee> ');
+  repl.on('attemptClose', function() {
+    if (backlog) {
+      backlog = '';
+      process.stdout.write('\n');
+      repl.setPrompt(REPL_PROMPT);
+      return repl.prompt();
+    } else {
+      return repl.close();
+    }
+  });
   repl.on('close', function() {
+    process.stdout.write('\n');
     return stdin.destroy();
   });
   repl.on('line', run);
+  repl.setPrompt(REPL_PROMPT);
   repl.prompt();
 }).call(this);
