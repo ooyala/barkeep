@@ -9,13 +9,28 @@ class Emails
   def self.send_comment_email(grit_commit, comments)
     subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
         "#{grit_commit.short_message[0..60]}"
-    html_body = comment_email_body
+    html_body = comment_email_body(grit_commit, comments)
 
     # TODO(philc): Provide a plaintext email as well.
     # TODO(philc): Determine how we're going to let this email FROM address be configured.
-    Pony.mail(:to => "phil.crosby@gmail.com", :from => "codereview@philisoft.com",
-        :subject => subject, :html_body => html_body)
+    deliver_mail("phil.crosby@gmail.com", subject, html_body)
     html_body
+  end
+
+  def self.deliver_mail(to, subject, html_body)
+    puts "Sending email to #{to} with subject \"#{subject}\""
+    Pony.mail(:to => to, :via => :smtp, :subject => subject, :html_body => html_body,
+      # These settings are from the Pony documentation and work with Gmail's TLS smtp server.
+      :via_options => {
+        :address => "smtp.gmail.com",
+        :port => "587",
+        :enable_starttls_auto => true,
+        :user_name => GMAIL_USERNAME,
+        :password => GMAIL_PASSWORD,
+        :authentication => :plain,
+        # the HELO domain provided by the client to the server
+        :domain => "localhost.localdomain"
+    })
   end
 
   def self.comment_email_body(grit_commit, comments)
