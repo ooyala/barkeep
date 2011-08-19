@@ -1,5 +1,6 @@
 source :rubygems
 
+gem "rack"
 gem "sinatra"
 gem "rerun"
 
@@ -7,6 +8,7 @@ gem "rerun"
 # This would be slightly nicer than using the lessc binary directly, but it
 # doesn't seem to be compatible with ruby 1.9.
 # gem "less"
+gem "json"
 gem "grit"
 gem "sequel"
 gem "mysql"
@@ -16,6 +18,7 @@ gem "thin"
 gem "albino"
 gem "ruby-openid"
 gem "redcarpet"
+gem "coffee-script"
 
 # For sending emails.
 gem "pony"
