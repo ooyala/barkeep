@@ -27,8 +27,11 @@ group :test do
   gem "mocha"
   gem "rack-test"
   gem "scope"
+  gem "nokogiri"
+  gem "pry"
 end
 
 group :development do
   gem "fezzik"
+  gem "pry"
 end
