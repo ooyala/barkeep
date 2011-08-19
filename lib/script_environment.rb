@@ -9,3 +9,4 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "config/environment"
 require "lib/models"
 require "lib/emails"
+require "lib/background_jobs"
