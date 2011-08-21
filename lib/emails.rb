@@ -6,6 +6,7 @@ require "lib/string_helper"
 class Emails
   LINES_OF_CONTEXT = 4
 
+  # Enqueues an email notification of a comment for delivery.
   def self.send_comment_email(grit_commit, comments)
     subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
         "#{grit_commit.short_message[0..60]}"
@@ -13,8 +14,8 @@ class Emails
 
     # TODO(philc): Provide a plaintext email as well.
     # TODO(philc): Determine how we're going to let this email FROM address be configured.
-    deliver_mail("phil.crosby@gmail.com", subject, html_body)
-    html_body
+    # TODO(philc): Delay the emails and batch them together.
+    EmailTask.create(:subject => subject, :to => "phil.crosby@gmail.com", :body => html_body)
   end
 
   def self.deliver_mail(to, subject, html_body)
