@@ -27,8 +27,14 @@ NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 
-class CodeReviewServer < Sinatra::Base
+class Barkeep < Sinatra::Base
   attr_accessor :current_user
+
+  # To be called from within the configure blocks, this method must be defined prior to them.
+  def self.start_background_email_worker
+    command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/mail_delivery.rb")
+    BackgroundJobs.fork_child_process { exec command }
+  end
 
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
   # files have changed.
@@ -51,6 +57,8 @@ class CodeReviewServer < Sinatra::Base
       puts message
       message
     end
+
+    Barkeep.start_background_email_worker
   end
 
   configure :test do
@@ -61,6 +69,7 @@ class CodeReviewServer < Sinatra::Base
   configure :production do
     enable :logging
     @@repo = Grit::Repo.new(File.dirname(__FILE__))
+    Barkeep.start_background_email_worker
   end
 
   helpers do
