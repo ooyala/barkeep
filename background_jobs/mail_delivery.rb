@@ -8,8 +8,14 @@ class MailDelivery
   POLL_FREQUENCY = 3 # How often we check for new emails in the email task queue.
   TASK_TIMEOUT = 10
 
+  # True if the parent process has been killed or died.
+  def has_become_orphaned?()
+    Process.ppid == 1 # Process with ID 1 is the init process, the father of all orphaned processes.
+  end
+
   def run
     while true
+      exit if has_become_orphaned?
       email_task = EmailTask.order(:id.desc).first
       if email_task.nil?
         sleep POLL_FREQUENCY
