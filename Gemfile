@@ -27,9 +27,10 @@ gem "pony"
 gem "tilt"
 
 group :test do
-  gem "mocha"
+  # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
+  gem "rr", ">= 1.0.3"
+  gem "scope", ">= 0.2.3"
   gem "rack-test"
-  gem "scope"
   gem "nokogiri"
   gem "pry"
 end

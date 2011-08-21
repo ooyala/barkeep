@@ -21,7 +21,7 @@ class BackgroundJobsTest < Scope::TestCase
       rescue Timeout::Error => error
         raised_error = error
       end
-      assert_equal false, raised_error.nil?
+      refute raised_error.nil?
     end
   end
 end

@@ -31,7 +31,6 @@ GEM
       ruby_parser (>= 2.0.5)
     mime-types (1.16)
     minitest (2.4.0)
-    mocha (0.9.12)
     multi_json (1.0.3)
     mysql (2.8.1)
     nokogiri (1.5.0)
@@ -54,10 +53,11 @@ GEM
       rake (~> 0.8)
     redcarpet (1.17.2)
     rerun (0.6.2)
+    rr (1.0.3)
     ruby-openid (2.1.8)
     ruby_parser (2.0.6)
       sexp_processor (~> 3.0)
-    scope (0.2.2)
+    scope (0.2.3)
       minitest
     sequel (3.26.0)
     sexp_processor (3.0.5)
@@ -86,7 +86,6 @@ DEPENDENCIES
   fezzik
   grit
   json
-  mocha
   mysql
   nokogiri
   pony
@@ -95,8 +94,9 @@ DEPENDENCIES
   rack-test
   redcarpet
   rerun
+  rr (>= 1.0.3)
   ruby-openid
-  scope
+  scope (>= 0.2.3)
   sequel
   sinatra
   sqlite3-ruby
