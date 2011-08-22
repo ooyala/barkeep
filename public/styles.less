@@ -509,7 +509,7 @@ table.commitsList, table.authorList {
     .sha {
       margin-bottom: 10px;
       font-family: @monoFont;
-      color: #777;
+      color: @lightTextColor;
     }
 
     .message {
@@ -522,9 +522,7 @@ table.commitsList, table.authorList {
       vertical-align: middle;
       line-height: 1.25em;
 
-      .email, .date {
-        color: #777;
-      }
+      .email, .date { color: @lightTextColor; }
     }
 
     td { vertical-align: top; }
@@ -566,7 +564,7 @@ table.commitsList, table.authorList {
     }
 
     .approvedBy, .approvedAt {
-      color: #777;
+      color: @lightTextColor;
       text-align: center;
       font-size: 12px;
       margin-bottom: 4px;
@@ -605,7 +603,7 @@ table.commitsList, table.authorList {
     }
 
     .heading {
-      color: #777;
+      color: @lightTextColor;
       padding: 5px;
       position: relative;
 
@@ -875,9 +873,7 @@ table.commitsList, table.authorList {
       }
     }
 
-    pre {
-      font: @commitFontFamily;
-    }
+    pre { font: @commitFontFamily; }
   }
 
   div.data {
