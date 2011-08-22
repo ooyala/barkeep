@@ -3,12 +3,12 @@
     <div class="heading">
       <img class="avatar" src="<%= comment.user.gravatar %>" />
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
-      <span>added a comment</span>
+      <span>commented</span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
       <% if current_user.id == comment.user_id %>
         <button class="delete standard">Delete</button>
       <% end %>
     </div>
-    <div class="body"> <%= replace_shas_with_links(Redcarpet.new(comment.text).to_html) %> </div>
+    <div class="commentBody"> <%= replace_shas_with_links(Redcarpet.new(comment.text).to_html) %> </div>
   </div>
 <% end %>
