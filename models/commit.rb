@@ -1,3 +1,6 @@
+# Columns:
+# - approved_at: when the commit was approved.
+# - approved_by_user_id: the most recent user to approve the commit.
 class Commit < Sequel::Model
   many_to_one :user
   one_to_many :commit_files
