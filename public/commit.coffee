@@ -5,8 +5,8 @@ window.Commit =
     $(document).keydown (e) => @onKeydown e
     $(".diffLine").click(Commit.onDiffLineClick)
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
-    $(".approveButton").live "click", (e) => @onApproveClicked e
-    $(".disapproveButton").live "click", (e) => @onDisapproveClicked e
+    $("#approveButton").live "click", (e) => @onApproveClicked e
+    $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
 
   onKeydown: (event) ->
@@ -90,7 +90,7 @@ window.Commit =
       url: "/approve_commit",
       data: { commit_sha: $("#commit").attr("sha") }
       success: (bannerHtml) ->
-        $(".approveButton").replaceWith(bannerHtml)
+        $("#approveButton").replaceWith(bannerHtml)
     })
 
   onDisapproveClicked: (e) ->
@@ -99,7 +99,7 @@ window.Commit =
       url: "/disapprove_commit",
       data: { commit_sha: $("#commit").attr("sha") }
       success: ->
-        $(".approvedBanner").replaceWith("<button class='approveButton'>Approve Commit</button>")
+        $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
     })
 
 $(document).ready(-> Commit.init())

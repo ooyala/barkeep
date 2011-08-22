@@ -1,8 +1,9 @@
 <%
-  # params
-  #  * user: the user to approved this commit
+  # The UI which show when a commit has been approved.
+  # Params:
+  #  - user: the user who approved this commit.
 %>
-<div class="approvedBanner">
-  <span>This commit was approved by <%= user.name %>.</span>
-  <button class="disapproveButton">Disapprove?</button>
+<div id="approvedBanner">
+  <button id="disapproveButton" class="fancy">Disapprove Commit</button><br/>
+  <div class="approvedBy">Approved by <%= user.name %></div>
 </div>

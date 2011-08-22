@@ -79,11 +79,10 @@ button.fancy {
       color-stop(0, lighten(@coreRed, 8%)), color-stop(0.95, darken(@coreRed, 10%)));
     background-image: -moz-linear-gradient(top, lighten(@coreRed, 10%) 0%, darken(@coreRed, 15%) 95%);
   }
-  &:active {
-    background-image: none;
-  }
+  &:active { background-image: none; }
 }
 
+/* Our standard buttons are flat grey buttons. */
 button.standard, input[type=button], input[type=submit] {
   .roundedCorners(5px);
   padding: 7px 15px;
@@ -502,7 +501,7 @@ table.commitsList, table.authorList {
     padding: 10px;
     font-size: 0.8em;
 
-    img {
+    img.avatar {
       width: 50px;
       height: 50px;
     }
@@ -527,78 +526,49 @@ table.commitsList, table.authorList {
         color: #999999;
       }
     }
-  }
 
-  .approveButton {
-    display: block;
-    margin: 30px auto;
-    width: 800px;
-    height: 50px;
-    color: #FFFFFF;
-    font-size: 1.2em;
-    text-shadow: 1px 1px #333333;
-    .roundedCorners(10px);
-    border: 2px solid #0F5D14;
-    cursor: pointer;
+    td { vertical-align: top; }
+    td:nth-of-type(1) { width: 100%; }
+/*    td:nth-of-type(2) { white-space: nowrap; }*/
 
-    background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, #81DF54), color-stop(0.95, #369B3F));
-    background-image: -moz-linear-gradient(top, #81DF54 0%, #369B3F 95%);
-
-    &:hover {
-      background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, lighten(#81DF54, 5%)), color-stop(0.95, lighten(#369B3F, 5%)));
-      background-image: -moz-linear-gradient(top, lighten(#81DF54, 5%) 0%, lighten(#369B3F, 5%) 95%);
+    button {
+      font-size: 14px;
+      margin-bottom: 8px;
+      white-space: nowrap;
     }
 
-    &:active {
-      text-shadow: -1px -1px #333333;
-      background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, #369B3F), color-stop(0.95, #81DF54));
-      background-image: -moz-linear-gradient(top, #369B3F 0%, #81DF54 95%);
-    }
-  }
+    #approveButton {
+      /* These styles were taken from our "fancy button" style definition. Only the color is different. */
+      @greenApproveButton: #42C050;
 
-  .approvedBanner {
-    padding: 10px;
-    font-size: 0.9em;
-    width: 60%;
-    margin: auto;
-    margin-bottom: 30px;
-    height: 28px;
-    line-height: 2.0em;
-    background: #D4EECE;
-    border: 1px solid darken(#D4EECE, 10%);
-    position: relative;
+      border: 1px solid darken(@greenApproveButton, 20%);
+      /* This darker border helps distinguish the drop shadow. */
+      border-bottom: 1px solid darken(@greenApproveButton, 25%);
+      text-shadow: 0px -1px 1px darken(@greenApproveButton, 30%);
 
-    .disapproveButton {
-      background: red;
-      position: absolute;
-      right: 10px;
-      height: 28px;
-      padding: 0px 15px;
-      .roundedCorners(10px);
-      cursor: pointer;
-      border: 1px solid #0F5D14;
-      color: #FFFFFF;
-      text-shadow: 1px 1px #666666;
+      background-color: darken(@greenApproveButton, 18%);
 
       background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, #FBA0A0), color-stop(0.95, #E47A7A));
-      background-image: -moz-linear-gradient(top, #FBA0A0 0%, #E47A7A 95%);
+        color-stop(0, lighten(@greenApproveButton, 3%)), color-stop(0.95, darken(@greenApproveButton, 10%)));
+      background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 3%) 0%,
+        darken(@greenApproveButton, 15%) 95%);
 
       &:hover {
+        border: 1px solid darken(#890128, 25%);
+
         background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, lighten(#FBA0A0, 5%)), color-stop(0.95, lighten(#E47A7A , 5%)));
-        background-image: -moz-linear-gradient(top, lighten(#FBA0A0, 5%) 0%, lighten(#E47A7A, 5%) 95%);
+          color-stop(0, lighten(@greenApproveButton, 8%)),
+          color-stop(0.95, darken(@greenApproveButton, 10%)));
+        background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 10%) 0%,
+          darken(@greenApproveButton, 15%) 95%);
       }
 
-      &:active {
-        text-shadow: -1px -1px #333333;
-        background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, #E47A7A), color-stop(0.95, #FBA0A0));
-        background-image: -moz-linear-gradient(top, #E47A7A 0%, #FBA0A0 95%);
-      }
+      &:active { background-image: none; }
+    }
+
+    .approvedBy {
+      text-align: center;
+      font-size: 12px;
     }
   }
 
