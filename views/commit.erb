@@ -1,6 +1,7 @@
 <script src="/js/commit.js"></script>
+
 <div id="commit" sha="<%= commit.sha %>">
-  <div id="commitMetadata">
+  <div id="commitMetadata" class="embossedPanel">
     <p class="sha"><%= commit.sha %></p>
     <p class="message"><%= commit.message %></p>
     <img class="avatar" src="<%= commit.user.gravatar %>" />
