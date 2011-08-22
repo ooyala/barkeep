@@ -55,6 +55,7 @@ window.Commit =
         commentForm.click (e) -> e.stopPropagation()
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
         codeLine.append(commentForm)
+        commentForm.find(".commentText").focus();
     })
 
   onCommentSubmit: (e) ->
