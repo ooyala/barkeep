@@ -84,27 +84,31 @@ button.fancy {
 
 /* Our standard buttons are flat grey buttons. */
 button.standard, input[type=button], input[type=submit] {
-  .roundedCorners(5px);
+  .roundedCorners(3px);
   padding: 7px 15px;
   text-shadow: 0px -1px 1px #EEEEEE;
   border: 1px solid #AAAAAA;
   font-weight: bold;
   cursor: pointer;
   color: #333333;
+  @standardButtonGrey: #F2F1EF;
+
   background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, #F0EEEA), color-stop(0.95, #DCE1E4));
-  background-image: -moz-linear-gradient(top, #F0F4FF 0%, #DCE1E4 95%);
+    color-stop(0, @standardButtonGrey), color-stop(0.90, darken(@standardButtonGrey, 8%)));
+  background-image: -moz-linear-gradient(top, @standardButtonGrey 0%, darken(@standardButtonGrey, 8%) 95%);
+  box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
 
   &:hover {
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten(#F0EEEA, 5%)), color-stop(0.95, lighten(#DCE1E4, 5%)));
-    background-image: -moz-linear-gradient(top, lighten(#F0F4FF, 5%) 0%, lighten(#DCE1E4, 5%) 95%);
+      color-stop(0, lighten(@standardButtonGrey, 2%)), color-stop(0.95, darken(@standardButtonGrey, 5%)));
+    background-image: -moz-linear-gradient(top, lighten(@standardButtonGrey, 2%) 0%,
+      darken(@standardButtonGrey, 5%) 95%);
   }
 
   &:active {
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, #DCE1E4), color-stop(0.95, #F0EEEA));
-    background-image: -moz-linear-gradient(top, #DCE1E4 0%, #F0F4FF 95%);
+      color-stop(0, darken(@standardButtonGrey, 8%)), color-stop(0.95, @standardButtonGrey));
+    background-image: -moz-linear-gradient(top, darken(@standardButtonGrey, 8%), @standardButtonGrey 95%);
   }
 }
 
