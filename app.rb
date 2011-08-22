@@ -146,16 +146,15 @@ class Barkeep < Sinatra::Base
   post "/approve_commit" do
     commit = Commit.find(:sha => params[:commit_sha])
     return 400 unless commit
-    commit.approved_by_user_id = current_user.id
-    commit.save
-    erb :_approved_banner, :layout => false, :locals => { :user => current_user }
+    commit.approve(current_user)
+    erb :_approved_banner, :layout => false, :locals => { :commit => commit }
   end
 
   post "/disapprove_commit" do
     commit = Commit.find(:sha => params[:commit_sha])
     return 400 unless commit
-    commit.approved_by_user_id = nil
-    commit.save
+    commit.disapprove
+    nil
   end
 
   # POST because this creates a saved search on the server.

@@ -15,9 +15,9 @@
           </div>
         </td>
         <td>
-          <% if commit.approved_by_user_id %>
+          <% if commit.approved? %>
             <%= erb :_approved_banner, :layout => false,
-                :locals => { :user => User[commit.approved_by_user_id] } %>
+                :locals => { :commit => commit } %>
           <% else %>
             <button id="approveButton" class="fancy">Approve Commit</button>
           <% end %>
