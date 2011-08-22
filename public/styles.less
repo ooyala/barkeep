@@ -593,13 +593,19 @@ table.commitsList, table.authorList {
     font-size: 0.9em;
   }
 
+  /* The styles for inline comments are slightly different than general comments -- they have no left border.
+   */
+  .file .comment, .file .commentForm {
+    width: 99%;
+    border-left: 0;
+  }
+
   .comment, .commentForm {
     border: 1px solid darken(@sunkenColor, 15%);
-    border-left: 0;
     border-bottom-width: 2px;
     margin: 8px 0;
     font-size: 0.8em;
-    width: 99%;
+    width: 100%;
 
     box-shadow: 3px 2px 1px #e8e8e8;
 
