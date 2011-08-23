@@ -1,3 +1,5 @@
+require "lib/meta_repo"
+
 # Columns:
 # - approved_at: when the commit was approved.
 # - approved_by_user_id: the most recent user to approve the commit.
@@ -7,11 +9,12 @@ class Commit < Sequel::Model
   one_to_many :comments
   many_to_one :approved_by_user, :class => User
 
-  # TODO(philc): There should be a way to get a grit_commit from this object.
+  def grit_commit
+    MetaRepo.grit_commit(repo_id, sha)
+  end
 
   def commit_comments
-    comments_dataset.filter(:commit_id => id, :commit_file_id => nil, :line_number => nil).
-        order(:created_at).all
+    comments_dataset.filter(:commit_id => id).order(:created_at).all
   end
 
   def approved?() !approved_by_user_id.nil? end

@@ -15,13 +15,13 @@ require 'openid/extensions/ax'
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
 require "config/environment"
-require "lib/script_environment"
 require "lib/git_helper"
-require "lib/grit_extensions"
 require "lib/keyboard_shortcuts"
-require "lib/string_helper"
+require "lib/meta_repo"
 require "lib/pretty_date"
+require "lib/script_environment"
 require "lib/stats"
+require "lib/string_helper"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"
@@ -47,7 +47,7 @@ class Barkeep < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    @@repo = Grit::Repo.new(File.dirname(__FILE__))
+    setup_meta_repo(REPO_PATHS)
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -68,7 +68,7 @@ class Barkeep < Sinatra::Base
 
   configure :production do
     enable :logging
-    @@repo = Grit::Repo.new(File.dirname(__FILE__))
+    setup_meta_repo(REPO_PATHS)
     Barkeep.start_background_email_worker
   end
 
@@ -97,18 +97,19 @@ class Barkeep < Sinatra::Base
   end
 
   get "/" do
-    refresh_commits
     redirect "/commits"
   end
 
+  # TODO(caleb): FIX
   get "/commits" do
-    erb :commit_search, :locals => { :saved_searches => current_user.saved_searches, :repo => @@repo }
+    erb :commit_search,
+        :locals => { :saved_searches => current_user.saved_searches } #, :meta_repo => @@meta_repo }
   end
 
-  get "/commits/:commit_id" do
-    repo_commit = @@repo.commit(params[:commit_id])
-    tagged_diff = GitHelper::get_tagged_commit_diffs(repo_commit)
-    commit = Commit[:sha => params[:commit_id]]
+  # TODO(caleb): FIX
+  get "/commits/:repo_name/:sha" do
+    commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
+    tagged_diff = GitHelper::get_tagged_commit_diffs(commit.grit_commit)
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
@@ -120,18 +121,19 @@ class Barkeep < Sinatra::Base
     }
   end
 
+  # TODO(caleb): FIX
   post "/comment" do
-    commit = Commit.filter({:sha => params[:sha]}).first
+    commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
     return 400 unless commit
     file = nil
     if params[:filename] && params[:filename] != ""
       file = commit.commit_files_dataset.filter(:filename => params[:filename]).first ||
-                CommitFile.new({:filename => params[:filename], :commit => commit}).save
+                CommitFile.new(:filename => params[:filename], :commit => commit).save
     end
     line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
     comment = Comment.create(:commit => commit, :commit_file => file, :line_number => line_number,
-        :user => current_user, :text => params[:text])
-    Emails.send_comment_email(@@repo.commit(params[:sha]), [comment])
+                             :user => current_user, :text => params[:text])
+    Emails.send_comment_email(commit.grit_commit, [comment])
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
@@ -144,19 +146,21 @@ class Barkeep < Sinatra::Base
   end
 
   post "/approve_commit" do
-    commit = Commit.find(:sha => params[:commit_sha])
+    commit = MetaRepo.db_commit(params[:repo_name], params[:commit_sha])
     return 400 unless commit
     commit.approve(current_user)
     erb :_approved_banner, :layout => false, :locals => { :commit => commit }
   end
 
+  # TODO(caleb): FIX
   post "/disapprove_commit" do
-    commit = Commit.find(:sha => params[:commit_sha])
+    commit = MetaRepo.db_commit(params[:repo_name], params[:commit_sha])
     return 400 unless commit
     commit.disapprove
     nil
   end
 
+  # TODO(caleb): FIX
   # POST because this creates a saved search on the server.
   post "/search" do
     authors = params[:authors].split(",").map(&:strip).join(",")
@@ -166,15 +170,16 @@ class Barkeep < Sinatra::Base
     SearchFilter.create(:filter_type => SearchFilter::AUTHORS_FILTER, :filter_value => params[:authors],
         :saved_search_id => saved_search.id)
     erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :repo => @@repo, :page_number => 1 }
+      :locals => { :saved_search => saved_search, :page_number => 1 }
   end
 
+  # TODO(caleb): FIX
   get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
     page_number = params[:page_number].to_i || 1
     page_number = 1 if page_number <= 0
     erb :_saved_search, :layout => false,
-        :locals => { :saved_search => saved_search, :repo => @@repo, :page_number => page_number }
+        :locals => { :saved_search => saved_search, :page_number => page_number }
   end
 
   # Change the order of saved searches.
@@ -231,13 +236,14 @@ class Barkeep < Sinatra::Base
     erb :_keyboard_shortcuts, :layout => false, :locals => { :view => params[:captures].first }
   end
 
+  # TODO(caleb): FIX
   get "/stats" do
     num_commits = Commit.count
     erb :stats, :locals => {
       :unreviewed_percent => unreviewed_commits.count.to_f / num_commits,
       :commented_percent => reviewed_without_lgtm_commits.count.to_f / num_commits,
       :approved_percent => lgtm_commits.count.to_f / num_commits,
-      :chatty_commits => chatty_commits(@@repo, 10),
+      :chatty_commits => chatty_commits(10),
       :top_reviewers => top_reviewers(10)
     }
   end
@@ -274,11 +280,11 @@ class Barkeep < Sinatra::Base
     erb :inspire, :locals => { :quote => quote, :author => author }
   end
 
+  # TODO(caleb): FIX
   # For development use only -- for testing and styling emails.
   get "/dev/latest_comment_email_preview" do
     comment = Comment.order(:id.desc).first
-    commit = @@repo.commit(comment.commit.sha)
-    Emails.comment_email_body(commit, [comment])
+    Emails.comment_email_body(comment.grit_commit, [comment])
   end
 
   def cleanup_backtrace(backtrace_lines)
@@ -288,26 +294,26 @@ class Barkeep < Sinatra::Base
     backtrace_lines[0...stop_at]
   end
 
-  def refresh_commits
-    # Hack to get all the commits...this refresh commits is itself a hack that's going away at some point.
-    commits = @@repo.commits("master", 9999999)
-    commits.each do |commit|
-      if DB[:commits].filter(:sha => commit.id).empty?
-        DB[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
-            :user_id => get_user(commit.author)[:id])
-      end
-    end
-  end
+  #def refresh_commits
+    ## Hack to get all the commits...this refresh commits is itself a hack that's going away at some point.
+    #commits = @@repo.commits("master", 9999999)
+    #commits.each do |commit|
+      #if DB[:commits].filter(:sha => commit.id).empty?
+        #DB[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
+            #:user_id => get_user(commit.author)[:id])
+      #end
+    #end
+  #end
 
-  def get_user(grit_actor)
-    dataset = DB[:users].filter(:email => grit_actor.email)
-    if dataset.empty?
-      id = DB[:users].insert(:name => grit_actor.name, :email => grit_actor.email)
-      DB[:users].filter(:id => id).first
-    else
-      dataset.first
-    end
-  end
+  #def get_user(grit_actor)
+    #dataset = DB[:users].filter(:email => grit_actor.email)
+    #if dataset.empty?
+      #id = DB[:users].insert(:name => grit_actor.name, :email => grit_actor.email)
+      #DB[:users].filter(:id => id).first
+    #else
+      #dataset.first
+    #end
+  #end
 
   private
 
@@ -339,5 +345,10 @@ class Barkeep < Sinatra::Base
       oidreq.add_extension(axreq)
       oidreq.redirect_url(root_url,root_url + "/login/complete")
     end
+  end
+
+  def setup_meta_repo(repo_paths)
+    repo_paths.each { |path| logger.info "Initializing repo at #{path}." }
+    MetaRepo.initialize_meta_repo(repo_paths)
   end
 end
