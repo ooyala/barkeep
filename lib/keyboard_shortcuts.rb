@@ -22,7 +22,8 @@ module KeyboardShortcuts
 		"j" => "Scroll down",
 		"k" => "Scroll up",
 		"n" => "Next file in commit",
-		"p" => "Previous file in commit"
+		"p" => "Previous file in commit",
+		"e" => "Toggle full diff view"
 	}
 
 	def self.shortcuts(view)

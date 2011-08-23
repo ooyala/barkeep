@@ -20,6 +20,8 @@ window.Commit =
         @scrollFile(true)
       when "p"
         @scrollFile(false)
+      when "e"
+        @toggleFullDiff()
       else
         KeyboardShortcuts.globalOnKeydown(event)
 
@@ -111,5 +113,13 @@ window.Commit =
       success: ->
         $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
     })
+
+  toggleFullDiff: ->
+    # Performance optimization: instead of using toggle(), which checks each element if it's visible,
+    # only check the first diffLine on the page to see if we need to show() or hide().
+    if $(document).find(".diffLine").css("display") == "none"
+      $(".diffLine.same").show()
+    else
+      $(".diffLine.same").hide()
 
 $(document).ready(-> Commit.init())

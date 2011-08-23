@@ -686,6 +686,8 @@ table.commitsList, table.authorList {
 
   .diffLine {
 
+    &.same { display: none; }
+
     .lineNumber {
       font: @commitFontFamily;
       height: 18px;
@@ -705,6 +707,9 @@ table.commitsList, table.authorList {
       }
       .added {
         background-color: #e2fce2;
+        height: 18px;
+      }
+      .same {
         height: 18px;
       }
       .c {

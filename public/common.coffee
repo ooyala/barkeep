@@ -6,6 +6,7 @@ window.Constants =
     13  : "return"
     27  : "escape"
     67  : "c"
+    69  : "e"
     72  : "h"
     73  : "i"
     74  : "j"
