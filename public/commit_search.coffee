@@ -165,16 +165,23 @@ window.CommitSearch =
       return unless animationComplete and fetchedHtml
       @searching = false
       newSavedSearchElement = $(fetchedHtml)
-      return unless newSavedSearchElement.find(".commitsList tr").size() > 0
 
-      newSavedSearchElement.css("height": savedSearchElement.height())
-      newSavedSearchElement.find(".commitsList").css("opacity", 0)
-      savedSearchElement.replaceWith newSavedSearchElement
-      $(".selected").removeClass "selected"
-      newSavedSearchElement.find(".commitsList tr:first").addClass "selected"
-      buttons = newSavedSearchElement.find(".pageControls")
-      if pageNumber <= 1
-        buttons.find(".pageLeftButton").addClass "disabled"
+      if newSavedSearchElement.find(".commitsList tr").size() == 0
+        # Circumstances on the server must've changed recently -- it believes we have no more commits.
+        # Just fade-in the previous page as if it was the next page.
+        savedSearchElement.find(".commitsList").css({ "margin-left": 0, "opacity": 0 })
+        newSavedSearchElement = savedSearchElement
+      else
+        newSavedSearchElement.css("height": savedSearchElement.height())
+        newSavedSearchElement.find(".commitsList").css("opacity", 0)
+        savedSearchElement.replaceWith newSavedSearchElement
+        $(".selected").removeClass "selected"
+        newSavedSearchElement.find(".commitsList tr:first").addClass "selected"
+
+        buttons = newSavedSearchElement.find(".pageControls")
+        if pageNumber <= 1
+          buttons.find(".pageLeftButton").addClass "disabled"
+
       newSavedSearchElement.find(".commitsList").animate({ "opacity": 1 }, { duration: 150 })
       # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
       # that we can know how many pages of results there are and when to stop paging properly.
