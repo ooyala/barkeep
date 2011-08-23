@@ -398,7 +398,7 @@ header {
 table.commitsList, table.authorList {
   width: 100%;
 
-  font-size: 16px;
+  font-size: 14px;
   a {
     text-decoration: none;
     color: @textColor;
@@ -412,12 +412,11 @@ table.commitsList, table.authorList {
     }
     &.author { white-space: nowrap; }
     &.commitId {
-      font: 14px @monoFont;
+      font: 13px @monoFont;
       a { color: @lightTextColor; }
       text-align: right;
     }
     &.commitMessage {
-      font: 14px @monoFont;
       width: 100%;
       /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
       a {
