@@ -15,7 +15,8 @@ class Emails
     # TODO(philc): Provide a plaintext email as well.
     # TODO(philc): Determine how we're going to let this email FROM address be configured.
     # TODO(philc): Delay the emails and batch them together.
-    EmailTask.create(:subject => subject, :to => "phil.crosby@gmail.com", :body => html_body)
+    EmailTask.create(:subject => subject, :to => "phil.crosby@gmail.com", :body => html_body,
+        :status => "pending")
   end
 
   def self.deliver_mail(to, subject, html_body)
