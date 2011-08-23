@@ -297,10 +297,12 @@ header {
   position: relative;
   /* We want the background of a saved search to be opaque while we're dragging it around. */
   background-image: url(/images/background.png);
-  padding-bottom: 5px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 8px;
   padding-right: 30px;
   width: 100%;
+  /* overflow is hidden because we slide pages of commits in saved searches off the edges of the page. */
+  overflow: hidden;
 
   .header {
     margin-bottom: 5px;

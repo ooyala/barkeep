@@ -130,17 +130,24 @@ window.CommitSearch =
   # direction: "forward" or "backward".
   showNextPage: (event, direction = "forward") ->
     return if @searching
-    @searching = true
+
     if event.type == "keydown"
       savedSearch = $(".selected").parents(".savedSearch")
       keypress = true
     else # event.type == "click"
       savedSearch = $(event.target).parents(".savedSearch")
       keypress = false
+
     savedSearchId = savedSearch.attr("saved-search-id")
-    # Do a click effect on the button
-    buttons = $("#savedSearches .savedSearch[saved-search-id=#{savedSearchId}] .pageControls")
-    button = buttons.find(if direction == "forward" then ".pageLeftButton" else ".pageRightButton")
+    savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
+
+    buttons = savedSearchElement.find(".pageControls")
+    button = buttons.find(if direction == "forward" then ".pageRightButton" else ".pageLeftButton")
+    return if button.hasClass "disabled"
+
+    @searching = true
+
+    # If it's a keypress, highlight the button for a moment as if the user clicked on it.
     if keypress
       button.addClass("active")
       timeout 70, =>
@@ -148,21 +155,45 @@ window.CommitSearch =
 
     pageNumber = (Number) savedSearch.attr("page-number")
     pageNumber = if direction == "forward" then pageNumber + 1 else pageNumber - 1
-    console.log "page saved_search with id #{savedSearchId} to page #{pageNumber}"
+
+    animationComplete = false
+    fetchedHtml = null
+
+    # We're going to animate sliding the current page away, while at the same time fetching the new page.
+    # When both of those events are done, showFetchedPage can then be called.
+    showFetchedPage = =>
+      return unless animationComplete and fetchedHtml
+      @searching = false
+      newSavedSearchElement = $(fetchedHtml)
+      return unless newSavedSearchElement.find(".commitsList tr").size() > 0
+
+      newSavedSearchElement.css("height": savedSearchElement.height())
+      newSavedSearchElement.find(".commitsList").css("opacity", 0)
+      savedSearchElement.replaceWith newSavedSearchElement
+      $(".selected").removeClass "selected"
+      newSavedSearchElement.find(".commitsList tr:first").addClass "selected"
+      buttons = newSavedSearchElement.find(".pageControls")
+      if pageNumber <= 1
+        buttons.find(".pageLeftButton").addClass "disabled"
+      newSavedSearchElement.find(".commitsList").animate({ "opacity": 1 }, { duration: 150 })
+      # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
+      # that we can know how many pages of results there are and when to stop paging properly.
+
+    animateTo = (if direction == "forward" then -1 else 1) * $(".commitsList").width()
+    savedSearchElement.find(".commitsList").animate({ "margin-left": animateTo },
+        {
+          duration: 400,
+          complete: =>
+            animationComplete = true
+            showFetchedPage()
+        })
+
     $.ajax
       url: "/saved_searches/#{savedSearchId}?page_number=#{pageNumber}",
       success: (html) =>
-        # only update if there are commits for the requested page number
-        if $(html).find(".commitsList tr").size() > 0
-          $(".savedSearch[saved-search-id=#{savedSearchId}]").replaceWith html
-          $(".selected").removeClass "selected"
-          $(".savedSearch[saved-search-id=#{savedSearchId}] .commitsList tr:first").addClass "selected"
-          buttons = $(".savedSearch[saved-search-id=#{savedSearchId}] .pageControls")
-          if pageNumber <= 1
-            buttons.find(".pageLeftButton").addClass "disabled"
-          # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
-          # that we can know how many pages of results there are and when to stop paging properly.
-        @searching = false
+        fetchedHtml = html
+        showFetchedPage()
+
 
   reorderSearches: ->
     @beforeSync()
