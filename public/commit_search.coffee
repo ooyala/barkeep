@@ -13,8 +13,8 @@ window.CommitSearch =
       stop: => @reorderSearches()
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
-    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @pageSearch(e, true)
-    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @pageSearch(e, false)
+    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage(e, "backward")
+    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "forward")
     $("#savedSearches .savedSearch .emailCheckbox").live "click", (e) => @emailUpdate(e)
     @selectFirstDiff()
 
@@ -62,9 +62,9 @@ window.CommitSearch =
       when "k"
         @selectDiff(false)
       when "h"
-        @pageSearch(event, true)
+        @showNextPage(event, "backward")
       when "l"
-        @pageSearch(event, false)
+        @showNextPage(event, "forward")
       when "return"
         window.location.href = $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
       else
@@ -126,7 +126,9 @@ window.CommitSearch =
       return true
     @selectNewGroup(next)
 
-  pageSearch: (event, reverse = false) ->
+  # Shows the next page of a commit search.
+  # direction: "forward" or "backward".
+  showNextPage: (event, direction = "forward") ->
     return if @searching
     @searching = true
     if event.type == "keydown"
@@ -138,14 +140,14 @@ window.CommitSearch =
     savedSearchId = savedSearch.attr("saved-search-id")
     # Do a click effect on the button
     buttons = $("#savedSearches .savedSearch[saved-search-id=#{savedSearchId}] .pageControls")
-    button = if reverse then buttons.find(".pageLeftButton") else buttons.find(".pageRightButton")
+    button = buttons.find(if direction == "forward" then ".pageLeftButton" else ".pageRightButton")
     if keypress
       button.addClass("active")
       timeout 70, =>
         button.removeClass("active")
 
     pageNumber = (Number) savedSearch.attr("page-number")
-    pageNumber = if reverse then pageNumber - 1 else pageNumber + 1
+    pageNumber = if direction == "forward" then pageNumber + 1 else pageNumber - 1
     console.log "page saved_search with id #{savedSearchId} to page #{pageNumber}"
     $.ajax
       url: "/saved_searches/#{savedSearchId}?page_number=#{pageNumber}",
