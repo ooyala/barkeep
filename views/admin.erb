@@ -1,0 +1,42 @@
+<%#
+  # A dashboard which tells you interesting things about your Barkeep install and helps you spot and
+  # troubleshoot problems.
+  # Params:
+  # - failed_email_count
+  # - recently_failed_emails
+%>
+
+<style type="text/css" media="screen">
+  #failedEmails { width: 100%; }
+  #admin td {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+  }
+</style>
+
+<div id="admin">
+  <h2>Emails</h2>
+
+  <h4>Recently failed email tasks (<%= failed_email_count %> total)</h4>
+  <% unless recently_failed_emails.empty? %>
+    <table id="failedEmails">
+      <tr>
+        <th>id</th>
+        <th>to</th>
+        <th>subject</th>
+        <th>last attempted</th>
+        <th>failure reason</th>
+      </tr>
+
+      <% recently_failed_emails.each do |email| %>
+        <tr>
+          <td><%= email.id %></td>
+          <td><%= email.to %></td>
+          <td><%= email.subject[0..30] %></td>
+          <td><%= email.last_attempted %></td>
+          <td><%= email.failure_reason %></td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+</div>
