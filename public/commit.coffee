@@ -35,8 +35,8 @@ window.Commit =
 
   #Logic to add comments
   onDiffLineClick: (e) ->
-    if $(e.target).hasClass("delete")
-      return
+    if $(e.target).hasClass("delete") then return
+    if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     codeLine = $(e.currentTarget).find(".code")
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
