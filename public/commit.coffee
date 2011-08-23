@@ -35,6 +35,8 @@ window.Commit =
 
   #Logic to add comments
   onDiffLineClick: (e) ->
+    if $(e.target).hasClass("delete")
+      return
     codeLine = $(e.currentTarget).find(".code")
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
@@ -54,8 +56,9 @@ window.Commit =
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
+        commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
-        commentForm.find(".commentText").focus();
+        commentForm.find(".commentText").focus()
     })
 
   onCommentSubmit: (e) ->
@@ -75,6 +78,10 @@ window.Commit =
     else
       # Don't remove the comment box if it's for a commit-level comment
       $(form).find("textarea").val("")
+
+  onCommentCancel: (e) ->
+    e.stopPropagation()
+    $(e.target).parents(".commentForm").remove()
 
   onCommentDelete: (e) ->
     $.ajax({
