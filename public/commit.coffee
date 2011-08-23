@@ -63,6 +63,8 @@ window.Commit =
 
   onCommentSubmit: (e) ->
     e.preventDefault()
+    if $(e.currentTarget).find("textarea").val() == ""
+      return
     data = {}
     $(e.currentTarget).find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
