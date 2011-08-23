@@ -47,7 +47,7 @@ class Barkeep < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    setup_meta_repo(REPO_PATHS)
+    MetaRepo.initialize_meta_repo(logger, repo_paths)
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -68,7 +68,7 @@ class Barkeep < Sinatra::Base
 
   configure :production do
     enable :logging
-    setup_meta_repo(REPO_PATHS)
+    MetaRepo.initialize_meta_repo(logger, repo_paths)
     Barkeep.start_background_email_worker
   end
 
@@ -345,10 +345,5 @@ class Barkeep < Sinatra::Base
       oidreq.add_extension(axreq)
       oidreq.redirect_url(root_url,root_url + "/login/complete")
     end
-  end
-
-  def setup_meta_repo(repo_paths)
-    repo_paths.each { |path| logger.info "Initializing repo at #{path}." }
-    MetaRepo.initialize_meta_repo(repo_paths)
   end
 end
