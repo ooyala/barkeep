@@ -2,6 +2,7 @@
 
 require "grit"
 
+$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/grit_extensions"
 require "lib/script_environment"
 
@@ -25,14 +26,57 @@ module MetaRepo
   end
 
   def self.db_commit(repo_name, sha)
-    Commit[:repo_id => @@repo_name_to_id[repo_name], :sha => sha]
+    Commit[:git_repo_id => @@repo_name_to_id[repo_name], :sha => sha]
   end
 
   def self.grit_commit(repo_name_or_id, sha)
-    @@repo_names_and_ids_to_repos[repo_name_to_id].commit(sha)
+    @@repo_names_and_ids_to_repos[repo_name_or_id].commit(sha)
   end
 
-  def self.import_new_commits!
-
+  def self.import_new_commits!(logger)
+    # TODO(caleb): lots of logging and error checking here.
+    @@repo_name_to_id.each do |repo_name, repo_id|
+      grit_repo = @@repo_names_and_ids_to_repos[repo_id]
+      grit_repo.git.fetch
+      logger.info "Importing new commits for repo #{repo_name}."
+      grit_repo.remotes.each do |remote|
+        next if remote.name == "origin/HEAD"
+        new_commits = self.import_new_ancestors!(logger, repo_id, remote.commit)
+        logger.info "Imported #{new_commits} new commits as ancestors of #{remote.name} in repo #{repo_name}"
+      end
+    end
   end
+
+  # Returns whether the commit is new.
+  def self.import_commit!(logger, repo_id, grit_commit)
+    new_commit = false
+    Commit.find_or_create(:git_repo_id => repo_id, :sha => grit_commit.sha) do |commit|
+      logger.debug "Importing commit #{grit_commit.sha}"
+      commit.message = grit_commit.message
+      # NOTE(caleb): For some reason, the commit object you get from a remote returns nil for #date (but it
+      # does have #authored_date and #committed_date. Bug?
+      commit.date = grit_commit.authored_date
+      # Users must be unique by email in our system.
+      user = User.find_or_create(:email => grit_commit.author.email) do |new_user|
+        new_user.name = grit_commit.author.name
+      end
+      commit.user_id = user.id
+      new_commit = true
+    end
+    new_commit
+  end
+
+  # Recursively import all undiscovered ancestors and report the number added.
+  def self.import_new_ancestors!(logger, repo_id, grit_commit)
+    return 0 unless self.import_commit!(logger, repo_id, grit_commit) # Stop if we already have this commit.
+    grit_commit.parents.reduce(0) { |s, commit| s + self.import_new_ancestors!(logger, repo_id, commit) } + 1
+  end
+end
+
+if __FILE__ == $0
+  puts "Running commit importer as standalone script."
+  logger = Logger.new(STDOUT)
+  logger.level = Logger::DEBUG
+  MetaRepo.initialize_meta_repo(logger, REPO_PATHS)
+  MetaRepo.import_new_commits!(logger)
 end
