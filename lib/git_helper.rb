@@ -34,7 +34,7 @@ class GitHelper
     blob && !blob.data.empty? && blob.data.index("\0")
   end
 
-  #returns an array of hashes representing the tagged and colorized lines of each file in the diff.
+  # Returns an array of hashes representing the tagged and colorized lines of each file in the diff.
   # Where :binary indicates if the file is binary, otherwise :lines is the output of tag_file
   # returns: [ { :binary, :lines}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.

@@ -1,7 +1,7 @@
 # A utility class for spawning background processes. This is used by background task queues to spawn
 # new workers -- for example, an email queue to spawn new workers which send emails.
 # Sample usage:
-#   
+#
 #   begin
 #     exit_code = BackgroundJobs.run_process_with_timeout(10) do
 #       # This is run in a new child process, and so any havoc it causes will not affect the parent process.
