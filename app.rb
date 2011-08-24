@@ -243,11 +243,11 @@ class Barkeep < Sinatra::Base
   get "/stats" do
     num_commits = Commit.count
     erb :stats, :locals => {
-      :unreviewed_percent => unreviewed_commits.count.to_f / num_commits,
-      :commented_percent => reviewed_without_lgtm_commits.count.to_f / num_commits,
-      :approved_percent => lgtm_commits.count.to_f / num_commits,
-      :chatty_commits => chatty_commits(10),
-      :top_reviewers => top_reviewers(10)
+      :unreviewed_percent => Stats.unreviewed_commits.count.to_f / num_commits,
+      :commented_percent => Stats.reviewed_without_lgtm_commits.count.to_f / num_commits,
+      :approved_percent => Stats.lgtm_commits.count.to_f / num_commits,
+      :chatty_commits => Stats.chatty_commits(10),
+      :top_reviewers => Stats.top_reviewers(10)
     }
   end
 
