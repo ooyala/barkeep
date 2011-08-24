@@ -276,11 +276,19 @@ class Barkeep < Sinatra::Base
     erb :profile, :locals => { :user => user }
   end
 
-  get "/inspire" do
+  get "/inspire/?" do
     doc = Nokogiri::HTML(open("http://inspiregen.appspot.com/"))
     quote = doc.css("h1").text
     author = doc.css("h2").text
     erb :inspire, :locals => { :quote => quote, :author => author }
+  end
+
+  # A page to help in troubleshooting Barkeep's background processes, like emails and commit ingestion.
+  get "/admin/?" do
+    erb :admin, :locals => {
+      :failed_email_count => EmailTask.filter(:status => "failed").count,
+      :recently_failed_emails => EmailTask.filter(:status => "failed").order(:id.desc).limit(15)
+    }
   end
 
   # TODO(caleb): FIX
@@ -289,6 +297,7 @@ class Barkeep < Sinatra::Base
     comment = Comment.order(:id.desc).first
     Emails.comment_email_body(comment.grit_commit, [comment])
   end
+
 
   def cleanup_backtrace(backtrace_lines)
     # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like

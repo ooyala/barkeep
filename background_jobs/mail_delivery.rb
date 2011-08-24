@@ -16,7 +16,7 @@ class MailDelivery
   def run
     while true
       exit if has_become_orphaned?
-      email_task = EmailTask.order(:id.desc).first
+      email_task = EmailTask.filter(:status => "pending").order(:id.desc).first
       if email_task.nil?
         sleep POLL_FREQUENCY
         next
@@ -43,7 +43,11 @@ class MailDeliveryWorker
       Emails.deliver_mail(email_task.to, email_task.subject, email_task.body)
       email_task.delete
     rescue => error
+      # We're leaving this email task in the database so you can troubleshoot your configuration if there's
+      # a problem.
       email_task.last_attempted = Time.now
+      email_task.failure_reason = error.to_s
+      email_task.status = "failed"
       email_task.save
       raise error
     end

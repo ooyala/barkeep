@@ -16,7 +16,7 @@
       </tr>
     <% else %>
       <% file[:lines].each_with_index do |line, index| %>
-        <tr class="diffLine" diff-line-number="<%= index + 1 %>">
+        <tr class="diffLine <%= line.tag == :same ? "same" : "diff" %>" diff-line-number="<%= index + 1 %>">
           <td class="lineNumber"><%= line.line_num_before || "&nbsp;" %></td>
           <td class="lineNumber"><%= line.line_num_after || "&nbsp;" %></td>
           <td class="code">

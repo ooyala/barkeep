@@ -20,6 +20,8 @@ window.Commit =
         @scrollFile(true)
       when "p"
         @scrollFile(false)
+      when "e"
+        @toggleFullDiff()
       else
         KeyboardShortcuts.globalOnKeydown(event)
 
@@ -35,6 +37,8 @@ window.Commit =
 
   #Logic to add comments
   onDiffLineClick: (e) ->
+    if $(e.target).hasClass("delete") then return
+    if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     codeLine = $(e.currentTarget).find(".code")
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
@@ -56,11 +60,15 @@ window.Commit =
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
+        commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
+        commentForm.find(".commentText").focus()
     })
 
   onCommentSubmit: (e) ->
     e.preventDefault()
+    if $(e.currentTarget).find("textarea").val() == ""
+      return
     data = {}
     $(e.currentTarget).find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
@@ -76,6 +84,10 @@ window.Commit =
     else
       # Don't remove the comment box if it's for a commit-level comment
       $(form).find("textarea").val("")
+
+  onCommentCancel: (e) ->
+    e.stopPropagation()
+    $(e.target).parents(".commentForm").remove()
 
   onCommentDelete: (e) ->
     $.ajax({
@@ -103,5 +115,16 @@ window.Commit =
       success: ->
         $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
     })
+
+  toggleFullDiff: ->
+    # Performance optimization: instead of using toggle(), which checks each element if it's visible,
+    # only check the first diffLine on the page to see if we need to show() or hide().
+    firstSame= $(document).find(".diffLine.same:first")
+    firstDiff = $(document).find(".diffLine.diff:first")
+    if firstSame.css("display") == "none"
+      $(".diffLine.same").show()
+      window.scrollTo(0, firstDiff.offset().top)
+    else
+      $(".diffLine.same").hide()
 
 $(document).ready(-> Commit.init())

@@ -1,13 +1,14 @@
 <form class="commentForm" action="/comment" type="POST">
-  <div class="heading">Add a comment</div>
+  <div class="heading"><span class="addAComment">Add a comment</span></div>
   <input type="hidden" name="repo_name" value="<%= repo_name %>"/>
   <input type="hidden" name="sha" value="<%= sha %>"/>
   <input type="hidden" name="filename" value="<%= filename %>" />
   <input type="hidden" name="line_number" value="<%= line_number %>" />
-  <div class="body">
-    <textarea class="commentText" name="text"></textarea>
-  </div>
+  <textarea class="commentText" name="text"></textarea>
   <div class="commentControls">
-    <input class="commentSubmit" type="submit" value="Submit" />
+    <% if line_number %>
+      <input class="commentCancel" type="button" value="Cancel" />
+    <% end %>
+    <input class="commentSubmit" type="submit" value="Post comment" />
   </div>
 </form>

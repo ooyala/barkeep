@@ -84,27 +84,31 @@ button.fancy {
 
 /* Our standard buttons are flat grey buttons. */
 button.standard, input[type=button], input[type=submit] {
-  .roundedCorners(5px);
+  .roundedCorners(3px);
   padding: 7px 15px;
   text-shadow: 0px -1px 1px #EEEEEE;
   border: 1px solid #AAAAAA;
   font-weight: bold;
   cursor: pointer;
   color: #333333;
+  @standardButtonGrey: #F2F1EF;
+
   background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, #F0EEEA), color-stop(0.95, #DCE1E4));
-  background-image: -moz-linear-gradient(top, #F0F4FF 0%, #DCE1E4 95%);
+    color-stop(0, @standardButtonGrey), color-stop(0.90, darken(@standardButtonGrey, 8%)));
+  background-image: -moz-linear-gradient(top, @standardButtonGrey 0%, darken(@standardButtonGrey, 8%) 95%);
+  box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
 
   &:hover {
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten(#F0EEEA, 5%)), color-stop(0.95, lighten(#DCE1E4, 5%)));
-    background-image: -moz-linear-gradient(top, lighten(#F0F4FF, 5%) 0%, lighten(#DCE1E4, 5%) 95%);
+      color-stop(0, lighten(@standardButtonGrey, 2%)), color-stop(0.95, darken(@standardButtonGrey, 5%)));
+    background-image: -moz-linear-gradient(top, lighten(@standardButtonGrey, 2%) 0%,
+      darken(@standardButtonGrey, 5%) 95%);
   }
 
   &:active {
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, #DCE1E4), color-stop(0.95, #F0EEEA));
-    background-image: -moz-linear-gradient(top, #DCE1E4 0%, #F0F4FF 95%);
+      color-stop(0, darken(@standardButtonGrey, 8%)), color-stop(0.95, @standardButtonGrey));
+    background-image: -moz-linear-gradient(top, darken(@standardButtonGrey, 8%), @standardButtonGrey 95%);
   }
 }
 
@@ -293,10 +297,12 @@ header {
   position: relative;
   /* We want the background of a saved search to be opaque while we're dragging it around. */
   background-image: url(/images/background.png);
-  padding-bottom: 5px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 8px;
   padding-right: 30px;
   width: 100%;
+  /* overflow is hidden because we slide pages of commits in saved searches off the edges of the page. */
+  overflow: hidden;
 
   .header {
     margin-bottom: 5px;
@@ -394,7 +400,7 @@ header {
 table.commitsList, table.authorList {
   width: 100%;
 
-  font-size: 16px;
+  font-size: 14px;
   a {
     text-decoration: none;
     color: @textColor;
@@ -408,18 +414,20 @@ table.commitsList, table.authorList {
     }
     &.author { white-space: nowrap; }
     &.commitId {
-      font: 14px @monoFont;
+      font: 13px @monoFont;
       a { color: @lightTextColor; }
       text-align: right;
     }
     &.commitMessage {
-      font: 14px @monoFont;
       width: 100%;
-      /* Commit messages can be very long. Truncate them preventing them from flowing out of the container. */
       a {
-        display:block;
+        display: block;
         width: 100%;
+        /* A height with overflow implements truncation of commit messages. There may be second and third
+         * lines of text in this element, but they'll be hidden. */
         overflow: hidden;
+        height: 1.2em;
+
       }
     }
     &.commitDate {
@@ -509,7 +517,7 @@ table.commitsList, table.authorList {
     .sha {
       margin-bottom: 10px;
       font-family: @monoFont;
-      color: #777;
+      color: @lightTextColor;
     }
 
     .message {
@@ -522,9 +530,7 @@ table.commitsList, table.authorList {
       vertical-align: middle;
       line-height: 1.25em;
 
-      .email, .date {
-        color: #777;
-      }
+      .email, .date { color: @lightTextColor; }
     }
 
     td { vertical-align: top; }
@@ -566,7 +572,7 @@ table.commitsList, table.authorList {
     }
 
     .approvedBy, .approvedAt {
-      color: #777;
+      color: @lightTextColor;
       text-align: center;
       font-size: 12px;
       margin-bottom: 4px;
@@ -591,58 +597,88 @@ table.commitsList, table.authorList {
     font-size: 0.9em;
   }
 
+  /* The styles for inline comments are slightly different than general comments -- they have no left border.
+   */
+  .file .comment, .file .commentForm {
+    width: 99%;
+    border-left: 0;
+  }
+
   .comment, .commentForm {
-    .roundedCorners(5px);
-    border: 3px solid #DDDDDD;
-    margin: 5px;
+    border: 1px solid darken(@sunkenColor, 15%);
+    border-bottom-width: 2px;
+    margin: 8px 0;
     font-size: 0.8em;
+    width: 100%;
+
+    box-shadow: 3px 2px 1px #e8e8e8;
 
     textarea {
       resize: none;
       height: 100px;
-      width: 100%;
+      width: 99.5%;
       font-size: 1.0em;
+      border: 0;
+      border-bottom: 1px solid #e8e8e8;
+      box-shadow: 0 1px 0 white;
+      padding-top: 3px;
+      padding-left: 2px;
+      /* Turn off Safari's heavy themed blue outline of focused textfields. */
+      outline: 0;
     }
 
     .heading {
-      color: #777;
+
+      color: @lightTextColor;
       padding: 5px;
       position: relative;
 
       background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, #F0F4FF), color-stop(0.95, #D3E1F6));
+        color-stop(0, @sunkenColor), color-stop(0.95, darken(@sunkenColor, 10%)));
       background-image: -moz-linear-gradient(top, #F0F4FF 0%, #D3E1F6 95%);
 
-      .name {
-        color: #333333;
+      background-color: @sunkenColor;
+      .addAComment, .name {
         font-weight: bold;
+        color: #333333;
       }
 
-      .date {
-        color: #666666;
-      }
+      .date { color: #666666; }
 
       .delete {
         position: absolute;
         right: 4px;
         top: 4px;
       }
+
+      .reply {
+        position: absolute;
+        right: 80px;
+        top: 4px;
+      }
     }
 
-    .body {
+    .commentBody {
       padding: 10px 5px;
+
       code {
+        display: inline;
+        padding: 0 2px;
+        font-family: @monoFont;
+        background: #F0EEEA;
+        border: 1px solid #DDD;
+      }
+
+      pre code {
         display: block;
         margin: 10px;
         padding: 10px;
         font-family: @monoFont;
-        background: #DFDFDF;
-        border: 1px solid #CCCCCC;
       }
     }
 
     .commentControls {
-      margin: 0px 10px 10px 10px;
+      margin: 7px 10px 10px 10px;
       text-align: right;
     }
   }
@@ -655,6 +691,8 @@ table.commitsList, table.authorList {
   }
 
   .diffLine {
+
+    &.same { display: none; }
 
     .lineNumber {
       font: @commitFontFamily;
@@ -675,6 +713,9 @@ table.commitsList, table.authorList {
       }
       .added {
         background-color: #e2fce2;
+        height: 18px;
+      }
+      .same {
         height: 18px;
       }
       .c {
@@ -875,9 +916,7 @@ table.commitsList, table.authorList {
       }
     }
 
-    pre {
-      font: @commitFontFamily;
-    }
+    pre { font: @commitFontFamily; }
   }
 
   div.data {

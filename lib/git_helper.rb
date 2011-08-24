@@ -173,6 +173,7 @@ class LineDiff
     case @tag
     when :removed then line = "<div class='removed'>#{line}</div>"
     when :added then line = "<div class='added'>#{line}</div>"
+    when :same then line = "<div class='same'>#{line}</div>"
     end
     return line
   end
