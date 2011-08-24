@@ -39,16 +39,16 @@ window.Commit =
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
-    repo = codeLine.parents("#commit").attr("repo")
-    Commit.createCommentForm(codeLine, repo, sha, filename, lineNumber)
+    repoName = codeLine.parents("#commit").attr("repo")
+    Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
-  createCommentForm: (codeLine, commitRepo, commitSha, filename, lineNumber) ->
+  createCommentForm: (codeLine, repoName, sha, filename, lineNumber) ->
     $.ajax({
       type: "get",
       url: "/comment_form",
       data: {
-        repo: commitRepo,
-        sha: commitSha,
+        repo_name: repoName,
+        sha: sha,
         filename: filename,
         line_number: lineNumber
       },

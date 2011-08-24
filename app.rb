@@ -118,14 +118,13 @@ class Barkeep < Sinatra::Base
 
   get "/comment_form" do
     erb :_comment_form, :layout => false, :locals => {
-      :repo => params[:repo],
+      :repo_name => params[:repo_name],
       :sha => params[:sha],
       :filename => params[:filename],
       :line_number => params[:line_number]
     }
   end
 
-  # TODO(caleb): FIX
   post "/comment" do
     commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
     return 400 unless commit
