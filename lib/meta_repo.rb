@@ -66,10 +66,18 @@ module MetaRepo
     new_commit
   end
 
-  # Recursively import all undiscovered ancestors and report the number added.
+  # Import all undiscovered ancestors and report the number added.
+  # This USED to be a beautiful 2-line method but being recursive makes Ruby blow its stack on a big import :\
   def self.import_new_ancestors!(logger, repo_id, grit_commit)
-    return 0 unless self.import_commit!(logger, repo_id, grit_commit) # Stop if we already have this commit.
-    grit_commit.parents.reduce(0) { |s, commit| s + self.import_new_ancestors!(logger, repo_id, commit) } + 1
+    frontier = [grit_commit]
+    imported = 0
+    while (new_commit = frontier.shift)
+      if self.import_commit!(logger, repo_id, new_commit)
+        imported += 1
+        frontier += new_commit.parents
+      end
+    end
+    imported
   end
 end
 
