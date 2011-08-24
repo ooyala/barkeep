@@ -5,7 +5,7 @@
     <table>
       <tr>
         <td>
-          <p class="sha"><%= commit.sha %></p>
+          <p class="sha"><%= commit.sha %> : <%= commit.git_repo.name %>.git</p>
           <p class="message"><%= commit.message %></p>
           <img class="avatar" src="<%= commit.user.gravatar %>" />
           <div class="authorInfo">
