@@ -39,6 +39,8 @@ class Barkeep < Sinatra::Base
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
   # files have changed.
   $compiled_cache = Hash.new { |hash, key| hash[key] = {} }
+  # Quick logging hack -- Sinatra 1.3 will expose logger inside routes.
+  $logger = Logger.new(STDOUT)
 
   set :public, "public"
 
@@ -47,7 +49,8 @@ class Barkeep < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    MetaRepo.initialize_meta_repo(logger, repo_paths)
+    $logger.level = Logger::DEBUG
+    MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -68,7 +71,8 @@ class Barkeep < Sinatra::Base
 
   configure :production do
     enable :logging
-    MetaRepo.initialize_meta_repo(logger, repo_paths)
+    $logger.level = Logger::INFO
+    MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
     Barkeep.start_background_email_worker
   end
 
