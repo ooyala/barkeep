@@ -1,6 +1,6 @@
 <script src="/js/commit.js"></script>
 
-<div id="commit" sha="<%= commit.sha %>">
+<div id="commit" sha="<%= commit.sha %>" repo="<%= commit.git_repo %>">
   <div id="commitMetadata" class="embossedPanel">
     <table>
       <tr>
@@ -35,5 +35,10 @@
       <%= erb :_comment, :locals => { :comment => comment } %>
     <% end %>
   </div>
-  <%= erb :_comment_form, :locals => {:sha => commit.sha, :filename => nil, :line_number => nil } %>
+  <%= erb :_comment_form, :locals => {
+    :repo => commit.git_repo,
+    :sha => commit.sha,
+    :filename => nil,
+    :line_number => nil
+  } %>
 </div>

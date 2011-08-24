@@ -5,12 +5,13 @@ require "lib/meta_repo"
 # - approved_by_user_id: the most recent user to approve the commit.
 class Commit < Sequel::Model
   many_to_one :user
+  many_to_one :git_repo
   one_to_many :commit_files
   one_to_many :comments
   many_to_one :approved_by_user, :class => User
 
   def grit_commit
-    MetaRepo.grit_commit(repo_id, sha)
+    MetaRepo.grit_commit(git_repo_id, sha)
   end
 
   def commit_comments

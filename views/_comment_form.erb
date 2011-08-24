@@ -1,5 +1,6 @@
 <form class="commentForm" action="/comment" type="POST">
   <div class="heading">Add a comment</div>
+  <input type="hidden" name="repo" value="<%= repo %>"/>
   <input type="hidden" name="sha" value="<%= sha %>"/>
   <input type="hidden" name="filename" value="<%= filename %>" />
   <input type="hidden" name="line_number" value="<%= line_number %>" />

@@ -110,7 +110,6 @@ class Barkeep < Sinatra::Base
         :locals => { :saved_searches => current_user.saved_searches } #, :meta_repo => @@meta_repo }
   end
 
-  # TODO(caleb): FIX
   get "/commits/:repo_name/:sha" do
     commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
     tagged_diff = GitHelper::get_tagged_commit_diffs(commit.grit_commit)
@@ -119,6 +118,7 @@ class Barkeep < Sinatra::Base
 
   get "/comment_form" do
     erb :_comment_form, :layout => false, :locals => {
+      :repo => params[:repo],
       :sha => params[:sha],
       :filename => params[:filename],
       :line_number => params[:line_number]
@@ -297,27 +297,6 @@ class Barkeep < Sinatra::Base
     stop_at = backtrace_lines.index { |line| line.include?("sinatra") }
     backtrace_lines[0...stop_at]
   end
-
-  #def refresh_commits
-    ## Hack to get all the commits...this refresh commits is itself a hack that's going away at some point.
-    #commits = @@repo.commits("master", 9999999)
-    #commits.each do |commit|
-      #if DB[:commits].filter(:sha => commit.id).empty?
-        #DB[:commits].insert(:sha => commit.id, :message => commit.message, :date => commit.date,
-            #:user_id => get_user(commit.author)[:id])
-      #end
-    #end
-  #end
-
-  #def get_user(grit_actor)
-    #dataset = DB[:users].filter(:email => grit_actor.email)
-    #if dataset.empty?
-      #id = DB[:users].insert(:name => grit_actor.name, :email => grit_actor.email)
-      #DB[:users].filter(:id => id).first
-    #else
-      #dataset.first
-    #end
-  #end
 
   private
 
