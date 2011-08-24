@@ -102,7 +102,10 @@ window.Commit =
     $.ajax({
       type: "post",
       url: "/approve_commit",
-      data: { commit_sha: $("#commit").attr("sha") }
+      data: {
+        repo_name: $("#commit").attr("repo")
+        commit_sha: $("#commit").attr("sha")
+      }
       success: (bannerHtml) ->
         $("#approveButton").replaceWith(bannerHtml)
     })
@@ -111,7 +114,10 @@ window.Commit =
     $.ajax({
       type: "post",
       url: "/disapprove_commit",
-      data: { commit_sha: $("#commit").attr("sha") }
+      data: {
+        repo_name: $("#commit").attr("repo")
+        commit_sha: $("#commit").attr("sha")
+      }
       success: ->
         $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
     })
