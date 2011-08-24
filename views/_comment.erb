@@ -5,7 +5,9 @@
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
       <span>commented</span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
-      <button class="reply standard">Reply</button>
+      <% if comment.line_number %>
+        <button class="reply standard">Reply</button>
+      <% end %>
       <% if current_user.id == comment.user_id %>
         <button class="delete standard">Delete</button>
       <% end %>
