@@ -38,7 +38,7 @@ window.Commit =
     codeLine = $(e.currentTarget).find(".code")
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
-    sha = codeLine.parents("#commit").attr("sha"
+    sha = codeLine.parents("#commit").attr("sha")
     repo = codeLine.parents("#commit").attr("repo")
     Commit.createCommentForm(codeLine, repo, sha, filename, lineNumber)
 
