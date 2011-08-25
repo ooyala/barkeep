@@ -31,9 +31,16 @@ OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
 
-  # To be called from within the configure blocks, this method must be defined prior to them.
+  #
+  # To be called from within the configure blocks, tehse methods must be defined prior to them.
+  #
   def self.start_background_email_worker
     command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/mail_delivery.rb")
+    BackgroundJobs.fork_child_process { exec command }
+  end
+
+  def self.start_background_commit_importer
+    command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/commit_importer.rb")
     BackgroundJobs.fork_child_process { exec command }
   end
 
@@ -75,6 +82,7 @@ class Barkeep < Sinatra::Base
     $logger.level = Logger::INFO
     MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
     Barkeep.start_background_email_worker
+    Barkeep.start_background_commit_importer
   end
 
   helpers do

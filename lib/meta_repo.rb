@@ -6,6 +6,7 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/grit_extensions"
 require "lib/script_environment"
 
+# TODO(philc): Make this an instantiable class so we don't need to pass around a logger in every method.
 module MetaRepo
   def self.initialize_meta_repo(logger, repo_paths)
     logger.info "Initializing #{repo_paths.size} git repositories."
