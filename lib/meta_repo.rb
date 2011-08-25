@@ -58,36 +58,58 @@ module MetaRepo
     end
   end
 
-  # Returns whether the commit is new.
-  def self.import_commit!(logger, repo_id, grit_commit)
-    new_commit = false
-    Commit.find_or_create(:git_repo_id => repo_id, :sha => grit_commit.sha) do |commit|
-      commit.message = grit_commit.message
-      # NOTE(caleb): For some reason, the commit object you get from a remote returns nil for #date (but it
-      # does have #authored_date and #committed_date. Bug?
-      commit.date = grit_commit.authored_date
-      # Users must be unique by email in our system.
-      user = User.find_or_create(:email => grit_commit.author.email) do |new_user|
-        new_user.name = grit_commit.author.name
-      end
-      commit.user_id = user.id
-      new_commit = true
-    end
-    new_commit
-  end
-
-  # Import all undiscovered ancestors and report the number added.
-  # This USED to be a beautiful 2-line method but being recursive makes Ruby blow its stack on a big import :\
+  # Import all undiscovered ancestors. Returns the number of new commits imported.
+  # This method can import a new repository of 25K commits in about 40s.
   def self.import_new_ancestors!(logger, repo_id, grit_commit)
-    frontier = [grit_commit]
-    imported = 0
-    while (new_commit = frontier.shift)
-      if self.import_commit!(logger, repo_id, new_commit)
-        imported += 1
-        frontier += new_commit.parents
+    # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
+    # importing a brand new repository. Setting this page size to 2,000 will result in a stack overflow --
+    # Grit must fetch commits recursively.
+    page_size = 200
+    page = 0
+    total_added = 0
+
+    begin
+      # repo.commits is ultimately shelling out to git rev-list.
+      commits = grit_commit.repo.commits(grit_commit.sha, page_size, page * page_size)
+
+      existing_commits = Commit.filter(:sha => commits.map(&:sha), :git_repo_id => repo_id).select(:sha).all
+      break if existing_commits.size >= page_size
+
+      existing_shas = Set.new(existing_commits.map { |commit| commit.sha })
+
+      rows_to_insert = commits.map do |commit|
+        next if existing_shas.include?(commit.sha)
+
+        user = User.find_or_create(:email => commit.author.email) do |new_user|
+          new_user.name = commit.author.name
+        end
+
+        {
+          :git_repo_id => repo_id,
+          :sha => commit.sha,
+          :message => commit.message,
+          # NOTE(caleb): For some reason, the commit object you get from a remote returns nil for #date (but
+          # it does have #authored_date and #committed_date. Bug?
+          :date => commit.authored_date,
+          :user_id => user.id
+        }
       end
-    end
-    imported
+      rows_to_insert.reject!(&:nil?)
+
+      # We're doing a single multi-insert statement because it's roughly 2x faster than doing insert
+      # statements one by one.
+      Commit.multi_insert(rows_to_insert)
+
+      total_added += rows_to_insert.size
+      page += 1
+
+      # Give some progress output for really big imports.
+      print "#{page_size * page}..." if (page % 10 == 0)
+
+    end until commits.empty?
+    print "\n"
+
+    total_added
   end
 end
 
