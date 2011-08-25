@@ -1,0 +1,23 @@
+# Phrases
+*capital-adjective* accomplishment comes from *virtue*.
+You must learn to *verb* before you can hope to *verb*.
+You are a *noun*.
+Don't *verb*, I love *adjective* *noun*s.
+
+# Nouns
+banana
+prank
+monkey
+
+# Verbs
+run
+swim
+cry
+
+# Adjectives
+gross
+sexy
+
+# Virtues
+courage
+faith

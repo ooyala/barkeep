@@ -22,6 +22,7 @@ require "lib/keyboard_shortcuts"
 require "lib/string_helper"
 require "lib/pretty_date"
 require "lib/stats"
+require "lib/inspire"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"
@@ -268,10 +269,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/inspire/?" do
-    doc = Nokogiri::HTML(open("http://inspiregen.appspot.com/"))
-    quote = doc.css("h1").text
-    author = doc.css("h2").text
-    erb :inspire, :locals => { :quote => quote, :author => author }
+    erb :inspire, :locals => { :quote => Inspire.new.quote }
   end
 
   # A page to help in troubleshooting Barkeep's background processes, like emails and commit ingestion.
