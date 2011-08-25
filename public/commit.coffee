@@ -22,13 +22,23 @@ window.Commit =
         @scrollFile(false)
       when "e"
         @toggleFullDiff()
+      when "]"
+        @scrollChunk(true)
+      when "["
+        @scrollChunk(false)
       else
         KeyboardShortcuts.globalOnKeydown(event)
 
+  scrollChunk: (next = true) ->
+    @scrollSelector(".diffLine.chunk-start", next)
+
   scrollFile: (next = true) ->
+    @scrollSelector("#commit .file", next)
+
+  scrollSelector: (selector, next = true) ->
     previousPosition = 0
-    for file in $("#commit .file")
-      currentPosition = $(file).offset().top
+    for selected in $(selector)
+      currentPosition = $(selected).offset().top
       if currentPosition < $(window).scrollTop() or ((currentPosition == $(window).scrollTop()) and next)
         previousPosition = currentPosition
       else
