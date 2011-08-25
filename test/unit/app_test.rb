@@ -1,7 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../test_helper.rb"))
 require "app"
 
-class EmailsTest < Scope::TestCase
+class AppTest < Scope::TestCase
   include Rack::Test::Methods
 
   def app() Barkeep end
