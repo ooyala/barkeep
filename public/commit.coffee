@@ -117,12 +117,12 @@ window.Commit =
   toggleFullDiff: ->
     # Performance optimization: instead of using toggle(), which checks each element if it's visible,
     # only check the first diffLine on the page to see if we need to show() or hide().
-    firstSame= $(document).find(".diffLine.same:first")
-    firstDiff = $(document).find(".diffLine.diff:first")
-    if firstSame.css("display") == "none"
-      $(".diffLine.same").show()
+    firstNonChunk = $(document).find(".diffLine").not(".chunk").filter(":first")
+    firstChunk = $(document).find(".diffLine.chunk:first")
+    if firstNonChunk.css("display") == "none"
+      $(".diffLine").not(".chunk").show()
       window.scrollTo(0, firstDiff.offset().top)
     else
-      $(".diffLine.same").hide()
+      $(".diffLine").not(".chunk").hide()
 
 $(document).ready(-> Commit.init())

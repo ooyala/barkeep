@@ -692,7 +692,7 @@ table.commitsList, table.authorList {
 
   .diffLine {
 
-    &.same { display: none; }
+    &:not(.chunk) { display: none; }
 
     .lineNumber {
       font: @commitFontFamily;
