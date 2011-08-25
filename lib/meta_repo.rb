@@ -33,6 +33,16 @@ module MetaRepo
     @@repo_names_and_ids_to_repos[repo_name_or_id].commit(sha)
   end
 
+  # Takes care of multiplexing across multiple repositories and then uses GItHelper#find_commits to locate the
+  # actual commits per repo.
+  def self.find_commits(options, count, timestamp = Time.now, previous = true)
+    # TODO(caleb)
+    repo = @@repo_name_to_id.keys.first
+    commits = GitHelper.find_commits(@@repo_names_and_ids_to_repos[repo], options, count, timestamp, previous)
+    commits.each { |commit| commit.repo_name = repo }
+    commits
+  end
+
   def self.import_new_commits!(logger)
     # TODO(caleb): lots of logging and error checking here.
     @@repo_name_to_id.each do |repo_name, repo_id|

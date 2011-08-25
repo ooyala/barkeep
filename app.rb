@@ -104,10 +104,9 @@ class Barkeep < Sinatra::Base
     redirect "/commits"
   end
 
-  # TODO(caleb): FIX
   get "/commits" do
     erb :commit_search,
-        :locals => { :saved_searches => current_user.saved_searches } #, :meta_repo => @@meta_repo }
+        :locals => { :saved_searches => current_user.saved_searches }
   end
 
   get "/commits/:repo_name/:sha" do
@@ -155,7 +154,6 @@ class Barkeep < Sinatra::Base
     erb :_approved_banner, :layout => false, :locals => { :commit => commit }
   end
 
-  # TODO(caleb): FIX
   post "/disapprove_commit" do
     commit = MetaRepo.db_commit(params[:repo_name], params[:commit_sha])
     return 400 unless commit
@@ -163,26 +161,26 @@ class Barkeep < Sinatra::Base
     nil
   end
 
-  # TODO(caleb): FIX
   # POST because this creates a saved search on the server.
   post "/search" do
-    authors = params[:authors].split(",").map(&:strip).join(",")
+    options = {}
+    [:repos, :authors, :paths, :messages].each do |option|
+      options[option] = params[option].split(",").map(&:strip)
+    end
     incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
-    saved_search = SavedSearch.create(:user_id => current_user.id, :user_order => incremented_user_order)
-    # TODO(philc): For now, we're assuming they're always filtering by author.
-    SearchFilter.create(:filter_type => SearchFilter::AUTHORS_FILTER, :filter_value => params[:authors],
-        :saved_search_id => saved_search.id)
+    saved_search = SavedSearch.create(
+      { :user_id => current_user.id, :user_order => incremented_user_order }.merge options
+    )
     erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :page_number => 1 }
+      :locals => { :saved_search => saved_search, :timestamp => Time.now, :previous => true }
   end
 
-  # TODO(caleb): FIX
   get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
-    page_number = params[:page_number].to_i || 1
-    page_number = 1 if page_number <= 0
+    timestamp = params[:timestamp].to_i || Time.now.to_i
+    previous = params[:previous] == "true"
     erb :_saved_search, :layout => false,
-        :locals => { :saved_search => saved_search, :page_number => page_number }
+        :locals => { :saved_search => saved_search, :timestamp => timestamp, :previous => previous }
   end
 
   # Change the order of saved searches.
@@ -200,7 +198,6 @@ class Barkeep < Sinatra::Base
 
   delete "/saved_searches/:id" do
     id = params[:id].to_i
-    SearchFilter.filter(:saved_search_id => id).delete
     SavedSearch.filter(:user_id => current_user.id, :id => id).delete
     "OK"
   end
@@ -239,7 +236,6 @@ class Barkeep < Sinatra::Base
     erb :_keyboard_shortcuts, :layout => false, :locals => { :view => params[:captures].first }
   end
 
-  # TODO(caleb): FIX
   get "/stats" do
     num_commits = Commit.count
     erb :stats, :locals => {
@@ -291,7 +287,6 @@ class Barkeep < Sinatra::Base
     }
   end
 
-  # TODO(caleb): FIX
   # For development use only -- for testing and styling emails.
   get "/dev/latest_comment_email_preview" do
     comment = Comment.order(:id.desc).first

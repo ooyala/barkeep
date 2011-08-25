@@ -4,8 +4,12 @@ require "grit"
 
 module Grit
   class Commit
+    def repo_name=(name)
+      @repo_name = name
+    end
+
     def link
-      "/commits/#{@id}"
+      "/commits/#{@repo_name}/#{@id}"
     end
   end
 

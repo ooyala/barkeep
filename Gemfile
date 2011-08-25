@@ -19,6 +19,7 @@ gem "albino"
 gem "ruby-openid"
 gem "redcarpet"
 gem "coffee-script"
+gem "activesupport"
 
 # For sending emails.
 gem "pony"

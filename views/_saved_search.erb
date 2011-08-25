@@ -1,10 +1,13 @@
 <%#
   View arguments:
   - saved_search: a SavedSearch object.
-  - repo: the repo object.
-  - page_number: the page number to load.
+  - timestamp: a Time token given by the client
+  - previous: whether we wish to get previous or successive results
  %>
-<div class="savedSearch" page-number="<%= page_number %>" saved-search-id="<%= saved_search.id %>">
+<% commits = saved_search.commits(timestamp, previous) %>
+<% from, to = [commits.first, commits.last].map { |commit| commit.date.to_i } %>
+<div class="savedSearch" from-timestamp="<%= from %>" to-timestamp="<%= to %>"
+     saved-search-id="<%= saved_search.id %>">
   <div class="header">
     <div class="dragHandle"></div>
     <a href="#" class="delete">x</a>
@@ -17,7 +20,6 @@
     </div>
     <h4><%= saved_search.title %></h4>
   </div>
-  <% commits = saved_search.commits(repo, page_number - 1) %>
   <% if commits.empty? %>
     <div class="noResults">No search results.</div>
   <% else %>
@@ -45,7 +47,7 @@
 
   <div class="pageControls" style="<%= commits.empty? ? "display:none" : "" %>">
     <a href="#" class="pageLeftButton pageButton">&laquo;</a>
-    <span class="pageNumber"><%= page_number %></span>
+    <span class="pageNumber">?</span>
     <a href="#" class="pageRightButton pageButton">&raquo;</a>
   </div>
 </div>
