@@ -13,26 +13,18 @@
       <option value="all" <%= user.stats_time_range == "all" ? "selected" : "" %>>all time</option>
     </select>
   </form>
-  <div id="graphs">
-    <div class="statistic">
-      <h3>Review Coverage</h3>
-      <div id="reviewPercentGraph" class="graph"
-          unreviewedPercent="<%= unreviewed_percent %>"
-          commentedPercent="<%= commented_percent %>"
-          approvedPercent="<%= approved_percent %>">
-      </div>
-    </div>
-    <div class="statistic">
+  <div id="statistics">
+    <div class="statistic topReviewers">
       <h3>Top Reviewers</h3>
       <table class="authorList">
         <% top_reviewers.each do |user, count| %>
           <tr>
-            <td><%= count %></td>
             <td><a href="/profile/<%= user.id %>">
                 <img class="avatar" src="<%= user.gravatar %>"/></a></td>
             <td class="author">
               <a href="/profile/<%= user.id %>"
-                  title="<%= user.email %>"><%= user.name[0..25] %></a></td>
+                title="<%= user.email %>"><%= user.name[0..25] %></a>
+              <span class="count">with <%= count %> comments</span></td>
             <td class="email">
               <a href="mailto:<%= user.email %>"
                   title="<%= user.email %>"><%= user.email %></a></td>
@@ -40,12 +32,24 @@
         <% end %>
       </table>
     </div>
-    <div class="statistic">
+    <div class="statistic reviewCoverage">
+      <h3>Review Coverage</h3>
+      <% if num_commits == 0 %>
+        <span>No commits within this time range.</span>
+      <% end %>
+      <div id="reviewPercentGraph" class="graph"
+          unreviewedPercent="<%= unreviewed_percent %>"
+          commentedPercent="<%= commented_percent %>"
+          approvedPercent="<%= approved_percent %>">
+      </div>
+    </div>
+    <!-- NOTE(dmac): The Flot canvas isn't playing nice with our css, so we're resorting to a float clear. -->
+    <div class="clear"></div>
+    <div class="statistic chattyCommits">
       <h3>Chatty Commits</h3>
       <table class="commitsList">
         <% chatty_commits.each do |commit, count| %>
           <tr>
-            <td><%= count %></td>
             <td><a href="/profile/<%= commit.author.user.id %>">
                 <img class="avatar" src="<%= commit.author.user.gravatar %>"/></a></td>
             <td class="author">
@@ -54,7 +58,7 @@
             <td class="commitId">
               <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a></td>
             <td class="commitMessage"><a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a></td>
-            <td class="commitDate"><%= commit.date.to_pretty %></td>
+            <td class="commitDate">committed <%= commit.date.to_pretty %></td>
           </tr>
         <% end %>
       </table>
