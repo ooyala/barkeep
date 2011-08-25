@@ -247,13 +247,22 @@ class Barkeep < Sinatra::Base
   end
 
   get "/stats" do
-    num_commits = Commit.count
+    since = case params[:since]
+            when "hour" then Time.now - 60 * 60
+            when "day" then Time.now - 60 * 60 * 24
+            when "week" then Time.now - 60 * 60 * 24 * 7
+            when "month" then Time.now - 60 * 60 * 24 * 30
+            when "year" then Time.now - 60 * 60 * 24 * 30 * 365
+            when "all" then Time.at(0)
+            else Time.at(0)
+            end
+    num_commits = Stats.num_commits(since)
     erb :stats, :locals => {
-      :unreviewed_percent => Stats.unreviewed_commits.count.to_f / num_commits,
-      :commented_percent => Stats.reviewed_without_lgtm_commits.count.to_f / num_commits,
-      :approved_percent => Stats.lgtm_commits.count.to_f / num_commits,
-      :chatty_commits => Stats.chatty_commits(10),
-      :top_reviewers => Stats.top_reviewers(10)
+      :unreviewed_percent => Stats.unreviewed_commits(since).count.to_f / num_commits,
+      :commented_percent => Stats.reviewed_without_lgtm_commits(since).count.to_f / num_commits,
+      :approved_percent => Stats.lgtm_commits(since).count.to_f / num_commits,
+      :chatty_commits => Stats.chatty_commits(since),
+      :top_reviewers => Stats.top_reviewers(since)
     }
   end
 
