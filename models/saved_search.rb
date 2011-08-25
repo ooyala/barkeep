@@ -7,7 +7,9 @@ class SavedSearch < Sequel::Model
   # The list of commits this saved search represents
   def commits(timestamp = Time.now, previous = true)
     # TODO(caleb)
-    options = {}
+    options = {
+      :authors => authors
+    }
     MetaRepo.find_commits(options, PAGE_SIZE, timestamp, previous)
   end
 

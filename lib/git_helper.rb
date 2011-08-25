@@ -8,37 +8,36 @@ class GitHelper
 
   def self.find_commits(repo, options, count, timestamp = Time.now, previous = true)
     # TODO(caleb)
-    repo.commits("master", count)
+    #repo.commits("master", count)
+    self.commits_by_authors(repo, options[:authors].split(","), count)
   end
 
-
-
-  #MAX_SEARCH_DEPTH = 1_000
+  MAX_SEARCH_DEPTH = 1_000
 
   # A list of commits matching any one of the given authors in reverse chronological order.
-  #def self.commits_by_authors(repo, authors, count, offset = 0)
-    ## TODO(philc): We should use Grit's paging API here.
-    #commits = repo.commits("master", MAX_SEARCH_DEPTH)
-    #commits_by_author = []
-    #commits.each do |commit|
-      #if authors.find { |author| author_search_matches?(author, commit) }
-        #if offset > 0
-          #offset = offset - 1
-        #else
-          #commits_by_author.push(commit)
-          #break if commits_by_author.size >= count
-        #end
-      #end
-    #end
-    #commits_by_author
-  #end
+  def self.commits_by_authors(repo, authors, count, offset = 0)
+    # TODO(philc): We should use Grit's paging API here.
+    commits = repo.commits("master", MAX_SEARCH_DEPTH)
+    commits_by_author = []
+    commits.each do |commit|
+      if authors.find { |author| author_search_matches?(author, commit) }
+        if offset > 0
+          offset = offset - 1
+        else
+          commits_by_author.push(commit)
+          break if commits_by_author.size >= count
+        end
+      end
+    end
+    commits_by_author
+  end
 
-  #def self.author_search_matches?(author_search, commit)
-    ## tig seems to do some fuzzy matching here on the commit's author when you search by author.
-    ## For instance, "phil" matches "Phil Crosby <phil.crosby@gmail.com>".
-    #commit.author.email.downcase.index(author_search) == 0 ||
-    #commit.author.to_s.downcase.index(author_search) == 0
-  #end
+  def self.author_search_matches?(author_search, commit)
+    # tig seems to do some fuzzy matching here on the commit's author when you search by author.
+    # For instance, "phil" matches "Phil Crosby <phil.crosby@gmail.com>".
+    commit.author.email.downcase.index(author_search) == 0 ||
+    commit.author.to_s.downcase.index(author_search) == 0
+  end
 
   # TODO(caleb): We should probably only inspect the first N bytes of the file for nulls to avoid the
   # pathological case. Also, we could explore better heuristics here (e.g. look at newlines or compare the

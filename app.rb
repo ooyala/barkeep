@@ -175,7 +175,7 @@ class Barkeep < Sinatra::Base
   post "/search" do
     options = {}
     [:repos, :authors, :paths, :messages].each do |option|
-      options[option] = params[option].split(",").map(&:strip)
+      options[option] = params[option] ? params[option].strip : nil
     end
     incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
     saved_search = SavedSearch.create(

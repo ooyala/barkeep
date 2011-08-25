@@ -5,7 +5,7 @@
   - previous: whether we wish to get previous or successive results
  %>
 <% commits = saved_search.commits(timestamp, previous) %>
-<% from, to = [commits.first, commits.last].map { |commit| commit.date.to_i } %>
+<% from, to = [commits.first, commits.last].map { |commit| commit ? commit.date.to_i : "" } %>
 <div class="savedSearch" from-timestamp="<%= from %>" to-timestamp="<%= to %>"
      saved-search-id="<%= saved_search.id %>">
   <div class="header">
