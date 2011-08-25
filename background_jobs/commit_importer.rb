@@ -24,7 +24,6 @@ class CommitImporter
 
       begin
         exit_status = BackgroundJobs.run_process_with_timeout(100_100_100) do
-          puts "running the importer"
           logger = Logger.new(STDOUT)
           MetaRepo.import_new_commits!(logger)
         end
