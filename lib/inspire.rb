@@ -4,7 +4,7 @@
 
 class Inspire
   def initialize
-    @@parts_of_speech ||= [ :noun, :verb, :adjective, :virtue ]
+    @@parts_of_speech ||= [ :noun, :verb, :adjective, :virtue, :vice ]
     @@transformations ||= [ :capital ]
     @@exclude_words = []
     parse_inspire_text
