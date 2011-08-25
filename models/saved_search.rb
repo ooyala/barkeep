@@ -1,5 +1,3 @@
-require "active_support/inflector"
-
 # A saved search represents a list of commits, some read and some unread.
 class SavedSearch < Sequel::Model
   many_to_one :users
@@ -30,9 +28,7 @@ class SavedSearch < Sequel::Model
 
   private
 
-  def english_quantity(word, quantity)
-    quantity == 1 ? word : word.pluralize
-  end
+  def english_quantity(word, quantity) quantity == 1 ? word + "s" : word end
 
   def comma_separated_list(list)
     case list.size
