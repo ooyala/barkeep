@@ -29,9 +29,9 @@ module KeyboardShortcuts
 	def self.shortcuts(view)
 		result = [{ "Global" => GLOBAL_SHORTCUTS }]
 		case view
-		when /^commits$/i
+		when %r{^commits$}i
 			result << { "Commit Search" => COMMIT_SEARCH_SHORTCUTS }
-		when /^commits\/\S{40}$/i
+		when %r{^commits/[^/]+/\S{40}$}i
 			result << { "Commit" => COMMIT_SHORTCUTS }
 		else
 			result << nil
