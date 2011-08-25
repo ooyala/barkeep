@@ -62,7 +62,6 @@ module MetaRepo
   def self.import_commit!(logger, repo_id, grit_commit)
     new_commit = false
     Commit.find_or_create(:git_repo_id => repo_id, :sha => grit_commit.sha) do |commit|
-      logger.debug "Importing commit #{grit_commit.sha}"
       commit.message = grit_commit.message
       # NOTE(caleb): For some reason, the commit object you get from a remote returns nil for #date (but it
       # does have #authored_date and #committed_date. Bug?
