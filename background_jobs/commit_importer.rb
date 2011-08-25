@@ -3,6 +3,7 @@
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/script_environment"
+require "fileutils"
 
 class CommitImporter
   POLL_FREQUENCY = 15 # How often we run check for new commits by running git fetch.
@@ -17,7 +18,10 @@ class CommitImporter
   end
 
   def run
-    MetaRepo.initialize_meta_repo(Logger.new(STDOUT), REPO_PATHS)
+    log_file_path = File.join(File.dirname(__FILE__), "../log/commit_importer.log")
+    FileUtils.touch(log_file_path)
+
+    MetaRepo.initialize_meta_repo(Logger.new(log_file_path), REPO_PATHS)
 
     while true
       exit if has_become_orphaned?
@@ -25,7 +29,7 @@ class CommitImporter
       begin
         exit_status = BackgroundJobs.run_process_with_timeout(100_100_100) do
           logger = Logger.new(STDOUT)
-          MetaRepo.import_new_commits!(logger)
+          MetaRepo.import_new_commits!(Logger.new(log_file_path))
         end
       rescue TimeoutError
         puts "The commit importer task timed out after #{TASK_TIMEOUT} seconds."

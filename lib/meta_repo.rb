@@ -104,10 +104,9 @@ module MetaRepo
       page += 1
 
       # Give some progress output for really big imports.
-      print "#{page_size * page}..." if (page % 10 == 0)
+      logger.info "Imported #{page_size * page} commits..." if (page % 10 == 0)
 
     end until commits.empty?
-    print "\n"
 
     total_added
   end
