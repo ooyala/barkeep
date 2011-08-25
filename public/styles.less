@@ -635,7 +635,7 @@ table.commitsList, table.authorList {
 
       background-image: -webkit-gradient(linear, left top, left bottom,
         color-stop(0, @sunkenColor), color-stop(0.95, darken(@sunkenColor, 10%)));
-      background-image: -moz-linear-gradient(top, #F0F4FF 0%, #D3E1F6 95%);
+      background-image: -moz-linear-gradient(top, @sunkenColor 0%, darken(@sunkenColor, 10%) 95%);
 
       background-color: @sunkenColor;
       .addAComment, .name {
