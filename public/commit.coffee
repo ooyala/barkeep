@@ -22,13 +22,23 @@ window.Commit =
         @scrollFile(false)
       when "e"
         @toggleFullDiff()
+      when "]"
+        @scrollChunk(true)
+      when "["
+        @scrollChunk(false)
       else
         KeyboardShortcuts.globalOnKeydown(event)
 
+  scrollChunk: (next = true) ->
+    @scrollSelector(".diffLine.chunk-start", next)
+
   scrollFile: (next = true) ->
+    @scrollSelector("#commit .file", next)
+
+  scrollSelector: (selector, next = true) ->
     previousPosition = 0
-    for file in $("#commit .file")
-      currentPosition = $(file).offset().top
+    for selected in $(selector)
+      currentPosition = $(selected).offset().top
       if currentPosition < $(window).scrollTop() or ((currentPosition == $(window).scrollTop()) and next)
         previousPosition = currentPosition
       else
@@ -125,12 +135,12 @@ window.Commit =
   toggleFullDiff: ->
     # Performance optimization: instead of using toggle(), which checks each element if it's visible,
     # only check the first diffLine on the page to see if we need to show() or hide().
-    firstSame= $(document).find(".diffLine.same:first")
-    firstDiff = $(document).find(".diffLine.diff:first")
-    if firstSame.css("display") == "none"
-      $(".diffLine.same").show()
+    firstNonChunk = $(document).find(".diffLine").not(".chunk").filter(":first")
+    firstChunk = $(document).find(".diffLine.chunk:first")
+    if firstNonChunk.css("display") == "none"
+      $(".diffLine").not(".chunk").show()
       window.scrollTo(0, firstDiff.offset().top)
     else
-      $(".diffLine.same").hide()
+      $(".diffLine").not(".chunk").hide()
 
 $(document).ready(-> Commit.init())

@@ -17,6 +17,8 @@ window.Constants =
     80  : "p"
     83  : "s"
     191 : "/"
+    219 : "["
+    221 : "]"
 
     # This is for keypress, not keydown. FF (on Mac only?) doesn't give any keycodes when you press shift-/.
     63  : "?"

@@ -164,21 +164,24 @@ class GitHelper
         end
         next if tag.nil?
         chunk[:tagged_lines] << LineDiff.new(tag, line[1..-1], highlighted, tag == :added ? nil : orig_line,
-            tag == :removed ? nil : diff_line)
+            tag == :removed ? nil : diff_line, :chunk => true)
       end
     end
+    chunks.each { |chunk| chunk[:tagged_lines][0].chunk_start = true }
     chunks
   end
 end
 
 class LineDiff
-  attr_accessor :tag, :data, :highlighted_data, :line_num_before, :line_num_after
-  def initialize(tag, data, highlighted_data, line_num_before, line_num_after)
+  attr_accessor :tag, :data, :highlighted_data, :line_num_before, :line_num_after, :chunk, :chunk_start
+  def initialize(tag, data, highlighted_data, line_num_before, line_num_after, chunk=false, chunk_start=false)
     @tag = tag
     @data = data
     @highlighted_data = highlighted_data
     @line_num_before = line_num_before
     @line_num_after = line_num_after
+    @chunk = chunk
+    @chunk_start = chunk_start
   end
 
   def formatted
