@@ -7,6 +7,7 @@ require "redcarpet"
 require "coffee-script"
 require "nokogiri"
 require "open-uri"
+require "methodchain"
 
 require 'openid'
 require 'openid/store/filesystem'
@@ -177,20 +178,22 @@ class Barkeep < Sinatra::Base
     [:repos, :authors, :paths, :messages].each do |option|
       options[option] = params[option] ? params[option].strip : nil
     end
+    # Default to only searching master unless branches are explicitly specified.
+    options[:branches] = params[:branches].else { "master" }
     incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
     saved_search = SavedSearch.create(
       { :user_id => current_user.id, :user_order => incremented_user_order }.merge options
     )
     erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :timestamp => Time.now, :previous => true }
+      :locals => { :saved_search => saved_search, :timestamp => nil, :direction => "before" }
   end
 
   get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
-    timestamp = params[:timestamp].to_i || Time.now.to_i
-    previous = params[:previous] == "true"
+    timestamp = params[:timestamp].then { to_i }
+    direction = params[:direction]
     erb :_saved_search, :layout => false,
-        :locals => { :saved_search => saved_search, :timestamp => timestamp, :previous => previous }
+        :locals => { :saved_search => saved_search, :timestamp => timestamp, :direction => direction }
   end
 
   # Change the order of saved searches.

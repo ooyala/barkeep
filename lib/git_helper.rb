@@ -1,42 +1,79 @@
 require "cgi"
 require "albino"
+require "grit"
 
 require "lib/albino_filetype"
 
 # Helper methods used to retrieve information from a Grit repository needed for the view.
 class GitHelper
+  def self.find_commits(repo, options)
+    # TODO(caleb): Deal with these filters:
+    #   * branches
+    #   * authors
+    #   * paths
+    #   * messages
+    git_options = {}
+    git_args = ["origin/master"]
 
-  def self.find_commits(repo, options, count, timestamp = Time.now, previous = true)
-    # TODO(caleb)
-    #repo.commits("master", count)
-    self.commits_by_authors(repo, options[:authors].split(","), count)
-  end
+    # assuming options has everything set up correctly for rev-list except for count and timestamp stuff
 
-  MAX_SEARCH_DEPTH = 1_000
-
-  # A list of commits matching any one of the given authors in reverse chronological order.
-  def self.commits_by_authors(repo, authors, count, offset = 0)
-    # TODO(philc): We should use Grit's paging API here.
-    commits = repo.commits("master", MAX_SEARCH_DEPTH)
-    commits_by_author = []
-    commits.each do |commit|
-      if authors.find { |author| author_search_matches?(author, commit) }
-        if offset > 0
-          offset = offset - 1
-        else
-          commits_by_author.push(commit)
-          break if commits_by_author.size >= count
-        end
-      end
+    # If nil, then we just want the most recent N results (including the most recent).
+    inclusive = options[:timestamp].nil?
+    options[:timestamp] ||= Time.now.to_i
+    if options[:direction] == "before"
+      self.find_commits_before(repo, options[:timestamp], options[:count], inclusive, true, git_options,
+                               git_args)
+    else
+      self.find_commits_after(repo, options[:timestamp], options[:count], false, true, git_options, git_args)
     end
-    commits_by_author
   end
 
-  def self.author_search_matches?(author_search, commit)
-    # tig seems to do some fuzzy matching here on the commit's author when you search by author.
-    # For instance, "phil" matches "Phil Crosby <phil.crosby@gmail.com>".
-    commit.author.email.downcase.index(author_search) == 0 ||
-    commit.author.to_s.downcase.index(author_search) == 0
+  def self.find_commits_before(repo, timestamp, count, inclusive, pad_results, options, args)
+    # TODO(caleb) Make sure this works.
+    extra_options = {}
+    extra_options[:before] = inclusive ? timestamp : timestamp - 1
+    extra_options[:max_count] = count
+    results = self.rev_list(repo, options.merge(extra_options), args)
+    return results unless pad_results
+    if results.empty? && !inclusive
+      inclusive = true
+      extra_options[:before] = timestamp
+      results = self.rev_list(repo, options.merge(extra_options), args)
+    end
+    # We've gone as far back as possible; return the last N resuls.
+    if results.size < count
+      results = self.find_commits_after(repo, timestamp, count - results.size, !inclusive, false, options,
+                                       args) + results
+    end
+    results
+  end
+
+  # TODO(caleb): see if there is a better way to do this -- I think it's fundamentally inefficient, though.
+  # (We can still make it less dumb)
+  def self.find_commits_after(repo, timestamp, count, inclusive, pad_results, options, args)
+    extra_options = {}
+    extra_options[:after] = inclusive ? timestamp : timestamp + 1
+    # TODO(caleb) page through big chunks of commits at a time here, I think
+    extra_options[:max_count] = 10_000
+    results = self.rev_list(repo, options.merge(extra_options), args).last(count)
+    return results unless pad_results
+    if results.empty? && !inclusive
+      inclusive = true
+      extra_options[:after] = timestamp
+      results = self.rev_list(repo, options.merge(extra_options), args).last(count)
+    end
+    if results.size < count
+      results += self.find_commits_before(repo, timestamp, count - results.size, !inclusive, false, options,
+                                          args)
+    end
+    results
+  end
+
+  # Take rev-list options directly and return a list of Grit::Commits
+  def self.rev_list(repo, options, args)
+    Grit::Commit.list_from_string(repo, repo.git.rev_list(options.merge(:pretty => "raw"), *args))
+  rescue Grit::GitRuby::Repository::NoSuchShaFound
+    []
   end
 
   # TODO(caleb): We should probably only inspect the first N bytes of the file for nulls to avoid the

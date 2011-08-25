@@ -2,10 +2,10 @@
   View arguments:
   - saved_search: a SavedSearch object.
   - timestamp: a Time token given by the client
-  - previous: whether we wish to get previous or successive results
+  - direction: "before" or "after"
  %>
-<% commits = saved_search.commits(timestamp, previous) %>
-<% from, to = [commits.first, commits.last].map { |commit| commit ? commit.date.to_i : "" } %>
+<% commits = saved_search.commits(timestamp, direction) %>
+<% from, to = [commits.last, commits.first].map { |commit| commit.date.to_i } %>
 <div class="savedSearch" from-timestamp="<%= from %>" to-timestamp="<%= to %>"
      saved-search-id="<%= saved_search.id %>">
   <div class="header">

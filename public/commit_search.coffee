@@ -12,17 +12,16 @@ window.CommitSearch =
       axis: "y"
       stop: => @reorderSearches()
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
-    $("#savedSearches .savedSearch .pageLeftButton").addClass "disabled"
-    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage(e, "backward")
-    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "forward")
+    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage(e, "after")
+    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
     $("#savedSearches .savedSearch .emailCheckbox").live "click", (e) => @emailUpdate(e)
     @selectFirstDiff()
 
   onSearchClick: ->
     $("#commitSearch input[name=filter_value]").blur()
-    authors = $("#commitSearch input[name=filter_value]").val()
-    return unless authors
-    queryParams = { authors: authors }
+    searchString = $("#commitSearch input[name=filter_value]").val()
+    # TODO(caleb): option parsing -- for now, assume they're searching authors
+    queryParams = { authors: searchString }
     $.post("/search", queryParams, (e) => @onSearchSaved e)
 
   onSearchSaved: (responseHtml) ->
@@ -62,9 +61,9 @@ window.CommitSearch =
       when "k"
         @selectDiff(false)
       when "h"
-        @showNextPage(event, "backward")
+        @showNextPage(event, "after")
       when "l"
-        @showNextPage(event, "forward")
+        @showNextPage(event, "before")
       when "return"
         window.location.href = $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
       else
@@ -127,8 +126,8 @@ window.CommitSearch =
     @selectNewGroup(next)
 
   # Shows the next page of a commit search.
-  # direction: "forward" or "backward".
-  showNextPage: (event, direction = "forward") ->
+  # direction: "before" or "after"
+  showNextPage: (event, direction = "before") ->
     return if @searching
 
     if event.type == "keydown"
@@ -142,19 +141,16 @@ window.CommitSearch =
     savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
 
     buttons = savedSearchElement.find(".pageControls")
-    button = buttons.find(if direction == "forward" then ".pageRightButton" else ".pageLeftButton")
-    return if button.hasClass "disabled"
+    button = buttons.find(if direction == "before" then ".pageRightButton" else ".pageLeftButton")
 
     @searching = true
 
     # If it's a keypress, highlight the button for a moment as if the user clicked on it.
     if keypress
       button.addClass("active")
-      timeout 70, =>
-        button.removeClass("active")
+      timeout 70, => button.removeClass("active")
 
-    pageNumber = (Number) savedSearch.attr("page-number")
-    pageNumber = if direction == "forward" then pageNumber + 1 else pageNumber - 1
+    timestamp = (Number) savedSearch.attr(if direction == "before" then "from-timestamp" else "to-timestamp")
 
     animationComplete = false
     fetchedHtml = null
@@ -178,29 +174,20 @@ window.CommitSearch =
         $(".selected").removeClass "selected"
         newSavedSearchElement.find(".commitsList tr:first").addClass "selected"
 
-        buttons = newSavedSearchElement.find(".pageControls")
-        if pageNumber <= 1
-          buttons.find(".pageLeftButton").addClass "disabled"
-
       newSavedSearchElement.find(".commitsList").animate({ "opacity": 1 }, { duration: 150 })
-      # TODO(caleb): Implement counting result size on the server and sending that back to the client, so
-      # that we can know how many pages of results there are and when to stop paging properly.
 
-    animateTo = (if direction == "forward" then -1 else 1) * $(".commitsList").width()
-    savedSearchElement.find(".commitsList").animate({ "margin-left": animateTo },
-        {
-          duration: 400,
-          complete: =>
-            animationComplete = true
-            showFetchedPage()
-        })
+    animateTo = (if direction == "before" then -1 else 1) * $(".commitsList").width()
+    savedSearchElement.find(".commitsList").animate { "margin-left": animateTo },
+      duration: 400,
+      complete: =>
+        animationComplete = true
+        showFetchedPage()
 
     $.ajax
-      url: "/saved_searches/#{savedSearchId}?page_number=#{pageNumber}",
+      url: "/saved_searches/#{savedSearchId}?timestamp=#{timestamp}&direction=#{direction}",
       success: (html) =>
         fetchedHtml = html
         showFetchedPage()
-
 
   reorderSearches: ->
     @beforeSync()
