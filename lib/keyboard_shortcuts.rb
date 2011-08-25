@@ -23,6 +23,8 @@ module KeyboardShortcuts
 		"k" => "Scroll up",
 		"n" => "Next file in commit",
 		"p" => "Previous file in commit",
+		"]" => "Next diff chunk in commit",
+		"[" => "Previous diff chunk in commit",
 		"e" => "Toggle full diff view"
 	}
 
