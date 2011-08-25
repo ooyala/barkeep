@@ -1,6 +1,7 @@
 
 window.Stats =
   init: ->
+    $("#statsRangeForm select").change (e) => $("#statsRangeForm").submit()
     @graphReviewPercent()
 
   graphReviewPercent: ->

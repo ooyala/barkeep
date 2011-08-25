@@ -2,6 +2,17 @@
 <script src="/flot/jquery.flot.pie.min.js"></script>
 <script src="/js/stats.js"></script>
 <div id="stats">
+  <form id="statsRangeForm" action="/set_stats_time_range" method="post">
+    <span>Show stats from</span>
+    <select name="since">
+      <option value="hour" <%= user.stats_time_range == "hour" ? "selected" : "" %>>last hour</option>
+      <option value="day" <%= user.stats_time_range == "day" ? "selected" : "" %>>last day</option>
+      <option value="week" <%= user.stats_time_range == "week" ? "selected" : "" %>>last week</option>
+      <option value="month" <%= user.stats_time_range == "month" ? "selected" : "" %>>last month</option>
+      <option value="year" <%= user.stats_time_range == "year" ? "selected" : "" %>>last year</option>
+      <option value="all" <%= user.stats_time_range == "all" ? "selected" : "" %>>all time</option>
+    </select>
+  </form>
   <div id="graphs">
     <div class="statistic">
       <h3>Review Coverage</h3>

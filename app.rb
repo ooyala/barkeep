@@ -247,7 +247,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/stats" do
-    since = case params[:since]
+    since = case current_user.stats_time_range
             when "hour" then Time.now - 60 * 60
             when "day" then Time.now - 60 * 60 * 24
             when "week" then Time.now - 60 * 60 * 24 * 7
@@ -258,12 +258,20 @@ class Barkeep < Sinatra::Base
             end
     num_commits = Stats.num_commits(since)
     erb :stats, :locals => {
+      :user => current_user,
       :unreviewed_percent => Stats.unreviewed_commits(since).count.to_f / num_commits,
       :commented_percent => Stats.reviewed_without_lgtm_commits(since).count.to_f / num_commits,
       :approved_percent => Stats.lgtm_commits(since).count.to_f / num_commits,
       :chatty_commits => Stats.chatty_commits(since),
       :top_reviewers => Stats.top_reviewers(since)
     }
+  end
+
+  post "/set_stats_time_range" do
+    halt 400 unless ["hour", "day", "week", "month", "year", "all"].include? params[:since]
+    current_user.stats_time_range = params[:since]
+    current_user.save
+    redirect "/stats"
   end
 
   # Serve CSS written in the "Less" DSL by first compiling it. We cache the output of the compilation and only
