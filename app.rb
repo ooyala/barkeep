@@ -105,7 +105,7 @@ class Barkeep < Sinatra::Base
     self.current_user = User.find(:email => request.cookies["email"])
     next if request.url =~ /^#{root_url}\/login/
     next if request.url =~ /^#{root_url}\/logout/
-    next if request.url =~ /^#{root_url}\/commits\/[^\/]+\/[^\/]{40}/
+    next if request.url =~ /^#{root_url}\/commits/
     next if request.url =~ /^#{root_url}\/stats/
     next if request.url =~ /^#{root_url}\/inspire/
     next if request.url =~ /^#{root_url}\/keyboard_shortcuts/
@@ -135,7 +135,7 @@ class Barkeep < Sinatra::Base
 
   get "/commits" do
     erb :commit_search,
-        :locals => { :saved_searches => current_user.saved_searches }
+        :locals => { :saved_searches => current_user ? current_user.saved_searches : [] }
   end
 
   get "/commits/:repo_name/:sha" do
