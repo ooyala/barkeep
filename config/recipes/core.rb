@@ -34,6 +34,7 @@ namespace :fezzik do
   remote_task :setup do
     puts "setting up servers"
     run "mkdir -p #{deploy_to}/releases"
+    run "mkdir -p #{deploy_to}/repos"
   end
 
   desc "rsyncs the project from its stages location to each destination server"

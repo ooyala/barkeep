@@ -43,4 +43,5 @@ destination :prod do
   env :db_location, "DBI:Mysql:barkeep:localhost"
   env :db_user, "root"
   env :db_password, ""
+  env :repos_root, "#{deploy_to}/repos"
 end

@@ -9,4 +9,4 @@ GMAIL_USERNAME = ""
 GMAIL_PASSWORD = ""
 
 # This a list of paths to git repos we should watch.
-REPO_PATHS = Dir.glob "#{ENV["HOME"]}/barkeep_repos/*/" # Trailing slash -> only directories
+REPOS_ROOT = "#{ENV["HOME"]}/barkeep_repos"
