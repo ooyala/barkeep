@@ -133,7 +133,7 @@ window.CommitSearch =
       button.addClass("active")
       timeout 70, => button.removeClass("active")
 
-    timestamp = (Number) savedSearch.attr(if direction == "before" then "from-timestamp" else "to-timestamp")
+    token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
 
     animationComplete = false
     fetchedHtml = null
@@ -167,7 +167,7 @@ window.CommitSearch =
         showFetchedPage()
 
     $.ajax
-      url: "/saved_searches/#{savedSearchId}?timestamp=#{timestamp}&direction=#{direction}",
+      url: "/saved_searches/#{savedSearchId}?token=#{token}&direction=#{direction}",
       success: (html) =>
         fetchedHtml = html
         showFetchedPage()

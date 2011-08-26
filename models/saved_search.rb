@@ -5,11 +5,13 @@ class SavedSearch < Sequel::Model
   PAGE_SIZE = 5
 
   # The list of commits this saved search represents
-  def commits(timestamp = Time.now, direction = "before")
+  def commits(token = nil, direction = "before")
     options = {}
     [:repos, :branches, :authors, :paths, :messages].each { |p| options[p] = self.send(p) }
-    options.merge!(:timestamp => timestamp, :direction => direction, :count => PAGE_SIZE)
-    MetaRepo.find_commits options
+    options.merge!(:token => token, :direction => direction, :limit => PAGE_SIZE)
+    result = MetaRepo.find_commits options
+    page = (result[:count] / PAGE_SIZE).to_i + 1
+    [result[:commits], page, result[:tokens]]
   end
 
   # Generates a human readable title based on the search criteria.

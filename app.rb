@@ -205,15 +205,15 @@ class Barkeep < Sinatra::Base
       { :user_id => current_user.id, :user_order => incremented_user_order }.merge options
     )
     erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :timestamp => nil, :direction => "before" }
+      :locals => { :saved_search => saved_search, :token => nil, :direction => "before" }
   end
 
   get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
-    timestamp = params[:timestamp].then { to_i }
+    token = params[:token] && !params[:token].empty? ? params[:token] : nil
     direction = params[:direction]
     erb :_saved_search, :layout => false,
-        :locals => { :saved_search => saved_search, :timestamp => timestamp, :direction => direction }
+        :locals => { :saved_search => saved_search, :token => token, :direction => direction }
   end
 
   # Change the order of saved searches.

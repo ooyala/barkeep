@@ -1,3 +1,5 @@
+# TODO(caleb) Test this core logic.
+
 require "cgi"
 require "albino"
 require "grit"
@@ -6,80 +8,35 @@ require "lib/albino_filetype"
 
 # Helper methods used to retrieve information from a Grit repository needed for the view.
 class GitHelper
-  def self.find_commits(repo, options)
-    # TODO(caleb): Deal with these filters:
-    #   * branches
-    #   * authors
-    #   * paths
-    #   * messages
-
-    # Need extended regexes to get |.
-    git_options = { :extended_regexp => true }
-    # Assuming authors is a comma-separated list.
-    if options[:authors] && !options[:authors].empty?
-      git_options[:author] = options[:authors].split(",").map(&:strip).join("|")
+  # mode = :commits or :count
+  # retain = :first or :last
+  def self.commits_with_limit(repo, options, args, limit, mode = :commits, retain = :first)
+    raise "Control result count with 'limit', not in options" unless (options.keys & [:n, :max_count]).empty?
+    if retain == :first || mode == :count
+      return self.rev_list(repo, options.merge({ :max_count => limit}), args, mode)
     end
-    git_args = ["origin/master"]
-
-    # now, assuming options has everything set up correctly for rev-list except for count and timestamp stuff
-
-    # If nil, then we just want the most recent N results (including the most recent).
-    inclusive = options[:timestamp].nil?
-    options[:timestamp] ||= Time.now.to_i
-    if options[:direction] == "before"
-      self.find_commits_before(repo, options[:timestamp], options[:count], inclusive, true, git_options,
-                               git_args)
-    else
-      self.find_commits_after(repo, options[:timestamp], options[:count], false, true, git_options, git_args)
-    end
+    # Now the tricky part
+    # TODO(caleb) Make this marginally smart (not sure how to do this efficiently).
+    extra_options = { :max_count => 10_000 }
+    self.rev_list(repo, options.merge(extra_options), args, mode).last(limit)
   end
 
-  def self.find_commits_before(repo, timestamp, count, inclusive, pad_results, options, args)
-    # TODO(caleb) Make sure this works.
-    extra_options = {}
-    extra_options[:before] = inclusive ? timestamp : timestamp - 1
-    extra_options[:max_count] = count
-    results = self.rev_list(repo, options.merge(extra_options), args)
-    return results unless pad_results
-    if results.empty? && !inclusive
-      inclusive = true
-      extra_options[:before] = timestamp
-      results = self.rev_list(repo, options.merge(extra_options), args)
-    end
-    # We've gone as far back as possible; return the last N resuls.
-    if results.size < count
-      results = self.find_commits_after(repo, timestamp, count - results.size, !inclusive, false, options,
-                                       args) + results
-    end
-    results
-  end
-
-  # TODO(caleb): see if there is a better way to do this -- I think it's fundamentally inefficient, though.
-  # (We can still make it less dumb)
-  def self.find_commits_after(repo, timestamp, count, inclusive, pad_results, options, args)
-    extra_options = {}
-    extra_options[:after] = inclusive ? timestamp : timestamp + 1
-    # TODO(caleb) page through big chunks of commits at a time here, I think
-    extra_options[:max_count] = 10_000
-    results = self.rev_list(repo, options.merge(extra_options), args).last(count)
-    return results unless pad_results
-    if results.empty? && !inclusive
-      inclusive = true
-      extra_options[:after] = timestamp
-      results = self.rev_list(repo, options.merge(extra_options), args).last(count)
-    end
-    if results.size < count
-      results += self.find_commits_before(repo, timestamp, count - results.size, !inclusive, false, options,
-                                          args)
-    end
-    results
-  end
-
-  # Take rev-list options directly and return a list of Grit::Commits
-  def self.rev_list(repo, options, args)
-    Grit::Commit.list_from_string(repo, repo.git.rev_list(options.merge(:pretty => "raw"), *args))
+  # Take rev-list options directly and return a list of Grit::Commits or a count
+  # If the former, we also tack on the repo name to each commit.
+  # This behavior varies from Grit::Git#rev_list in that it doesn't attempt to do any extra parsing for the
+  # --all option. We also add the ability to only count result.
+  # mode is :commits or :count
+  def self.rev_list(repo, options, args, mode = :commits)
+    raise "Cannot specify formatting" if options[:pretty] || options[:format]
+    count = mode != :commits
+    extra_options = count ? { :count => true } : extra_options = { :pretty => "raw" }
+    result = repo.git.rev_list(options.merge(extra_options), *args)
+    return result.to_i if count
+    commits = Grit::Commit.list_from_string(repo, result)
+    commits.each { |commit| commit.repo_name = repo.name }
+    commits
   rescue Grit::GitRuby::Repository::NoSuchShaFound
-    []
+    mode == :commits ? [] : 0
   end
 
   # TODO(caleb): We should probably only inspect the first N bytes of the file for nulls to avoid the

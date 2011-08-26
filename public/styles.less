@@ -432,11 +432,12 @@ table.commitsList, table.authorList {
 
       }
     }
-    &.commitDate {
+    &.commitRepo { font-variant: small-caps; }
+    &.commitDate { text-align: right; }
+    &.commitDate, &.commitRepo {
       white-space: nowrap;
       font-size: 90%;
       color: @lightTextColor;
-      text-align: right;
     }
   }
   .selectArrow {

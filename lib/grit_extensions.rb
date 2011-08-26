@@ -4,13 +4,19 @@ require "grit"
 
 module Grit
   class Commit
-    def repo_name=(name)
-      @repo_name = name
-    end
+    attr_accessor :repo_name
 
     def link
       "/commits/#{@repo_name}/#{@id}"
     end
+
+    def timestamp
+      date.to_i
+    end
+  end
+
+  class Repo
+    attr_accessor :name
   end
 
   class Actor

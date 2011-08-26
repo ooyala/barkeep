@@ -1,16 +1,13 @@
 <%#
   View arguments:
   - saved_search: a SavedSearch object.
-  - timestamp: a Time token given by the client
+  - token: a stringified PagingToken given by the client
   - direction: "before" or "after"
  %>
-<% commits = saved_search.commits(timestamp, direction) %>
-<% if commits.empty? %>
-  <% from, to = 0, 0 %>
-<% else %>
-  <% from, to = [commits.last, commits.first].map { |commit| commit.authored_date.to_i } %>
-<% end %>
-<div class="savedSearch" from-timestamp="<%= from %>" to-timestamp="<%= to %>"
+<% commits, page, tokens = saved_search.commits(token, direction) %>
+<% from = tokens[:from] %>
+<% to = tokens[:to] %>
+<div class="savedSearch" from-token="<%= from %>" to-token="<%= to %>"
      saved-search-id="<%= saved_search.id %>">
   <div class="header">
     <div class="dragHandle"></div>
@@ -44,6 +41,7 @@
             <a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a>
           </td>
           <td class="commitDate"><%= commit.date.to_pretty %></td>
+          <td class="commitRepo"><%= commit.repo_name %></td>
         </tr>
       <% end %>
     </table>
@@ -51,7 +49,7 @@
 
   <div class="pageControls" style="<%= commits.empty? ? "display:none" : "" %>">
     <a href="#" class="pageLeftButton pageButton">&laquo;</a>
-    <span class="pageNumber">?</span>
+    <span class="pageNumber"><%= page %></span>
     <a href="#" class="pageRightButton pageButton">&raquo;</a>
   </div>
 </div>
