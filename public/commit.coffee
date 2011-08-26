@@ -3,7 +3,8 @@
 window.Commit =
   init: ->
     $(document).keydown (e) => @onKeydown e
-    $(".diffLine").dblclick(Commit.onDiffLineDblClick)
+    $(".diffLine").dblclick (e) => @onDiffLineDblClickOrReply e
+    $(".reply").live "click", (e) => @onDiffLineDblClickOrReply e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
     $("#approveButton").live "click", (e) => @onApproveClicked e
@@ -88,10 +89,13 @@ window.Commit =
     window.scroll(0, if next then currentPosition else previousPosition)
 
   #Logic to add comments
-  onDiffLineDblClick: (e) ->
+  onDiffLineDblClickOrReply: (e) ->
     if $(e.target).hasClass("delete") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
-    codeLine = $(e.currentTarget).find(".code")
+    if $(e.target).hasClass("reply")
+      codeLine = $(e.currentTarget).parents(".diffLine").find(".code")
+    else
+      codeLine = $(e.currentTarget).find(".code")
     lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
