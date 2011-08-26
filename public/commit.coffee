@@ -3,7 +3,8 @@
 window.Commit =
   init: ->
     $(document).keydown (e) => @onKeydown e
-    $(".diffLine").click(Commit.onDiffLineClick)
+    $(".diffLine").dblclick(Commit.onDiffLineDblClick)
+    $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
     $("#approveButton").live "click", (e) => @onApproveClicked e
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
@@ -13,21 +14,62 @@ window.Commit =
     return unless KeyboardShortcuts.beforeKeydown(event)
     switch KeyboardShortcuts.keyCombo(event)
       when "j"
-        window.scrollBy(0, Constants.SCROLL_DISTANCE_PIXELS)
+        @selectNextLine(true)
       when "k"
-        window.scrollBy(0, Constants.SCROLL_DISTANCE_PIXELS * -1)
-      when "n"
+        @selectNextLine(false)
+      when "s_n"
         @scrollFile(true)
-      when "p"
+      when "s_p"
         @scrollFile(false)
       when "e"
         @toggleFullDiff()
-      when "]"
+      when "n"
         @scrollChunk(true)
-      when "["
+      when "p"
         @scrollChunk(false)
+      when "return"
+        return if $(".commentCancel").length > 0
+        $(".diffLine.selected").dblclick()
+      when "escape"
+        #TODO(kle): cancel comment forms
+        @clearSelectedLine()
       else
         KeyboardShortcuts.globalOnKeydown(event)
+
+  lineVisible: (line,visible = "all") ->
+    lineTop = $(line).offset().top
+    windowTop = $(window).scrollTop()
+    lineBottom = lineTop + $(line).height()
+    windowBottom = windowTop + $(window).height()
+    switch visible
+      when "top" then lineTop >= windowTop
+      when "bottom" then lineBottom <= windowBottom
+      else lineTop >= windowTop and lineBottom <= windowBottom
+
+  clearSelectedLine: ->
+    $(".diffLine.selected").removeClass("selected")
+
+  selectLine: (event) ->
+    target = $(event.currentTarget)
+    return if target.hasClass("selected")
+    @clearSelectedLine()
+    target.addClass("selected")
+
+  selectNextLine: (next = true) ->
+    selectedLine = $(".diffLine.selected")
+    visibleLines = $(".diffLine").filter(":visible")
+    if selectedLine.length == 0 or not @lineVisible(selectedLine)
+      selectedLine.removeClass("selected")
+      select = _(visibleLines).detect((x) => @lineVisible(x,"top"))
+      $(select).addClass("selected")
+    else
+      index = _(visibleLines).indexOf(selectedLine[0])
+      return if (not next and index == 0) or (next and index == (visibleLines.length - 1))
+      selectedLine.removeClass("selected")
+      newIndex = if next then index + 1 else index - 1
+      $(visibleLines[newIndex]).addClass("selected")
+    ScrollWithContext(".diffLine.selected")
+
 
   scrollChunk: (next = true) ->
     @scrollSelector(".diffLine.chunk-start", next)
@@ -46,7 +88,7 @@ window.Commit =
     window.scroll(0, if next then currentPosition else previousPosition)
 
   #Logic to add comments
-  onDiffLineClick: (e) ->
+  onDiffLineDblClick: (e) ->
     if $(e.target).hasClass("delete") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     codeLine = $(e.currentTarget).find(".code")
@@ -142,5 +184,6 @@ window.Commit =
       window.scrollTo(0, firstChunk.offset().top)
     else
       $(".diffLine").not(".chunk").hide()
+      $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
 $(document).ready(-> Commit.init())

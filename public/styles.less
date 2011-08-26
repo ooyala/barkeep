@@ -690,6 +690,13 @@ table.commitsList, table.authorList {
   .diffLine {
 
     &:not(.chunk) { display: none; }
+    &.selected {
+      .code {
+        .removed, .same, .added {
+          background-color: #FFC;
+        }
+      }
+    }
 
     .lineNumber {
       font: @commitFontFamily;
