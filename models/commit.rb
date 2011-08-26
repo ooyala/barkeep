@@ -15,7 +15,7 @@ class Commit < Sequel::Model
   end
 
   def commit_comments
-    comments_dataset.filter(:commit_id => id).order(:created_at).all
+    comments_dataset.filter(:commit_id => id, :line_number => nil).order(:created_at).all
   end
 
   def approved?() !approved_by_user_id.nil? end
