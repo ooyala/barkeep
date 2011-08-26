@@ -23,7 +23,7 @@ window.Commit =
       when "s_p"
         @scrollFile(false)
       when "e"
-        @toggleFullDiff()
+        @toggleFullDiff(event)
       when "n"
         @scrollChunk(true)
       when "p"
@@ -178,7 +178,9 @@ window.Commit =
         $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
     })
 
-  toggleFullDiff: ->
+  toggleFullDiff: (event) ->
+    # Only toggle the full diff if no other element on the page is selected
+    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
     # Performance optimization: instead of using toggle(), which checks each element if it's visible,
     # only check the first diffLine on the page to see if we need to show() or hide().
     firstNonChunk = $(document).find(".diffLine").not(".chunk").filter(":first")
