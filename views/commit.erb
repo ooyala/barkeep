@@ -19,7 +19,9 @@
             <%= erb :_approved_banner, :layout => false,
                 :locals => { :commit => commit } %>
           <% else %>
-            <button id="approveButton" class="fancy">Approve Commit</button>
+            <% if current_user %>
+              <button id="approveButton" class="fancy">Approve Commit</button>
+            <% end %>
           <% end %>
         </td>
       </tr>
@@ -35,10 +37,12 @@
       <%= erb :_comment, :locals => { :comment => comment } %>
     <% end %>
   </div>
-  <%= erb :_comment_form, :locals => {
-    :repo_name => commit.git_repo.name,
-    :sha => commit.sha,
-    :filename => nil,
-    :line_number => nil
-  } %>
+  <% if current_user %>
+    <%= erb :_comment_form, :locals => {
+      :repo_name => commit.git_repo.name,
+      :sha => commit.sha,
+      :filename => nil,
+      :line_number => nil
+    } %>
+  <% end %>
 </div>

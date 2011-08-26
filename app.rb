@@ -102,8 +102,15 @@ class Barkeep < Sinatra::Base
   end
 
   before do
-    next if request.url =~ /^#{root_url}\/login/
     self.current_user = User.find(:email => request.cookies["email"])
+    next if request.url =~ /^#{root_url}\/login/
+    next if request.url =~ /^#{root_url}\/logout/
+    next if request.url =~ /^#{root_url}\/commits\/[^\/]+\/[^\/]{40}/
+    next if request.url =~ /^#{root_url}\/keyboard_shortcuts/
+    next if request.url =~ /^#{root_url}\/inspire/
+    next if request.url =~ /^#{root_url}\/.*\.css/
+    next if request.url =~ /^#{root_url}\/.*\.js/
+    next if request.url =~ /^#{root_url}\/.*\.woff/
     unless self.current_user
       #save url to return to it after login completes
       response.set_cookie  "login_started_url", :value => request.url, :path => "/"
@@ -113,6 +120,16 @@ class Barkeep < Sinatra::Base
 
   get "/" do
     redirect "/commits"
+  end
+
+  get "/login" do
+    response.set_cookie  "login_started_url", :value => request.referrer, :path => "/"
+    redirect get_login_redirect
+  end
+
+  get "/logout" do
+    response.delete_cookie  "email"
+    redirect "/inspire"
   end
 
   get "/commits" do

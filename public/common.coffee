@@ -88,11 +88,9 @@ window.Login =
     $(".logoutLink").click Login.logout
 
   logout: ->
-    document.cookie = "email=; expires=Thu, 01-Jan-70 00:00:01 GMT;"
-    #need to logout from google too, but there is no way to get back, so do it in an iframe
-    $("#logoutIFrame").ready ->
-      location.reload(true)
-    logoutIFrame.location = 'https://www.google.com/accounts/Logout'
+    # need to logout from google too, but there is no way to get back, so do it in an iframe
+    $("#logoutIFrame").load -> location.href = "/logout"
+    $("#logoutIFrame").get(0).src = "https://www.google.com/accounts/Logout"
     return false
 
 $(document).ready(-> Login.init())

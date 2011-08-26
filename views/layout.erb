@@ -51,10 +51,14 @@
       </nav>
 
       <div id="signInBox">
-        <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
-        [<a class="logoutLink" href="https://www.google.com/accounts/Logout">logout</a>]
-        <% #bullshittery to logout from google without getting stuck on their page %>
-        <iframe id="logoutIFrame"></iframe>
+        <% if current_user %>
+          <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
+          [<a class="logoutLink" href="#">Logout</a>]
+          <% #bullshittery to logout from google without getting stuck on their page %>
+          <iframe id="logoutIFrame"></iframe>
+        <% else %>
+          <a class="loginLink" href="/login">Login to search and leave comments</a>
+        <% end %>
       </div>
   </header>
 
