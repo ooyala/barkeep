@@ -37,7 +37,7 @@ class Barkeep < Sinatra::Base
   #
   def self.start_background_email_worker
     command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/mail_delivery.rb")
-    BackgroundJobs.fork_child_process { exec command }
+    BackgroundJobs.fork_child_process { DB.disconnect; exec command }
   end
 
   def self.start_background_commit_importer

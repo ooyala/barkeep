@@ -24,6 +24,7 @@ class MailDelivery
 
       begin
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
+          DB.disconnect
           MailDeliveryWorker.new.perform_task(email_task)
         end
       rescue TimeoutError
