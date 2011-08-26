@@ -2,7 +2,7 @@
 class SavedSearch < Sequel::Model
   many_to_one :users
 
-  PAGE_SIZE = 5
+  PAGE_SIZE = 10
 
   # The list of commits this saved search represents
   def commits(token = nil, direction = "before")
@@ -16,7 +16,7 @@ class SavedSearch < Sequel::Model
 
   # Generates a human readable title based on the search criteria.
   def title
-    return "All commits" if [repos, authors, paths, messages].all?(&:nil?)
+    return "All commits" if [repos, branches, authors, paths, messages].all?(&:nil?)
     if !repos.nil? && [authors, paths, messages].all?(&:nil?)
       return "All commits for the #{comma_separated_list(repos)} repos"
     end
@@ -25,6 +25,7 @@ class SavedSearch < Sequel::Model
     author_list = self.authors_list
     message << "by #{comma_separated_list(authors_list)}" unless authors_list.empty?
     message << "in #{comma_separated_list(paths_list)}" unless paths_list.empty?
+    message << "on #{comma_separated_list(branches_list)}" unless branches_list.empty?
     unless repos_list.empty?
       message << "in the #{comma_separated_list(repos_list)} #{english_quantity("repo", repos_list.size)}"
     end
@@ -33,7 +34,11 @@ class SavedSearch < Sequel::Model
 
   def authors_list() (self.authors || "").split(",").map(&:strip) end
   def repos_list() (self.repos || "").split(",").map(&:strip) end
-  def paths_list() (self.paths|| "").split(",").map(&:strip) end
+  def paths_list() (self.paths || "").split(",").map(&:strip) end
+  def branches_list
+    return "" unless self.branches && self.branches != "master"
+    self.branches.split(",").map(&:strip)
+  end
 
   def self.create_from_search_string(search_string)
     parts = search_string.split(" ")

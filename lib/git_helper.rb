@@ -30,7 +30,7 @@ class GitHelper
     raise "Cannot specify formatting" if options[:pretty] || options[:format]
     count = mode != :commits
     extra_options = count ? { :count => true } : extra_options = { :pretty => "raw" }
-    result = repo.git.rev_list(options.merge(extra_options), *args)
+    result = repo.git.rev_list(options.merge(extra_options), args)
     return result.to_i if count
     commits = Grit::Commit.list_from_string(repo, result)
     commits.each { |commit| commit.repo_name = repo.name }

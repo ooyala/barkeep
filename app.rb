@@ -195,9 +195,11 @@ class Barkeep < Sinatra::Base
   # POST because this creates a saved search on the server.
   post "/search" do
     options = {}
-    [:repos, :authors, :paths, :messages].each do |option|
+    [:repos, :authors, :messages].each do |option|
       options[option] = params[option] ? params[option].strip : nil
     end
+    # Paths is a list
+    options[:paths] = params[:paths].to_json if params[:paths] && !params[:paths].empty?
     # Default to only searching master unless branches are explicitly specified.
     options[:branches] = params[:branches].else { "master" }
     incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1

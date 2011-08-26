@@ -23,23 +23,13 @@
   <% if current_user %>
     <table>
       <tr>
-        <td>Search by</td>
-        <td>
-          <select name="filter_type">
-            <option value="authors">authors</option>
-            <option value="directories">directories</option>
-            <option value="repository">repository</option>
-          </select>
-        </td>
         <td>
           <input type="text" name="filter_value" value="" />
         </td>
         <td><button class="fancy submit">Search</button></td>
       </tr>
       <tr>
-        <td></td>
-        <td></td>
-        <td><div class="example">separate authors by commas</div></td>
+        <td><div class="example">keywords: <b>repos, authors, paths, branches</b></div></td>
         <td></td>
       </tr>
     </table>

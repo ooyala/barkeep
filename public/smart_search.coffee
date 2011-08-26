@@ -16,8 +16,16 @@ class window.SmartSearch
     @searchBox.blur()
 
   parseSearch: (searchString) ->
-    console.log "Hello! #{searchString}"
-    { authors: searchString }
+    parts = (part for part in searchString.split(" ") when part != "")
+    query = { paths: [] }
+    for part in parts
+      [key, value] = part.split(":", 2)
+      if value?
+        if key == "paths" then query.paths.push(value) else query[key] = value
+      else
+        # For now, assume any value with no : is a path.
+        query.paths.push part
+    query
 
   search: ->
     queryParams = @parseSearch(@searchBox.val())
