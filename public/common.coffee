@@ -93,4 +93,21 @@ window.Login =
     $("#logoutIFrame").get(0).src = "https://www.google.com/accounts/Logout"
     return false
 
+# Keep some amount of context on-screen to pad the selection position
+window.ScrollWithContext = (selector) ->
+  selection = $(selector)
+  return unless selection.size() > 0
+  selectionTop = selection.offset().top
+  selectionBottom = selectionTop + selection.height()
+  windowTop = $(window).scrollTop()
+  windowBottom = windowTop + $(window).height()
+  # If the selection if off-screen, center on it
+  if selectionBottom < windowTop or selectionTop > windowBottom
+    window.scroll(0, (selectionTop + selectionBottom) / 2 - $(window).height() / 2)
+  # Otherwise ensure there is enough buffer
+  else if selectionTop - windowTop < Constants.CONTEXT_BUFFER_PIXELS
+    window.scroll(0, selectionTop - Constants.CONTEXT_BUFFER_PIXELS)
+  else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS
+    window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
+
 $(document).ready(-> Login.init())

@@ -35,7 +35,7 @@ window.CommitSearch =
       @selectNewGroup(false) unless @selectNewGroup(true)
       removedSelected = true
     target.remove()
-    @scrollWithContext() if removedSelected
+    ScrollWithContext(".selected") if removedSelected
     @deleteSearch(searchId)
     false
 
@@ -46,7 +46,7 @@ window.CommitSearch =
         @onSearchClick()
       when "escape"
         $("#commitSearch input[name=filter_value]").blur()
-        @scrollWithContext()
+        ScrollWithContext(".selected")
 
   onKeydown: (event) ->
     return unless KeyboardShortcuts.beforeKeydown(event)
@@ -74,23 +74,6 @@ window.CommitSearch =
     $(".selected").removeClass "selected"
     next.addClass "selected"
 
-  # Keep some amount of context on-screen to pad the selection position
-  scrollWithContext: ->
-    selection = $(".selected")
-    return unless selection.size() > 0
-    selectionTop = selection.offset().top
-    selectionBottom = selectionTop + selection.height()
-    windowTop = $(window).scrollTop()
-    windowBottom = windowTop + $(window).height()
-    # If the selection if off-screen, center on it
-    if selectionBottom < windowTop or selectionTop > windowBottom
-      window.scroll(0, (selectionTop + selectionBottom) / 2 - $(window).height() / 2)
-    # Otherwise ensure there is enough buffer
-    else if selectionTop - windowTop < Constants.CONTEXT_BUFFER_PIXELS
-      window.scroll(0, selectionTop - Constants.CONTEXT_BUFFER_PIXELS)
-    else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS
-      window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
-
   # If next = false then move to the previous group instead
   selectNewGroup: (next = true) ->
     selected = $(".selected")
@@ -101,7 +84,7 @@ window.CommitSearch =
       return false if group.size() == 0
       newlySelected = if next then group.find("tr:first-of-type") else group.find("tr:last-of-type")
     @selectNewDiff(newlySelected)
-    @scrollWithContext()
+    ScrollWithContext(".selected")
     true
 
   selectFirstDiff: ->
@@ -110,7 +93,7 @@ window.CommitSearch =
       selected = selectedGroup.find(".commitsList tr:first-of-type")
       if selected.size() > 0
         @selectNewDiff(selected)
-        @scrollWithContext()
+        ScrollWithContext(".selected")
         break
       selectedGroup = selectedGroup.next()
 
@@ -121,7 +104,7 @@ window.CommitSearch =
     newlySelected = if next then selected.next() else selected.prev()
     if newlySelected.size() > 0
       @selectNewDiff(newlySelected)
-      @scrollWithContext()
+      ScrollWithContext(".selected")
       return true
     @selectNewGroup(next)
 
