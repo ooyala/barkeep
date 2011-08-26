@@ -7,15 +7,20 @@ class Emails
   LINES_OF_CONTEXT = 4
 
   # Enqueues an email notification of a comment for delivery.
-  def self.send_comment_email(grit_commit, comments)
+  def self.send_comment_email(commit, comments)
+    grit_commit = commit.grit_commit
     subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
         "#{grit_commit.short_message[0..60]}"
     html_body = comment_email_body(grit_commit, comments)
 
     # TODO(philc): Provide a plaintext email as well.
-    # TODO(philc): Determine how we're going to let this email FROM address be configured.
     # TODO(philc): Delay the emails and batch them together.
-    EmailTask.create(:subject => subject, :to => "phil.crosby@gmail.com", :body => html_body,
+
+    all_commenters = commit.comments.map { |comment| comment.user.email }
+    to = ([commit.user.email] + all_commenters).uniq
+
+    EmailTask.create(:subject => subject, :to => to.join(","),
+        :body => html_body,
         :status => "pending")
   end
 

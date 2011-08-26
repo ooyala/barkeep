@@ -166,7 +166,7 @@ class Barkeep < Sinatra::Base
     line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
     comment = Comment.create(:commit => commit, :commit_file => file, :line_number => line_number,
                              :user => current_user, :text => params[:text])
-    Emails.send_comment_email(commit.grit_commit, [comment])
+    Emails.send_comment_email(commit, [comment])
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
