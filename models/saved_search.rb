@@ -40,7 +40,7 @@ class SavedSearch < Sequel::Model
   rescue []
   end
   def branches_list
-    return "" unless self.branches && self.branches != "master"
+    return "" unless self.branches
     self.branches.split(",").map(&:strip)
   end
 

@@ -63,15 +63,16 @@ module MetaRepo
       git_options[:author] = options[:authors].split(",").map(&:strip).join("|")
     end
 
-    repos = []
     if options[:repos]
       repo_search_regexes = options[:repos].split(",").map { |r| /#{r.strip}/ }
+      repos = []
       @@repo_name_to_id.each do |name, id|
         repos << @@repo_names_and_ids_to_repos[id] if repo_search_regexes.any? { |r| name =~ r }
       end
       repos.uniq!
+    else
+      repos = @@repos
     end
-    repos = @@repos if repos.empty?
 
     git_args = options[:branches].then { split(",").map(&:strip).map { |name| "origin/#{name}" } }.else { [] }
     git_args << "--"
