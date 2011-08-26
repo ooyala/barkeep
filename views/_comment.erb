@@ -5,12 +5,14 @@
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
       <span>commented</span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
-      <% if comment.line_number %>
-        <button class="reply standard">Reply</button>
-      <% end %>
-      <% if current_user.id == comment.user_id %>
-        <button class="delete standard">Delete</button>
-      <% end %>
+      <div class="buttonContainer">
+        <% if current_user && comment.line_number %>
+          <button class="reply standard">Reply</button>
+        <% end %>
+        <% if current_user && current_user.id == comment.user_id %>
+          <button class="delete standard">Delete</button>
+        <% end %>
+      </div>
     </div>
     <div class="commentBody"> <%= replace_shas_with_links(Redcarpet.new(comment.text).to_html) %> </div>
   </div>
