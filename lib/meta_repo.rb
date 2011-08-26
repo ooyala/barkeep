@@ -31,7 +31,10 @@ module MetaRepo
   end
 
   def self.grit_commit(repo_name_or_id, sha)
-    @@repo_names_and_ids_to_repos[repo_name_or_id].commit(sha)
+    grit_repo = @@repo_names_and_ids_to_repos[repo_name_or_id]
+    grit_commit = grit_repo.commit(sha)
+    grit_commit.repo_name = File.basename(grit_repo.working_dir)
+    grit_commit
   end
 
   # Takes care of multiplexing across multiple repositories and then uses GitHelper#find_commits to locate the
