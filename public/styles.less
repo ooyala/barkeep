@@ -980,6 +980,7 @@ table.commitsList, table.authorList {
       .tableWrapper {
         width: 100%;
         margin: 10px 0;
+        td { width: 50%; }
 
         .shortcutList {
           vertical-align: top;
@@ -993,16 +994,17 @@ table.commitsList, table.authorList {
             width: 100%;
             tr {
               td {
-                width: 50%;
                 padding: 0 10px;
                 line-height: 150%;
 
                 &.keys {
+                  width: 30%;
                   font: 14px @monoFont;
                   text-align: right;
                   text-shadow: -1px -1px 1px @shadowColor;
                 }
                 &.description {
+                  width: 70%;
                   text-align: left;
                   border-left: 2px solid @coreRed;
                 }
