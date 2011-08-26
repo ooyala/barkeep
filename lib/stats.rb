@@ -12,20 +12,18 @@ module Stats
     Commit.filter("date > ?", since).count
   end
 
-  def self.unreviewed_commits(since)
-    Commit.filter("date > ?", since).all.select do |commit|
-      commit.comments.empty?
-    end
+  def self.num_unreviewed_commits(since)
+    Commit.filter("`commits`.`date` > ?", since).
+        left_join(:comments, :commit_id => :commits__id).filter(:comments__id => nil).count
   end
 
-  def self.reviewed_without_lgtm_commits(since)
-    Commit.filter("date > ?", since).filter(:approved_by_user_id => nil).all.reject do |commit|
-      commit.comments.empty?
-    end
+  def self.num_reviewed_without_lgtm_commits(since)
+    Commit.filter("`commits`.`date` > ?", since).filter(:approved_by_user_id => nil).
+        left_join(:comments, :commit_id => :commits__id).filter("`comments`.`id` IS NOT NULL").count
   end
 
-  def self.lgtm_commits(since)
-    Commit.filter("date > ?", since).filter("approved_by_user_id IS NOT NULL").all
+  def self.num_lgtm_commits(since)
+    Commit.filter("`commits`.`date` > ?", since).filter("approved_by_user_id IS NOT NULL").count
   end
 
   def self.chatty_commits(since)
