@@ -53,7 +53,7 @@ class BackgroundJobs
       begin
         yield
       rescue StandardError => error
-        puts "Exception will running code in forked child process: #{error.message}"
+        puts "Exception will running code in forked child process: #{error.class} #{error.message}"
         puts error.backtrace.join("\n")
         exit 2
       end
