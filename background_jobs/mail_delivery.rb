@@ -16,17 +16,21 @@ class MailDelivery
   def run
     while true
       exit if has_become_orphaned?
+      puts "email querying"
       email_task = EmailTask.filter(:status => "pending").order(:id.desc).first
       if email_task.nil?
+        puts "no outstanding email tasks"
         sleep POLL_FREQUENCY
         next
       end
 
       begin
+        puts "forking and running MailDeliveryWorker"
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
           DB.disconnect
           MailDeliveryWorker.new.perform_task(email_task)
         end
+        puts "finished with MailDeliveryWorker"
       rescue TimeoutError
         puts "The mail task timed out after #{TASK_TIMEOUT} seconds."
         exit_status = 1
@@ -41,6 +45,7 @@ end
 class MailDeliveryWorker
   def perform_task(email_task)
     begin
+      puts "running Emails.deliver_mail"
       Emails.deliver_mail(email_task.to, email_task.subject, email_task.body)
       email_task.delete
     rescue => error
