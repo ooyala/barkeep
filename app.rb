@@ -106,8 +106,9 @@ class Barkeep < Sinatra::Base
     next if request.url =~ /^#{root_url}\/login/
     next if request.url =~ /^#{root_url}\/logout/
     next if request.url =~ /^#{root_url}\/commits\/[^\/]+\/[^\/]{40}/
-    next if request.url =~ /^#{root_url}\/keyboard_shortcuts/
+    next if request.url =~ /^#{root_url}\/stats/
     next if request.url =~ /^#{root_url}\/inspire/
+    next if request.url =~ /^#{root_url}\/keyboard_shortcuts/
     next if request.url =~ /^#{root_url}\/.*\.css/
     next if request.url =~ /^#{root_url}\/.*\.js/
     next if request.url =~ /^#{root_url}\/.*\.woff/
@@ -129,7 +130,7 @@ class Barkeep < Sinatra::Base
 
   get "/logout" do
     response.delete_cookie  "email"
-    redirect "/inspire"
+    redirect request.referrer
   end
 
   get "/commits" do
@@ -267,7 +268,9 @@ class Barkeep < Sinatra::Base
   end
 
   get "/stats" do
-    since = case current_user.stats_time_range
+    # TODO(dmac): Allow users to change range of stats page without loggin in.
+    stats_time_range = current_user ? current_user.stats_time_range : "month"
+    since = case stats_time_range
             when "hour" then Time.now - 60 * 60
             when "day" then Time.now - 60 * 60 * 24
             when "week" then Time.now - 60 * 60 * 24 * 7
@@ -278,7 +281,6 @@ class Barkeep < Sinatra::Base
             end
     num_commits = Stats.num_commits(since)
     erb :stats, :locals => {
-      :user => current_user,
       :num_commits => num_commits,
       :unreviewed_percent => Stats.unreviewed_commits(since).count.to_f / num_commits,
       :commented_percent => Stats.reviewed_without_lgtm_commits(since).count.to_f / num_commits,
