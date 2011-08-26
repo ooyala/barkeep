@@ -45,10 +45,12 @@ body {
 a {
   color: @linkColor;
   text-decoration: none;
-  border-bottom: 1px dotted #FE003C;
   outline: 0; /* This removes the dotted line around links that Firefox adds when they're focused. */
 }
-a:hover { color: #FD0D00; }
+a:hover {
+  color: #FD0D00;
+  text-decoration: underline;
+}
 a:active {
   background-color: @linkColor;
   color: white;
