@@ -5,7 +5,11 @@
   - direction: "before" or "after"
  %>
 <% commits = saved_search.commits(timestamp, direction) %>
-<% from, to = [commits.last, commits.first].map { |commit| commit.date.to_i } %>
+<% if commits.empty? %>
+  <% from, to = 0, 0 %>
+<% else %>
+  <% from, to = [commits.last, commits.first].map { |commit| commit.authored_date.to_i } %>
+<% end %>
 <div class="savedSearch" from-timestamp="<%= from %>" to-timestamp="<%= to %>"
      saved-search-id="<%= saved_search.id %>">
   <div class="header">

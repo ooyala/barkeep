@@ -12,10 +12,16 @@ class GitHelper
     #   * authors
     #   * paths
     #   * messages
-    git_options = {}
+
+    # Need extended regexes to get |.
+    git_options = { :extended_regexp => true }
+    # Assuming authors is a comma-separated list.
+    if options[:authors] && !options[:authors].empty?
+      git_options[:author] = options[:authors].split(",").map(&:strip).join("|")
+    end
     git_args = ["origin/master"]
 
-    # assuming options has everything set up correctly for rev-list except for count and timestamp stuff
+    # now, assuming options has everything set up correctly for rev-list except for count and timestamp stuff
 
     # If nil, then we just want the most recent N results (including the most recent).
     inclusive = options[:timestamp].nil?
