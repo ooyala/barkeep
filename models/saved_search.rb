@@ -14,14 +14,24 @@ class SavedSearch < Sequel::Model
 
   # Generates a human readable title based on the search criteria.
   def title
-    return "All commits." if [repos, authors, paths, messages].all?(&:nil?)
+    return "All commits" if [repos, authors, paths, messages].all?(&:nil?)
     if !repos.nil? && [authors, paths, messages].all?(&:nil?)
-      return "All commits for the #{comma_separated_list(repos)} repos."
+      return "All commits for the #{comma_separated_list(repos)} repos"
     end
-    # TODO(caleb) A sentence like:
-    # "Commits in the backlot and ooyala repos by Caleb, Daniel, and Kevin matching the path '.gitignore'
-    "repos: #{repos}; authors: #{authors}; paths: #{paths}; messages: #{messages}"
+
+    message = ["Commits"]
+    author_list = self.authors_list
+    message << "by #{comma_separated_list(authors_list)}" unless authors_list.empty?
+    message << "in #{comma_separated_list(paths_list)}" unless paths_list.empty?
+    unless repos_list.empty?
+      message << "in the #{comma_separated_list(repos_list)} #{english_quantity("repo", repos_list.size)}"
+    end
+    message.join(" ")
   end
+
+  def authors_list() (self.authors || "").split(",").map(&:strip) end
+  def repos_list() (self.repos || "").split(",").map(&:strip) end
+  def paths_list() (self.paths|| "").split(",").map(&:strip) end
 
   def self.create_from_search_string(search_string)
     parts = search_string.split(" ")
@@ -29,7 +39,7 @@ class SavedSearch < Sequel::Model
 
   private
 
-  def english_quantity(word, quantity) quantity == 1 ? word + "s" : word end
+  def english_quantity(word, quantity) quantity == 1 ? word : word + "s" end
 
   def comma_separated_list(list)
     case list.size
