@@ -53,7 +53,6 @@ module MetaRepo
   def self.find_commits(options)
     # TODO(caleb): Deal with these filters:
     #   * branches
-    #   * authors
     #   * paths
     #   * messages
 
@@ -255,11 +254,12 @@ module MetaRepo
   # Number of commits preceding the token. Right now this is actually only a close estimate (it doesn't deal
   # with the conflicting timestamps case). AFAIK this is probably fine (for now) because this will only be
   # used for page numbering (which is going to be off when we import commits anyway).
+  # NOTE(caleb) this should return >= the actual count.
   def self.count_commits_to_token(repos, token, options, args)
     count = 0
     # TODO(caleb): Fix the case where we've paged back > 10000 commits into a single repo.
     self.parallel_each_repos(repos) do |repo, mutex|
-      local_count = GitHelper.commits_with_limit(repo, options.merge({:after => token.timestamp + 1}), args,
+      local_count = GitHelper.commits_with_limit(repo, options.merge({:after => token.timestamp}), args,
                                                  10_000, :count, :first)
       mutex.synchronize { count += local_count }
     end
