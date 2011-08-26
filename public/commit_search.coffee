@@ -1,8 +1,9 @@
-# import common.coffee, jquery, jquery UI, and jquery-json
+# import common.coffee, smart_search.coffee, jquery, jquery UI, and jquery-json
 
 window.CommitSearch =
   init: ->
-    $("#commitSearch .submit").click (e) => @onSearchClick e
+    @smartSearch = new SmartSearch
+    $("#commitSearch .submit").click (e) => @smartSearch.search()
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $("#commitSearch input[name=filter_value]").keypress (e) => KeyboardShortcuts.beforeKeydown(e)
     $(document).keydown (e) => @onKeydown e
@@ -16,13 +17,6 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
     $("#savedSearches .savedSearch .emailCheckbox").live "click", (e) => @emailUpdate(e)
     @selectFirstDiff()
-
-  onSearchClick: ->
-    $("#commitSearch input[name=filter_value]").blur()
-    searchString = $("#commitSearch input[name=filter_value]").val()
-    # TODO(caleb): option parsing -- for now, assume they're searching authors
-    queryParams = { authors: searchString }
-    $.post("/search", queryParams, (e) => @onSearchSaved e)
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
@@ -43,9 +37,9 @@ window.CommitSearch =
     return unless KeyboardShortcuts.beforeKeydown(event)
     switch KeyboardShortcuts.keyCombo(event)
       when "return"
-        @onSearchClick()
+        @smartSearch.search()
       when "escape"
-        $("#commitSearch input[name=filter_value]").blur()
+        @smartSearch.unfocus()
         ScrollWithContext(".selected")
 
   onKeydown: (event) ->
@@ -53,8 +47,7 @@ window.CommitSearch =
     switch KeyboardShortcuts.keyCombo(event)
       when "/"
         window.scroll(0, 0)
-        $("#commitSearch input[name=filter_value]").focus()
-        $("#commitSearch input[name=filter_value]").select()
+        @smartSearch.focus()
         return false
       when "j"
         @selectDiff(true)

@@ -57,8 +57,7 @@ module MetaRepo
     #   * messages
 
     # Need extended regexes to get |.
-    git_options = { :extended_regexp => true }
-    git_options = { :regexp_ignore_case => true }
+    git_options = { :extended_regexp => true, :regexp_ignore_case => true }
     # Assuming authors is a comma-separated list.
     if options[:authors] && !options[:authors].empty?
       git_options[:author] = options[:authors].split(",").map(&:strip).join("|")
