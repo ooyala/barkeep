@@ -10,6 +10,21 @@ set :local_path, Dir.pwd
 set :user, "root"
 
 
+# When deploying, we must deploy the private credentials for the email user account we send emails from.
+# We do not want to check these into the repository, and so they should be stored in a file in
+# $BARKEEP_CREDENTIALS. It should be of the form:
+#   destination :prod do
+#     env :gmail_username, "..."
+#     env :gmail_password, "..."
+#   end
+#
+if ENV.has_key?("BARKEEP_CREDENTIALS") && File.exist?(ENV["BARKEEP_CREDENTIALS"])
+  require ENV["BARKEEP_CREDENTIALS"]
+else
+  puts "Unable to locate the file $BARKEEP_CREDENTIALS. You need this to deploy. See deploy.rb for details."
+  exit 1
+end
+
 # Each destination is a set of machines and configurations to deploy to.
 # You can deploy to a destination from the command line with:
 #     fez to_dev deploy
