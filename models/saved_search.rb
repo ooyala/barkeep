@@ -34,7 +34,11 @@ class SavedSearch < Sequel::Model
 
   def authors_list() (self.authors || "").split(",").map(&:strip) end
   def repos_list() (self.repos || "").split(",").map(&:strip) end
-  def paths_list() (self.paths || "").split(",").map(&:strip) end
+  def paths_list
+    return [] unless self.paths && !self.paths.empty?
+    JSON.parse(self.paths).map(&:strip)
+  rescue []
+  end
   def branches_list
     return "" unless self.branches && self.branches != "master"
     self.branches.split(",").map(&:strip)
