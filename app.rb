@@ -97,7 +97,9 @@ class Barkeep < Sinatra::Base
     end
 
     def replace_shas_with_links(text)
-      text.gsub(/([a-zA-Z0-9]{40})/) { |sha| "<a href='/commits/#{sha}'>#{sha[0..6]}</a>" }
+      # We assume the sha is linking to another commit in this repository.
+      repo_name = /\/commits\/([^\/]+)\//.match(request.url)[1] rescue ""
+      text.gsub(/([a-zA-Z0-9]{40})/) { |sha| "<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>" }
     end
   end
 
