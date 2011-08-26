@@ -26,8 +26,8 @@ class MailDelivery
 
       begin
         puts "forking and running MailDeliveryWorker"
+        DB.disconnect
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
-          DB.disconnect
           MailDeliveryWorker.new.perform_task(email_task)
         end
         puts "finished with MailDeliveryWorker"
