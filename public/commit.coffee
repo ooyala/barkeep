@@ -37,6 +37,7 @@ window.Commit =
       else
         KeyboardShortcuts.globalOnKeydown(event)
 
+  # Returns true if the diff line is within the user's scroll context
   lineVisible: (line,visible = "all") ->
     lineTop = $(line).offset().top
     windowTop = $(window).scrollTop()
@@ -56,13 +57,18 @@ window.Commit =
     @clearSelectedLine()
     target.addClass("selected")
 
+  selectNextVisibleLine: ->
+    selectedLine = $(".diffLine.selected")
+    visibleLines = $(".diffLine").filter(":visible")
+    selectedLine.removeClass("selected")
+    select = _(visibleLines).detect((x) => @lineVisible(x,"top"))
+    $(select).addClass("selected")
+
   selectNextLine: (next = true) ->
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
     if selectedLine.length == 0 or not @lineVisible(selectedLine)
-      selectedLine.removeClass("selected")
-      select = _(visibleLines).detect((x) => @lineVisible(x,"top"))
-      $(select).addClass("selected")
+      @selectNextVisibleLine()
     else
       index = _(visibleLines).indexOf(selectedLine[0])
       return if (not next and index == 0) or (next and index == (visibleLines.length - 1))
@@ -87,6 +93,10 @@ window.Commit =
       else
         break
     window.scroll(0, if next then currentPosition else previousPosition)
+    selectedLine = $(".diffLine.selected")
+    return if selectedLine.length == 0 or @lineVisible(selectedLine)
+    @selectNextVisibleLine()
+
 
   #Logic to add comments
   onDiffLineDblClickOrReply: (e) ->
