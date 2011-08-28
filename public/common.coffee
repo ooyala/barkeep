@@ -94,7 +94,7 @@ window.Login =
     return false
 
 # Keep some amount of context on-screen to pad the selection position
-window.ScrollWithContext = (selector) ->
+window.ScrollWithContext = (selector, scroll="all") ->
   selection = $(selector)
   return unless selection.size() > 0
   selectionTop = selection.offset().top
@@ -105,9 +105,11 @@ window.ScrollWithContext = (selector) ->
   if selectionBottom < windowTop or selectionTop > windowBottom
     window.scroll(0, (selectionTop + selectionBottom) / 2 - $(window).height() / 2)
   # Otherwise ensure there is enough buffer
-  else if selectionTop - windowTop < Constants.CONTEXT_BUFFER_PIXELS
+  else if (selectionTop - windowTop < Constants.CONTEXT_BUFFER_PIXELS) and
+      (scroll == "all" or scroll == "top")
     window.scroll(0, selectionTop - Constants.CONTEXT_BUFFER_PIXELS)
-  else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS
+  else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS and
+      (scroll == "all" or scroll == "bottom")
     window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
 
 $(document).ready(-> Login.init())

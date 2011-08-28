@@ -75,7 +75,8 @@ window.Commit =
       selectedLine.removeClass("selected")
       newIndex = if next then index + 1 else index - 1
       $(visibleLines[newIndex]).addClass("selected")
-    ScrollWithContext(".diffLine.selected")
+    scroll = if next then "bottom" else "top"
+    ScrollWithContext(".diffLine.selected", scroll)
 
 
   scrollChunk: (next = true) ->
