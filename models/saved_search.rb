@@ -4,12 +4,16 @@ class SavedSearch < Sequel::Model
 
   PAGE_SIZE = 10
 
-  # The list of commits this saved search represents
+  # The list of commits this saved search represents.
   def commits(token = nil, direction = "before")
-    options = {}
-    [:repos, :branches, :authors, :paths, :messages].each { |p| options[p] = self.send(p) }
-    options.merge!(:token => token, :direction => direction, :limit => PAGE_SIZE)
-    result = MetaRepo.find_commits options
+    result = MetaRepo.find_commits(
+      :repos => repos_list,
+      :branches => branches_list,
+      :authors => authors_list,
+      :paths => paths_list,
+      :token => token,
+      :direction => direction,
+      :limit => PAGE_SIZE)
     page = (result[:count] / PAGE_SIZE).to_i + 1
     [result[:commits], page, result[:tokens]]
   end

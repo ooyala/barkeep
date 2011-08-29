@@ -48,6 +48,12 @@ module MetaRepo
     grit_commit
   end
 
+  # Returns a page of commits based on the given options.
+  # options:
+  #  - authors: a list of authors
+  #  - repos: a list of repo paths
+  #  - branches: a list of branch names
+  # 
   # returns: { :commits => [git commits], :count => number of results,
   #            :tokens => { :from => new search token, :to => new search token } }
   def self.find_commits(options)
@@ -56,28 +62,26 @@ module MetaRepo
     #   * paths
     #   * messages
 
-    # Need extended regexes to get |.
+    # Need extended regexes to be able to use the  "|" operator.
     git_options = { :extended_regexp => true, :regexp_ignore_case => true }
-    # Assuming authors is a comma-separated list.
-    if options[:authors] && !options[:authors].empty?
-      git_options[:author] = options[:authors].split(",").map(&:strip).join("|")
-    end
 
-    if options[:repos]
-      repo_search_regexes = options[:repos].split(",").map { |r| /#{r.strip}/ }
+    git_options[:author] = options[:authors].join("|") unless options[:authors].blank?
+
+    if options[:repos].blank?
+      repos = @@repos
+    else
+      repo_search_regexes = options[:repos].map { |repo| /#{repo}/ }
       repos = []
       @@repo_name_to_id.each do |name, id|
-        repos << @@repo_names_and_ids_to_repos[id] if repo_search_regexes.any? { |r| name =~ r }
+        repos << @@repo_names_and_ids_to_repos[id] if repo_search_regexes.any? { |regexp| name =~ regexp }
       end
       repos.uniq!
-    else
-      repos = @@repos
     end
 
-    git_args = options[:branches].then { split(",").map(&:strip).map { |name| "origin/#{name}" } }.else { [] }
+    git_args = options[:branches].blank? ? [] : options[:branches].map { |name| "origin/#{name}" }
     git_options[:all] = true if git_args.empty?
     git_args << "--"
-    git_args += JSON.parse(options[:paths]) if options[:paths] && !options[:paths].empty?
+    git_args += options[:paths] unless options[:paths].blank?
 
     # now, assuming options has everything set up correctly for rev-list except for limit and timestamp stuff
 
