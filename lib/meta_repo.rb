@@ -53,38 +53,16 @@ module MetaRepo
   #  - authors: a list of authors
   #  - repos: a list of repo paths
   #  - branches: a list of branch names
-  # 
+  #
   # returns: { :commits => [git commits], :count => number of results,
   #            :tokens => { :from => new search token, :to => new search token } }
   def self.find_commits(options)
-    # TODO(caleb): Deal with these filters:
-    #   * branches
-    #   * paths
-    #   * messages
+    git_options, git_args = git_options_and_args_from_search_filter_options(options)
+    repos = options[:repos].blank? ? @@repos :
+        repos_which_match(options[:repos].map { |name| Regexp.new(name) })
 
-    # Need extended regexes to be able to use the  "|" operator.
-    git_options = { :extended_regexp => true, :regexp_ignore_case => true }
-
-    git_options[:author] = options[:authors].join("|") unless options[:authors].blank?
-
-    if options[:repos].blank?
-      repos = @@repos
-    else
-      repo_search_regexes = options[:repos].map { |repo| /#{repo}/ }
-      repos = []
-      @@repo_name_to_id.each do |name, id|
-        repos << @@repo_names_and_ids_to_repos[id] if repo_search_regexes.any? { |regexp| name =~ regexp }
-      end
-      repos.uniq!
-    end
-
-    git_args = options[:branches].blank? ? [] : options[:branches].map { |name| "origin/#{name}" }
-    git_options[:all] = true if git_args.empty?
-    git_args << "--"
-    git_args += options[:paths] unless options[:paths].blank?
-
-    # now, assuming options has everything set up correctly for rev-list except for limit and timestamp stuff
-
+    # Assuming everything has been set up correctly in preparation to invoke git rev-list, add in options for
+    # the limit and timestamp.
     token = options[:token].then { |token_string| PagingToken.from_s(token_string) }
     if options[:direction] == "before"
       commits = self.find_commits_before(repos, token, options[:limit], token.nil?, true, git_options,
@@ -306,6 +284,35 @@ module MetaRepo
     compare = tuple2[0] <=> tuple1[0]
     return compare unless compare.zero?
     [tuple1[1], tuple1[2]] <=> [tuple2[1], tuple2[2]]
+  end
+
+  # Returns the repos which have names matching any of the given regular expressions.
+  def self.repos_which_match(regexps)
+    repos = []
+    @@repo_name_to_id.each do |name, id|
+      repos << @@repo_names_and_ids_to_repos[id] if regexps.any? { |regexp| name =~ regexp }
+    end
+    repos.uniq
+  end
+
+  # Converts the given search filter options to an arguments array and git CLI options, to be passed to git
+  # rev-list.
+  def self.git_options_and_args_from_search_filter_options(options)
+    # TODO(caleb): Deal with these filters:
+    #   * branches
+    #   * paths
+    #   * messages
+
+    # Need extended regexes to be able to use the  "|" operator.
+    git_options = { :extended_regexp => true, :regexp_ignore_case => true }
+
+    git_options[:author] = options[:authors].join("|") unless options[:authors].blank?
+
+    git_arguments = options[:branches].blank? ? [] : options[:branches].map { |name| "origin/#{name}" }
+    git_arguments << "--"
+    git_arguments += options[:paths] unless options[:paths].blank?
+
+    return git_options, git_arguments
   end
 end
 
