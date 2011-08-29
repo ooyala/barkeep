@@ -18,7 +18,8 @@ class SavedSearch < Sequel::Model
   def title
     return "All commits" if [repos, branches, authors, paths, messages].all?(&:nil?)
     if !repos.nil? && [authors, paths, messages].all?(&:nil?)
-      return "All commits for the #{comma_separated_list(repos_list)} #{english_quantity("repo", repos_list.size)}"
+      return "All commits for the #{comma_separated_list(repos_list)} " +
+          "#{english_quantity("repo", repos_list.size)}"
     end
 
     message = ["Commits"]
@@ -34,11 +35,13 @@ class SavedSearch < Sequel::Model
 
   def authors_list() (self.authors || "").split(",").map(&:strip) end
   def repos_list() (self.repos || "").split(",").map(&:strip) end
+
   def paths_list
     return [] unless self.paths && !self.paths.empty?
     JSON.parse(self.paths).map(&:strip)
   rescue []
   end
+
   def branches_list
     return "" unless self.branches
     self.branches.split(",").map(&:strip)
