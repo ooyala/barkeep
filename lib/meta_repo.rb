@@ -75,6 +75,7 @@ module MetaRepo
     end
 
     git_args = options[:branches].then { split(",").map(&:strip).map { |name| "origin/#{name}" } }.else { [] }
+    git_options[:all] = true if git_args.empty?
     git_args << "--"
     git_args += JSON.parse(options[:paths]) if options[:paths] && !options[:paths].empty?
 
