@@ -16,6 +16,7 @@ require 'openid/extensions/ax'
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
 require "config/environment"
+require "lib/ruby_extensions"
 require "lib/git_helper"
 require "lib/keyboard_shortcuts"
 require "lib/meta_repo"
