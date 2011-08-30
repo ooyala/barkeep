@@ -163,7 +163,11 @@ module MetaRepo
 
       # Give some progress output for really big imports.
       logger.info "Imported #{page_size * page} commits..." if (page % 10 == 0)
-
+    rescue Sequel::DatabaseDisconnectError => e
+      # NOTE(dmac): This will occur the first time the background job runs, because it's
+      # trying to reconnect to the database. If we retry, the connection will be
+      # reestablished and ingestion will continue on its merry way.
+      redo
     end until commits.empty?
 
     total_added
