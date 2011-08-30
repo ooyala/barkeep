@@ -7,7 +7,7 @@ set :app, "barkeep"
 set :deploy_to, "/opt/ooyala/#{app}"
 set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :local_path, Dir.pwd
-set :user, "root"
+set :user, "role-barkeep"
 
 
 # When deploying, we must deploy the private credentials for the email user account we send emails from.
