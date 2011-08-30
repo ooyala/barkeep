@@ -76,6 +76,8 @@ namespace :fezzik do
   remote_task :stop do
     puts "stopping app"
     run "(kill -9 `ps aux | grep 'thin start -p 80' | grep -v grep | awk '{print $2}'` || true)"
+    # kill any rogue background jobs still running
+    run "(kill -9 `ps aux | grep 'background_jobs' | grep -v grep | awk '{print $2}'` || true)"
   end
 
   desc "restarts the application"
