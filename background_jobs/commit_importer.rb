@@ -20,19 +20,20 @@ class CommitImporter
   def run
     log_file_path = File.join(File.dirname(__FILE__), "../log/commit_importer.log")
     FileUtils.touch(log_file_path)
+    logger = Logger.new(log_file_path)
 
-    MetaRepo.initialize_meta_repo(Logger.new(log_file_path), REPO_PATHS)
+    MetaRepo.initialize_meta_repo(logger, REPO_PATHS)
 
     while true
       exit if has_become_orphaned?
 
       begin
+        DB.disconnect
         exit_status = BackgroundJobs.run_process_with_timeout(100_100_100) do
-          logger = Logger.new(STDOUT)
-          MetaRepo.import_new_commits!(Logger.new(log_file_path))
+          MetaRepo.import_new_commits!(logger)
         end
       rescue TimeoutError
-        puts "The commit importer task timed out after #{TASK_TIMEOUT} seconds."
+        logger.info "The commit importer task timed out after #{TASK_TIMEOUT} seconds."
         exit_status = 1
       end
 
