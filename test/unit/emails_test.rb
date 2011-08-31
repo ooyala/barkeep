@@ -17,8 +17,12 @@ class EmailsTest < Scope::TestCase
 
   context "email body" do
     setup do
-      @grit_commit = OpenStruct.new(:short_message => "message", :id_abbrev => "commit_id",
+      @commit = Commit.new
+      grit_commit = OpenStruct.new(
+          :short_message => "message", :id_abbrev => "commit_id",
           :author => "commit_author", :date => Time.now)
+      stub(@commit).grit_commit { grit_commit }
+      stub(@commit).git_repo { GitRepo.new(:name => "my_repo") }
       stub(GitHelper).get_tagged_commit_diffs { [] }
       @user = User.new(:name => "jimbo")
     end
@@ -30,12 +34,12 @@ class EmailsTest < Scope::TestCase
       end
 
       should "include general comments when there are some" do
-        email = Emails.comment_email_body(@grit_commit, [@general_comment])
+        email = Emails.comment_email_body(@commit, [@general_comment])
         assert email.include?("General comments")
       end
 
       should "omit general comments when there are none" do
-        email = Emails.comment_email_body(@grit_commit, [])
+        email = Emails.comment_email_body(@commit, [])
         refute email.include?("General comments")
       end
     end
@@ -52,10 +56,10 @@ class EmailsTest < Scope::TestCase
 
       should "trim out whitespace that's common to all lines of the diff" do
         stub(GitHelper).get_tagged_commit_diffs { diffs_with_lines(@commit_file, ["  Line 1", "    Line 2"]) }
-        email = Nokogiri::HTML(Emails.comment_email_body(@grit_commit, [@line_comment]))
+        email = Nokogiri::HTML(Emails.comment_email_body(@commit, [@line_comment]))
         diff_lines = email.css("pre").text.split("\n")[0..1]
         # Both lines had two leading spaces in common. The email should have factored those out.
-        assert_equal ["+ Line 1", "+   Line 2"], diff_lines
+        assert_equal ["+Line 1", "+  Line 2"], diff_lines
       end
     end
   end
