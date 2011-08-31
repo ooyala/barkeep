@@ -16,7 +16,11 @@ class SyntaxHighlighter
 
     highlighted = self.pygmentize(file_type, blob.data)
 
-    @redis.set(cache_key, highlighted) if @redis
+    begin
+      @redis.set(cache_key, highlighted) if @redis
+    rescue Exception => e
+      $logger.error("Redis failed with message: #{e.message}")
+    end
 
     return highlighted
   end
