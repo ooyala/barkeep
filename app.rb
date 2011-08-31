@@ -38,12 +38,12 @@ class Barkeep < Sinatra::Base
   #
   def self.start_background_email_worker
     command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/mail_delivery.rb")
-    BackgroundJobs.fork_child_process { exec command }
+    IO.popen(command)
   end
 
   def self.start_background_commit_importer
     command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/commit_importer.rb")
-    BackgroundJobs.fork_child_process { exec command }
+    IO.popen(command)
   end
 
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
