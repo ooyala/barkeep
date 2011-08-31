@@ -10,3 +10,6 @@ GMAIL_PASSWORD = ""
 
 # This a list of paths to git repos we should watch.
 REPOS_ROOT = "#{ENV["HOME"]}/barkeep_repos"
+
+# This hostname is used to construct links in the commit emails.
+BARKEEP_HOSTNAME = "localhost:4567"

@@ -44,4 +44,5 @@ destination :prod do
   env :db_user, "root"
   env :db_password, ""
   env :repos_root, "#{deploy_to}/repos"
+  env :barkeep_hostname, "barkeep.sv2"
 end

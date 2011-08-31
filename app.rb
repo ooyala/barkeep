@@ -343,7 +343,7 @@ class Barkeep < Sinatra::Base
   # For development use only -- for testing and styling emails.
   get "/dev/latest_comment_email_preview" do
     comment = Comment.order(:id.desc).first
-    Emails.comment_email_body(comment.commit.grit_commit, [comment])
+    Emails.comment_email_body(comment.commit, [comment])
   end
 
 

@@ -9,7 +9,7 @@ class Emails
     grit_commit = commit.grit_commit
     subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
         "#{grit_commit.short_message[0..60]}"
-    html_body = comment_email_body(grit_commit, comments)
+    html_body = comment_email_body(commit, comments)
 
     # TODO(philc): Provide a plaintext email as well.
     # TODO(philc): Delay the emails and batch them together.
@@ -38,10 +38,10 @@ class Emails
     })
   end
 
-  def self.comment_email_body(grit_commit, comments)
+  def self.comment_email_body(commit, comments)
     general_comments, file_comments = comments.partition(&:general_comment?)
 
-    tagged_diffs = GitHelper.get_tagged_commit_diffs(grit_commit)
+    tagged_diffs = GitHelper.get_tagged_commit_diffs(commit.grit_commit)
 
     diffs_by_file = tagged_diffs.group_by { |tagged_diff| tagged_diff[:file_name_after] }
     diffs_by_file.each { |filename, diffs| diffs_by_file[filename] = diffs.first }
@@ -50,7 +50,7 @@ class Emails
     comments_by_file.each { |filename, comments| comments.sort_by!(&:line_number) }
 
     template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/comment_email.erb"))
-    locals = { :grit_commit => grit_commit, :comments_by_file => comments_by_file,
+    locals = { :commit => commit, :comments_by_file => comments_by_file,
         :general_comments => general_comments,
         :diffs_by_file => diffs_by_file }
     template.render(self, locals)

@@ -11,7 +11,7 @@ class Commit < Sequel::Model
   many_to_one :approved_by_user, :class => User
 
   def grit_commit
-    MetaRepo.grit_commit(git_repo_id, sha)
+    @grit_commit ||= MetaRepo.grit_commit(git_repo_id, sha)
   end
 
   def commit_comments
