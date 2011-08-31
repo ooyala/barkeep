@@ -143,7 +143,7 @@ class Barkeep < Sinatra::Base
   get "/commits/:repo_name/:sha" do
     commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
     halt 404, "No such commit." unless commit
-    tagged_diff = GitHelper::get_tagged_commit_diffs(commit.grit_commit)
+    tagged_diff = GitHelper::get_tagged_commit_diffs(commit.grit_commit, :use_syntax_highlighting => true)
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 

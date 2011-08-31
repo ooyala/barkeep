@@ -48,9 +48,11 @@ class GitHelper
 
   # Returns an array of hashes representing the tagged and colorized lines of each file in the diff.
   # Where :binary indicates if the file is binary, otherwise :lines is the output of tag_file
+  # options:
+  #  use_syntax_highlighting - whether we should use syntax highlighting when generating diffs.
   # returns: [ { :binary, :lines}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
-  def self.get_tagged_commit_diffs(commit)
+  def self.get_tagged_commit_diffs(commit, options = {})
     commit.diffs.map do |diff|
       a_path = diff.a_path
       b_path = diff.b_path
@@ -62,35 +64,38 @@ class GitHelper
       if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
         data[:binary] = true
       else
-        data[:lines] = GitHelper::tag_file(diff.a_blob, diff.b_blob, diff.diff, filetype)
+        before, after = diff.a_blob.data, diff.b_blob.data
+        if options[:use_syntax_highlighting]
+          before = GitHelper::colorize_text(before, filetype)
+          after = GitHelper::colorize_text(after, filetype)
+        end
+        data[:lines] = GitHelper::tag_file(before, after, diff.diff, filetype)
       end
       data
     end
   end
 
-  def self.colorize_blob(blob, filetype)
-    return "" if blob.nil?
-    syntaxer = Albino.new(blob.data, filetype, :html)
-    syntaxer.colorize({ :O => "encoding=utf-8,nowrap=true,stripnl=false,stripall=false" }).split("\n")
+  def self.colorize_text(text, filetype)
+    return "" if text.nil?
+    syntaxer = Albino.new(text, filetype, :html)
+    syntaxer.colorize({ :O => "encoding=utf-8,nowrap=true,stripnl=false,stripall=false" })
   end
 
-  #parse unified diff and return an array of LineDiff, that has all the lines in the original file and the diffs
-  # returns: [ {:tag, :data, :highlighted_data, :line_num_before, :line_num_after}, ... ]
-  def self.tag_file(file, file_after, diff, filetype)
-    before_lines = file ? file.data.split("\n") : []
-    after_lines = file_after ? file_after.data.split("\n") : []
-    before_highlighted = GitHelper::colorize_blob(file, filetype)
-    after_highlighted = GitHelper::colorize_blob(file_after, filetype)
+  # Parse unified diff and return an array of LineDiff objects, which have all the lines in the original file
+  # as well as the changed (diff) lines.
+  def self.tag_file(file_before, file_after, diff, filetype)
+    before_lines = file_before ? file_before.split("\n") : []
+    after_lines = file_after ? file_after.split("\n") : []
     tagged_lines = []
     orig_line, diff_line = 0, 0
-    chunks = tag_diff(diff, before_highlighted, after_highlighted)
+    chunks = tag_diff(diff, before_lines, after_lines)
 
     chunks.each do |chunk|
       if chunk[:orig_line] && chunk[:orig_line] > orig_line
-        tagged_lines += before_lines[ orig_line...chunk[:orig_line] ].map do |data|
+        tagged_lines += before_lines[orig_line...chunk[:orig_line]].map do |data|
           diff_line += 1
           orig_line += 1
-          LineDiff.new(:same, data, before_highlighted[orig_line-1], orig_line, diff_line)
+          LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
         end
       end
       tagged_lines += chunk[:tagged_lines]
@@ -101,7 +106,7 @@ class GitHelper
       tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
-        LineDiff.new(:same, data, before_highlighted[orig_line-1], orig_line, diff_line )
+        LineDiff.new(:same, before_lines[orig_line-1], orig_line, diff_line )
       end
     end
     tagged_lines
@@ -162,7 +167,7 @@ class GitHelper
             highlighted = before_highlighted[orig_line-1]
         end
         next if tag.nil?
-        chunk[:tagged_lines] << LineDiff.new(tag, line[1..-1], highlighted, tag == :added ? nil : orig_line,
+        chunk[:tagged_lines] << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line, :chunk => true)
       end
     end
@@ -172,11 +177,10 @@ class GitHelper
 end
 
 class LineDiff
-  attr_accessor :tag, :data, :highlighted_data, :line_num_before, :line_num_after, :chunk, :chunk_start
-  def initialize(tag, data, highlighted_data, line_num_before, line_num_after, chunk=false, chunk_start=false)
+  attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start
+  def initialize(tag, data, line_num_before, line_num_after, chunk=false, chunk_start=false)
     @tag = tag
     @data = data
-    @highlighted_data = highlighted_data
     @line_num_before = line_num_before
     @line_num_after = line_num_after
     @chunk = chunk
@@ -184,7 +188,7 @@ class LineDiff
   end
 
   def formatted
-    line = "<pre>#{self.line_tag + highlighted_data}</pre>"
+    line = "<pre>#{self.line_tag + self.data}</pre>"
     case @tag
     when :removed then line = "<div class='removed'>#{line}</div>"
     when :added then line = "<div class='added'>#{line}</div>"
