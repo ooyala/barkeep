@@ -19,14 +19,16 @@ class MailDelivery
     while true
       exit if has_become_orphaned?
       email_task = EmailTask.filter(:status => "pending").order(:id.desc).first
+
       if email_task.nil?
         sleep POLL_FREQUENCY
         next
       end
 
       begin
+        DB.disconnect # Do not share a DB connection file descriptor across process boundaries.
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
-          MailDeliveryWorker.new.perform_task(email_task)
+          MailDeliveryWorker.new(@logger).perform_task(email_task)
         end
       rescue TimeoutError
         @logger.info "The mail task timed out after #{TASK_TIMEOUT} seconds."
@@ -40,12 +42,15 @@ class MailDelivery
 end
 
 class MailDeliveryWorker
+  def initialize(logger) @logger = logger end
+
   def perform_task(email_task)
     begin
-      @logger.info "running Emails.deliver_mail"
+      @logger.info "Sending email to #{email_task.to} with subject \"#{email_task.subject}\""
       Emails.deliver_mail(email_task.to, email_task.subject, email_task.body)
       email_task.delete
     rescue => error
+      @logger.error("#{error.class} #{error.message} #{error.backtrace}")
       # We're leaving this email task in the database so you can troubleshoot your configuration if there's
       # a problem.
       email_task.last_attempted = Time.now
