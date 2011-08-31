@@ -8,6 +8,7 @@ require "coffee-script"
 require "nokogiri"
 require "open-uri"
 require "methodchain"
+require "redis"
 
 require 'openid'
 require 'openid/store/filesystem'
@@ -32,6 +33,7 @@ OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
+  @@redis = nil
 
   #
   # To be called from within the configure blocks, tehse methods must be defined prior to them.
@@ -44,6 +46,18 @@ class Barkeep < Sinatra::Base
   def self.start_background_commit_importer
     command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/commit_importer.rb")
     IO.popen(command)
+  end
+
+  def self.get_redis_instance
+    return @@redis if @@redis
+    begin
+      @@redis = Redis.new
+      @@redis.ping
+    rescue
+      warn "Cannot connect to Redis"
+      @@redis = nil
+    end
+    @@redis
   end
 
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
@@ -61,7 +75,7 @@ class Barkeep < Sinatra::Base
 
     $logger.level = Logger::DEBUG
     MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
-
+    GitHelper.initialize_git_helper(Barkeep.get_redis_instance)
     error do
       # Show a more developer-friendly error page and stack traces.
       content_type "text/plain"
@@ -78,12 +92,14 @@ class Barkeep < Sinatra::Base
   configure :test do
     set :show_exceptions, false
     set :dump_errors, false
+    GitHelper.initialize_git_helper(nil)
   end
 
   configure :production do
     enable :logging
     $logger.level = Logger::INFO
     MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
+    GitHelper.initialize_git_helper(Barkeep.get_redis_instance)
     Barkeep.start_background_email_worker
     Barkeep.start_background_commit_importer
   end
@@ -142,9 +158,11 @@ class Barkeep < Sinatra::Base
   end
 
   get "/commits/:repo_name/:sha" do
-    commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
+    repo_name = params[:repo_name]
+    commit = MetaRepo.db_commit(repo_name, params[:sha])
     halt 404, "No such commit." unless commit
-    tagged_diff = GitHelper::get_tagged_commit_diffs(commit.grit_commit, :use_syntax_highlighting => true)
+    tagged_diff = GitHelper::get_tagged_commit_diffs(repo_name, commit.grit_commit,
+        :use_syntax_highlighting => true)
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 

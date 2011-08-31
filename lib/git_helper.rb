@@ -1,13 +1,16 @@
 # TODO(caleb) Test this core logic.
 
 require "cgi"
-require "albino"
 require "grit"
 
 require "lib/albino_filetype"
+require "lib/syntax_highlighter"
 
 # Helper methods used to retrieve information from a Grit repository needed for the view.
 class GitHelper
+  def self.initialize_git_helper(redis)
+    @@syntax_highlighter = SyntaxHighlighter.new(redis)
+  end
   # mode = :commits or :count
   # retain = :first or :last
   def self.commits_with_limit(repo, options, args, limit, mode = :commits, retain = :first)
@@ -52,7 +55,7 @@ class GitHelper
   #  use_syntax_highlighting - whether we should use syntax highlighting when generating diffs.
   # returns: [ { :binary, :lines}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
-  def self.get_tagged_commit_diffs(commit, options = {})
+  def self.get_tagged_commit_diffs(repo_name, commit, options = {})
     commit.diffs.map do |diff|
       a_path = diff.a_path
       b_path = diff.b_path
@@ -64,21 +67,17 @@ class GitHelper
       if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
         data[:binary] = true
       else
-        before, after = diff.a_blob.data, diff.b_blob.data
         if options[:use_syntax_highlighting]
-          before = GitHelper::colorize_text(before, filetype)
-          after = GitHelper::colorize_text(after, filetype)
+          before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
+          after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
+        else
+          before = diff.a_blob ? diff.a_blob.data : ""
+          after = diff.b_blob ? diff.b_blob.data : ""
         end
         data[:lines] = GitHelper::tag_file(before, after, diff.diff, filetype)
       end
       data
     end
-  end
-
-  def self.colorize_text(text, filetype)
-    return "" if text.nil?
-    syntaxer = Albino.new(text, filetype, :html)
-    syntaxer.colorize({ :O => "encoding=utf-8,nowrap=true,stripnl=false,stripall=false" })
   end
 
   # Parse unified diff and return an array of LineDiff objects, which have all the lines in the original file
