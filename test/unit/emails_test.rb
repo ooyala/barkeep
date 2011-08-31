@@ -5,6 +5,8 @@ require "ostruct"
 require "nokogiri"
 
 class EmailsTest < Scope::TestCase
+  include StubHelper
+
   context "strip_unchanged_blank_lines" do
     should "remove unchanged blank lines from both sides of the array" do
       line_diffs = [
@@ -17,14 +19,9 @@ class EmailsTest < Scope::TestCase
 
   context "email body" do
     setup do
-      @commit = Commit.new
-      grit_commit = OpenStruct.new(
-          :short_message => "message", :id_abbrev => "commit_id",
-          :author => "commit_author", :date => Time.now)
-      stub(@commit).grit_commit { grit_commit }
-      stub(@commit).git_repo { GitRepo.new(:name => "my_repo") }
-      stub(GitHelper).get_tagged_commit_diffs { [] }
       @user = User.new(:name => "jimbo")
+      @commit = stub_commit(@user)
+      stub(GitHelper).get_tagged_commit_diffs { [] }
     end
 
     context "general comments" do

@@ -3,6 +3,7 @@ require "app"
 
 class AppTest < Scope::TestCase
   include Rack::Test::Methods
+  include StubHelper
 
   def app() Barkeep end
 
@@ -15,7 +16,9 @@ class AppTest < Scope::TestCase
     setup do
       @comment = Comment.new(:text => "howdy ho", :created_at => Time.now)
       stub(@comment).user { @user }
-      stub(Commit).filter { [Commit.new()] }
+      @commit = stub_commit(@user)
+
+      stub(MetaRepo).db_commit { @commit }
     end
 
     should "posting a comment should trigger an email" do
@@ -26,6 +29,5 @@ class AppTest < Scope::TestCase
       # TODO(philc): Make a stronger assertion, e.g. about who this email is being sent to.
       assert_equal false, @email_task_params.nil?
     end
-
   end
 end
