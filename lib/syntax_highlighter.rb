@@ -26,9 +26,8 @@ class SyntaxHighlighter
   end
 
   def pygmentize(file_type, text)
-    lexer = Pygments::Lexer.find_by_name(file_type)
-    return lexer.highlight(text, { :encoding => "utf-8", :nowrap => true, :stripnl => false,
-        :stripall => false })
+    Pygments.highlight(text, :lexer => file_type, :options => { :encoding => "utf-8", :nowrap => true,
+        :stripnl => false, :stripall => false })
   end
 
   def key(repo_name, blob)

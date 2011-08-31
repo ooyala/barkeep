@@ -1,27 +1,27 @@
 class AlbinoFiletype
   EXTENSION_TO_FILETYPE = {
-    ".rb" => "Ruby",
-    "Rakefile" => "Ruby",
-    ".erb" => "RHTML",
-    ".xml" => "XML",
-    ".js" => "JavaScript",
-    ".coffee" => "CoffeeScript",
-    ".sh" => "Bash",
-    ".css" => "CSS",
-    ".less" => "CSS",
-    ".py" => "Python",
-    ".c" => "C",
-    ".h" => "C",
-    ".as" => "ActionScript",
-    ".scala" => "Scala",
-    ".sbt" => "Scala"
+    ".rb" => :ruby,
+    "Rakefile" => :ruby,
+    ".erb" => :rhtml,
+    ".xml" => :xml,
+    ".js" => :javascript,
+    ".coffee" => :coffeescript,
+    ".sh" => :bash,
+    ".css" => :css,
+    ".less" => :css,
+    ".py" => :python,
+    ".c" => :c,
+    ".h" => :c,
+    ".as" => :actionscript,
+    ".scala" => :scala,
+    ".sbt" => :scala
   }
   def self.detect_filetype(filename)
     # if path, separate file from path
     filename = filename.include?("/") ? filename[filename.index(%r{/[^/]+$})..-1] : filename
-    return "Text only" unless filename.include?(".")
+    return :text unless filename.include?(".")
     extension = filename[filename.index(/\.[^\.]+$/)..-1]
     filetype = extension ? EXTENSION_TO_FILETYPE[extension] : EXTENSION_TO_FILETYPE[filename]
-    filetype || "Text only"
+    filetype || :text
   end
 end
