@@ -25,8 +25,7 @@ namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
     puts "staging project in /tmp/#{app}"
-    system("rm -fr /tmp/#{app}")
-    system("cp -r #{local_path} /tmp/#{app}")
+    system("rsync --recursive #{local_path}/* --exclude=.git --exclude=tmp --exclude=log /tmp/#{app}")
     Rake::Task["fezzik:save_environment"].invoke
   end
 
