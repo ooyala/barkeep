@@ -188,7 +188,7 @@ class LineDiff
   end
 
   def formatted
-    line = "<pre>#{self.line_tag + self.data}</pre>"
+    line = "<pre>#{self.line_prefix + self.data}</pre>"
     case @tag
     when :removed then line = "<div class='removed'>#{line}</div>"
     when :added then line = "<div class='added'>#{line}</div>"
@@ -197,7 +197,7 @@ class LineDiff
     return line
   end
 
-  def line_tag
+  def line_prefix
     case @tag
     when :same then " "
     when :removed then "-"

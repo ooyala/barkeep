@@ -54,12 +54,10 @@
       # for a cleaner display. If that happens, just show the comment after the last line in the diff.
       comment_appears_after_diff = (comment_offset >= line_diffs.size)
 
-      line_prefix = { :added => "+ ", :removed => "- ", :same => "  " }
-
       output = []
 
       line_diffs.each_with_index do |line_diff, index|
-        output << line_prefix[line_diff.tag] + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
+        output << line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
         if (comment_offset == index) || (comment_appears_after_diff && index == line_diffs.size - 1)
           output << "\n&lt;" + CGI.escape_html(comment.user.name) + "&gt; " +
               CGI.escape_html(comment.text) + "\n"
