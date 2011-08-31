@@ -27,9 +27,6 @@ gem "pony"
 # For rendering erb outside of views.
 gem "tilt"
 
-# For closing all open file descriptors when we fork and exec.
-gem "io-extra"
-
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"

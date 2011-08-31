@@ -15,7 +15,6 @@
 # but using plain process management like this is much simpler and fits well with our unambitious needs.
 
 require "timeout"
-require "io/extra"
 
 class BackgroundJobs
   # Runs a block of code as a child process and kills it if it hasn't exited after timeout_seconds.
@@ -52,7 +51,6 @@ class BackgroundJobs
     child_pid = fork
     if child_pid.nil?
       begin
-        IO.closefrom(3)
         yield
       rescue StandardError => error
         puts "Exception will running code in forked child process: #{error.class} #{error.message}"
