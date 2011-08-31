@@ -72,6 +72,7 @@ class GitHelper
           before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
           after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
         else
+          # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
           before = diff.a_blob ? diff.a_blob.data : ""
           after = diff.b_blob ? diff.b_blob.data : ""
         end
