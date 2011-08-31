@@ -11,6 +11,7 @@ class CommitImporter
   # TODO(philc): Implement a reasonable timeout here. We need to be able to paginate our import process
   # such that our commit importer only bites off as much as it can chew.
   TASK_TIMEOUT = 100_000_000 # Effectively infinity. Should be more like 15s.
+  @redis = nil
 
   # True if the parent process has been killed or died.
   def has_become_orphaned?()
@@ -23,6 +24,7 @@ class CommitImporter
     logger = Logger.new(log_file_path)
 
     MetaRepo.initialize_meta_repo(logger, REPO_PATHS)
+    GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
 
     while true
       exit if has_become_orphaned?

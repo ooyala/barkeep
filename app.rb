@@ -26,6 +26,7 @@ require "lib/script_environment"
 require "lib/stats"
 require "lib/string_helper"
 require "lib/inspire"
+require "lib/redis_manager"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"
@@ -33,7 +34,6 @@ OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
-  @@redis = nil
 
   #
   # To be called from within the configure blocks, tehse methods must be defined prior to them.
@@ -46,18 +46,6 @@ class Barkeep < Sinatra::Base
   def self.start_background_commit_importer
     command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/commit_importer.rb")
     IO.popen(command)
-  end
-
-  def self.get_redis_instance
-    return @@redis if @@redis
-    begin
-      @@redis = Redis.new
-      @@redis.ping
-    rescue
-      warn "Cannot connect to Redis"
-      @@redis = nil
-    end
-    @@redis
   end
 
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
@@ -75,7 +63,7 @@ class Barkeep < Sinatra::Base
 
     $logger.level = Logger::DEBUG
     MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
-    GitHelper.initialize_git_helper(Barkeep.get_redis_instance)
+    GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
     error do
       # Show a more developer-friendly error page and stack traces.
       content_type "text/plain"
@@ -99,7 +87,7 @@ class Barkeep < Sinatra::Base
     enable :logging
     $logger.level = Logger::INFO
     MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
-    GitHelper.initialize_git_helper(Barkeep.get_redis_instance)
+    GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
     Barkeep.start_background_email_worker
     Barkeep.start_background_commit_importer
   end

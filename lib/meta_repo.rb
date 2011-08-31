@@ -10,6 +10,7 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/grit_extensions"
 require "lib/script_environment"
 require "lib/commit_search/paging_token"
+require "lib/git_helper"
 
 # TODO(philc): Make this an instantiable class so we don't need to pass around a logger in every method.
 module MetaRepo
@@ -90,7 +91,7 @@ module MetaRepo
       logger.info "Importing new commits for repo #{repo_name}."
       grit_repo.remotes.each do |remote|
         next if remote.name == "origin/HEAD"
-        new_commits = self.import_new_ancestors!(logger, repo_id, remote.commit)
+        new_commits = self.import_new_ancestors!(logger, repo_name, repo_id, remote.commit)
         logger.info "Imported #{new_commits} new commits as ancestors of #{remote.name} in repo #{repo_name}"
       end
     end
@@ -100,7 +101,7 @@ module MetaRepo
 
   # Import all undiscovered ancestors. Returns the number of new commits imported.
   # This method can import a new repository of 25K commits in about 40s.
-  def self.import_new_ancestors!(logger, repo_id, grit_commit)
+  def self.import_new_ancestors!(logger, repo_name, repo_id, grit_commit)
     # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
     # importing a brand new repository. Setting this page size to 2,000 will result in a stack overflow --
     # Grit must fetch commits recursively.
@@ -123,6 +124,8 @@ module MetaRepo
         user = User.find_or_create(:email => commit.author.email) do |new_user|
           new_user.name = commit.author.name
         end
+
+        GitHelper::get_tagged_commit_diffs(repo_name, commit, :cache_prime => true)
 
         {
           :git_repo_id => repo_id,
@@ -321,5 +324,6 @@ if __FILE__ == $0
   logger = Logger.new(STDOUT)
   logger.level = Logger::DEBUG
   MetaRepo.initialize_meta_repo(logger, REPO_PATHS)
+  GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
   MetaRepo.import_new_commits!(logger)
 end

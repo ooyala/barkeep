@@ -45,4 +45,6 @@ destination :prod do
   env :db_password, ""
   env :repos_root, "#{deploy_to}/repos"
   env :barkeep_hostname, "barkeep.sv2"
+  env :redis_host, "localhost"
+  env :redis_port, 6379
 end

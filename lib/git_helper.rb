@@ -8,6 +8,7 @@ require "lib/syntax_highlighter"
 
 # Helper methods used to retrieve information from a Grit repository needed for the view.
 class GitHelper
+  @@syntax_highlighter = nil
   def self.initialize_git_helper(redis)
     @@syntax_highlighter = SyntaxHighlighter.new(redis)
   end
@@ -67,14 +68,16 @@ class GitHelper
       if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
         data[:binary] = true
       else
-        if options[:use_syntax_highlighting]
+        if options[:use_syntax_highlighting] || options[:cache_prime]
           before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
           after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
         else
           before = diff.a_blob ? diff.a_blob.data : ""
           after = diff.b_blob ? diff.b_blob.data : ""
         end
-        data[:lines] = GitHelper::tag_file(before, after, diff.diff, filetype)
+        unless options[:cache_prime]
+          data[:lines] = GitHelper::tag_file(before, after, diff.diff, filetype)
+        end
       end
       data
     end
