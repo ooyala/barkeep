@@ -8,31 +8,29 @@ class MailDelivery
   POLL_FREQUENCY = 3 # How often we check for new emails in the email task queue.
   TASK_TIMEOUT = 10
 
+  def initialize(logger) @logger = logger end
+
   # True if the parent process has been killed or died.
   def has_become_orphaned?()
     Process.ppid == 1 # Process with ID 1 is the init process, the father of all orphaned processes.
   end
 
-  def run
+  def run()
     while true
       exit if has_become_orphaned?
-      puts "email querying"
       email_task = EmailTask.filter(:status => "pending").order(:id.desc).first
       if email_task.nil?
-        puts "no outstanding email tasks"
         sleep POLL_FREQUENCY
         next
       end
 
       begin
-        puts "forking and running MailDeliveryWorker"
         DB.disconnect
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
           MailDeliveryWorker.new.perform_task(email_task)
         end
-        puts "finished with MailDeliveryWorker"
       rescue TimeoutError
-        puts "The mail task timed out after #{TASK_TIMEOUT} seconds."
+        @logger.info "The mail task timed out after #{TASK_TIMEOUT} seconds."
         exit_status = 1
       end
 
@@ -45,7 +43,7 @@ end
 class MailDeliveryWorker
   def perform_task(email_task)
     begin
-      puts "running Emails.deliver_mail"
+      @logger.info "running Emails.deliver_mail"
       Emails.deliver_mail(email_task.to, email_task.subject, email_task.body)
       email_task.delete
     rescue => error
@@ -61,5 +59,10 @@ class MailDeliveryWorker
 end
 
 if $0 == __FILE__
-  MailDelivery.new.run
+  logger = Logger.new(File.join(File.dirname(__FILE__), "../log/mail_delivery.log"))
+  logger.formatter = proc do |severity, datetime, program_name, message|
+    time = datetime.strftime "%Y-%m-%d %H:%M:%S"
+    "[#{time}] #{message}\n"
+  end
+  MailDelivery.new(logger).run
 end
