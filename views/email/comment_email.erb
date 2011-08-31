@@ -35,33 +35,31 @@
 
   <pre><%=
     comments.map do |comment|
-      line_diffs = context_around_line(comment.line_number, diffs_by_file[filename][:lines])
-      next if line_diffs.empty?
-      # Do this so there isn't useless whitespace surrounding the diff.
-      line_diffs = strip_unchanged_blank_lines(line_diffs)
+      lines_of_context = 4
 
-      # If all of the lines in the diff have some similar amount of leading whitespace, trim it off so the
-      # diff isn't so far indented.
-      non_empty_lines = line_diffs.map(&:data).reject { |content| content.strip.blank? }
+      lines = diffs_by_file[filename][:lines]
+      lines_before = lines[[comment.line_number - lines_of_context, 0].max, lines_of_context]
+      lines_after = lines[comment.line_number, lines_of_context]
+
+      # Do this so there isn't useless whitespace surrounding the diff.
+      lines_before = strip_unchanged_blank_lines(lines_before)
+      lines_after = strip_unchanged_blank_lines(lines_after)
+
+      # If all of the lines in the diff have some similar amount of leading whitespace, unindent each line
+      # so the diff isn't so far indented.
+      non_empty_lines = (lines_before + lines_after).map(&:data).reject { |content| content.strip.blank? }
       leading_whitespace = non_empty_lines.map { |content| content.index(/\S/) }.min || 0
       trim_leading_whitespace = Proc.new { |line| line[leading_whitespace..-1] || "" }
 
-      comment_offset = comment.line_number -
-          (line_diffs.first.tag == :removed ? line_diffs.first.line_num_before :
-           line_diffs.first.line_num_after)
+      output = lines_before.map do |line_diff|
+        line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
+      end
 
-      # The comment may have been made on a blank line at the edge of the diff, which we've since stripped off
-      # for a cleaner display. If that happens, just show the comment after the last line in the diff.
-      comment_appears_after_diff = (comment_offset >= line_diffs.size)
+      output << "\n&lt;" + CGI.escape_html(comment.user.name) + "&gt; " +
+          CGI.escape_html(comment.text) + "\n"
 
-      output = []
-
-      line_diffs.each_with_index do |line_diff, index|
-        output << line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
-        if (comment_offset == index) || (comment_appears_after_diff && index == line_diffs.size - 1)
-          output << "\n&lt;" + CGI.escape_html(comment.user.name) + "&gt; " +
-              CGI.escape_html(comment.text) + "\n"
-        end
+      output += lines_after.map do |line_diff|
+        line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
       end
       output.join("\n")
     end.join("\n\n")

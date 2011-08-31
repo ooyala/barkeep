@@ -4,8 +4,6 @@ require "lib/string_helper"
 
 # Methods for sending various emails, like comment notifications and new commit notifications.
 class Emails
-  LINES_OF_CONTEXT = 4
-
   # Enqueues an email notification of a comment for delivery.
   def self.send_comment_email(commit, comments)
     grit_commit = commit.grit_commit
@@ -61,15 +59,6 @@ class Emails
   #
   # Helpers for formatting the email views.
   #
-
-  # An array of LineDiff objects which are close to the given line_number.
-  # - line_diffs: an array of LineDiff objects
-  def self.context_around_line(line_number, line_diffs)
-    context = line_diffs.select do |line_diff|
-      diff_line_number = (line_diff.tag == :removed ? line_diff.line_num_before : line_diff.line_num_after)
-      (diff_line_number - line_number).abs <= LINES_OF_CONTEXT
-    end
-  end
 
   # Removes empty, unchanged lines from the edges of the given line_diffs array.
   # This is useful so that our diffs in emails don't have unnecessary whitespace around them.

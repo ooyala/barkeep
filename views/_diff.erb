@@ -25,7 +25,7 @@
             <% # add line comments
                while comment_index < line_comments.length &&
                 line_comments[comment_index].line_number == index + 1 %>
-                  <%= erb :_comment, :locals => {:comment => line_comments[comment_index]} %>
+                  <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
                 <% comment_index += 1 %>
             <% end %>
           </td>
