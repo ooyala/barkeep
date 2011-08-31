@@ -25,7 +25,6 @@ class MailDelivery
       end
 
       begin
-        DB.disconnect
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
           MailDeliveryWorker.new.perform_task(email_task)
         end

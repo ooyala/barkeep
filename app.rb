@@ -37,8 +37,8 @@ class Barkeep < Sinatra::Base
   # To be called from within the configure blocks, tehse methods must be defined prior to them.
   #
   def self.start_background_email_worker
-    command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/mail_delivery.rb")
-    BackgroundJobs.fork_child_process { DB.disconnect; exec command }
+    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/mail_delivery.rb")
+    BackgroundJobs.fork_child_process { exec command }
   end
 
   def self.start_background_commit_importer
