@@ -1,5 +1,8 @@
-#DB_LOCATION = "DBI:Mysql:barkeep:localhost"
-DB_LOCATION = "DBI:SQLite:dev.db"
+# SQLite is easier for new developers to get started with, but it gets easily corrupted during development.
+# Using MySQL for now, for stability reasons.
+# DB_LOCATION = "DBI:SQLite:dev.db"
+DB_LOCATION = "DBI:Mysql:barkeep:localhost"
+
 DB_USER = "root"
 DB_PASSWORD = ""
 
