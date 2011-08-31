@@ -36,7 +36,6 @@ class CommitImporter
         exit_status = 1
       end
 
-      # If we sent that last email successfully, we'll continue onto the next email immediately.
       sleep POLL_FREQUENCY
     end
   end

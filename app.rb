@@ -72,7 +72,7 @@ class Barkeep < Sinatra::Base
     end
 
     Barkeep.start_background_email_worker
-    # Barkeep.start_background_commit_importer
+    Barkeep.start_background_commit_importer
   end
 
   configure :test do
