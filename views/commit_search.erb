@@ -1,24 +1,6 @@
 <script src="/js/smart_search.js"></script>
 <script src="/js/commit_search.js"></script>
 <!-- These options apply to all commit lists shown on the page. -->
-<% if current_user %>
-  <div id="filterControls">
-    <select name="date_selection">
-      <option value="three_days">Last 3 days</option>
-      <option value="one_week">Last 1 week</option>
-      <option value="one_week">Last 2 weeks</option>
-      <option value="one_week" selected>Last 1 month</option>
-      <option value="one_week">Last 6 months</option>
-      <option value="all_time">All time</option>
-    </select>
-    <br/>
-      <span id="showUnreviewedOnly">
-        <input type="checkbox" id="unreviewedOnlyCheckbox"></input>
-        <label for="unreviewedOnlyCheckbox">Unreviewed only</label>
-      </span>
-  </div>
-<% end %>
-
 <div id="commitSearch" class="embossedPanel">
   <% if current_user %>
     <table>
