@@ -76,7 +76,7 @@ class GitHelper
           after = diff.b_blob ? diff.b_blob.data : ""
         end
         unless options[:cache_prime]
-          data[:lines] = GitHelper::tag_file(before, after, diff.diff, filetype)
+          data[:lines] = GitHelper::tag_file(before, after, diff.diff)
         end
       end
       data
@@ -85,7 +85,7 @@ class GitHelper
 
   # Parse unified diff and return an array of LineDiff objects, which have all the lines in the original file
   # as well as the changed (diff) lines.
-  def self.tag_file(file_before, file_after, diff, filetype)
+  def self.tag_file(file_before, file_after, diff)
     before_lines = file_before ? file_before.split("\n") : []
     after_lines = file_after ? file_after.split("\n") : []
     tagged_lines = []
