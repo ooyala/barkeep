@@ -34,5 +34,8 @@ def suppress_warnings(&block)
   result
 end
 
+$logger = Logger.new(STDOUT)
+$logger.level = Logger::DEBUG
+MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
 
 IRB.start(__FILE__)
