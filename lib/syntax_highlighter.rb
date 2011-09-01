@@ -14,7 +14,7 @@ class SyntaxHighlighter
       return cached if cached
     end
 
-    highlighted = self.pygmentize(file_type, blob.data)
+    highlighted = SyntaxHighlighter.pygmentize(file_type, blob.data)
 
     begin
       @redis.set(cache_key, highlighted) if @redis
