@@ -153,6 +153,12 @@ module MetaRepo
       # trying to reconnect to the database. If we retry, the connection will be
       # reestablished and ingestion will continue on its merry way.
       redo
+    rescue Exception => e
+      logger.info "Exception raised while importing commits:"
+      logger.info "#{e.class}"
+      logger.info "#{e.message}"
+      logger.info "#{e.backtrace}"
+      raise e
     end until commits.empty?
 
     total_added
