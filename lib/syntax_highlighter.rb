@@ -25,7 +25,7 @@ class SyntaxHighlighter
     return highlighted
   end
 
-  def pygmentize(file_type, text)
+  def self.pygmentize(file_type, text)
     Pygments.highlight(text, :lexer => file_type, :options => { :encoding => "utf-8", :nowrap => true,
         :stripnl => false, :stripall => false })
   end

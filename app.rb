@@ -27,6 +27,7 @@ require "lib/stats"
 require "lib/string_helper"
 require "lib/inspire"
 require "lib/redis_manager"
+require "lib/redcarpet_extensions"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_DISCOVERY_ENDPOINT = "google.com/accounts/o8/id"

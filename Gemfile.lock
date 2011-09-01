@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/tanoku/redcarpet.git
+  revision: 3c6b5807e8a5be51d769149e555b09bae8ae3228
+  specs:
+    redcarpet (2.0.0b3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -53,7 +59,6 @@ GEM
     rake-remote_task (2.0.4)
       open4 (~> 0.9.0)
       rake (~> 0.8)
-    redcarpet (1.17.2)
     redis (2.2.2)
     rerun (0.6.2)
     rr (1.0.3)
@@ -99,7 +104,7 @@ DEPENDENCIES
   pygments.rb
   rack
   rack-test
-  redcarpet
+  redcarpet!
   redis
   rerun
   rr (>= 1.0.3)

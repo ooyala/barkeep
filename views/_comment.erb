@@ -14,6 +14,7 @@
         <% end %>
       </div>
     </div>
-    <div class="commentBody"> <%= replace_shas_with_links(Redcarpet.new(comment.text).to_html) %> </div>
+    <div class="commentBody"> <%= replace_shas_with_links(
+      RedcarpetManager.redcarpet_pygments.render(comment.text)) %> </div>
   </div>
 <% end %>
