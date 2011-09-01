@@ -3,7 +3,6 @@ require "pygments"
 require "lib/syntax_highlighter"
 
 class RedcarpetManager
-  @@redcarpet_html = nil
   @@redcarpet_pygments = nil
 
   EXTENSIONS = {
@@ -27,12 +26,6 @@ class RedcarpetManager
     :hard_wrap => true,
     :xhtml => false
   }
-
-  def self.redcarpet_html
-    return @@redcarpet_html if @@redcarpet_html
-    renderer = Redcarpet::Render::HTML.new(RENDER_OPTIONS)
-    @@redcarpet_html = Redcarpet::Markdown.new(renderer, EXTENSIONS)
-  end
 
   def self.redcarpet_pygments
     return @@redcarpet_pygments if @@redcarpet_pygments
