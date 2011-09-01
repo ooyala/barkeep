@@ -15,7 +15,8 @@ Setting up Barkeep for development
     navigate to localhost:4567/commits
 
 If you're running a Mac using Macports with rvm, ensure your ruby is compiled against the macports openssl library. Otherwise you will get segfaults when sending emails over SSL:
-rvm install 1.9.2 --with-openssl-dir=/opt/local
+
+    rvm install 1.9.2 --with-openssl-dir=/opt/local
 
 Deployment
 ==========
