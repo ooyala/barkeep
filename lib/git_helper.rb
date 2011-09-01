@@ -57,30 +57,40 @@ class GitHelper
   # returns: [ { :binary, :lines}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
-    commit.diffs.map do |diff|
-      a_path = diff.a_path
-      b_path = diff.b_path
-      data = {
-        :file_name_before => a_path,
-        :file_name_after => b_path,
-      }
-      filetype = AlbinoFiletype::detect_filetype(a_path == "dev/null" ? b_path : a_path)
-      if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
-        data[:binary] = true
-      else
-        if options[:use_syntax_highlighting] || options[:cache_prime]
-          before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
-          after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
+    begin
+      commit.diffs.map do |diff|
+        a_path = diff.a_path
+        b_path = diff.b_path
+        data = {
+          :file_name_before => a_path,
+          :file_name_after => b_path,
+        }
+        filetype = AlbinoFiletype::detect_filetype(a_path == "dev/null" ? b_path : a_path)
+        if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
+          data[:binary] = true
         else
-          # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
-          before = diff.a_blob ? diff.a_blob.data : ""
-          after = diff.b_blob ? diff.b_blob.data : ""
+          if options[:use_syntax_highlighting] || options[:cache_prime]
+            before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
+            after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
+          else
+            # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
+            before = diff.a_blob ? diff.a_blob.data : ""
+            after = diff.b_blob ? diff.b_blob.data : ""
+          end
+          unless options[:cache_prime]
+            data[:lines] = GitHelper::tag_file(before, after, diff.diff)
+          end
         end
-        unless options[:cache_prime]
-          data[:lines] = GitHelper::tag_file(before, after, diff.diff)
-        end
+        data
       end
-      data
+    rescue Grit::Git::GitTimeout => e
+      # NOTE/TODO(dmac): Grit will die when trying to diff huge commits.
+      # Here we're returning an skeleton diff so we can actually display something in the UI.
+      # It's pretty lame, but gets around any exceptions for now.
+      [{ :file_name_before => "Error processing commit diff",
+         :file_name_after => "",
+         :lines => [LineDiff.new(:same, "This commit is too damn big!", 0, 0, true, true)]
+      }]
     end
   end
 
