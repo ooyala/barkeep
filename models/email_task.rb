@@ -4,4 +4,5 @@
 #   failure reason (usually a bad email config, or an email server which was down for awhile) and then reset
 #   those pending tasks.
 class EmailTask < Sequel::Model
+  many_to_one :commit
 end
