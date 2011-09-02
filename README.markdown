@@ -22,6 +22,14 @@ If you're running a Mac using Macports with rvm, ensure your ruby is compiled ag
 
     rvm install 1.9.2 --with-openssl-dir=/opt/local
 
+Viewing Repositories
+====================
+
+Once Barkeep is set up for development, look in config/environment.rb.  By default, Barkeep will
+look in ~/barkeep_repos, though you can change the REPOS_ROOT variable to change that.
+
+Create the directory and use normal "git clone" to add repositories.  Now Barkeep can see them!
+
 Deployment
 ==========
 These packages will need to be installed on a linux server before a deploy will work. apt-get the following:
