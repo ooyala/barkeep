@@ -9,9 +9,12 @@ Setting up Barkeep for development
     gem install bundler
     bundle install
     port install nodejs # or brew install node
+      # Note: you may need to "port deactivate c-ares" before installing nodejs
     curl http://npmjs.org/install.sh | sh # install npm
     npm install less
-    run_migrations.sh # db migrations
+    mysqladmin5 -u root create barkeep  # create the 'barkeep' database
+    ruby run_migrations.rb # db migrations
+    redis-server  # run Redis
     bin/rerun.sh # run the server
     navigate to localhost:4567/commits
 
@@ -32,6 +35,7 @@ These packages will need to be installed on a linux server before a deploy will 
     libopenssl-ruby
     libssl-dev
     python-setuptools
+    redis-server
 
 Also install:
 
