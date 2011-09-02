@@ -36,6 +36,9 @@ Once Barkeep is set up for development, look in `config/environment.rb`. By defa
 
 Create the directory and use normal `git clone` to add repositories. Now Barkeep can see them!
 
+Be careful about pointing at all of your local repositories.  It can take time to pull in all the
+commits, and you may get a very large database of commit records!
+
 Deployment
 ==========
 
