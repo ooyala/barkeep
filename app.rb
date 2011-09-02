@@ -287,7 +287,7 @@ class Barkeep < Sinatra::Base
     openid_response = @openid_consumer.complete(params, request.url)
     case openid_response.status
       when OpenID::Consumer::FAILURE
-        "Sorry, we could not authenticate you with this identifier." #{openid_response.display_identifier}"
+        "Sorry, we could not authenticate you with this identifier. #{openid_response.display_identifier}"
 
       when OpenID::Consumer::SETUP_NEEDED
         "Immediate request failed - Setup Needed"
