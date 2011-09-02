@@ -42,9 +42,16 @@ module MetaRepo
     Commit[:git_repo_id => @@repo_name_to_id[repo_name], :sha => sha]
   end
 
+  # Returns nil if the given commit doesn't exist or is no longer on-disk
+  # (because the repo was removed or mistakenly rebased).
   def self.grit_commit(repo_name_or_id, sha)
+    # The grit_repo can be nil if the user has removed the repo from disk.
     grit_repo = @@repo_names_and_ids_to_repos[repo_name_or_id]
+    return nil unless grit_repo
+
     grit_commit = grit_repo.commit(sha)
+    return nil unless grit_commit
+
     grit_commit.repo_name = File.basename(grit_repo.working_dir)
     grit_commit
   end
