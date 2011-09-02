@@ -4,6 +4,7 @@ Coming soon!
 
 Setting up Barkeep for development
 ==================================
+    easy_install pip
     pip install pygments
     gem install bundler
     bundle install
