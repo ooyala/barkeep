@@ -57,7 +57,7 @@
         line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
       end
 
-      output << "\n&lt;" + CGI.escape_html(comment.user.name) + "&gt; " +
+      output << "\n<b>&lt;" + CGI.escape_html(comment.user.name) + "&gt;</b> " +
           CGI.escape_html(comment.text) + "\n"
 
       output += lines_after.map do |line_diff|
