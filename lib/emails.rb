@@ -4,6 +4,11 @@ require "lib/string_helper"
 
 # Methods for sending various emails, like comment notifications and new commit notifications.
 class Emails
+  # This encapsulates some of the recoverable errors we have sending email, like the inability to connect
+  # to the SMTP server.
+  class RecoverableEmailError < StandardError
+  end
+
   # Enqueues an email notification of a comment for delivery.
   # - send_immediately: used for testing and debugging.
   def self.send_comment_email(commit, comments, send_immediately = false)
@@ -40,7 +45,13 @@ class Emails
         :authentication => :plain,
         # the HELO domain provided by the client to the server
         :domain => "localhost.localdomain"
-    })
+      }
+    }
+    begin
+      Pony.mail(options.merge(pony_options))
+    rescue Errno::ECONNRESET, Errno::ECONNABORTED, Errno::ETIMEDOUT => error
+      raise RecoverableEmailError.new(error.message)
+    end
   end
 
   def self.comment_email_body(commit, comments)

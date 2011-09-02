@@ -59,6 +59,19 @@ class EmailsTest < Scope::TestCase
         assert_equal ["+Line 1", "+  Line 2"], diff_lines
       end
     end
+
+    context "deliver_mail" do
+      should "raise a RecoverableEmailError when the connection to the SMTP server fails" do
+        stub(Pony).mail { raise Errno::ECONNRESET.new }
+        error = nil
+        begin
+          Emails.deliver_mail("to", "subject", "html_body")
+        rescue Emails::RecoverableEmailError => error
+        end
+        assert_equal "Connection reset by peer", error.message
+        assert_equal Emails::RecoverableEmailError, error.class
+      end
+    end
   end
 
   # A helper for creating test data
