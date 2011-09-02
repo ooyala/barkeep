@@ -347,9 +347,11 @@ class Barkeep < Sinatra::Base
     }
   end
 
-  # For development use only -- for testing and styling emails.
+  # For development use only -- for testing and styling emails. Use ?send_email=true to actually send
+  # the email for this comment.
   get "/dev/latest_comment_email_preview" do
     comment = Comment.order(:id.desc).first
+    Emails.send_comment_email(comment.commit, [comment], true) if params[:send_email] == "true"
     Emails.comment_email_body(comment.commit, [comment])
   end
 

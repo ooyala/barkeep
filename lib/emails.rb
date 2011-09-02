@@ -5,7 +5,8 @@ require "lib/string_helper"
 # Methods for sending various emails, like comment notifications and new commit notifications.
 class Emails
   # Enqueues an email notification of a comment for delivery.
-  def self.send_comment_email(commit, comments)
+  # - send_immediately: used for testing and debugging.
+  def self.send_comment_email(commit, comments, send_immediately = false)
     grit_commit = commit.grit_commit
     subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
         "#{grit_commit.short_message[0..60]}"
@@ -17,9 +18,13 @@ class Emails
     all_commenters = commit.comments.map { |comment| comment.user.email }
     to = ([commit.user.email] + all_commenters).uniq
 
-    EmailTask.create(:subject => subject, :to => to.join(","),
-        :body => html_body,
-        :status => "pending")
+    if send_immediately
+      deliver_mail(to.join(","), subject, html_body)
+    else
+      EmailTask.create(:subject => subject, :to => to.join(","),
+          :body => html_body,
+          :status => "pending")
+    end
   end
 
   def self.deliver_mail(to, subject, html_body)
