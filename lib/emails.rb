@@ -24,18 +24,44 @@ class Emails
     to = ([commit.user.email] + all_commenters).uniq
 
     if send_immediately
-      deliver_mail(to.join(","), subject, html_body)
+      deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
     else
       EmailTask.create(:subject => subject, :to => to.join(","),
           :body => html_body,
+          :commit_id => commit.id,
           :status => "pending")
     end
   end
 
-  def self.deliver_mail(to, subject, html_body)
+  # Email headers which should be used when sending emails about a commit. This will help other emails
+  # discussing this commit thread properly.
+  # Returns a hash. You can pass this hash through to Pony via Pony.mail(..., :headers => headers )
+  def self.pony_options_for_commit(commit)
+    # See http://cr.yp.to/immhf/thread.html for information about headers used for threading.
+    # To have Gmail properly thread all correspondences, you must set In-Reply-To for all messages to be
+    # the same. The message ID that In-Reply-To refers to need not exist.
+    # Note that consumer Gmail (but not corporate Gmail for your domain) ignores any custom message-id
+    # on the message and instead uses their own.
+
+    # Strip off any port-numbers from the barkeep hostname. Gmail will not thread properly when the
+    # In-Reply-To header has colons in it. It must just discard the header altogether.
+    hostname = BARKEEP_HOSTNAME.sub(/\:.+/, "")
+    message_id = "<#{commit.sha}-comments@#{hostname}>"
+    {
+      :headers => {
+        "In-Reply-To" => message_id,
+        "References" => message_id
+      }
+    }
+  end
+
+  # Sends an email using Pony.
+  # pony_options: extra options to pass through to Pony. Used for setting mail headers like
+  # "message-ID" to enable threading.
+  def self.deliver_mail(to, subject, html_body, pony_options = {})
     puts "Sending email to #{to} with subject \"#{subject}\""
-    Pony.mail(:to => to, :via => :smtp, :subject => subject, :html_body => html_body,
-      # These settings are from the Pony documentation and work with Gmail's TLS smtp server.
+    options = { :to => to, :via => :smtp, :subject => subject, :html_body => html_body,
+      # These settings are from the Pony documentation and work with Gmail's SMTP TLS server.
       :via_options => {
         :address => "smtp.gmail.com",
         :port => "587",
