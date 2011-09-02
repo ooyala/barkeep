@@ -56,6 +56,11 @@ class MailDeliveryWorker
         @logger.warn "The commit associated with email task #{email_task.subject} is missing. Skipping email."
       end
       email_task.delete
+    rescue Emails::RecoverableError => error
+      @logger.warn("Recoverable error when sending email: #{error.message}")
+      email_task.last_attempted = Time.now
+      email_task.failure_reason = error.to_s
+      email_task.save
     rescue => error
       @logger.error("#{error.class} #{error.message} #{error.backtrace.join(' ')}")
       # We're leaving this email task in the database so you can troubleshoot your configuration if there's
