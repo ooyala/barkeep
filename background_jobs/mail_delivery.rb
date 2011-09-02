@@ -46,11 +46,18 @@ class MailDeliveryWorker
 
   def perform_task(email_task)
     begin
-      @logger.info "Sending email to #{email_task.to} with subject \"#{email_task.subject}\""
-      Emails.deliver_mail(email_task.to, email_task.subject, email_task.body)
+      # If the commit for this email has somehow been lost, like we've stopped tracking this repo,
+      # skip this email.
+      if email_task.commit
+        @logger.info "Sending email to #{email_task.to} with subject \"#{email_task.subject}\""
+        Emails.deliver_mail(email_task.to, email_task.subject, email_task.body,
+            Emails.pony_options_for_commit(email_task.commit))
+      else
+        @logger.warn "The commit associated with email task #{email_task.subject} is missing. Skipping email."
+      end
       email_task.delete
     rescue => error
-      @logger.error("#{error.class} #{error.message} #{error.backtrace}")
+      @logger.error("#{error.class} #{error.message} #{error.backtrace.join(' ')}")
       # We're leaving this email task in the database so you can troubleshoot your configuration if there's
       # a problem.
       email_task.last_attempted = Time.now
