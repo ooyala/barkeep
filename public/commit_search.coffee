@@ -57,7 +57,7 @@ window.CommitSearch =
         @showNextPage(event, "after")
       when "l"
         @showNextPage(event, "before")
-      when "return"
+      when "return", "o"
         window.location.href = $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
       else
         KeyboardShortcuts.globalOnKeydown(event)

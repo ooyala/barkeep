@@ -15,7 +15,7 @@ module KeyboardShortcuts
     "l" => "Next page of results",
     "h" => "Previous page of results",
     "/" => "Focus search box",
-    "enter" => "Go to commit"
+    "o or enter" => "Go to commit"
   }
 
   COMMIT_SHORTCUTS = {
