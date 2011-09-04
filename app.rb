@@ -62,8 +62,6 @@ class Barkeep < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    $logger.level = Logger::DEBUG
-    MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
     error do
       # Show a more developer-friendly error page and stack traces.

@@ -8,7 +8,6 @@ require "methodchain"
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/grit_extensions"
-require "lib/script_environment"
 require "lib/commit_search/paging_token"
 require "lib/git_helper"
 
@@ -333,10 +332,10 @@ module MetaRepo
 end
 
 if __FILE__ == $0
+  require "lib/script_environment"
   puts "Running commit importer as standalone script."
   logger = Logger.new(STDOUT)
   logger.level = Logger::DEBUG
-  MetaRepo.initialize_meta_repo(logger, REPO_PATHS)
   GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
   MetaRepo.import_new_commits!(logger)
 end

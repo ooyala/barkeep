@@ -15,5 +15,10 @@ require "lib/models"
 require "lib/emails"
 require "lib/background_jobs"
 require "lib/git_helper"
+require "lib/meta_repo"
 require "redis"
 require "lib/redis_manager"
+
+$logger = Logger.new(STDOUT)
+$logger.level = Logger::DEBUG
+MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
