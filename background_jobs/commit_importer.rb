@@ -19,9 +19,7 @@ class CommitImporter
   end
 
   def run
-    log_file_path = File.join(File.dirname(__FILE__), "../log/commit_importer.log")
-    FileUtils.touch(log_file_path)
-    logger = Logger.new(log_file_path)
+    logger = Logging.create_logger("commit_importer.log")
 
     MetaRepo.initialize_meta_repo(logger, REPO_PATHS)
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)

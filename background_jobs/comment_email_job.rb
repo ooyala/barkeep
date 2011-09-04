@@ -1,4 +1,4 @@
-# The comment email job polls the background_jobs table for email tasks every few seconds. When a a new task
+# The comment email job polls the background_jobs table for email tasks every few seconds. When a new task
 # is found, it forks a worker which builds and sends the email.
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
@@ -65,11 +65,5 @@ class CommentEmailWorker
 end
 
 if $0 == __FILE__
-  # TODO(philc): bundle this logger setup into a helper class.
-  logger = Logger.new(File.join(File.dirname(__FILE__), "../log/comment_email_jobs.log"))
-  logger.formatter = proc do |severity, datetime, program_name, message|
-    time = datetime.strftime "%Y-%m-%d %H:%M:%S"
-    "[#{time}] #{message}\n"
-  end
-  CommentEmailJob.new(logger).run
+  CommentEmailJob.new(Logging.create_logger("comment_email_job.log")).run
 end
