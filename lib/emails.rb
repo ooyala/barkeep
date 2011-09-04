@@ -9,8 +9,9 @@ class Emails
   class RecoverableEmailError < StandardError
   end
 
-  # Enqueues an email notification of a comment for delivery.
-  # - send_immediately: used for testing and debugging.
+  # Sends an email notification of a comment.
+  # Upon success or non-recoverable failure, an entry in the completed_emails table is added to record the
+  # email.
   def self.send_comment_email(commit, comments, send_immediately = false)
     grit_commit = commit.grit_commit
     subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
@@ -23,7 +24,20 @@ class Emails
     all_commenters = commit.comments.map { |comment| comment.user.email }
     to = ([commit.user.email] + all_commenters).uniq
 
-    deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
+    completed_email = CompletedEmail.new(:to => to.join(","), :subject => subject,
+        :result => "success", :comment_ids => comments.map(&:id).join(","))
+    begin
+      deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
+    rescue Exception => error
+      unless error.is_a?(RecoverableEmailError)
+        completed_email.result = "failure"
+        completed_email.failure_reason = "#{error.class} #{error.message}\n#{error.backtrace.join("\n")}"
+        completed_email.save
+      end
+      raise error
+    end
+
+    completed_email.save
   end
 
   # Email headers which should be used when sending emails about a commit. This will help other emails
