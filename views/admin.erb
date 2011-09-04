@@ -31,9 +31,9 @@
       <% recently_failed_emails.each do |email| %>
         <tr>
           <td><%= email.id %></td>
-          <td><%= email.to %></td>
+          <td><%= email.to.split(",").join(" ") %></td>
           <td><%= email.subject[0..30] %></td>
-          <td><%= email.last_attempted %></td>
+          <td><%= email.created_at %></td>
           <td><%= email.failure_reason %></td>
         </tr>
       <% end %>

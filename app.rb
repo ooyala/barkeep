@@ -341,8 +341,9 @@ class Barkeep < Sinatra::Base
   # A page to help in troubleshooting Barkeep's background processes, like emails and commit ingestion.
   get "/admin/?" do
     erb :admin, :locals => {
-      :failed_email_count => EmailTask.filter(:status => "failed").count,
-      :recently_failed_emails => EmailTask.filter(:status => "failed").order(:id.desc).limit(15)
+      :failed_email_count => CompletedEmail.filter(:result => "failure").count,
+      :recently_failed_emails =>
+          CompletedEmail.filter(:result => "failure").order(:created_at.desc).limit(15).all
     }
   end
 
