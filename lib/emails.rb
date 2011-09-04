@@ -23,14 +23,7 @@ class Emails
     all_commenters = commit.comments.map { |comment| comment.user.email }
     to = ([commit.user.email] + all_commenters).uniq
 
-    if send_immediately
-      deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
-    else
-      EmailTask.create(:subject => subject, :to => to.join(","),
-          :body => html_body,
-          :commit_id => commit.id,
-          :status => "pending")
-    end
+    deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
   end
 
   # Email headers which should be used when sending emails about a commit. This will help other emails

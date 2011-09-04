@@ -39,8 +39,8 @@ class Barkeep < Sinatra::Base
   #
   # To be called from within the configure blocks, tehse methods must be defined prior to them.
   #
-  def self.start_background_email_worker
-    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/mail_delivery.rb")
+  def self.start_background_comment_emails_worker
+    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/comment_email_job.rb")
     IO.popen(command)
   end
 
@@ -72,7 +72,7 @@ class Barkeep < Sinatra::Base
       message
     end
 
-    Barkeep.start_background_email_worker
+    Barkeep.start_background_comment_emails_worker
     Barkeep.start_background_commit_importer
   end
 
@@ -173,7 +173,8 @@ class Barkeep < Sinatra::Base
     line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
     comment = Comment.create(:commit => commit, :commit_file => file, :line_number => line_number,
                              :user => current_user, :text => params[:text])
-    Emails.send_comment_email(commit, [comment])
+    BackgroundJob.create(:job_type => BackgroundJob::COMMENTS_EMAIL,
+        :params => { :comment_ids => [comment.id] }.to_json)
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 

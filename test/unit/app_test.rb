@@ -22,12 +22,12 @@ class AppTest < Scope::TestCase
     end
 
     should "posting a comment should trigger an email" do
-      @email_task_params = nil
+      @background_job_params = nil
       stub(Comment).create { @comment }
-      stub(EmailTask).create { |params| @email_task_params = params; EmailTask.new }
+      stub(BackgroundJob).create { |params| @background_job_params = params; BackgroundJob.new }
       post "/comment"
       # TODO(philc): Make a stronger assertion, e.g. about who this email is being sent to.
-      assert_equal false, @email_task_params.nil?
+      assert_equal BackgroundJob::COMMENTS_EMAIL, @background_job_params[:job_type]
     end
   end
 end
