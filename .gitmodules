@@ -1,0 +1,3 @@
+[submodule "test/fixtures/test_git_repo"]
+	path = test/fixtures/test_git_repo
+	url = git://github.com/ooyala/barkeep_integration_tests.git
