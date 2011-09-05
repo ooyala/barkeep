@@ -64,7 +64,7 @@
         line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
       end
       output.join("\n")
-    end.join("\n\n")
+    end.join("\n\n--\n\n")
   %></pre>
 <% end %>
 
