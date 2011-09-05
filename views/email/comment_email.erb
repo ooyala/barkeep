@@ -36,12 +36,13 @@
   <%= "-" * filename.size %><br/>
 
   <pre><%=
-    comments.map do |comment|
+    comments_by_line_number = comments.group_by(&:line_number)
+    comments_by_line_number.map do |line_number, comments|
       lines_of_context = 4
 
       lines = diffs_by_file[filename][:lines]
-      lines_before = lines[[comment.line_number - lines_of_context, 0].max, lines_of_context]
-      lines_after = lines[comment.line_number, lines_of_context]
+      lines_before = lines[[line_number - lines_of_context, 0].max, lines_of_context]
+      lines_after = lines[line_number, lines_of_context]
 
       # Do this so there isn't useless whitespace surrounding the diff.
       lines_before = strip_unchanged_blank_lines(lines_before)
@@ -57,14 +58,19 @@
         line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
       end
 
-      output << "\n<b>&lt;" + CGI.escape_html(comment.user.name) + "&gt;</b> " +
-          CGI.escape_html(comment.text) + "\n"
+      output << ""
+      # If there are multiple comments discussing the same line of code, place them right next to each other.
+      comments.each do |comment|
+        output << "<b>&lt;" + CGI.escape_html(comment.user.name) + "&gt;</b> " +
+            CGI.escape_html(comment.text)
+      end
+      output << ""
 
       output += lines_after.map do |line_diff|
         line_diff.line_prefix + CGI.escape_html(trim_leading_whitespace.call(line_diff.data))
       end
       output.join("\n")
-    end.join("\n\n--\n\n")
+    end.join("\n\n\n")
   %></pre>
 <% end %>
 
