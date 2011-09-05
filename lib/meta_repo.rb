@@ -20,7 +20,7 @@ class MetaRepo
   attr_accessor :logger
 
   def initialize(logger, repo_paths)
-    @logger = logger
+    self.logger = logger
     Thread.abort_on_exception = true
     logger.info "Initializing #{repo_paths.size} git repositories."
     # Let's keep this mapping in memory at all times -- we'll be hitting it all the time.
@@ -96,7 +96,7 @@ class MetaRepo
     result
   end
 
-  def import_new_commits!(logger)
+  def import_new_commits!
     # TODO(caleb): lots of logging and error checking here.
     @repo_name_to_id.each do |repo_name, repo_id|
       grit_repo = @repo_names_and_ids_to_repos[repo_id]
@@ -104,7 +104,7 @@ class MetaRepo
       logger.info "Importing new commits for repo #{repo_name}."
       grit_repo.remotes.each do |remote|
         next if remote.name == "origin/HEAD"
-        new_commits = import_new_ancestors!(logger, repo_name, repo_id, remote.commit)
+        new_commits = import_new_ancestors!(repo_name, repo_id, remote.commit)
         logger.info "Imported #{new_commits} new commits as ancestors of #{remote.name} in repo #{repo_name}"
       end
     end
@@ -114,7 +114,7 @@ class MetaRepo
 
   # Import all undiscovered ancestors. Returns the number of new commits imported.
   # This method can import a new repository of 25K commits in about 40s.
-  def import_new_ancestors!(logger, repo_name, repo_id, grit_commit)
+  def import_new_ancestors!(repo_name, repo_id, grit_commit)
     # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
     # importing a brand new repository. Setting this page size to 2,000 will result in a stack overflow --
     # Grit must fetch commits recursively.
@@ -341,7 +341,6 @@ end
 if __FILE__ == $0
   require "lib/script_environment"
   puts "Running commit importer as standalone script."
-  logger = Logger.new(STDOUT)
   GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
-  MetaRepo.instance.import_new_commits!(logger)
+  MetaRepo.instance.import_new_commits!
 end

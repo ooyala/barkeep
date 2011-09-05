@@ -19,7 +19,8 @@ class CommitImporter
   end
 
   def run
-    MetaRepo.instance.logger = Logging.create_logger("commit_importer.log")
+    logger = Logging.create_logger("commit_importer.log")
+    MetaRepo.instance.logger = logger
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
 
     while true
@@ -28,7 +29,7 @@ class CommitImporter
       begin
         DB.disconnect
         exit_status = BackgroundJobs.run_process_with_timeout(100_100_100) do
-          MetaRepo.instance.import_new_commits!(logger)
+          MetaRepo.instance.import_new_commits!
         end
       rescue TimeoutError
         logger.info "The commit importer task timed out after #{TASK_TIMEOUT} seconds."
