@@ -25,7 +25,7 @@ class MetaRepo
     logger.info "Initializing #{repo_paths.size} git repositories."
     # Let's keep this mapping in memory at all times -- we'll be hitting it all the time.
     @repo_name_to_id = {}
-    @@repos = []
+    @repos = []
     # A convenient lookup table for Grit::Repos keyed by both string name and db id.
     @repo_names_and_ids_to_repos = {}
     repo_paths.each do |path|
@@ -37,7 +37,7 @@ class MetaRepo
       id = GitRepo.find_or_create(:name => name, :path => path).id
       grit_repo = Grit::Repo.new(path)
       grit_repo.name = name
-      @@repos << grit_repo
+      @repos << grit_repo
       @repo_name_to_id[name] = id
       @repo_names_and_ids_to_repos[name] = grit_repo
       @repo_names_and_ids_to_repos[id] = grit_repo
@@ -62,6 +62,31 @@ class MetaRepo
     grit_commit
   end
 
+  # True if the list of commits defined by the search_options will include the given commit sha.
+  # - repo_id_or_name: the repo that the commit_sha belongs to.
+  # - commit_sha: the sha of the commit, which will be checked against the given search_options.
+  # - search_options:
+  #   - authors: a list of authors
+  #   - repos: a list of repo paths
+  #   - branches: a list of branch names
+  def search_options_match_commit?(repo_id_or_name, commit_sha, search_options)
+    git_options, git_args = MetaRepo.git_options_and_args_from_search_filter_options(search_options)
+    grit_repo = @repo_names_and_ids_to_repos[repo_id_or_name]
+    # git rev-list wants the commit ID to be the first argument.
+    git_args.unshift(commit_sha)
+
+    repos = search_options[:repos].blank? ? @repos :
+        repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
+
+    commit_matches_search = false
+    parallel_each_repos(repos) do |repo, mutex|
+      is_match = (GitHelper.rev_list(grit_repo, git_options, git_args, :count) > 0)
+      commit_matches_search = true if is_match
+    end
+
+    commit_matches_search
+  end
+
   # Returns a page of commits based on the given options.
   # options:
   #  - authors: a list of authors
@@ -72,7 +97,7 @@ class MetaRepo
   #            :tokens => { :from => new search token, :to => new search token } }
   def find_commits(options)
     git_options, git_args = MetaRepo.git_options_and_args_from_search_filter_options(options)
-    repos = options[:repos].blank? ? @@repos :
+    repos = options[:repos].blank? ? @repos :
         repos_which_match(options[:repos].map { |name| Regexp.new(name) })
 
     # Assuming everything has been set up correctly in preparation to invoke git rev-list, add in options for
