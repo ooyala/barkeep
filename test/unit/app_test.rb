@@ -23,13 +23,11 @@ class AppTest < Scope::TestCase
       stub(meta_repo).db_commit { @commit }
     end
 
-    should "posting a comment should trigger an email" do
-      @background_job_params = nil
-      stub(Comment).create { @comment }
-      stub(BackgroundJob).create { |params| @background_job_params = params; BackgroundJob.new }
-      post "/comment"
-      # TODO(philc): Make a stronger assertion, e.g. about who this email is being sent to.
-      assert_equal BackgroundJob::COMMENTS_EMAIL, @background_job_params[:job_type]
+    should "posting a comment should create a comment" do
+      @comment_params = nil
+      stub(Comment).create { |params| @comment_params = params; @comment }
+      post "/comment", :text => "great job"
+      assert_equal "great job", @comment_params[:text]
     end
   end
 end

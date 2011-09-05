@@ -44,6 +44,11 @@ class Barkeep < Sinatra::Base
     IO.popen(command)
   end
 
+  def self.start_background_batch_comment_emails_job
+    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/batch_comment_emails.rb")
+    IO.popen(command)
+  end
+
   def self.start_background_commit_importer
     command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/commit_importer.rb")
     IO.popen(command)
@@ -72,6 +77,7 @@ class Barkeep < Sinatra::Base
       message
     end
 
+    Barkeep.start_background_batch_comment_emails_job
     Barkeep.start_background_deliver_comment_emails_job
     Barkeep.start_background_commit_importer
   end
@@ -86,6 +92,8 @@ class Barkeep < Sinatra::Base
     enable :logging
     MetaRepo.instance.logger.level = Logger::INFO
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
+
+    Barkeep.start_background_batch_comment_emails_job
     Barkeep.start_background_deliver_comment_emails_job
     Barkeep.start_background_commit_importer
   end
@@ -172,8 +180,6 @@ class Barkeep < Sinatra::Base
     line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
     comment = Comment.create(:commit => commit, :commit_file => file, :line_number => line_number,
                              :user => current_user, :text => params[:text])
-    BackgroundJob.create(:job_type => BackgroundJob::COMMENTS_EMAIL,
-        :params => { :comment_ids => [comment.id] }.to_json)
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
