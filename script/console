@@ -13,9 +13,10 @@ include Grit
 $repo = Repo.new(File.join(File.dirname(__FILE__), "../"))
 
 def reload!
+  paths = ["lib/*.rb", "models/*.rb"]
   suppress_warnings do
-    Dir.glob("lib/*.rb").each do |file|
-      load(file)
+    paths.each do |path|
+      Dir.glob(path).each { |file| load(file) }
     end
   end
   nil
