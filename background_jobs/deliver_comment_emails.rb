@@ -4,7 +4,7 @@
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/script_environment"
 
-class CommentEmailJob
+class DeliverCommentEmails
   POLL_FREQUENCY = 3 # How often we check for new emails in the email task queue.
   TASK_TIMEOUT = 10
 
@@ -24,7 +24,7 @@ class CommentEmailJob
       begin
         DB.disconnect # Do not share a DB connection file descriptor across process boundaries.
         exit_status = BackgroundJobs.run_process_with_timeout(TASK_TIMEOUT) do
-          CommentEmailWorker.new(@logger).perform(email_job)
+          DeliverCommentEmailsWorker.new(@logger).perform(email_job)
         end
       rescue TimeoutError
         @logger.info "The comment email task timed out after #{TASK_TIMEOUT} seconds."
@@ -37,7 +37,7 @@ class CommentEmailJob
   end
 end
 
-class CommentEmailWorker
+class DeliverCommentEmailsWorker
   def initialize(logger) @logger = logger end
 
   def perform(email_job)
@@ -65,5 +65,5 @@ class CommentEmailWorker
 end
 
 if $0 == __FILE__
-  CommentEmailJob.new(Logging.create_logger("comment_email_job.log")).run
+  DeliverCommentEmails.new(Logging.create_logger("deliver_comment_emails.log")).run
 end

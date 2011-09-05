@@ -39,8 +39,8 @@ class Barkeep < Sinatra::Base
   #
   # To be called from within the configure blocks, tehse methods must be defined prior to them.
   #
-  def self.start_background_comment_emails_worker
-    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/comment_email_job.rb")
+  def self.start_background_deliver_comment_emails_job
+    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/deliver_comment_emails.rb")
     IO.popen(command)
   end
 
@@ -72,7 +72,7 @@ class Barkeep < Sinatra::Base
       message
     end
 
-    Barkeep.start_background_comment_emails_worker
+    Barkeep.start_background_deliver_comment_emails_job
     Barkeep.start_background_commit_importer
   end
 
@@ -86,7 +86,7 @@ class Barkeep < Sinatra::Base
     enable :logging
     MetaRepo.instance.logger.level = Logger::INFO
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
-    Barkeep.start_background_email_worker
+    Barkeep.start_background_deliver_comment_emails_job
     Barkeep.start_background_commit_importer
   end
 
