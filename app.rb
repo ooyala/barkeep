@@ -84,8 +84,7 @@ class Barkeep < Sinatra::Base
 
   configure :production do
     enable :logging
-    $logger.level = Logger::INFO
-    MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
+    MetaRepo.instance.logger.level = Logger::INFO
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
     Barkeep.start_background_email_worker
     Barkeep.start_background_commit_importer
@@ -146,7 +145,7 @@ class Barkeep < Sinatra::Base
 
   get "/commits/:repo_name/:sha" do
     repo_name = params[:repo_name]
-    commit = MetaRepo.db_commit(repo_name, params[:sha])
+    commit = MetaRepo.instance.db_commit(repo_name, params[:sha])
     halt 404, "No such commit." unless commit
     tagged_diff = GitHelper::get_tagged_commit_diffs(repo_name, commit.grit_commit,
         :use_syntax_highlighting => true)
@@ -163,7 +162,7 @@ class Barkeep < Sinatra::Base
   end
 
   post "/comment" do
-    commit = MetaRepo.db_commit(params[:repo_name], params[:sha])
+    commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     return 400 unless commit
     file = nil
     if params[:filename] && params[:filename] != ""
@@ -187,14 +186,14 @@ class Barkeep < Sinatra::Base
   end
 
   post "/approve_commit" do
-    commit = MetaRepo.db_commit(params[:repo_name], params[:commit_sha])
+    commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     return 400 unless commit
     commit.approve(current_user)
     erb :_approved_banner, :layout => false, :locals => { :commit => commit }
   end
 
   post "/disapprove_commit" do
-    commit = MetaRepo.db_commit(params[:repo_name], params[:commit_sha])
+    commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     return 400 unless commit
     commit.disapprove
     nil

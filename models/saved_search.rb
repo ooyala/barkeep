@@ -6,7 +6,7 @@ class SavedSearch < Sequel::Model
 
   # The list of commits this saved search represents.
   def commits(token = nil, direction = "before")
-    result = MetaRepo.find_commits(
+    result = MetaRepo.instance.find_commits(
       :repos => repos_list,
       :branches => branches_list,
       :authors => authors_list,

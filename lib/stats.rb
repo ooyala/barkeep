@@ -34,7 +34,7 @@ module Stats
         group_and_count(:commits__sha, :git_repos__name___repo).order(:count.desc).limit(10)
     commits_sha_repo_count = dataset.all
     commits_and_counts = commits_sha_repo_count.map do |sha_repo_count|
-      grit_commit = MetaRepo.grit_commit(sha_repo_count[:repo], sha_repo_count[:sha])
+      grit_commit = MetaRepo.instance.grit_commit(sha_repo_count[:repo], sha_repo_count[:sha])
       next unless grit_commit
       [grit_commit, sha_repo_count[:count]]
     end

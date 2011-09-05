@@ -20,6 +20,6 @@ require "lib/meta_repo"
 require "redis"
 require "lib/redis_manager"
 
-$logger = Logger.new(STDOUT)
-$logger.level = Logger::DEBUG
-MetaRepo.initialize_meta_repo($logger, REPO_PATHS)
+logger = Logger.new(STDOUT)
+logger.level = Logger::DEBUG
+MetaRepo.instance = MetaRepo.new(logger, REPO_PATHS)
