@@ -19,13 +19,15 @@ class Emails
     html_body = comment_email_body(commit, comments)
 
     # TODO(philc): Provide a plaintext email as well.
-    # TODO(philc): Delay the emails and batch them together.
 
-    all_commenters = commit.comments.map { |comment| comment.user.email }
-    to = ([commit.user.email] + all_commenters).uniq
+    all_previous_commenters = commit.comments.map { |comment| comment.user.email }
+    to = ([commit.user.email] +
+          users_with_saved_searches_matching(commit).map(&:email) +
+          all_previous_commenters).uniq
 
     completed_email = CompletedEmail.new(:to => to.join(","), :subject => subject,
         :result => "success", :comment_ids => comments.map(&:id).join(","))
+
     begin
       deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
     rescue Exception => error
@@ -38,6 +40,18 @@ class Emails
     end
 
     completed_email.save
+  end
+
+  # Returns a list of User objects who have saved searches which match the given commit.
+  # This can take up to 0.5 seconds per saved search, as it calls out to git for every repo tracked
+  # unless the saved search limits by repo.
+  def self.users_with_saved_searches_matching(commit)
+    searches = SavedSearch.eager(:user).all
+    searches_by_user = searches.group_by(&:user)
+    users_with_matching_searches = searches_by_user.map do |user, searches|
+      searches.any? { |search| search.matches_commit?(commit) } ? user : nil
+    end
+    users_with_matching_searches.compact
   end
 
   # Email headers which should be used when sending emails about a commit. This will help other emails

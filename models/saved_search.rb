@@ -1,6 +1,6 @@
 # A saved search represents a list of commits, some read and some unread.
 class SavedSearch < Sequel::Model
-  many_to_one :users
+  many_to_one :user
 
   PAGE_SIZE = 10
 
@@ -16,6 +16,15 @@ class SavedSearch < Sequel::Model
       :limit => PAGE_SIZE)
     page = (result[:count] / PAGE_SIZE).to_i + 1
     [result[:commits], page, result[:tokens]]
+  end
+
+  # True if this saved search's results include this commit.
+  def matches_commit?(commit)
+    MetaRepo.instance.search_options_match_commit?(commit.git_repo.name, commit.sha,
+        :authors => authors_list,
+        :paths => paths_list,
+        :branches => branches_list,
+        :repos => repos_list)
   end
 
   # Generates a human readable title based on the search criteria.

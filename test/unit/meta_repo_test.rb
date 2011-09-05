@@ -14,6 +14,10 @@ class MetaRepoTest < Scope::TestCase
   end
 
   setup_once do
+    # TODO(philc): The database is disconnected when we start these tests. Unclear why. Reconnect by making
+    # a query. Remove this hack.
+    Commit.first rescue nil
+
     # Initialize against sample repo.
     test_git_repo_path = File.join(File.dirname(__FILE__), "../fixtures/test_git_repo")
     @@repo = MetaRepo.new(Logger.new("/dev/null"), [test_git_repo_path])
