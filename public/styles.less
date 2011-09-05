@@ -217,6 +217,7 @@ header {
       font-weight: normal;
       color: #777;
       text-shadow: 0px 2px 1px white, 0px -1px 0px #888;
+      text-decoration: none;
 
       .keep { color: #999; }
     }
@@ -250,11 +251,13 @@ header {
         color: #333;
 
         box-shadow: 0px 1px 1px #999 inset;
+
         /* Cancel any border effects that the standard a:hover implements. */
         &:hover {
           color: @linkColor;
           border: 1px solid #ddd;
           border-top: 0;
+          text-decoration: none;
         }
         &:active { background-color: @sunkenColor; }
       }
