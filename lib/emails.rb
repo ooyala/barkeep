@@ -45,15 +45,15 @@ class Emails
   # Returns a hash. You can pass this hash through to Pony via Pony.mail(..., :headers => headers )
   def self.pony_options_for_commit(commit)
     # See http://cr.yp.to/immhf/thread.html for information about headers used for threading.
-    # To have Gmail properly thread all correspondences, you must set In-Reply-To for all messages to be
-    # the same. The message ID that In-Reply-To refers to need not exist.
+    # To have Gmail properly thread all correspondences, you must use the same value for In-Reply-To
+    # on all messages in the same thread. The message ID that In-Reply-To refers to need not exist.
     # Note that consumer Gmail (but not corporate Gmail for your domain) ignores any custom message-id
     # on the message and instead uses their own.
 
     # Strip off any port-numbers from the barkeep hostname. Gmail will not thread properly when the
     # In-Reply-To header has colons in it. It must just discard the header altogether.
-    hostname = BARKEEP_HOSTNAME.sub(/\:.+/, "")
-    message_id = "<#{commit.sha}-comments@#{hostname}>"
+    hostname_without_port = BARKEEP_HOSTNAME.sub(/\:.+/, "")
+    message_id = "<#{commit.sha}-comments@#{hostname_without_port}>"
     {
       :headers => {
         "In-Reply-To" => message_id,
