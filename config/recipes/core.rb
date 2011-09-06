@@ -25,16 +25,17 @@ namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
     puts "staging project in /tmp/#{app}"
-    system("rm -fr /tmp/#{app}")
-    system("cp -r #{local_path} /tmp/#{app}")
+    # --delete removes files in the dest directory which no longer exist in the source directory.
+    command = "rsync -r --delete --exclude=.git --exclude=log --exclude=tmp " +
+        "#{local_path}/* '/tmp/#{app}/'"
+    puts `#{command}`
     Rake::Task["fezzik:save_environment"].invoke
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"
   remote_task :setup do
     puts "setting up servers"
-    run "mkdir -p #{deploy_to}/releases"
-    run "mkdir -p #{deploy_to}/repos"
+    run "mkdir -p #{deploy_to}/releases #{deploy_to}/repos"
   end
 
   desc "rsyncs the project from its stages location to each destination server"
@@ -42,6 +43,12 @@ namespace :fezzik do
     puts "pushing to #{target_host}:#{release_path}"
     # Copy on top of previous release to optimize rsync
     rsync "-q", "--copy-dest=#{current_path}", "/tmp/#{app}/", "#{target_host}:#{release_path}"
+
+    # Store a few directories outside of the release directory which should be shared across releases.
+    # tmp/ contains Google's open ID tokens. If it's not shared, we'll log everyone out every push.
+    run "mkdir -p #{deploy_to}/shared/log #{deploy_to}/shared/tmp"
+    run "cd #{release_path} && ln -fns #{deploy_to}/shared/log log"
+    run "cd #{release_path} && ln -fns #{deploy_to}/shared/tmp tmp"
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"
