@@ -26,7 +26,8 @@ namespace :fezzik do
   task :stage do
     puts "staging project in /tmp/#{app}"
     # --delete removes files in the dest directory which no longer exist in the source directory.
-    command = "rsync -r --delete --exclude=.git --exclude=log --exclude=tmp " +
+    # --safe-links copies symlinks as symlinks, but ignores any which point outside of the tree.
+    command = "rsync -r --archive --safe-links --delete --exclude=.git --exclude=log --exclude=tmp " +
         "#{local_path}/* '/tmp/#{app}/'"
     puts `#{command}`
     Rake::Task["fezzik:save_environment"].invoke
