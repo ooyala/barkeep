@@ -11,7 +11,7 @@ Sequel.migration do
     # A saved search consists of one or more search filters.
     create_table(:search_filters) do
       primary_key :id
-      foreign_key :saved_search_id, :saved_searches
+      foreign_key :saved_search_id, :saved_searches, :key => :id
       # Filter types are things like "author", "directory".
       String :filter_type
       # The filter value will be the value of the search, e.g. "dmac" if searching for commits by dmac.
