@@ -9,7 +9,7 @@ class MetaRepoTest < Scope::TestCase
 
   setup do
     # This commit added the file "units.txt" and has an author of "phil.crosby@gmail.com"
-    @first_valid_commit = "65a0045"
+    @first_commit = "65a0045"
     @repo_name = "test_git_repo"
   end
 
@@ -26,32 +26,32 @@ class MetaRepoTest < Scope::TestCase
   context "grit_commit" do
     should "return nil for invalid repos and commits" do
       assert_equal nil, @@repo.grit_commit(@repo_name, "non_existant_sha")
-      assert_equal nil, @@repo.grit_commit("invalid_repo", @first_valid_commit)
-      assert_equal @first_valid_commit, @@repo.grit_commit(@repo_name, @first_valid_commit).id_abbrev
+      assert_equal nil, @@repo.grit_commit("invalid_repo", @first_commit)
+      assert_equal @first_commit, @@repo.grit_commit(@repo_name, @first_commit).id_abbrev
     end
   end
 
   context "search_options_include_commit" do
     should "find a commit by author" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["Jones"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["Phil"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["Phil", "Jones"] })
     end
 
     should "find a commit by path" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :paths => ["nonexistant_file.txt"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :paths => ["units.txt"] })
     end
 
     should "find a commit by both author and path" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["phil"], :paths => ["nonexistant_file.txt"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_valid_commit,
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["phil"], :paths => ["units.txt"] })
     end
 
@@ -65,6 +65,18 @@ class MetaRepoTest < Scope::TestCase
       # TODO(philc): This does not work. A bug in grit?
       # assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
           # { :branches => ["nonexistant_branch", "cheese"] })
+    end
+
+    should "return false for a commit which has matching commits in its history, but does not itself match" do
+      # NOTE(philc): This exposes a bug where we were improperly parsing the output of git rev-list.
+      # git rev-list would return us a commit sha which matched our search criteria, but it was different
+      # than the commit ID we were searching for. We needed to compare the two.
+
+      # This commit added the file "strategies.txt" and has an author of "phil.crosby@gmail.com"
+      second_commit = "17de311"
+
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, second_commit,
+          { :paths => ["units.txt"] })
     end
   end
 end

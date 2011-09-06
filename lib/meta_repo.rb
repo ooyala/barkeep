@@ -72,16 +72,28 @@ class MetaRepo
   def search_options_match_commit?(repo_id_or_name, commit_sha, search_options)
     git_options, git_args = MetaRepo.git_options_and_args_from_search_filter_options(search_options)
     grit_repo = @repo_names_and_ids_to_repos[repo_id_or_name]
+    grit_commit = grit_repo.commit(commit_sha)
+
     # git rev-list wants the commit ID to be the first argument.
     git_args.unshift(commit_sha)
+
+    # Building up this rev-list command is a bit tricky. --all is added to the CL args if we're searching
+    # across all branches. --all includes all refs as part of the command, so rev-list will simply return the
+    # most recent commits from *any* ref which match the search criteria. What we want to do in that case is
+    # limit the time range of the returned commits to match the commit we're looking for. We ask for 10
+    # commits and see if the commit we're looking for is in that list, just in case there's more than one
+    # commit with the same date (rare).
+    git_options[:n] = 10
+    git_options["min-age"] = git_options["max-age"] = grit_commit.date.to_i
 
     repos = search_options[:repos].blank? ? @repos :
         repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
 
     commit_matches_search = false
+    # TODO(philc): Abort searches in other threads when we find a match.
     parallel_each_repos(repos) do |repo, mutex|
-      is_match = (GitHelper.rev_list(grit_repo, git_options, git_args, :count) > 0)
-      commit_matches_search = true if is_match
+      commit_ids = GitHelper.rev_list(grit_repo, git_options, git_args).map(&:sha)
+      commit_matches_search = true if commit_ids.include?(grit_commit.sha)
     end
 
     commit_matches_search
