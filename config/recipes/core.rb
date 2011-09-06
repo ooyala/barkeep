@@ -25,6 +25,7 @@ namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
     puts "staging project in /tmp/#{app}"
+    `rm -Rf /tmp/#{app}`
     # --delete removes files in the dest directory which no longer exist in the source directory.
     # --safe-links copies symlinks as symlinks, but ignores any which point outside of the tree.
     command = "rsync -r --archive --safe-links --delete --exclude=.git --exclude=log --exclude=tmp " +
