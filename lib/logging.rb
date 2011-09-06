@@ -1,5 +1,11 @@
 # Utilities to aid in logging.
 class Logging
+
+  # A global logger than misc classes can use.
+  class << self
+    attr_accessor :logger
+  end
+
   # Creates a logger with our standard options.
   # The logger will have more succinct output than the standard logger. All log files are placed in the "log"
   # directory.

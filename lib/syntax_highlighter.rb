@@ -1,4 +1,6 @@
 require "pygments"
+$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "lib/logging"
 
 class SyntaxHighlighter
 
@@ -19,7 +21,7 @@ class SyntaxHighlighter
     begin
       @redis.set(cache_key, highlighted) if @redis
     rescue Exception => e
-      $logger.error("Redis failed with message: #{e.message}")
+      Logging.logger.error("Redis failed with message: #{e.message}")
     end
 
     return highlighted

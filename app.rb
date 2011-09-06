@@ -58,7 +58,7 @@ class Barkeep < Sinatra::Base
   # files have changed.
   $compiled_cache = Hash.new { |hash, key| hash[key] = {} }
   # Quick logging hack -- Sinatra 1.3 will expose logger inside routes.
-  $logger = Logger.new(STDOUT)
+  Logging.logger = Logger.new(STDOUT)
 
   set :public, "public"
 

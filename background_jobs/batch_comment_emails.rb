@@ -29,7 +29,7 @@ class BatchCommentEmails
           BatchCommentEmailsWorker.new(@logger).perform()
         end
       rescue TimeoutError
-        @logger.info "The comment email task timed out after #{TASK_TIMEOUT} seconds."
+        @logger.warn "The comment email task timed out after #{TASK_TIMEOUT} seconds."
       end
 
       sleep POLL_FREQUENCY
