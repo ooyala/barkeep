@@ -46,7 +46,6 @@ class BatchCommentEmailsWorker
 
     two_minutes_ago = Time.now - 2 * 60
     four_minutes_ago = Time.now - 4 * 60
-    @logger.info comments.size
 
     comments_by_commit.each do |commit_id, comments|
       ready_to_email =
