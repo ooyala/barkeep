@@ -6,7 +6,9 @@ require "lib/script_environment"
 
 class DeliverCommentEmails
   POLL_FREQUENCY = 3 # How often we check for new emails in the email task queue.
-  TASK_TIMEOUT = 10
+  # NOTE(philc): We're giving this task a generous timeout because it must scan through all saved searches.
+  # to determine who to send an email to. That is expensive at the moment.
+  TASK_TIMEOUT = 60
 
   def initialize(logger) @logger = logger end
 
