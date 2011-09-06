@@ -1,3 +1,5 @@
+require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+
 Sequel.migration do
   change do
     rename_table :files, :commit_files
