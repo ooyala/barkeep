@@ -28,6 +28,16 @@ library. Otherwise you will get segfaults when sending emails over SSL:
 
     $ rvm install 1.9.2 --with-openssl-dir=/opt/local
 
+Running Barkeep Locally
+=======================
+
+Make sure you're up to date on Ruby gems ("bundle install") and on migrations
+("ruby run_migrations.rb").  After that, follow these steps:
+
+    $ redis-server  # run Redis
+    $ bin/rerun.sh # run the server
+    $ navigate to localhost:4567/commits
+
 Viewing Repositories
 ====================
 
