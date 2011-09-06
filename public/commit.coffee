@@ -65,6 +65,7 @@ window.Commit =
     $(select).addClass("selected")
 
   selectNextLine: (next = true) ->
+    return if $(document.activeElement).is("textarea")
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
     if selectedLine.length == 0 or not @lineVisible(selectedLine)
