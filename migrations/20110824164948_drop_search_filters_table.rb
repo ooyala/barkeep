@@ -1,3 +1,5 @@
+require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+
 Sequel.migration do
   up do
     drop_table :search_filters

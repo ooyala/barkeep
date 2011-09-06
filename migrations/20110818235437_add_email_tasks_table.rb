@@ -1,3 +1,5 @@
+require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+
 Sequel.migration do
   up do
     create_table(:email_tasks) do
