@@ -345,17 +345,14 @@ class MetaRepo
   # Converts the given search filter options to an arguments array and git CLI options, to be passed to git
   # rev-list.
   def self.git_options_and_args_from_search_filter_options(options)
-    # TODO(caleb): Deal with these filters:
-    #   * branches
-    #   * paths
-    #   * messages
-
+    # TODO(caleb): Deal with filtering commit messages
     # Need extended regexes to be able to use the  "|" operator.
     git_options = { :extended_regexp => true, :regexp_ignore_case => true }
 
     git_options[:author] = options[:authors].join("|") unless options[:authors].blank?
 
     git_arguments = options[:branches].blank? ? [] : options[:branches].map { |name| "origin/#{name}" }
+    git_options[:all] = true if git_arguments.empty?
     git_arguments << "--"
     git_arguments += options[:paths] unless options[:paths].blank?
 
