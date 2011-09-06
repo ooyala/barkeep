@@ -208,7 +208,7 @@ class Barkeep < Sinatra::Base
   # POST because this creates a saved search on the server.
   post "/search" do
     options = {}
-    [:branches, :repos, :authors, :messages].each do |option|
+    [:repos, :authors, :messages].each do |option|
       options[option] = params[option].then { strip.empty? ? nil : strip }
     end
     # Paths is a list
