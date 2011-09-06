@@ -36,6 +36,6 @@ end
 
 class HTMLwithPygments < Redcarpet::Render::HTML
   def block_code(code, language)
-    "<div class=\"code\"><pre>#{SyntaxHighlighter::pygmentize(language, code)}</pre></div>"
+    "<div class=\"commentCode\"><pre>#{SyntaxHighlighter::pygmentize(language, code)}</pre></div>"
   end
 end
