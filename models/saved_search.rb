@@ -73,7 +73,7 @@ class SavedSearch < Sequel::Model
     when 0 then ""
     when 1 then list[0]
     when 2 then "#{list[0]} and #{list[1]}"
-    else "#{list[0..-1].join(", ")}, and #{list[-1]}"
+    else "#{list[0..-2].join(", ")}, and #{list[-1]}"
     end
   end
 end
