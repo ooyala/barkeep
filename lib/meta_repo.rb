@@ -95,7 +95,7 @@ class MetaRepo
     commit_matches_search = false
     # TODO(philc): Abort searches in other threads when we find a match.
     parallel_each_repos(repos) do |repo, mutex|
-      commit_ids = GitHelper.rev_list(grit_repo, git_options, git_args).map(&:sha)
+      commit_ids = GitHelper.rev_list(repo, git_options, git_args).map(&:sha)
       commit_matches_search = true if commit_ids.include?(grit_commit.sha)
     end
 
