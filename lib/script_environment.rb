@@ -22,4 +22,4 @@ require "lib/redis_manager"
 
 logger = Logger.new(STDOUT)
 logger.level = Logger::DEBUG
-MetaRepo.instance = MetaRepo.new(logger, REPO_PATHS)
+MetaRepo.configure(logger, REPO_PATHS)

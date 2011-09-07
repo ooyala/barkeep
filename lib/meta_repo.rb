@@ -14,21 +14,26 @@ require "lib/git_helper"
 class MetaRepo
   # This is the singleton instance that the app and all models use.
   class << self
-    attr_accessor :instance
+    def instance; @instance ||= MetaRepo.new; end
   end
 
   attr_accessor :logger
 
-  def initialize(logger, repo_paths)
-    self.logger = logger
+  def self.configure(logger, repo_paths)
+    @@logger = logger
+    @@repo_paths = repo_paths
+  end
+
+  def initialize
+    @logger = @@logger
     Thread.abort_on_exception = true
-    logger.info "Initializing #{repo_paths.size} git repositories."
+    logger.info "Initializing #{@@repo_paths.size} git repositories."
     # Let's keep this mapping in memory at all times -- we'll be hitting it all the time.
     @repo_name_to_id = {}
     @repos = []
     # A convenient lookup table for Grit::Repos keyed by both string name and db id.
     @repo_names_and_ids_to_repos = {}
-    repo_paths.each do |path|
+    @@repo_paths.each do |path|
       # Canonical path
       path = Pathname.new(path).realpath.to_s
       name = File.basename(path)

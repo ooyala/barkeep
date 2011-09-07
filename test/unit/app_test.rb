@@ -17,10 +17,8 @@ class AppTest < Scope::TestCase
       @comment = Comment.new(:text => "howdy ho", :created_at => Time.now)
       stub(@comment).user { @user }
       @commit = stub_commit(@user)
-      meta_repo = MetaRepo.new(Logger.new(STDERR), [])
-      stub(MetaRepo).instance { meta_repo }
-
-      stub(meta_repo).db_commit { @commit }
+      MetaRepo.configure(Logger.new(STDERR), [])
+      stub(MetaRepo.instance).db_commit { @commit }
     end
 
     should "posting a comment should create a comment" do
