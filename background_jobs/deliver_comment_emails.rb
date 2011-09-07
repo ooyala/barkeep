@@ -67,5 +67,8 @@ class DeliverCommentEmailsWorker
 end
 
 if $0 == __FILE__
-  DeliverCommentEmails.new(Logging.create_logger("deliver_comment_emails.log")).run
+  logger = Logging.create_logger("deliver_comment_emails.log")
+  MetaRepo.configure(logger, REPO_PATHS)
+  MetaRepo.instance
+  DeliverCommentEmails.new(logger).run
 end
