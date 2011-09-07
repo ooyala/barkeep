@@ -56,7 +56,9 @@ window.KeyboardShortcuts =
   # Call before handling an event. The return value of this indicates whether to continue handling.
   beforeKeydown: (event) ->
     event.stopPropagation()
-    if ShortcutOverlay.showing
+    if $(document.activeElement).is("textarea, input[type=text]")
+      return false
+    else if ShortcutOverlay.showing
       ShortcutOverlay.hide()
       return false
     true
