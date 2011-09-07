@@ -14,13 +14,12 @@ require "lib/git_helper"
 class MetaRepo
   # This is the singleton instance that the app and all models use.
   class << self
-    attr_accessor :logger
+    def logger=(logger); @@logger = logger; end
     def instance; @instance ||= MetaRepo.new; end
-  end
-
-  def self.configure(logger, repo_paths)
-    @@logger = logger
-    @@repo_paths = repo_paths
+    def configure(logger, repo_paths)
+      @@logger = logger
+      @@repo_paths = repo_paths
+    end
   end
 
   def initialize
