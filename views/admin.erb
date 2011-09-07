@@ -2,8 +2,12 @@
   # A dashboard which tells you interesting things about your Barkeep install and helps you spot and
   # troubleshoot problems.
   # Params:
+  # - most_recent_commit
+  # - most_recent_comment
   # - failed_email_count
   # - recently_failed_emails
+  # - pending_background_jobs_count
+  # - pending_background_jobs
 %>
 
 <style type="text/css" media="screen">
@@ -12,12 +16,60 @@
     padding: 10px;
     border: 1px solid #e0e0e0;
   }
+  h2 {
+    margin: 14px 0;
+  }
+  h4 {
+    margin: 10px 0;
+  }
+  p {
+    margin: 10px 0;
+  }
 </style>
 
 <div id="admin">
-  <h2>Emails</h2>
+  <h2>Data model metrics</h2>
 
-  <h4>Recently failed email tasks (<%= failed_email_count %> total)</h4>
+  <% if most_recent_commit %>
+    <h4>Most recent commit</h4>
+    <p>
+      Most recent commit:<br/>
+      id: <%= most_recent_commit.id %><br/>
+      date: <%= most_recent_commit.date.to_pretty %><br/>
+      author: <%= most_recent_commit.user.name %>
+    </p>
+  <% end %>
+
+  <% if most_recent_comment %>
+    <h4>Most recent comment</h4>
+    <p>
+      id: <%= most_recent_comment.id %><br/>
+      created_at: <%= most_recent_comment.created_at.to_pretty %><br/>
+      author: <%= most_recent_comment.user.name %>
+    </p>
+  <% end %>
+
+  <h2>Pending background jobs, oldest first (<%= pending_background_jobs_count %> total)</h2>
+  <% unless pending_background_jobs.empty? %>
+    <table>
+      <tr>
+        <th>id</th>
+        <th>created_at</th>
+        <th>job_type</th>
+        <th>params</th>
+      </tr>
+      <% pending_background_jobs.each do |job| %>
+      <tr>
+        <td><%= job.id %></td>
+        <td><%= job.created_at %></td>
+        <td><%= job.job_type %></td>
+        <td><%= job.params %></td>
+      </tr>
+      <% end %>
+    </table>
+  <% end %>
+
+  <h2>Recently failed email tasks (<%= failed_email_count %> total)</h2>
   <% unless recently_failed_emails.empty? %>
     <table id="failedEmails">
       <tr>
