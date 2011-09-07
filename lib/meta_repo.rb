@@ -14,10 +14,9 @@ require "lib/git_helper"
 class MetaRepo
   # This is the singleton instance that the app and all models use.
   class << self
+    attr_accessor :logger
     def instance; @instance ||= MetaRepo.new; end
   end
-
-  attr_accessor :logger
 
   def self.configure(logger, repo_paths)
     @@logger = logger
@@ -25,9 +24,8 @@ class MetaRepo
   end
 
   def initialize
-    @logger = @@logger
     Thread.abort_on_exception = true
-    logger.info "Initializing #{@@repo_paths.size} git repositories."
+    @@logger.info "Initializing #{@@repo_paths.size} git repositories."
     # Let's keep this mapping in memory at all times -- we'll be hitting it all the time.
     @repo_name_to_id = {}
     @repos = []
@@ -37,7 +35,7 @@ class MetaRepo
       # Canonical path
       path = Pathname.new(path).realpath.to_s
       name = File.basename(path)
-      logger.info "Initializing repo '#{name}' at #{path}."
+      @@logger.info "Initializing repo '#{name}' at #{path}."
       raise "Error: Already have repo named #{name}" if @repo_name_to_id[name]
       id = GitRepo.find_or_create(:name => name, :path => path).id
       grit_repo = Grit::Repo.new(path)
@@ -143,11 +141,11 @@ class MetaRepo
     @repo_name_to_id.each do |repo_name, repo_id|
       grit_repo = @repo_names_and_ids_to_repos[repo_id]
       grit_repo.git.fetch
-      logger.info "Importing new commits for repo #{repo_name}."
+      @@logger.info "Importing new commits for repo #{repo_name}."
       grit_repo.remotes.each do |remote|
         next if remote.name == "origin/HEAD"
         new_commits = import_new_ancestors!(repo_name, repo_id, remote.commit)
-        logger.info "Imported #{new_commits} new commits as ancestors of #{remote.name} in repo #{repo_name}"
+        @@logger.info "Imported #{new_commits} new commits as ancestors of #{remote.name} in repo #{repo_name}"
       end
     end
   end
@@ -202,17 +200,17 @@ class MetaRepo
       page += 1
 
       # Give some progress output for really big imports.
-      logger.info "Imported #{page_size * page} commits..." if (page % 10 == 0)
+      @@logger.info "Imported #{page_size * page} commits..." if (page % 10 == 0)
     rescue Sequel::DatabaseDisconnectError => e
       # NOTE(dmac): This will occur the first time the background job runs, because it's
       # trying to reconnect to the database. If we retry, the connection will be
       # reestablished and ingestion will continue on its merry way.
       redo
     rescue Exception => e
-      logger.info "Exception raised while importing commits:"
-      logger.info "#{e.class}"
-      logger.info "#{e.message}"
-      logger.info "#{e.backtrace}"
+      @@logger.info "Exception raised while importing commits:"
+      @@logger.info "#{e.class}"
+      @@logger.info "#{e.message}"
+      @@logger.info "#{e.backtrace}"
       raise e
     end until commits.empty?
 

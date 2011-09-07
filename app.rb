@@ -90,7 +90,7 @@ class Barkeep < Sinatra::Base
 
   configure :production do
     enable :logging
-    MetaRepo.instance.logger.level = Logger::INFO
+    MetaRepo.logger.level = Logger::INFO
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
 
     Barkeep.start_background_batch_comment_emails_job

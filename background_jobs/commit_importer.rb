@@ -20,7 +20,7 @@ class CommitImporter
 
   def run
     logger = Logging.logger = Logging.create_logger("commit_importer.log")
-    MetaRepo.instance.logger = logger
+    MetaRepo.logger = logger
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
 
     while true
