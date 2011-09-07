@@ -79,5 +79,10 @@ class MetaRepoTest < Scope::TestCase
       assert_equal false, @@repo.search_options_match_commit?(@repo_name, second_commit,
           { :paths => ["units.txt"] })
     end
+
+    should "return false when searching on a repo which doesn't exist" do
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
+          { :repos => ["non-existant-repo"] })
+    end
   end
 end
