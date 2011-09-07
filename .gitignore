@@ -1,3 +1,4 @@
-dev.db
+/dev.db
 /tmp/*
-log/*
+/log/*
+/dump.rdb
