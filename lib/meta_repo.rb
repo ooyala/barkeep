@@ -93,13 +93,12 @@ class MetaRepo
         repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
 
     commit_matches_search = false
-    # TODO(philc): Abort searches in other threads when we find a match.
-    parallel_each_repos(repos) do |repo, mutex|
+    # NOTE(philc): Doing this serially for now, as running git rev-list with popen from multiple threads
+    # using "parallel_each_repos" was consistently giving a broken pipe error.
+    commit_matches_search = repos.any? do |repo|
       commit_ids = GitHelper.rev_list(repo, git_options, git_args).map(&:sha)
-      commit_matches_search = true if commit_ids.include?(grit_commit.sha)
+      commit_ids.include?(grit_commit.sha)
     end
-
-    commit_matches_search
   end
 
   # Returns a page of commits based on the given options.
