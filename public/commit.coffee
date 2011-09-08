@@ -12,7 +12,7 @@ window.Commit =
     $(".delete").live "click", (e) => @onCommentDelete e
 
   onKeydown: (event) ->
-    return unless KeyboardShortcuts.beforeKeydown(event)
+    return unless @beforeKeydown(event)
     switch KeyboardShortcuts.keyCombo(event)
       when "j"
         @selectNextLine(true)
@@ -36,6 +36,10 @@ window.Commit =
         @clearSelectedLine()
       else
         KeyboardShortcuts.globalOnKeydown(event)
+
+  beforeKeydown: (event) ->
+    return false if $(document.activeElement).is("textarea")
+    KeyboardShortcuts.beforeKeydown(event)
 
   # Returns true if the diff line is within the user's scroll context
   lineVisible: (line,visible = "all") ->
@@ -65,7 +69,6 @@ window.Commit =
     $(select).addClass("selected")
 
   selectNextLine: (next = true) ->
-    return if $(document.activeElement).is("textarea")
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
     if selectedLine.length == 0 or not @lineVisible(selectedLine)
