@@ -673,20 +673,18 @@ table.commitsList, table.authorList {
         border: 1px solid #DDD;
       }
 
-      pre code {
-        display: block;
-        margin: 10px;
-        padding: 10px;
+      pre {
         font-family: @monoFont;
       }
 
-      .code {
-        background: #FAFAFA;
-        margin: 1em 0;
-        border: 1px solid #DDD;
+      .commentCode {
+        margin: 5px 0;
         padding: 5px;
+        background: #F0EEEA;
+        border: 1px solid #DDD;
         .roundedCorners(3px);
       }
+
     }
 
     .commentControls {
@@ -910,15 +908,6 @@ table.commitsList, table.authorList {
 }
 
 .clear { clear: both; }
-
-.commentCode {
-  margin: 1em 0;
-  padding: 5px;
-  background: #F0EEEA;
-  border: 1px solid #DDD;
-  overflow: auto;
-  .roundedCorners(3px);
-}
 
 .code, .commentCode {
   .c {
