@@ -31,6 +31,8 @@ namespace :fezzik do
     command = "rsync -r --archive --safe-links --delete --exclude=.git --exclude=log --exclude=tmp " +
         "#{local_path}/* '/tmp/#{app}/'"
     puts `#{command}`
+    # Write out a bit of useful deploy-time info
+    `./config/recipes/write_git_info.sh > /tmp/#{app}/git_deploy_info.txt`
     Rake::Task["fezzik:save_environment"].invoke
   end
 

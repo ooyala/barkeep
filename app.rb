@@ -122,6 +122,8 @@ class Barkeep < Sinatra::Base
     next if request.url =~ /^#{root_url}\/stats/
     next if request.url =~ /^#{root_url}\/inspire/
     next if request.url =~ /^#{root_url}\/keyboard_shortcuts/
+    next if request.url =~ /^#{root_url}\/admin/
+    next if request.url =~ /^#{root_url}\/statusz/
     next if request.url =~ /^#{root_url}\/.*\.css/
     next if request.url =~ /^#{root_url}\/.*\.js/
     next if request.url =~ /^#{root_url}\/.*\.woff/
@@ -354,6 +356,11 @@ class Barkeep < Sinatra::Base
       :pending_background_jobs => BackgroundJob.order(:id.asc).limit(10).all,
       :pending_background_jobs_count => BackgroundJob.count
     }
+  end
+
+  get "/statusz" do
+    content_type "text/plain"
+    File.read(File.join(File.dirname(__FILE__), "./git_deploy_info.txt"))
   end
 
   # For development use only -- for testing and styling emails. Use ?send_email=true to actually send
