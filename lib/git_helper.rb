@@ -70,8 +70,13 @@ class GitHelper
           data[:binary] = true
         else
           if options[:use_syntax_highlighting] || options[:cache_prime]
-            before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
-            after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
+            begin
+              before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
+              after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
+            rescue RubyPython::PythonError
+              data[:lines] = [LineDiff.new(:same, "This commit may contain bad Unicode characters.", 0, 0, true, true)]
+              next data
+            end
           else
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
             before = diff.a_blob ? diff.a_blob.data : ""
