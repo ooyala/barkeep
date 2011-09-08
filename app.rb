@@ -24,6 +24,7 @@ require "lib/meta_repo"
 require "lib/pretty_date"
 require "lib/script_environment"
 require "lib/stats"
+require "lib/statusz"
 require "lib/string_helper"
 require "lib/inspire"
 require "lib/redis_manager"
@@ -358,9 +359,13 @@ class Barkeep < Sinatra::Base
     }
   end
 
-  get "/statusz" do
+  get %r{/statusz$} do
+    erb :statusz
+  end
+
+  get "/statusz/:sha_part" do
     content_type "text/plain"
-    File.read(File.join(File.dirname(__FILE__), "./git_deploy_info.txt"))
+    Statusz.commit_info params[:sha_part]
   end
 
   # For development use only -- for testing and styling emails. Use ?send_email=true to actually send

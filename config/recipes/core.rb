@@ -33,6 +33,7 @@ namespace :fezzik do
     puts `#{command}`
     # Write out a bit of useful deploy-time info
     `./config/recipes/write_git_info.sh > /tmp/#{app}/git_deploy_info.txt`
+    `git log --pretty=%H > /tmp/#{app}/all_commits.txt`
     Rake::Task["fezzik:save_environment"].invoke
   end
 
