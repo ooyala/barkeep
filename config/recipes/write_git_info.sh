@@ -9,7 +9,7 @@ echo
 echo "Date:"
 date -u
 echo
-echo "Current user on host:"
+echo "whoami:"
 whoami
 echo
 echo "Git user info:"
