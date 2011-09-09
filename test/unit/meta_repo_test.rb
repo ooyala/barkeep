@@ -62,10 +62,20 @@ class MetaRepoTest < Scope::TestCase
           { :branches => ["nonexistant_branch"] })
       assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
           { :branches => ["cheese"] })
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
+          { :branches => ["cheese"] })
 
-      # TODO(philc): This does not work. A bug in grit?
+      # TODO(philc): This does not work. We should eliminate nonexistant branches from the CLI args before
+      # passing them on to git rev-list, as the command will fail with 
+      #   fatal: ambiguous argument 'origin/nonexistant_branch': unknown revision or path
       # assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
           # { :branches => ["nonexistant_branch", "cheese"] })
+    end
+
+    should "not find a commit which does not exist on the given branch" do
+      commit_not_on_branch = "17de3113"
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, commit_not_on_branch,
+          { :branches => ["cheese"] })
     end
 
     should "return false for a commit which has matching commits in its history, but does not itself match" do

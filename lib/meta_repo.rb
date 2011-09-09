@@ -76,17 +76,18 @@ class MetaRepo
     grit_repo = @repo_names_and_ids_to_repos[repo_id_or_name]
     grit_commit = grit_repo.commit(commit_sha)
 
-    # git rev-list wants the commit ID to be the first argument.
-    git_args.unshift(commit_sha)
-
     # Building up this rev-list command is a bit tricky. --all is added to the CL args if we're searching
     # across all branches. --all includes all refs as part of the command, so rev-list will simply return the
     # most recent commits from *any* ref which match the search criteria. What we want to do in that case is
     # limit the time range of the returned commits to match the commit we're looking for. We ask for 10
     # commits and see if the commit we're looking for is in that list, just in case there's more than one
     # commit with the same date (rare).
+    # NOTE(philc): min-age and max-age seem to work well as commit filters in all cases. If we ever need
+    # to use something more specific when determining if a commit ID is on a branch, we can search with these
+    # arguments: git rev-list commit_id^..origin/branch_name --reverse.
     git_options[:n] = 10
     git_options["min-age"] = git_options["max-age"] = grit_commit.date.to_i
+
 
     repos = search_options[:repos].blank? ? @repos :
         repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
