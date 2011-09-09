@@ -61,7 +61,7 @@
       <% pending_background_jobs.each do |job| %>
       <tr>
         <td><%= job.id %></td>
-        <td><%= job.created_at %></td>
+        <td><%= job.created_at.to_pretty %></td>
         <td><%= job.job_type %></td>
         <td><%= job.params %></td>
       </tr>
@@ -85,7 +85,7 @@
           <td><%= email.id %></td>
           <td><%= email.to.split(",").join(" ") %></td>
           <td><%= email.subject[0..30] %></td>
-          <td><%= email.created_at %></td>
+          <td><%= email.created_at.to_pretty %></td>
           <td><%= email.failure_reason %></td>
         </tr>
       <% end %>
