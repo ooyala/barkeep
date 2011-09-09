@@ -585,27 +585,24 @@ table.commitsList, table.authorList {
     }
   }
 
-  .data {
-    background-color: @almostWhite;
-    overflow-y: auto;
-    border-collapse: collapse;
-    border: 1px solid #DDDDDD;
+  .dataWrapper {
+    overflow-x: auto;
     width: 100%;
+    background-color: @almostWhite;
+    .data { border-collapse: collapse; }
   }
 
   .filename {
     padding: 5px;
     background-color: @sunkenColor;
-    border: 1px solid #DDDDDD;
-    border-bottom: none;
+    border-bottom: 1px solid #ddd;
     color: #666666;
     font-family: @monoFont;
     font-size: 0.9em;
   }
 
   .file {
-    overflow: auto;
-
+    border: 1px solid #ddd;
     // The styles for inline comments are slightly different than general comments -- they have no left border.
     .comment, .commentForm {
       width: 849px;

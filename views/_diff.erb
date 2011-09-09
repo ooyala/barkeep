@@ -9,28 +9,30 @@
       <% line_comments = commit_file.line_comments %>
     <% end %>
   </div>
-  <table class="data">
-    <% if file[:binary] %>
-      <tr>
-        <td class="fileBinary">binary file</td>
-      </tr>
-    <% else %>
-      <% file[:lines].each_with_index do |line, index| %>
-        <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
-            diff-line-number="<%= index + 1 %>">
-          <td class="lineNumber"><%= line.line_num_before || "&nbsp;" %></td>
-          <td class="lineNumber"><%= line.line_num_after || "&nbsp;" %></td>
-          <td class="code">
-            <%= line.formatted %>
-            <% # add line comments
-               while comment_index < line_comments.length &&
-                line_comments[comment_index].line_number == index + 1 %>
-                  <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
-                <% comment_index += 1 %>
-            <% end %>
-          </td>
+  <div class="dataWrapper">
+    <table class="data">
+      <% if file[:binary] %>
+        <tr>
+          <td class="fileBinary">binary file</td>
         </tr>
+      <% else %>
+        <% file[:lines].each_with_index do |line, index| %>
+          <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
+              diff-line-number="<%= index + 1 %>">
+            <td class="lineNumber"><%= line.line_num_before || "&nbsp;" %></td>
+            <td class="lineNumber"><%= line.line_num_after || "&nbsp;" %></td>
+            <td class="code">
+              <%= line.formatted %>
+              <% # add line comments
+                 while comment_index < line_comments.length &&
+                  line_comments[comment_index].line_number == index + 1 %>
+                    <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
+                  <% comment_index += 1 %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       <% end %>
-    <% end %>
-  </table>
+    </table>
+  </div>
 </div>
