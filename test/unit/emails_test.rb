@@ -71,6 +71,20 @@ class EmailsTest < Scope::TestCase
         assert_equal "Connection reset by peer", error.message
         assert_equal Emails::RecoverableEmailError, error.class
       end
+
+      should "raise a RecoverableEmailError when the SMTP server responds with a temporary failure" do
+        # This specific error message was obtained from the logs. It's sometimes returned by Gmail.
+        smtp_failure = "454 4.7.0 Cannot authenticate due to temporary system problem. Try again later"
+        stub(Pony).mail { raise Net::SMTPAuthenticationError.new(smtp_failure) }
+
+        error = nil
+        begin
+          Emails.deliver_mail("to", "subject", "html_body")
+        rescue Emails::RecoverableEmailError => error
+        end
+        assert_equal Emails::RecoverableEmailError, error.class
+        assert_equal smtp_failure, error.message
+      end
     end
   end
 

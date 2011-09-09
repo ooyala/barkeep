@@ -80,7 +80,6 @@ class Emails
   # pony_options: extra options to pass through to Pony. Used for setting mail headers like
   # "message-ID" to enable threading.
   def self.deliver_mail(to, subject, html_body, pony_options = {})
-    puts "Sending email to #{to} with subject \"#{subject}\""
     options = { :to => to, :via => :smtp, :subject => subject, :html_body => html_body,
       # These settings are from the Pony documentation and work with Gmail's SMTP TLS server.
       :via_options => {
@@ -96,6 +95,13 @@ class Emails
     }
     begin
       Pony.mail(options.merge(pony_options))
+    rescue Net::SMTPAuthenticationError => error
+      # Gmail's SMTP server sometimes gives this response; we've seen it come up in the admin dashboard.
+      if error.message.include?("Cannot authenticate due to temporary system problem")
+        raise RecoverableEmailError.new(error.message)
+      else
+        raise error
+      end
     rescue Errno::ECONNRESET, Errno::ECONNABORTED, Errno::ETIMEDOUT => error
       raise RecoverableEmailError.new(error.message)
     end
