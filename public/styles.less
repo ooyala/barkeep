@@ -589,7 +589,10 @@ table.commitsList, table.authorList {
     overflow-x: auto;
     width: 100%;
     background-color: @almostWhite;
-    .data { border-collapse: collapse; }
+    .data {
+      width: 100%;
+      border-collapse: collapse;
+    }
   }
 
   .filename {
@@ -699,7 +702,6 @@ table.commitsList, table.authorList {
   }
 
   .diffLine {
-
     &:not(.chunk) { display: none; }
     &.selected {
       .code {
@@ -740,12 +742,11 @@ table.commitsList, table.authorList {
 
   div.data {
     border: 1px solid #ddd;
-  }
-
-  div.data table {
-    border-collapse: collapse;
-    border-spacing: 0px;
-    width: 100%;
+    table {
+      border-collapse: collapse;
+      border-spacing: 0px;
+      width: 100%;
+    }
   }
 }
 
