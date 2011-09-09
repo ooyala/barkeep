@@ -6,7 +6,7 @@
       <tr>
         <td>
           <p class="sha"><%= commit.sha %> : <%= commit.git_repo.name %>.git</p>
-          <p class="message"><%= commit.message %></p>
+          <p class="message"><%= CGI::escapeHTML(commit.message).gsub("\n", "<br/>") %></p>
           <img class="avatar" src="<%= commit.user.gravatar %>" />
           <div class="authorInfo">
             <p class="author"><%= commit.user.name %></p>
