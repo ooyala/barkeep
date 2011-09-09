@@ -8,6 +8,8 @@
   # - recently_failed_emails
   # - pending_background_jobs_count
   # - pending_background_jobs
+  # - pending_comments
+  # - pending_comments_count
 %>
 
 <style type="text/css" media="screen">
@@ -18,6 +20,8 @@
   }
   h2 {
     margin: 14px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed #999;
   }
   h4 {
     margin: 10px 0;
@@ -68,6 +72,27 @@
       <% end %>
     </table>
   <% end %>
+
+  <h2>Comments waiting to be emailed, oldest first (<%= pending_comments_count %> total)</h2>
+  <% unless pending_comments.empty? %>
+    <table>
+      <tr>
+        <th>id</th>
+        <th>created_at</th>
+        <th>commit_id</th>
+        <th>author</th>
+      </tr>
+      <% pending_comments.each do |comment| %>
+      <tr>
+        <td><%= comment.id %></td>
+        <td><%= comment.created_at.to_pretty %></td>
+        <td><%= comment.commit.sha %></td>
+        <td><%= comment.user.email %></td>
+      </tr>
+      <% end %>
+    </table>
+  <% end %>
+  
 
   <h2>Recently failed email tasks (<%= failed_email_count %> total)</h2>
   <% unless recently_failed_emails.empty? %>

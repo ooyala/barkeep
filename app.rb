@@ -355,7 +355,9 @@ class Barkeep < Sinatra::Base
       :recently_failed_emails =>
           CompletedEmail.filter(:result => "failure").order(:created_at.desc).limit(10).all,
       :pending_background_jobs => BackgroundJob.order(:id.asc).limit(10).all,
-      :pending_background_jobs_count => BackgroundJob.count
+      :pending_background_jobs_count => BackgroundJob.count,
+      :pending_comments => Comment.filter(:has_been_emailed => false).order(:id.asc).limit(10).all,
+      :pending_comments_count => Comment.filter(:has_been_emailed => false).count,
     }
   end
 
