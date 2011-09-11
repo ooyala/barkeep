@@ -74,7 +74,7 @@ class GitHelper
               before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
               after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
             rescue RubyPython::PythonError
-              data[:lines] = [LineDiff.new(:same, "This commit may contain bad Unicode characters.", 0, 0, true, true)]
+              data[:corrupted] = true
               next data
             end
           else
