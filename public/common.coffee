@@ -5,6 +5,7 @@ window.Constants =
   KEY_CODES:
     13  : "return"
     27  : "escape"
+    66  : "b"
     67  : "c"
     69  : "e"
     72  : "h"
