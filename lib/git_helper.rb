@@ -65,8 +65,8 @@ class GitHelper
           :file_name_before => a_path,
           :file_name_after => b_path,
         }
-        filetype = AlbinoFiletype::detect_filetype(a_path == "dev/null" ? b_path : a_path)
-        if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
+        filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
+        if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data[:special_case] = "This is a binary file."
         else
           if options[:use_syntax_highlighting] || options[:cache_prime]
@@ -82,7 +82,7 @@ class GitHelper
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
           unless options[:cache_prime]
-            data[:lines] = GitHelper::tag_file(before, after, diff.diff)
+            data[:lines] = GitHelper.tag_file(before, after, diff.diff)
           end
         end
         data
@@ -101,8 +101,7 @@ class GitHelper
   # Parse unified diff and return an array of LineDiff objects, which have all the lines in the original file
   # as well as the changed (diff) lines.
   def self.tag_file(file_before, file_after, diff)
-    before_lines = file_before ? file_before.split("\n") : []
-    after_lines = file_after ? file_after.split("\n") : []
+    before_lines, after_lines = [file_before, file_after].map { |file| file ? file.split("\n") : [] }
     tagged_lines = []
     orig_line, diff_line = 0, 0
     chunks = tag_diff(diff, before_lines, after_lines)
@@ -123,45 +122,44 @@ class GitHelper
       tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
-        LineDiff.new(:same, before_lines[orig_line-1], orig_line, diff_line )
+        LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line )
       end
     end
     tagged_lines
   end
 
-  # parses unified diff, into objects so that the rest of the file can be inserted around it.
-  # returns { :orig_line, :orig_length, :diff_line, :diff_length, [ DiffLines... ] }
+  # parses unified diff into objects so that the rest of the file can be inserted around it.
+  # returns [{ :orig_line, :orig_length, :diff_line, :diff_length, [ DiffLines... ] }, ...]
   def self.tag_diff(diff, before_highlighted, after_highlighted)
-    diff_lines = diff_lines = diff.split("\n")
     chunks = []
     chunk = nil
     orig_line = 0
     diff_line = 0
 
-    diff_lines.each do |line|
+    diff.split("\n").each do |line|
       match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@$/.match(line)
       if match
-        orig_line = Integer(match[1]) - 1
-        diff_line = Integer(match[3]) - 1
-        chunk = { :orig_line => orig_line, :orig_length => Integer(match[2]), :diff_line => diff_line,
-            :diff_length => Integer(match[4]), :tagged_lines => [] }
+        orig_line = match[1].to_i - 1
+        diff_line = match[3].to_i - 1
+        chunk = { :orig_line => orig_line, :orig_length => match[2].to_i, :diff_line => diff_line,
+            :diff_length => match[4].to_i, :tagged_lines => [] }
         chunks << chunk
         next
       end
       match_new_file = /^@@ \-(\d+) \+(\d+),(\d+) @@$/.match(line)
       if match_new_file
         orig_line = nil
-        diff_line = Integer(match_new_file[2]) - 1
+        diff_line = match_new_file[2].to_i - 1
         chunk = { orig_line => nil, :orig_length => 0, :diff_line => diff_line,
-            :diff_length => Integer(match_new_file[3]), :tagged_lines => [] }
+            :diff_length => match_new_file[3].to_i, :tagged_lines => [] }
         chunks << chunk
         next
       end
       match_removed_file = /^@@ \-(\d+),(\d+) \+(\d+) @@$/.match(line)
       if match_removed_file
-        orig_line = Integer(match_removed_file[1]) - 1
+        orig_line = match_removed_file[1].to_i - 1
         diff_line = nil
-        chunk = { orig_line => orig_line, :orig_length => Integer(match_removed_file[2]), diff_line => nil,
+        chunk = { orig_line => orig_line, :orig_length => match_removed_file[2].to_i, diff_line => nil,
             :diff_length => 0, :tagged_lines => [] }
         chunks << chunk
         next
@@ -183,7 +181,7 @@ class GitHelper
             orig_line += 1
             highlighted = before_highlighted[orig_line-1]
         end
-        next if tag.nil?
+        next unless tag
         chunk[:tagged_lines] << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line, :chunk => true)
       end
@@ -194,8 +192,14 @@ class GitHelper
 end
 
 class LineDiff
+  LINE_PREFIX = {
+    :same => " ",
+    :removed => "-",
+    :added => "+"
+  }
+
   attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start
-  def initialize(tag, data, line_num_before, line_num_after, chunk=false, chunk_start=false)
+  def initialize(tag, data, line_num_before, line_num_after, chunk = false, chunk_start = false)
     @tag = tag
     @data = data
     @line_num_before = line_num_before
@@ -205,20 +209,6 @@ class LineDiff
   end
 
   def formatted
-    line = "<pre>#{self.line_prefix + self.data}</pre>"
-    case @tag
-    when :removed then line = "<div class='removed'>#{line}</div>"
-    when :added then line = "<div class='added'>#{line}</div>"
-    when :same then line = "<div class='same'>#{line}</div>"
-    end
-    return line
-  end
-
-  def line_prefix
-    case @tag
-    when :same then " "
-    when :removed then "-"
-    when :added then "+"
-    end
+    "<div class='#{@tag}'><pre>#{LINE_PREFIX[@tag] + @data}</pre></div>"
   end
 end
