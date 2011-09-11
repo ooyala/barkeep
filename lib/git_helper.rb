@@ -79,8 +79,7 @@ class GitHelper
             end
           else
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
-            before = diff.a_blob ? diff.a_blob.data : ""
-            after = diff.b_blob ? diff.b_blob.data : ""
+            before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
           unless options[:cache_prime]
             data[:lines] = GitHelper::tag_file(before, after, diff.diff)
