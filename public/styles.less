@@ -207,7 +207,7 @@ button.standard, input[type=button], input[type=submit] {
 /*
  * Page chrome styles.
  */
-#body {
+body {
   clear: both;
   width: @pageWidth;
   margin: 0 auto;
@@ -551,7 +551,8 @@ table.commitsList, table.authorList {
   }
 
   #commitMetadata {
-    margin: 40px 0px;
+    width: @pageWidth;
+    margin: 40px auto;
     padding: 10px;
     font-size: 0.8em;
 
@@ -634,11 +635,30 @@ table.commitsList, table.authorList {
 
   .dataWrapper {
     overflow-x: auto;
+    //relative position here to anchor the codeRight element that has absolute position
+    position: relative;
     width: 100%;
     background-color: @almostWhite;
     .data {
       width: 100%;
       border-collapse: collapse;
+    }
+    .codeLeft {
+      left: 0px;
+    }
+    .lineNumber {
+      width: 4ex;
+      div {
+        width: 4ex;
+        position: absolute;
+      }
+    }
+    //right side table for code is not diplayed initially, javascript will show it for side-by-side view
+    .codeRight {
+      position: absolute;
+      display: none;
+      top: 0px;
+      left: 0px;
     }
   }
 
@@ -664,9 +684,9 @@ table.commitsList, table.authorList {
   .comment, .commentForm {
     .raisedPanel;
     background-color: @almostWhite;
-    margin: 8px 8px 8px 0px;
+    margin: 8px auto;
     font-size: 0.8em;
-    width: 100%;
+    width: @pageWidth;
 
     textarea {
       resize: vertical;
