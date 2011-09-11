@@ -51,7 +51,8 @@ class GitHelper
   end
 
   # Returns an array of hashes representing the tagged and colorized lines of each file in the diff.
-  # Where :binary indicates if the file is binary, otherwise :lines is the output of tag_file
+  # Where :special_case indicates if the file is an exception of some kind (binary file, corrupt/unparseable
+  # file, etc), otherwise :lines is the output of tag_file.
   # options:
   #  use_syntax_highlighting - whether we should use syntax highlighting when generating diffs.
   # returns: [ { :binary, :lines}, ... ]
