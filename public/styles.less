@@ -154,6 +154,12 @@ button.standard, input[type=button], input[type=submit] {
   box-align: @alignment;
 }
 
+.boxOrdinalGroup (@index: 1) {
+  -webkit-box-ordinal-group: @index;
+  -moz-box-ordinal-group: @index;
+  box-ordinal-group: @index;
+}
+
 // Some standard CSS3 elements
 .boxShadow(@x: 0, @y: 0, @blur: 1px, @color: black) {
   -moz-box-shadow: @arguments;
@@ -688,8 +694,20 @@ table.commitsList, table.authorList {
     }
 
     .commentControls {
-      margin: 7px 10px 10px 10px;
-      text-align: right;
+      margin: 10px 0;
+      width: 100%;
+      .flexbox;
+      .boxPack(end);
+      .commentCancel {
+        .flexbox;
+        .boxOrdinalGroup(1);
+        margin-right: 3px;
+      }
+      .commentSubmit {
+        .flexbox;
+        .boxOrdinalGroup(2);
+        margin-right: 10px;
+      }
     }
   }
 
