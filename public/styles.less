@@ -526,10 +526,16 @@ table.commitsList, table.authorList {
       height: 50px;
     }
 
-    .sha {
+    .name {
       margin-bottom: 10px;
-      font-family: @monoFont;
-      color: @lightTextColor;
+        color: @lightTextColor;
+      .repoName {
+        font: 18px @sansFont;
+        font-variant: small-caps;
+      }
+      .sha {
+        font-family: @monoFont;
+      }
     }
 
     .message {
