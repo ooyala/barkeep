@@ -11,12 +11,8 @@
   </div>
   <div class="dataWrapper">
     <table class="data">
-      <% if file[:binary] || file[:corrupted] %>
-        <tr>
-          <td class="fileBinary">
-            <%= file[:binary] ? "This is a binary file." : "This file contains unexpected characters." %>
-          </td>
-        </tr>
+      <% if file[:special_case] %>
+        <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
       <% else %>
         <% file[:lines].each_with_index do |line, index| %>
           <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"

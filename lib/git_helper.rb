@@ -67,14 +67,14 @@ class GitHelper
         }
         filetype = AlbinoFiletype::detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper::blob_binary?(diff.a_blob) || GitHelper::blob_binary?(diff.b_blob)
-          data[:binary] = true
+          data[:special_case] = "This is a binary file."
         else
           if options[:use_syntax_highlighting] || options[:cache_prime]
             begin
               before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
               after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
             rescue RubyPython::PythonError
-              data[:corrupted] = true
+              data[:special_case] = "This file contains unexpected characters."
               next data
             end
           else
@@ -91,9 +91,9 @@ class GitHelper
       # NOTE/TODO(dmac): Grit will die when trying to diff huge commits.
       # Here we're returning an skeleton diff so we can actually display something in the UI.
       # It's pretty lame, but gets around any exceptions for now.
-      [{ :file_name_before => "Error processing commit diff",
-         :file_name_after => "",
-         :lines => [LineDiff.new(:same, "This commit is too damn big!", 0, 0, true, true)]
+      [{:file_name_before => "Error processing commit diff",
+        :file_name_after => "",
+        :special_case => "This commit is too large to process."
       }]
     end
   end
