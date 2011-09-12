@@ -6,14 +6,18 @@
 # This information is exposed through the /statusz route.
 
 module Statusz
+  INFO_FILE = File.join(File.dirname(__FILE__), "../git_deploy_info.txt")
+  COMMITS_FILE = File.join(File.dirname(__FILE__), "../all_commits.txt")
+
   def self.summary_info
-    File.read File.join(File.dirname(__FILE__), "../git_deploy_info.txt")
+    return "No deploy info available" unless File.file? INFO_FILE
+    File.read INFO_FILE
   end
 
   def self.commit_info(sha_part)
+    return "" unless File.file? COMMITS_FILE
     return "Need more than '#{sha_part}' to search." unless sha_part.size > 4
-    all_commits_file = File.join(File.dirname(__FILE__), "../all_commits.txt")
-    matching_commits = `cat #{all_commits_file} | grep "^#{sha_part}"`
+    matching_commits = `cat #{COMMITS_FILE} | grep "^#{sha_part}"`
     return "No matching commits" if matching_commits.empty?
     "Matching commits:\n" << matching_commits
   end
