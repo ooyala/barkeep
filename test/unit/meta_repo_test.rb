@@ -10,6 +10,9 @@ class MetaRepoTest < Scope::TestCase
   setup do
     # This commit added the file "units.txt" and has an author of "phil.crosby@gmail.com"
     @first_commit = "65a0045"
+    # This commit added the file "strategies.txt" and has an author of "phil.crosby@gmail.com"
+    @second_commit = "17de311"
+
     @repo_name = "test_git_repo"
   end
 
@@ -32,7 +35,7 @@ class MetaRepoTest < Scope::TestCase
     end
   end
 
-  context "search_options_include_commit" do
+  context "search_options_match_commit?" do
     should "find a commit by author" do
       assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["Jones"] })
@@ -57,18 +60,18 @@ class MetaRepoTest < Scope::TestCase
     end
 
     should "find a commit by branch" do
-      commit_on_branch = "4a7d3e5"
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
+      first_commit_on_cheese_branch = "4a7d3e5"
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           { :branches => ["nonexistant_branch"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           { :branches => ["cheese"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
+      assert_equal true, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           { :branches => ["cheese"] })
 
       # TODO(philc): This does not work. We should eliminate nonexistant branches from the CLI args before
       # passing them on to git rev-list, as the command will fail with 
       #   fatal: ambiguous argument 'origin/nonexistant_branch': unknown revision or path
-      # assert_equal true, @@repo.search_options_match_commit?(@repo_name, commit_on_branch,
+      # assert_equal true, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           # { :branches => ["nonexistant_branch", "cheese"] })
     end
 
@@ -83,16 +86,41 @@ class MetaRepoTest < Scope::TestCase
       # git rev-list would return us a commit sha which matched our search criteria, but it was different
       # than the commit ID we were searching for. We needed to compare the two.
 
-      # This commit added the file "strategies.txt" and has an author of "phil.crosby@gmail.com"
-      second_commit = "17de311"
 
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, second_commit,
+      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @second_commit,
           { :paths => ["units.txt"] })
     end
 
     should "return false when searching on a repo which doesn't exist" do
       assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :repos => ["non-existant-repo"] })
+    end
+  end
+
+  # TODO(philc): Add tests which require merging results across multiple repos.
+  context "find_commits" do
+    setup do
+      @options = { :direction => "before", :limit => 2 }
+    end
+
+    should "find commits matching an author" do
+      assert_equal [], @@repo.find_commits(@options.merge(:authors => ["nonexistant author"]))[:commits]
+
+      result = @@repo.find_commits(@options.merge(:authors => ["Phil Crosby"]))
+      assert_equal 2, result[:commits].size
+      assert_equal ["Phil Crosby"], result[:commits].map { |commit| commit.author.name }.uniq
+
+      # TODO(philc): the test below should work, but it's 1, not 2. Fix that bug.
+      # assert_equal 2, results[:count]
+    end
+
+    should "find commits matching a branch" do
+      assert_equal [], @@repo.find_commits(@options.merge(:branches => ["nonexistant_branch"]))[:commits]
+
+      first_commit_on_cheese_branch = "4a7d3e5"
+
+      result = @@repo.find_commits(@options.merge(:branches => ["cheese"]))
+      assert_equal [first_commit_on_cheese_branch, @first_commit], result[:commits].map(&:id_abbrev)
     end
   end
 end

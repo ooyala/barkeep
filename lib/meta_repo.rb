@@ -110,6 +110,7 @@ class MetaRepo
   # returns: { :commits => [git commits], :count => number of results,
   #            :tokens => { :from => new search token, :to => new search token } }
   def find_commits(options)
+    raise "Limit required" unless options[:limit]
     git_options, git_args = MetaRepo.git_options_and_args_from_search_filter_options(options)
     repos = options[:repos].blank? ? @repos :
         repos_which_match(options[:repos].map { |name| Regexp.new(name) })
