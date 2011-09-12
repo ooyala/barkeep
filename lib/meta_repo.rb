@@ -88,8 +88,7 @@ class MetaRepo
     git_command_options[:n] = 10
     git_command_options["min-age"] = git_command_options["max-age"] = grit_commit.date.to_i
 
-    repos = search_options[:repos].blank? ? @repos :
-        repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
+    repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
 
     commit_matches_search = false
     # TODO(philc): Abort searches in other threads when we find a match.
@@ -112,8 +111,7 @@ class MetaRepo
   def find_commits(options)
     raise "Limit required" unless options[:limit]
     git_command_options = MetaRepo.git_command_options(options)
-    repos = options[:repos].blank? ? @repos :
-        repos_which_match(options[:repos].map { |name| Regexp.new(name) })
+    repos = options[:repos].blank? ? @repos : repos_which_match(options[:repos])
 
     # Assuming everything has been set up correctly in preparation to invoke git rev-list, add in options for
     # the limit and timestamp.
@@ -389,12 +387,11 @@ class MetaRepo
   end
 
   # Returns the repos which have names matching any of the given regular expressions.
-  def repos_which_match(regexps)
-    repos = []
-    @repo_name_to_id.each do |name, id|
-      repos << @repo_names_and_ids_to_repos[id] if regexps.any? { |regexp| name =~ regexp }
+  def repos_which_match(repo_names)
+    repos = @repo_name_to_id.map do |name, id|
+      repo_names.include?(name) ? @repo_names_and_ids_to_repos[id] : nil
     end
-    repos.uniq
+    repos.compact.uniq
   end
 
   # Converts the given search filter options to an arguments array and git CLI options, to be passed to git
