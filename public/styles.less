@@ -191,6 +191,22 @@ button.standard, input[type=button], input[type=submit] {
   }
 }
 
+.standardPanel {
+  background-color: @sunkenColor;
+  border: 1px solid @borderColor;
+}
+
+.raisedPanel {
+  .standardPanel;
+  border-bottom-width: 2px;
+  box-shadow: 3px 3px 2px #e8e8e8;
+}
+
+.embossedPanel {
+  .standardPanel;
+  box-shadow: 0px 2px 2px white;
+}
+
 .webkit button.standard { font-weight: bold; }
 
 /*
@@ -314,6 +330,9 @@ header {
 /*
  * Saved searches styles.
  */
+
+.searchPanel { .embossedPanel; }
+
 .savedSearchPlaceholder {
   border: 3px dashed #ccc;
   margin-bottom: 19px;
@@ -487,13 +506,6 @@ table.commitsList, table.authorList {
   }
 }
 
-.embossedPanel {
-  background-color: @sunkenColor;
-  border: 1px solid @borderColor;
-  .roundedCorners(4px);
-  box-shadow: 0px 2px 1px white;
-}
-
 #commitSearch {
   padding: 10px 8px;
   width: 80%;
@@ -638,7 +650,7 @@ table.commitsList, table.authorList {
   }
 
   .file {
-    border: 1px solid @borderColor;
+    .embossedPanel;
     // The styles for inline comments are slightly different than general comments -- they have no left border.
     .comment, .commentForm {
       width: 849px;
@@ -648,13 +660,11 @@ table.commitsList, table.authorList {
   }
 
   .comment, .commentForm {
-    border: 1px solid @borderColor;
-    border-bottom-width: 2px;
+    .raisedPanel;
     background-color: @almostWhite;
     margin: 8px 8px 8px 0px;
     font-size: 0.8em;
     width: 100%;
-
 
     textarea {
       resize: vertical;
@@ -717,7 +727,6 @@ table.commitsList, table.authorList {
         padding: 5px;
         background: #F0EEEA;
         border: 1px solid @borderColor;
-        .roundedCorners(3px);
       }
 
     }
@@ -819,7 +828,6 @@ table.commitsList, table.authorList {
     opacity: 0.95;
     width: @pageWidth - 100;
     .boxShadow(2px, 2px, 5px, black);
-    .roundedCorners(5px);
 
     #shortcuts {
       background: transparent;
