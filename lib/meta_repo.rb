@@ -283,8 +283,9 @@ class MetaRepo
     commits = []
     parallel_each_repos(repos) do |repo, mutex|
       local_results = GitHelper.commits_with_limit(repo, git_options, args, limit, :commits, retain)
-      # This BS is because ruby's sort isn't stable, but I need to preserve the git ordering of commits beyond
-      # timestamp.
+      # If two commits have the same timestamp, we want to order them as they were originally ordered by
+      # GitHelper.commits_with_limit. We could just sort by timestamp if Ruby's sort was stable, but it's not.
+      # Instead, we must remember the array position of each commit so that we can use this later to sort.
       commit_tuples = local_results.each_with_index.map do |commit, i|
         [commit, [commit.timestamp, commit.repo_name, i]]
       end
