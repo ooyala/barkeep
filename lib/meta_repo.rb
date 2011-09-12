@@ -72,7 +72,7 @@ class MetaRepo
   #   - repos: a list of repo paths
   #   - branches: a list of branch names
   def search_options_match_commit?(repo_id_or_name, commit_sha, search_options)
-    git_options, git_args = MetaRepo.git_options_and_args_from_search_filter_options(search_options)
+    git_command_options = MetaRepo.git_command_options(search_options)
     grit_repo = @repo_names_and_ids_to_repos[repo_id_or_name]
     grit_commit = grit_repo.commit(commit_sha)
 
@@ -85,8 +85,8 @@ class MetaRepo
     # NOTE(philc): min-age and max-age seem to work well as commit filters in all cases. If we ever need
     # to use something more specific when determining if a commit ID is on a branch, we can search with these
     # arguments: git rev-list commit_id^..origin/branch_name --reverse.
-    git_options[:n] = 10
-    git_options["min-age"] = git_options["max-age"] = grit_commit.date.to_i
+    git_command_options[:n] = 10
+    git_command_options["min-age"] = git_command_options["max-age"] = grit_commit.date.to_i
 
     repos = search_options[:repos].blank? ? @repos :
         repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
@@ -94,7 +94,7 @@ class MetaRepo
     commit_matches_search = false
     # TODO(philc): Abort searches in other threads when we find a match.
     parallel_each_repos(repos) do |repo, mutex|
-      commit_ids = GitHelper.rev_list(repo, git_options, git_args).map(&:sha)
+      commit_ids = GitHelper.rev_list(repo, git_command_options).map(&:sha)
       commit_matches_search = true if commit_ids.include?(grit_commit.sha)
     end
 
@@ -111,7 +111,7 @@ class MetaRepo
   #            :tokens => { :from => new search token, :to => new search token } }
   def find_commits(options)
     raise "Limit required" unless options[:limit]
-    git_options, git_args = MetaRepo.git_options_and_args_from_search_filter_options(options)
+    git_command_options = MetaRepo.git_command_options(options)
     repos = options[:repos].blank? ? @repos :
         repos_which_match(options[:repos].map { |name| Regexp.new(name) })
 
@@ -119,10 +119,9 @@ class MetaRepo
     # the limit and timestamp.
     token = options[:token].then { |token_string| PagingToken.from_s(token_string) }
     if options[:direction] == "before"
-      commits = find_commits_before(repos, token, options[:limit], token.nil?, true, git_options,
-                                         git_args)
+      commits = find_commits_before(repos, token, options[:limit], token.nil?, true, git_command_options)
     else
-      commits = find_commits_after(repos, token, options[:limit], false, true, git_options, git_args)
+      commits = find_commits_after(repos, token, options[:limit], false, true, git_command_options)
     end
     return { :commits => [], :count => 0, :tokens => { :from => nil, :to => nil } } if commits.empty?
 
@@ -131,7 +130,7 @@ class MetaRepo
     [[:from, commits.last], [:to, commits.first]].each do |token_name, commit|
       tokens[token_name] = PagingToken.new(commit.timestamp, commit.repo_name, commit.sha)
     end
-    result[:count] = count_commits_to_token(repos, tokens[:to], git_options, git_args)
+    result[:count] = count_commits_to_token(repos, tokens[:to], git_command_options)
     result[:tokens] = { :from => tokens[:from].to_s, :to => tokens[:to].to_s }
     result
   end
@@ -220,9 +219,9 @@ class MetaRepo
   # TODO(caleb): the following two methods are too copy-pasta, but at the same time they're quite complex so
   # when we combine them we should make sure that it is understandable what's happening.
 
-  def find_commits_before(repos, token, limit, inclusive, pad_results, options, args)
+  def find_commits_before(repos, token, limit, inclusive, pad_results, git_command_options)
     extra_options = token ? { :before => token.timestamp } : {}
-    results = commits_from_repos(repos, options.merge(extra_options), args, limit, :first)
+    results = commits_from_repos(repos, git_command_options.merge(extra_options), limit, :first)
 
     token_index = token.nil? ? 0 : results.index do |commit|
       [:timestamp, :repo_name, :sha].all? { |p| commit.send(p) == token.send(p) }
@@ -235,15 +234,15 @@ class MetaRepo
 
     # We've gone as far back as possible; return the last N resuls.
     if results.size < limit && pad_results && token
-      results = find_commits_after(repos, token, limit - results.size, !inclusive, false, options,
-                                        args) + results
+      results = find_commits_after(repos, token, limit - results.size, !inclusive, false,
+          git_command_options) + results
     end
     results
   end
 
-  def find_commits_after(repos, token, limit, inclusive, pad_results, options, args)
+  def find_commits_after(repos, token, limit, inclusive, pad_results, git_command_options)
     extra_options = { :after => token.timestamp }
-    results = commits_from_repos(repos, options.merge(extra_options), args, limit, :last)
+    results = commits_from_repos(repos, git_command_options.merge(extra_options), limit, :last)
 
     token_index = results.index do |commit|
       [:timestamp, :repo_name, :sha].all? { |p| commit.send(p) == token.send(p) }
@@ -258,7 +257,7 @@ class MetaRepo
     # We've gone as far back as possible; return the last N resuls.
     if results.size < limit && pad_results
       results +=
-        find_commits_before(repos, token, limit - results.size, !inclusive, false, options, args)
+        find_commits_before(repos, token, limit - results.size, !inclusive, false, git_command_options)
     end
     results
   end
@@ -270,19 +269,19 @@ class MetaRepo
   # *all* be returned, in addition to the `limit` commits before/after them. This is so that other methods in
   # this class can handle the corner case of many commits clustered around the paging token (i.e. at the same
   # timestamp).
-  def commits_from_repos(repos, options, args, limit, retain = :first)
-    raise "Can't change the sort order" if options[:reverse]
-    git_options = options.clone
+  def commits_from_repos(repos, git_command_options, limit, retain = :first)
+    raise "Can't change the sort order" if git_command_options[:reverse]
+    git_command_options = git_command_options.clone
 
     # Need to explicitly handle the before/after corner cases.
-    original_timestamp = git_options[:before] || git_options[:after]
+    original_timestamp = git_command_options[:before] || git_command_options[:after]
     # Exclude the commits on the boundary; we'll add them in later.
-    git_options[:before] -= 1 if git_options[:before]
-    git_options[:after] += 1 if git_options[:after]
+    git_command_options[:before] -= 1 if git_command_options[:before]
+    git_command_options[:after] += 1 if git_command_options[:after]
 
     commits = []
     parallel_each_repos(repos) do |repo, mutex|
-      local_results = GitHelper.commits_with_limit(repo, git_options, args, limit, :commits, retain)
+      local_results = GitHelper.commits_with_limit(repo, git_command_options, limit, :commits, retain)
       # If two commits have the same timestamp, we want to order them as they were originally ordered by
       # GitHelper.commits_with_limit. We could just sort by timestamp if Ruby's sort was stable, but it's not.
       # Instead, we must remember the array position of each commit so that we can use this later to sort.
@@ -295,10 +294,10 @@ class MetaRepo
     # Hokay, now let's add in all the boundary commits (if necessary)
     boundary_commits = []
     if original_timestamp
-      git_options[:before] = git_options[:after] = original_timestamp
+      git_command_options[:before] = git_command_options[:after] = original_timestamp
       parallel_each_repos(repos) do |repo, mutex|
         # Hopefully there aren't > 1000 commits with a single timestamp...
-        local_results = GitHelper.commits_with_limit(repo, git_options, args, 1000, :commits, retain)
+        local_results = GitHelper.commits_with_limit(repo, git_command_options, 1000, :commits, retain)
         commit_tuples = local_results.each_with_index.map do |commit, i|
           [commit, [commit.timestamp, commit.repo_name, i]]
         end
@@ -317,11 +316,11 @@ class MetaRepo
   # with the conflicting timestamps case). AFAIK this is probably fine (for now) because this will only be
   # used for page numbering (which is going to be off when we import commits anyway).
   # NOTE(caleb) this should return >= the actual count.
-  def count_commits_to_token(repos, token, options, args)
+  def count_commits_to_token(repos, token, git_command_options)
     count = 0
     # TODO(caleb): Fix the case where we've paged back > 10000 commits into a single repo.
     parallel_each_repos(repos) do |repo, mutex|
-      local_count = GitHelper.commits_with_limit(repo, options.merge({:after => token.timestamp}), args,
+      local_count = GitHelper.commits_with_limit(repo, git_command_options.merge({:after => token.timestamp}),
                                                  10_000, :count, :first)
       mutex.synchronize { count += local_count }
     end
@@ -360,19 +359,25 @@ class MetaRepo
 
   # Converts the given search filter options to an arguments array and git CLI options, to be passed to git
   # rev-list.
-  def self.git_options_and_args_from_search_filter_options(options)
+  # The git_command_options has the form
+  #    { :option1 => ..., :option2 => ..., :cli_args => ... }
+  # where each option will be added as an --option to the rev_list command, followed by any CLI args
+  # found in cli_args.
+  def self.git_command_options(search_options)
     # TODO(caleb): Deal with filtering commit messages
     # Need extended regexes to be able to use the  "|" operator.
+    # TODO(philc): Shouldn't we only add extended_regexp if authors is specified?
     git_options = { :extended_regexp => true, :regexp_ignore_case => true }
 
-    git_options[:author] = options[:authors].join("|") unless options[:authors].blank?
+    git_options[:author] = search_options[:authors].join("|") unless search_options[:authors].blank?
 
-    git_arguments = options[:branches].blank? ? [] : options[:branches].map { |name| "origin/#{name}" }
+    git_arguments = search_options[:branches].blank? ? [] :
+        search_options[:branches].map { |name| "origin/#{name}" }
     git_options[:all] = true if git_arguments.empty?
     git_arguments << "--"
-    git_arguments += options[:paths] unless options[:paths].blank?
+    git_arguments += search_options[:paths] unless search_options[:paths].blank?
 
-    return git_options, git_arguments
+    git_options.merge(:cli_args => git_arguments)
   end
 end
 
