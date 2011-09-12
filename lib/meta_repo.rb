@@ -149,8 +149,6 @@ class MetaRepo
     end
   end
 
-  private
-
   # Import all undiscovered ancestors. Returns the number of new commits imported.
   # This method can import a new repository of 25K commits in about 40s.
   def import_new_ancestors!(repo_name, repo_id, grit_commit)
@@ -307,9 +305,51 @@ class MetaRepo
 
     commits.sort! { |commit1, commit2| compare_commit_tuples(commit1[1], commit2[1]) }
     boundary_commits.sort! { |commit1, commit2| compare_commit_tuples(commit1[1], commit2[1]) }
-    results = retain == :first ? boundary_commits + commits.take(limit) :
-      commits.last(limit) + boundary_commits
+    results = (retain == :first) ?
+        boundary_commits + commits.take(limit) :
+        commits.last(limit) + boundary_commits
     results.map(&:first)
+  end
+
+  # Retrives commits from a single repo.
+  # If a filter_proc is provided in search_options, that filter is used to eliminate commits. This will page
+  # through all commits which satisfy the given search criteria until enough commits are found which are
+  # approved by the filter_proc.
+  def commits_from_repo(repo, search_options, git_command_options, limit, retain)
+    unless git_command_options[:before] || git_command_options[:after]
+      raise ":before or :after criteria are required."
+    end
+
+    git_command_options = git_command_options.dup
+    search_boundary = git_command_options[:before] ? :before : :after
+    filtered_results = []
+
+    # If a filter_proc has been provided, we may need to make multiple invocations to git rev-list in case
+    # the first list of commits we got from git rev-list were not all approved by the filter_proc.
+    # We'll ask for more than we need if there's a filter_proc, so that we'll hopefully reduce how many
+    # invocations we'll need to make to git rev-list.
+    limit_with_padding = search_options[:filter_proc] ? limit * 2 : limit
+    begin
+      original_results = GitHelper.commits_with_limit(repo, git_command_options, limit_with_padding + 1,
+          :commits, retain)
+      has_more = (original_results.size > limit_with_padding)
+      original_results = original_results.take(limit_with_padding)
+      filtered_results += search_options[:filter_proc] ?
+          search_options[:filter_proc].call(original_results) :
+          original_results
+
+      if has_more
+        if retain == :first
+          oldest_commit = original_results.last
+          git_command_options[:before] = oldest_commit.timestamp - 1
+        elsif retain == :last
+          newest_commit = original_results.first
+          git_command_options[:after] = newest_commit.timestamp + 1
+        end
+      end
+    end while (has_more && filtered_results.size < limit)
+
+    filtered_results.take(limit)
   end
 
   # Number of commits preceding the token. Right now this is actually only a close estimate (it doesn't deal

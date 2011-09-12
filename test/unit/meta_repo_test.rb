@@ -22,8 +22,8 @@ class MetaRepoTest < Scope::TestCase
     Commit.first rescue nil
 
     # Initialize against sample repo.
-    test_git_repo_path = File.join(File.dirname(__FILE__), "../fixtures/test_git_repo")
-    MetaRepo.configure(Logger.new("/dev/null"), [test_git_repo_path])
+    @@test_git_repo_path = File.join(File.dirname(__FILE__), "../fixtures/test_git_repo")
+    MetaRepo.configure(Logger.new("/dev/null"), [@@test_git_repo_path])
     @@repo = MetaRepo.new
   end
 
@@ -122,5 +122,49 @@ class MetaRepoTest < Scope::TestCase
       result = @@repo.find_commits(@options.merge(:branches => ["cheese"]))
       assert_equal [first_commit_on_cheese_branch, @first_commit], result[:commits].map(&:id_abbrev)
     end
+
+    context "commits_from_repo" do
+      setup_once do
+        # TODO(philc): It would be nice to simply use the GritRepo MetaRepo has already created, but for now
+        # that's a private instance variable.
+        @@grit_repo = Grit::Repo.new(@@test_git_repo_path)
+      end
+
+      setup do
+        @git_options = { :author => "Phil Crosby", :before => Time.now.to_i, :cli_args => "master" }
+      end
+
+      should "use a filter_proc to filter out commits from the list of results" do
+        # This search should include the first_commit and second_commit.
+        commit_ids = @@repo.commits_from_repo(@@grit_repo, {}, @git_options, 100, :first).map(&:id_abbrev)
+        assert commit_ids.include?(@first_commit)
+        assert commit_ids.include?(@second_commit)
+
+        # This search uses a filter_proc to eliminate all commits but the first one.
+        search_options = {
+          :filter_proc => proc { |commits| commits.select { |commit| commit.id_abbrev == @first_commit } }
+        }
+        commit_ids = @@repo.commits_from_repo(@@grit_repo, search_options, @git_options, 2, :first).
+            map(&:id_abbrev)
+        assert_equal [@first_commit], commit_ids
+      end
+
+      should "page through commits and pass each page to filter_proc" do
+        third_commit_on_master = "9f9c5d8"
+        commits_being_filtered = []
+        filter_proc = Proc.new do |commits|
+          commits_being_filtered.push(commits.map(&:id_abbrev))
+          commits.select { |commit| commit.id_abbrev == @first_commit }
+        end
+        search_options = { :filter_proc => filter_proc }
+        commit_ids = @@repo.commits_from_repo(@@grit_repo, search_options, @git_options, 1, :first).
+            map(&:id_abbrev)
+
+        # commits_from_repo() pages through commits in pages of 2*limit at a time.
+        assert_equal [[third_commit_on_master, @second_commit], [@first_commit]], commits_being_filtered
+        assert_equal [@first_commit], commit_ids
+      end
+    end
   end
+
 end
