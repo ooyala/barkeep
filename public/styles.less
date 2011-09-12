@@ -19,6 +19,7 @@
 @lightTextColor: #777;
 /* The color of those tan/grey sections of the site which look sunken into the page. */
 @sunkenColor: #F0EEEA;
+@borderColor: darken(@sunkenColor, 15%);
 @dragHandleWidth: 30px;
 @almostWhite: #FDFDFD;
 
@@ -61,7 +62,7 @@ button.fancy {
   border: 1px solid @deepRed;
   /* This darker border helps distinguish the drop shadow. */
   border-bottom: 1px solid darken(@deepRed, 5%);
-  border-radius: 3px;
+  .roundedCorners(3px);
   box-shadow: 0 2px 4px #999;
   text-shadow: 0px -1px 1px @deepRed;
   padding: 5px 18px;
@@ -260,8 +261,8 @@ header {
         box-shadow: 0px 2px 1px white;
       }
       a {
-        border-radius: 4px;
-        border: 1px solid #ddd;
+        .roundedCorners(4px);
+        border: 1px solid @borderColor;
         border-top: 0;
 
         display: block;
@@ -278,7 +279,7 @@ header {
         /* Cancel any border effects that the standard a:hover implements. */
         &:hover {
           color: @linkColor;
-          border: 1px solid #ddd;
+          border: 1px solid @borderColor;
           border-top: 0;
           text-decoration: none;
         }
@@ -335,7 +336,7 @@ header {
   .header {
     margin-bottom: 5px;
     padding-bottom: 3px;
-    border-bottom: 1px solid #d0d0d0;
+    border-bottom: 1px solid @borderColor;
 
     .dragHandle {
       position: absolute;
@@ -396,7 +397,7 @@ header {
       text-align: center;
     }
     a {
-      border: 1px solid #ddd;
+      border: 1px solid @borderColor;
       padding-bottom: 2px;
       &:hover, &.active { background-color: #e0e0e0; }
       &.disabled {
@@ -488,8 +489,8 @@ table.commitsList, table.authorList {
 
 .embossedPanel {
   background-color: @sunkenColor;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid @borderColor;
+  .roundedCorners(4px);
   box-shadow: 0px 2px 1px white;
 }
 
@@ -630,14 +631,14 @@ table.commitsList, table.authorList {
   .filename {
     padding: 5px;
     background-color: @sunkenColor;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid @borderColor;
     color: #666666;
     font-family: @monoFont;
     font-size: 0.9em;
   }
 
   .file {
-    border: 1px solid #ddd;
+    border: 1px solid @borderColor;
     // The styles for inline comments are slightly different than general comments -- they have no left border.
     .comment, .commentForm {
       width: 849px;
@@ -646,7 +647,7 @@ table.commitsList, table.authorList {
   }
 
   .comment, .commentForm {
-    border: 1px solid darken(@sunkenColor, 15%);
+    border: 1px solid @borderColor;
     border-bottom-width: 2px;
     margin: 8px 8px 8px 0px;
     font-size: 0.8em;
@@ -660,7 +661,7 @@ table.commitsList, table.authorList {
       width: 99.5%;
       font-size: 1.0em;
       border: 0;
-      border-bottom: 1px solid #e8e8e8;
+      border-bottom: 1px solid @borderColor;
       box-shadow: 0 1px 0 white;
       padding-top: 3px;
       padding-left: 2px;
@@ -669,6 +670,7 @@ table.commitsList, table.authorList {
     }
 
     .heading {
+      .avatar { .gravatar(25px); }
       color: @lightTextColor;
       padding: 5px;
       position: relative;
@@ -713,7 +715,7 @@ table.commitsList, table.authorList {
         margin: 5px 0;
         padding: 5px;
         background: #F0EEEA;
-        border: 1px solid #DDD;
+        border: 1px solid @borderColor;
         .roundedCorners(3px);
       }
 
@@ -759,7 +761,7 @@ table.commitsList, table.authorList {
       height: 18px;
       background-color: @sunkenColor;
       color: @lightTextColor;
-      border-right: 1px solid #ddd;
+      border-right: 1px solid @borderColor;
       text-align: right;
       vertical-align: text-top;
       padding: 0 5px;
@@ -793,15 +795,6 @@ table.commitsList, table.authorList {
     }
 
     pre { font: @commitFontFamily; }
-  }
-
-  div.data {
-    border: 1px solid #ddd;
-    table {
-      border-collapse: collapse;
-      border-spacing: 0px;
-      width: 100%;
-    }
   }
 }
 

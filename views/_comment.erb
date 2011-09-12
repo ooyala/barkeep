@@ -1,7 +1,7 @@
 <% if comment %>
   <div class="comment" commentId="<%=comment.id%>">
     <div class="heading">
-      <img class="avatar" src="<%= comment.user.gravatar %>" />
+      <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
       <span>commented</span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
