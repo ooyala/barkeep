@@ -523,14 +523,17 @@ table.commitsList, table.authorList {
   button.submit {
     font-size: 16px;
     /* Have the submit button be roughly the same height as the text field. */
-    padding-top: 4px;
-    padding-bottom: 4px;
+    height: 28px;
+    padding: 0 16px 3px 16px;
   }
   .example {
     color: #999;
     font-size: 12px;
   }
 }
+
+// Can't get the search button to render in the same way in FF/chrome without individual browser tweaking.
+.webkit #commitSearch button.submit { padding-bottom: 0; }
 
 /* For some reason webkit renders this select box smaller than Firefox does. */
 .webkit #commitSearch select { font-size: 16px; }
