@@ -163,12 +163,6 @@ button.standard, input[type=button], input[type=submit] {
 }
 
 // Some standard CSS3 elements
-.boxShadow(@x: 0, @y: 0, @blur: 1px, @color: black) {
-  -moz-box-shadow: @arguments;
-  -webkit-box-shadow: @arguments;
-  box-shadow: @arguments;
-}
-
 .roundedCorners (@radius: 5px) {
   border-radius: @radius;
   -webkit-border-radius: @radius;
@@ -832,7 +826,7 @@ table.commitsList, table.authorList {
     background: @textColor;
     opacity: 0.95;
     width: @pageWidth - 100;
-    .boxShadow(2px, 2px, 5px, black);
+    box-shadow: 2px 2px 5px black;
 
     #shortcuts {
       background: transparent;
