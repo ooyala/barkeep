@@ -88,7 +88,6 @@ class MetaRepo
     git_options[:n] = 10
     git_options["min-age"] = git_options["max-age"] = grit_commit.date.to_i
 
-
     repos = search_options[:repos].blank? ? @repos :
         repos_which_match(search_options[:repos].map { |name| Regexp.new(name) })
 

@@ -20,6 +20,8 @@ require "lib/meta_repo"
 require "redis"
 require "lib/redis_manager"
 
-logger = Logger.new(STDOUT)
-logger.level = Logger::DEBUG
-MetaRepo.configure(logger, REPO_PATHS)
+unless ENV["RACK_ENV"] == "test"
+  logger = Logger.new(STDOUT)
+  logger.level = Logger::DEBUG
+  MetaRepo.configure(logger, REPO_PATHS)
+end
