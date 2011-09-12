@@ -20,6 +20,7 @@
 /* The color of those tan/grey sections of the site which look sunken into the page. */
 @sunkenColor: #F0EEEA;
 @borderColor: darken(@sunkenColor, 15%);
+@standardBorder: 1px solid @borderColor;
 @dragHandleWidth: 30px;
 @almostWhite: #FDFDFD;
 
@@ -193,7 +194,7 @@ button.standard, input[type=button], input[type=submit] {
 
 .standardPanel {
   background-color: @sunkenColor;
-  border: 1px solid @borderColor;
+  border: @standardBorder;
 }
 
 .raisedPanel {
@@ -278,7 +279,7 @@ header {
       }
       a {
         .roundedCorners(4px);
-        border: 1px solid @borderColor;
+        border: @standardBorder;
         border-top: 0;
 
         display: block;
@@ -295,7 +296,7 @@ header {
         /* Cancel any border effects that the standard a:hover implements. */
         &:hover {
           color: @linkColor;
-          border: 1px solid @borderColor;
+          border: @standardBorder;
           border-top: 0;
           text-decoration: none;
         }
@@ -355,7 +356,7 @@ header {
   .header {
     margin-bottom: 5px;
     padding-bottom: 3px;
-    border-bottom: 1px solid @borderColor;
+    border-bottom: @standardBorder;
 
     .dragHandle {
       position: absolute;
@@ -416,7 +417,7 @@ header {
       text-align: center;
     }
     a {
-      border: 1px solid @borderColor;
+      border: @standardBorder;
       padding-bottom: 2px;
       &:hover, &.active { background-color: #e0e0e0; }
       &.disabled {
@@ -643,7 +644,7 @@ table.commitsList, table.authorList {
   .filename {
     padding: 5px;
     background-color: @sunkenColor;
-    border-bottom: 1px solid @borderColor;
+    border-bottom: @standardBorder;
     color: #666666;
     font-family: @monoFont;
     font-size: 0.9em;
@@ -672,7 +673,7 @@ table.commitsList, table.authorList {
       width: @pageWidth - 2px;
       font-size: 1.0em;
       border: 0;
-      border-bottom: 1px solid @borderColor;
+      border-bottom: @standardBorder;
       box-shadow: 0 1px 0 white;
       padding-top: 3px;
       padding-left: 2px;
@@ -726,7 +727,7 @@ table.commitsList, table.authorList {
         margin: 5px 0;
         padding: 5px;
         background: #F0EEEA;
-        border: 1px solid @borderColor;
+        border: @standardBorder;
       }
 
     }
@@ -771,7 +772,7 @@ table.commitsList, table.authorList {
       height: 18px;
       background-color: @sunkenColor;
       color: @lightTextColor;
-      border-right: 1px solid @borderColor;
+      border-right: @standardBorder;
       text-align: right;
       vertical-align: text-top;
       padding: 0 5px;
