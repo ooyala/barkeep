@@ -28,8 +28,14 @@
       <% commits.each do |commit| %>
         <tr>
           <td class="selectArrow"></td>
-          <td><a href="/profile/<%= commit.author.user.id %>">
-              <img class="avatar" src="<%= commit.author.user.gravatar %>"/></a></td>
+          <td>
+            <a href="/profile/<%= commit.author.user.id %>">
+              <div class="avatar">
+                <div class="gloss"></div>
+                <img src="<%= commit.author.user.gravatar %>"/>
+              </div>
+            </a>
+          </td>
           <td class="author">
             <a href="/profile/<%= commit.author.user.id %>"
                 title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>

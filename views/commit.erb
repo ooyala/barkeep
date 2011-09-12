@@ -11,7 +11,7 @@
           <span class="repoName">| <%= commit.git_repo.name %></span>
           </p>
           <p class="message"><%= CGI::escapeHTML(commit.message).gsub("\n", "<br/>") %></p>
-          <img class="avatar" src="<%= commit.user.gravatar %>" />
+          <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
           <div class="authorInfo">
             <p class="author"><%= commit.user.name %></p>
             <p class="email"><%= commit.user.email %></p>
