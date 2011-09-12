@@ -643,6 +643,7 @@ table.commitsList, table.authorList {
     .comment, .commentForm {
       width: 849px;
       border-left: 0;
+      textarea { width: 847px; }
     }
   }
 
@@ -658,7 +659,7 @@ table.commitsList, table.authorList {
     textarea {
       resize: vertical;
       min-height: 100px;
-      width: 99.5%;
+      width: @pageWidth - 2px;
       font-size: 1.0em;
       border: 0;
       border-bottom: 1px solid @borderColor;
