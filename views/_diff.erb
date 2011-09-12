@@ -20,6 +20,7 @@
             <td class="lineNumber"><%= line.line_num_before || "&nbsp;" %></td>
             <td class="lineNumber"><%= line.line_num_after || "&nbsp;" %></td>
             <td class="code">
+              <div class="marginLine"></div>
               <%= line.formatted %>
               <% # add line comments
                  while comment_index < line_comments.length &&

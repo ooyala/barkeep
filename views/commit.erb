@@ -1,6 +1,7 @@
 <script src="/js/commit.js"></script>
 
-<div id="commit" sha="<%= commit.sha %>" repo="<%= commit.git_repo.name %>">
+<%# TODO(caleb): Make margin-size user-customizable. %>
+<div id="commit" sha="<%= commit.sha %>" repo="<%= commit.git_repo.name %>" margin-size="110">
   <div id="commitMetadata" class="embossedPanel">
     <table>
       <tr>

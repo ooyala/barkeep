@@ -41,6 +41,17 @@ window.Commit =
     return false if $(document.activeElement).is("textarea")
     KeyboardShortcuts.beforeKeydown(event)
 
+  calculateMarginSize: ->
+    commit = $("#commit")
+    # We need to add 1 to account for the extra 'diff' character (" ", "+", or "-")
+    lineSize = Number(commit.attr("margin-size")) + 1
+    maxLengthLine = ("a" for i in [1..lineSize]).join("")
+    marginSizingDiv = $("<span id='marginSizing'>#{maxLengthLine}</span>")
+    commit.append(marginSizingDiv)
+    marginSize = marginSizingDiv.width()
+    marginSizingDiv.remove()
+    $("#commit .marginLine").css("left", "#{marginSize}px")
+
   # Returns true if the diff line is within the user's scroll context
   lineVisible: (line,visible = "all") ->
     lineTop = $(line).offset().top
@@ -208,3 +219,5 @@ window.Commit =
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
 $(document).ready(-> Commit.init())
+# This needs to happen on page load because we need the styles to be rendered.
+$(window).load(-> Commit.calculateMarginSize())
