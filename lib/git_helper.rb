@@ -222,7 +222,9 @@ class LineDiff
     @chunk_start = chunk_start
   end
 
+  def line_prefix() LINE_PREFIX[self.tag] end
+
   def formatted
-    "<div class='#{@tag}'><pre>#{LINE_PREFIX[@tag] + @data}</pre></div>"
+    "<div class='#{@tag}'><pre>#{line_prefix + @data}</pre></div>"
   end
 end
