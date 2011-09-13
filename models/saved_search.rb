@@ -13,12 +13,16 @@ class SavedSearch < Sequel::Model
       :paths => paths_list,
       :token => token,
       :direction => direction,
+      :commit_filter_proc => self.unapproved_only ? self.method(:select_unapproved_commits).to_proc : nil,
       :limit => PAGE_SIZE)
     page = (result[:count] / PAGE_SIZE).to_i + 1
     [result[:commits], page, result[:tokens]]
   end
 
   # True if this saved search's results include this commit.
+  # NOTE(philc): This ignores the "unapproved_only" option of saved searches, because it's currently
+  # being used to compute who to send comment emails to, and those computations should not care if a commit
+  # has been approved yet.
   def matches_commit?(commit)
     MetaRepo.instance.search_options_match_commit?(commit.git_repo.name, commit.sha,
         :authors => authors_list,
@@ -65,6 +69,14 @@ class SavedSearch < Sequel::Model
   end
 
   private
+
+  # This is used as a commit filter when fetching the commits which make up this saved search.
+  def select_unapproved_commits(grit_commits)
+    # Note that the original order of commits should be preserved.
+    commit_ids = Set.new(Commit.select(:sha).
+        filter(:sha => grit_commits.map(&:sha), :approved_by_user_id => nil).all.map(&:sha))
+    grit_commits.select { |grit_commit| commit_ids.include?(grit_commit.sha) }
+  end
 
   def english_quantity(word, quantity) quantity == 1 ? word : word + "s" end
 
