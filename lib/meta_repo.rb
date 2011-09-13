@@ -110,8 +110,6 @@ class MetaRepo
   #            :tokens => { :from => new search token, :to => new search token } }
   def find_commits(search_options)
     raise "Limit required" unless search_options[:limit]
-    git_command_options = MetaRepo.git_command_options(search_options)
-    repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
 
     # Assuming everything has been set up correctly in preparation to invoke git rev-list, add in options for
     # the limit and timestamp.
@@ -277,13 +275,15 @@ class MetaRepo
 
     # Need to explicitly handle the before/after corner cases.
     original_timestamp = git_command_options[:before] || git_command_options[:after]
+
     # Exclude the commits on the boundary; we'll add them in later.
     git_command_options[:before] -= 1 if git_command_options[:before]
     git_command_options[:after] += 1 if git_command_options[:after]
 
     commits = []
     parallel_each_repos(repos) do |repo, mutex|
-      local_results = GitHelper.commits_with_limit(repo, git_command_options, limit, :commits, retain)
+      local_results = commits_from_repo(repo, git_command_options, limit, retain, commit_filter_proc)
+
       # If two commits have the same timestamp, we want to order them as they were originally ordered by
       # GitHelper.commits_with_limit. We could just sort by timestamp if Ruby's sort was stable, but it's not.
       # Instead, we must remember the array position of each commit so that we can use this later to sort.
@@ -299,7 +299,7 @@ class MetaRepo
       git_command_options[:before] = git_command_options[:after] = original_timestamp
       parallel_each_repos(repos) do |repo, mutex|
         # Hopefully there aren't > 1000 commits with a single timestamp...
-        local_results = GitHelper.commits_with_limit(repo, git_command_options, 1000, :commits, retain)
+        local_results = commits_from_repo(repo, git_command_options, 1000, retain, commit_filter_proc)
         commit_tuples = local_results.each_with_index.map do |commit, i|
           [commit, [commit.timestamp, commit.repo_name, i]]
         end
@@ -316,16 +316,11 @@ class MetaRepo
   end
 
   # Retrives commits from a single repo.
-  # If a filter_proc is provided in search_options, that filter is used to eliminate commits. This will page
-  # through all commits which satisfy the given search criteria until enough commits are found which are
-  # approved by the filter_proc.
+  # - commit_filter_proc: if provided, this filter is used to eliminate commits. This will page
+  #   through all commits which satisfy the given search criteria until enough commits are found which are
+  #   approved by the commit_filter_proc.
   def commits_from_repo(repo, git_command_options, limit, retain, commit_filter_proc = nil)
-    unless git_command_options[:before] || git_command_options[:after]
-      raise ":before or :after criteria are required."
-    end
-
     git_command_options = git_command_options.dup
-    search_boundary = git_command_options[:before] ? :before : :after
     filtered_results = []
 
     # If a filter_proc has been provided, we may need to make multiple invocations to git rev-list in case

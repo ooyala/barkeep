@@ -131,7 +131,7 @@ class MetaRepoTest < Scope::TestCase
       end
 
       setup do
-        @git_options = { :author => "Phil Crosby", :before => Time.now.to_i, :cli_args => "master" }
+        @git_options = { :author => "Phil Crosby", :cli_args => "master" }
       end
 
       should "use a commit_filter_proc to filter out commits from the list of results" do
