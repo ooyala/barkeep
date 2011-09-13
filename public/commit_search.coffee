@@ -200,15 +200,15 @@ window.CommitSearch =
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
-    if @synching
+    if @syncing
       # TODO(caleb): Getting rid of this for now, but we need to think about handling this. The most
       # full-featured option would be displaying some kind of error message to the user and queuing up syncs
       # (a la Gmail), but maybe there's a simpler option.
       #alert "Another sync in progress...server connection problems?"
       return
-    @synching = true
+    @syncing = true
 
   afterSync: ->
-    @synching = false
+    @syncing = false
 
 $(document).ready(-> CommitSearch.init())
