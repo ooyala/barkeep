@@ -108,18 +108,19 @@ class MetaRepo
   #
   # returns: { :commits => [git commits], :count => number of results,
   #            :tokens => { :from => new search token, :to => new search token } }
-  def find_commits(options)
-    raise "Limit required" unless options[:limit]
-    git_command_options = MetaRepo.git_command_options(options)
-    repos = options[:repos].blank? ? @repos : repos_which_match(options[:repos])
+  def find_commits(search_options)
+    raise "Limit required" unless search_options[:limit]
+    git_command_options = MetaRepo.git_command_options(search_options)
+    repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
 
     # Assuming everything has been set up correctly in preparation to invoke git rev-list, add in options for
     # the limit and timestamp.
-    token = options[:token].then { |token_string| PagingToken.from_s(token_string) }
-    if options[:direction] == "before"
-      commits = find_commits_before(repos, token, options[:limit], token.nil?, true, git_command_options)
+    token = search_options[:token].then { |token_string| PagingToken.from_s(token_string) }
+    if search_options[:direction] == "before"
+      commits = find_commits_before(repos, token, search_options[:limit], token.nil?, true,
+          git_command_options)
     else
-      commits = find_commits_after(repos, token, options[:limit], false, true, git_command_options)
+      commits = find_commits_after(repos, token, search_options[:limit], false, true, git_command_options)
     end
     return { :commits => [], :count => 0, :tokens => { :from => nil, :to => nil } } if commits.empty?
 
