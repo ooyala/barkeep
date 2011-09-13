@@ -116,12 +116,10 @@ class MetaRepo
     # Assuming everything has been set up correctly in preparation to invoke git rev-list, add in options for
     # the limit and timestamp.
     token = search_options[:token].then { |token_string| PagingToken.from_s(token_string) }
-    if search_options[:direction] == "before"
-      commits = find_commits_before(repos, token, search_options[:limit], token.nil?, true,
-          git_command_options)
-    else
-      commits = find_commits_after(repos, token, search_options[:limit], false, true, git_command_options)
-    end
+    commits = (search_options[:direction] == "before") ?
+      find_commits_before(search_options, token, token.nil?, true) :
+      find_commits_after(search_options, token, false, true)
+
     return { :commits => [], :count => 0, :tokens => { :from => nil, :to => nil } } if commits.empty?
 
     result = { :commits => commits }
@@ -129,7 +127,7 @@ class MetaRepo
     [[:from, commits.last], [:to, commits.first]].each do |token_name, commit|
       tokens[token_name] = PagingToken.new(commit.timestamp, commit.repo_name, commit.sha)
     end
-    result[:count] = count_commits_to_token(repos, tokens[:to], git_command_options)
+    result[:count] = count_commits_to_token(search_options, tokens[:to])
     result[:tokens] = { :from => tokens[:from].to_s, :to => tokens[:to].to_s }
     result
   end
@@ -216,13 +214,17 @@ class MetaRepo
   # TODO(caleb): the following two methods are too copy-pasta, but at the same time they're quite complex so
   # when we combine them we should make sure that it is understandable what's happening.
 
-  def find_commits_before(repos, token, limit, inclusive, pad_results, git_command_options)
+  def find_commits_before(search_options, token, inclusive, pad_results)
+    repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
+    limit = search_options[:limit]
     extra_options = token ? { :before => token.timestamp } : {}
-    results = commits_from_repos(repos, git_command_options.merge(extra_options), limit, :first)
+    results = commits_from_repos(repos, MetaRepo.git_command_options(search_options).merge(extra_options),
+        limit, :first)
 
     token_index = token.nil? ? 0 : results.index do |commit|
       [:timestamp, :repo_name, :sha].all? { |p| commit.send(p) == token.send(p) }
     end
+
     if token_index
       token_index += 1 unless inclusive
       results = results[token_index, limit]
@@ -231,15 +233,18 @@ class MetaRepo
 
     # We've gone as far back as possible; return the last N resuls.
     if results.size < limit && pad_results && token
-      results = find_commits_after(repos, token, limit - results.size, !inclusive, false,
-          git_command_options) + results
+      results = find_commits_after(search_options.merge(:limit => limit - results.size), token,
+          !inclusive, false) + results
     end
     results
   end
 
-  def find_commits_after(repos, token, limit, inclusive, pad_results, git_command_options)
+  def find_commits_after(search_options, token, inclusive, pad_results)
+    repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
+    limit = search_options[:limit]
     extra_options = { :after => token.timestamp }
-    results = commits_from_repos(repos, git_command_options.merge(extra_options), limit, :last)
+    results = commits_from_repos(repos, MetaRepo.git_command_options(search_options).merge(extra_options),
+        search_options[:limit], :last)
 
     token_index = results.index do |commit|
       [:timestamp, :repo_name, :sha].all? { |p| commit.send(p) == token.send(p) }
@@ -253,8 +258,8 @@ class MetaRepo
 
     # We've gone as far back as possible; return the last N resuls.
     if results.size < limit && pad_results
-      results +=
-        find_commits_before(repos, token, limit - results.size, !inclusive, false, git_command_options)
+      results += find_commits_before(search_options.merge(:limit => limit - results.size), token,
+          !inclusive, false)
     end
     results
   end
@@ -314,7 +319,7 @@ class MetaRepo
   # If a filter_proc is provided in search_options, that filter is used to eliminate commits. This will page
   # through all commits which satisfy the given search criteria until enough commits are found which are
   # approved by the filter_proc.
-  def commits_from_repo(repo, search_options, git_command_options, limit, retain)
+  def commits_from_repo(repo, git_command_options, limit, retain, filter_proc = nil)
     unless git_command_options[:before] || git_command_options[:after]
       raise ":before or :after criteria are required."
     end
@@ -355,12 +360,14 @@ class MetaRepo
   # with the conflicting timestamps case). AFAIK this is probably fine (for now) because this will only be
   # used for page numbering (which is going to be off when we import commits anyway).
   # NOTE(caleb) this should return >= the actual count.
-  def count_commits_to_token(repos, token, git_command_options)
+  def count_commits_to_token(search_options, token)
+    repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
+    git_command_options = MetaRepo.git_command_options(search_options).merge(:after => token.timestamp)
+
     count = 0
     # TODO(caleb): Fix the case where we've paged back > 10000 commits into a single repo.
     parallel_each_repos(repos) do |repo, mutex|
-      local_count = GitHelper.commits_with_limit(repo, git_command_options.merge({:after => token.timestamp}),
-                                                 10_000, :count, :first)
+      local_count = GitHelper.commits_with_limit(repo, git_command_options, 10_000, :count, :first)
       mutex.synchronize { count += local_count }
     end
     count
