@@ -212,8 +212,8 @@ window.Commit =
     firstNonChunk = $(document).find(".diffLine").not(".chunk").filter(":first")
     firstChunk = $(document).find(".diffLine.chunk:first")
     if firstNonChunk.css("display") == "none"
-      $(".diffLine").not(".chunk").show()
       $(".chunkBreak").hide()
+      $(".diffLine").not(".chunk").show()
       window.scrollTo(0, firstChunk.offset().top)
     else
       $(".diffLine").not(".chunk").hide()
