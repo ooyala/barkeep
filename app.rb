@@ -228,6 +228,7 @@ class Barkeep < Sinatra::Base
 
   get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
+    halt 400, "Bad saved search id." unless saved_search
     token = params[:token] && !params[:token].empty? ? params[:token] : nil
     direction = params[:direction]
     erb :_saved_search, :layout => false,
