@@ -758,6 +758,15 @@ table.commitsList, table.authorList {
     font-style: italic;
   }
 
+  .chunkBreak {
+    background-color: #F0EEEA;
+    font: @commitFontFamily;
+    td:nth-child(-n+2) {
+      border-right: @standardBorder;
+    }
+    td { text-align: center; }
+  }
+
   .diffLine {
     &:not(.chunk) { display: none; }
     &.selected {

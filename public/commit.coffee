@@ -213,9 +213,11 @@ window.Commit =
     firstChunk = $(document).find(".diffLine.chunk:first")
     if firstNonChunk.css("display") == "none"
       $(".diffLine").not(".chunk").show()
+      $(".chunkBreak").hide()
       window.scrollTo(0, firstChunk.offset().top)
     else
       $(".diffLine").not(".chunk").hide()
+      $(".chunkBreak").show()
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
 $(document).ready(-> Commit.init())

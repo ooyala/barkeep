@@ -97,6 +97,13 @@ class GitHelper
           end
           unless options[:cache_prime]
             data[:lines] = GitHelper.tag_file(before, after, diff.diff)
+            index = 1
+            data[:lines].each do |line|
+              if line != :break
+                line.index = index
+                index += 1
+              end
+            end
           end
         end
         data
@@ -120,19 +127,21 @@ class GitHelper
     orig_line, diff_line = 0, 0
     chunks = tag_diff(diff, before_lines, after_lines)
 
-    chunks.each do |chunk|
+    chunks.each_with_index do |chunk, i|
       if chunk[:orig_line] && chunk[:orig_line] > orig_line
         tagged_lines += before_lines[orig_line...chunk[:orig_line]].map do |data|
           diff_line += 1
           orig_line += 1
           LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
         end
+        tagged_lines += [:break]
       end
       tagged_lines += chunk[:tagged_lines]
       orig_line += chunk[:orig_length]
       diff_line += chunk[:diff_length]
     end
     if orig_line <= before_lines.count
+      tagged_lines += [:break]
       tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
@@ -212,7 +221,7 @@ class LineDiff
     :added => "+"
   }
 
-  attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start
+  attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start, :index
   def initialize(tag, data, line_num_before, line_num_after, chunk = false, chunk_start = false)
     @tag = tag
     @data = data
