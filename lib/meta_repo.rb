@@ -219,7 +219,7 @@ class MetaRepo
     limit = search_options[:limit]
     extra_options = token ? { :before => token.timestamp } : {}
     results = commits_from_repos(repos, MetaRepo.git_command_options(search_options).merge(extra_options),
-        limit, :first)
+        limit, :first, search_options[:commit_filter_proc])
 
     token_index = token.nil? ? 0 : results.index do |commit|
       [:timestamp, :repo_name, :sha].all? { |p| commit.send(p) == token.send(p) }
@@ -244,7 +244,7 @@ class MetaRepo
     limit = search_options[:limit]
     extra_options = { :after => token.timestamp }
     results = commits_from_repos(repos, MetaRepo.git_command_options(search_options).merge(extra_options),
-        search_options[:limit], :last)
+        search_options[:limit], :last, search_options[:commit_filter_proc])
 
     token_index = results.index do |commit|
       [:timestamp, :repo_name, :sha].all? { |p| commit.send(p) == token.send(p) }
@@ -271,7 +271,7 @@ class MetaRepo
   # *all* be returned, in addition to the `limit` commits before/after them. This is so that other methods in
   # this class can handle the corner case of many commits clustered around the paging token (i.e. at the same
   # timestamp).
-  def commits_from_repos(repos, git_command_options, limit, retain = :first)
+  def commits_from_repos(repos, git_command_options, limit, retain = :first, commit_filter_proc = nil)
     raise "Can't change the sort order" if git_command_options[:reverse]
     git_command_options = git_command_options.clone
 
@@ -319,7 +319,7 @@ class MetaRepo
   # If a filter_proc is provided in search_options, that filter is used to eliminate commits. This will page
   # through all commits which satisfy the given search criteria until enough commits are found which are
   # approved by the filter_proc.
-  def commits_from_repo(repo, git_command_options, limit, retain, filter_proc = nil)
+  def commits_from_repo(repo, git_command_options, limit, retain, commit_filter_proc = nil)
     unless git_command_options[:before] || git_command_options[:after]
       raise ":before or :after criteria are required."
     end
@@ -332,14 +332,14 @@ class MetaRepo
     # the first list of commits we got from git rev-list were not all approved by the filter_proc.
     # We'll ask for more than we need if there's a filter_proc, so that we'll hopefully reduce how many
     # invocations we'll need to make to git rev-list.
-    limit_with_padding = search_options[:filter_proc] ? limit * 2 : limit
+    limit_with_padding = commit_filter_proc ? limit * 2 : limit
     begin
       original_results = GitHelper.commits_with_limit(repo, git_command_options, limit_with_padding + 1,
           :commits, retain)
       has_more = (original_results.size > limit_with_padding)
       original_results = original_results.take(limit_with_padding)
-      filtered_results += search_options[:filter_proc] ?
-          search_options[:filter_proc].call(original_results) :
+      filtered_results += commit_filter_proc ?
+          commit_filter_proc.call(original_results) :
           original_results
 
       if has_more

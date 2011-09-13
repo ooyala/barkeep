@@ -134,30 +134,27 @@ class MetaRepoTest < Scope::TestCase
         @git_options = { :author => "Phil Crosby", :before => Time.now.to_i, :cli_args => "master" }
       end
 
-      should "use a filter_proc to filter out commits from the list of results" do
+      should "use a commit_filter_proc to filter out commits from the list of results" do
         # This search should include the first_commit and second_commit.
-        commit_ids = @@repo.commits_from_repo(@@grit_repo, {}, @git_options, 100, :first).map(&:id_abbrev)
+        commit_ids = @@repo.commits_from_repo(@@grit_repo,  @git_options, 100, :first).map(&:id_abbrev)
         assert commit_ids.include?(@first_commit)
         assert commit_ids.include?(@second_commit)
 
         # This search uses a filter_proc to eliminate all commits but the first one.
-        search_options = {
-          :filter_proc => proc { |commits| commits.select { |commit| commit.id_abbrev == @first_commit } }
-        }
-        commit_ids = @@repo.commits_from_repo(@@grit_repo, search_options, @git_options, 2, :first).
+        commit_filter_proc = proc { |commits| commits.select { |commit| commit.id_abbrev == @first_commit } }
+        commit_ids = @@repo.commits_from_repo(@@grit_repo, @git_options, 2, :first, commit_filter_proc).
             map(&:id_abbrev)
         assert_equal [@first_commit], commit_ids
       end
 
-      should "page through commits and pass each page to filter_proc" do
+      should "page through commits and pass each page to commit_filter_proc" do
         third_commit_on_master = "9f9c5d8"
         commits_being_filtered = []
-        filter_proc = Proc.new do |commits|
+        commit_filter_proc = Proc.new do |commits|
           commits_being_filtered.push(commits.map(&:id_abbrev))
           commits.select { |commit| commit.id_abbrev == @first_commit }
         end
-        search_options = { :filter_proc => filter_proc }
-        commit_ids = @@repo.commits_from_repo(@@grit_repo, search_options, @git_options, 1, :first).
+        commit_ids = @@repo.commits_from_repo(@@grit_repo, @git_options, 1, :first, commit_filter_proc).
             map(&:id_abbrev)
 
         # commits_from_repo() pages through commits in pages of 2*limit at a time.
