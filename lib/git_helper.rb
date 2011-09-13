@@ -140,7 +140,7 @@ class GitHelper
       orig_line += chunk[:orig_length]
       diff_line += chunk[:diff_length]
     end
-    if orig_line <= before_lines.count
+    if !before_lines.empty? && orig_line <= before_lines.count
       tagged_lines += [:break]
       tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
