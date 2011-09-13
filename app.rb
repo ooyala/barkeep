@@ -253,10 +253,16 @@ class Barkeep < Sinatra::Base
     "OK"
   end
 
+  # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
+  #
+  # TODO(philc): Make this more generic to take in all options related to a saved search.
   post "/saved_searches/:id/show_unapproved_commits" do
     unapproved_only = JSON.parse(request.body.read)["unapproved_only"] || false
-    SavedSearch[:id => params[:id].to_i].update(:unapproved_only => unapproved_only)
-    "OK"
+    saved_search = SavedSearch[:id => params[:id].to_i]
+    saved_search.unapproved_only = unapproved_only
+    saved_search.save
+    erb :_saved_search, :layout => false,
+        :locals => { :saved_search => saved_search, :token => nil, :direction => "before" }
   end
 
   #handle login complete from openid provider

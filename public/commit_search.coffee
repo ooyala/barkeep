@@ -190,13 +190,16 @@ window.CommitSearch =
   toggleUnapprovedCommits: (event) ->
     @beforeSync()
     data = { unapproved_only: $(event.target).attr("checked") == "checked" }
-    id = (Number) $(event.target).parents(".savedSearch").attr("saved-search-id")
+    savedSearchId = (Number) $(event.target).parents(".savedSearch").attr("saved-search-id")
     $.ajax
       type: "POST"
       contentTypeType: "application/json"
-      url: "/saved_searches/#{id}/show_unapproved_commits"
+      url: "/saved_searches/#{savedSearchId}/show_unapproved_commits"
       data: jQuery.toJSON(data)
-      success: => @afterSync()
+      success: (newSavedSearchHtml) => 
+        @afterSync()
+        savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
+        savedSearchElement.replaceWith $(newSavedSearchHtml)
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
