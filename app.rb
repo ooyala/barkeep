@@ -253,9 +253,9 @@ class Barkeep < Sinatra::Base
     "OK"
   end
 
-  post "/saved_searches/:id/email" do
-    email_changes = JSON.parse(request.body.read)["email_changes"]
-    SavedSearch[:id => params[:id].to_i].update(:email_changes => email_changes)
+  post "/saved_searches/:id/show_unapproved_commits" do
+    unapproved_only = JSON.parse(request.body.read)["unapproved_only"] || false
+    SavedSearch[:id => params[:id].to_i].update(:unapproved_only => unapproved_only)
     "OK"
   end
 

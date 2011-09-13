@@ -15,7 +15,8 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage(e, "after")
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
-    $("#savedSearches .savedSearch .emailCheckbox").live "click", (e) => @emailUpdate(e)
+    $("#savedSearches .savedSearch input[name='show_unapproved_commits']").live "click",
+        (e) => @toggleUnapprovedCommits(e)
     @selectFirstDiff()
 
   onSearchSaved: (responseHtml) ->
@@ -186,15 +187,15 @@ window.CommitSearch =
       url: "/saved_searches/#{id}"
       success: => @afterSync()
 
-  emailUpdate: (event) ->
+  toggleUnapprovedCommits: (event) ->
     @beforeSync()
-    data = { email_changes: $(event.target).attr("checked") == "checked" }
+    data = { unapproved_only: $(event.target).attr("checked") == "checked" }
     id = (Number) $(event.target).parents(".savedSearch").attr("saved-search-id")
     $.ajax
       type: "POST"
       contentTypeType: "application/json"
-      url: "/saved_searches/#{id}/email"
-      data: $.toJSON(data)
+      url: "/saved_searches/#{id}/show_unapproved_commits"
+      data: jQuery.toJSON(data)
       success: => @afterSync()
 
   beforeSync: ->

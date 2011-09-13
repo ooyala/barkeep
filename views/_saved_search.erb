@@ -13,10 +13,10 @@
     <div class="dragHandle"></div>
     <a href="#" class="delete">x</a>
     <div class="emailMe">
-      <% checked = saved_search.email_changes ? "checked" : nil %>
       <label>
-        <input type="checkbox" name="email_me" class="emailCheckbox" <%= checked %> />
-        email me new commits
+        <input type="checkbox" name="show_unapproved_commits" class="emailCheckbox"
+            <%= saved_search.unapproved_only ? "checked" : nil %> />
+        show unapproved only
       </label>
     </div>
     <h4><%= saved_search.title %></h4>
