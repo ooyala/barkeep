@@ -759,12 +759,20 @@ table.commitsList, table.authorList {
   }
 
   .chunkBreak {
-    background-color: #F0EEEA;
-    font: @commitFontFamily;
-    td:nth-child(-n+2) {
-      border-right: @standardBorder;
+    font-size: 14px;
+    background-color: @sunkenColor;
+    color: @lightTextColor;
+    td {
+      padding-left: 5px;
+      position: relative;
+      .breakMessage {
+        padding-left: 5px;
+        font-family: @sansFont;
+        font-style: italic;
+      }
     }
-    td { text-align: center; }
+    &:not(.firstBreak) { border-top: @standardBorder; }
+    &:not(.lastBreak) { border-bottom: @standardBorder; }
   }
 
   .diffLine {
@@ -795,6 +803,7 @@ table.commitsList, table.authorList {
       .marginLine {
         position: absolute;
         /* This value is just a guess; it will be adjusted in JS. */
+        top: 0px;
         left: 820px;
         right: 0px;
         height: 18px;
