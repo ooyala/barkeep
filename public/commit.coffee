@@ -120,7 +120,11 @@ window.Commit =
   onDiffLineDblClickOrReply: (e) ->
     if $(e.target).hasClass("delete") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
-    lineNumber = $(e.target).parents(".diffLine").attr("diff-line-number")
+    if $(e.target).hasClass("reply")
+      lineNumber = $(e.currentTarget).parents(".diffLine").attr("diff-line-number")
+    else
+      lineNumber = $(e.currentTarget).attr("diff-line-number")
+
     #select line and add form to both left and right tables (so that the length of them stay the same
     codeLine = $(e.target).parents(".file").find(".diffLine[diff-line-number='" + lineNumber + "'] .code")
     filename = codeLine.parents(".file").attr("filename")
