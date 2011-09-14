@@ -220,17 +220,20 @@ window.CommitSearch =
   # Refresh a saved search with the latest from the server.
   #  - savedSearch: a JQuery savedSearch div
   refreshSearch: (savedSearch) ->
-    savedSearchId = (Number) savedSearch.attr("saved-search-id")
-    selected = $(".selected").parents(".savedSearch").is(savedSearch)
-    @beforeSync()
-    $.ajax
-      url: "/saved_searches/#{savedSearchId}"
-      success: (newSavedSearchHtml) =>
-        @afterSync()
-        newSavedSearch = $(newSavedSearchHtml)
-        savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
-        savedSearchElement.replaceWith newSavedSearch
-        newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
+    overlayDiv = $("<div class='overlay'></div>")
+    savedSearch.append(overlayDiv)
+    overlayDiv.fadeTo 100, 0.6, => timeout 100, =>
+      savedSearchId = (Number) savedSearch.attr("saved-search-id")
+      selected = $(".selected").parents(".savedSearch").is(savedSearch)
+      @beforeSync()
+      $.ajax
+        url: "/saved_searches/#{savedSearchId}"
+        success: (newSavedSearchHtml) =>
+          @afterSync()
+          newSavedSearch = $(newSavedSearchHtml)
+          savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
+          savedSearchElement.replaceWith newSavedSearch
+          newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
 
   refreshAllSearches: ->
     @refreshSearch($(savedSearch)) for savedSearch in $("#savedSearches .savedSearch")
