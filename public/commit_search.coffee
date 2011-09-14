@@ -205,7 +205,6 @@ window.CommitSearch =
   # Refresh a saved search with the latest from the server.
   #  - savedSearch: a JQuery savedSearch div
   refreshSearch: (savedSearch) ->
-    console.log "refresh"
     savedSearchId = (Number) savedSearch.attr("saved-search-id")
     selected = $(".selected").parents(".savedSearch").is(savedSearch)
     @beforeSync()
