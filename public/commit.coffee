@@ -241,30 +241,30 @@ window.Commit =
 
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
-    if rightCodeTable.css("display") == "none"
+    unless Commit.isSideBySide
       Commit.isSideBySide = true
       originalLeftWidth = leftCodeTable.width()
       rightCodeTable.width(originalLeftWidth)
       leftCodeTable.width(originalLeftWidth)
 
       # show and hide the appropriate elements in the 2 tables
+      rightCodeTable.show()
       leftCodeTable.find(".added > .codeText").css("visibility", "hidden")
       rightCodeTable.find(".removed > .codeText").css("visibility", "hidden")
       leftCodeTable.find(".rightNumber").hide()
-      rightCodeTable.show()
       rightCodeTable.find(".leftNumber").hide()
       Commit.setSideBySideCommentVisibility()
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
       $(document.body).animate("width": 2 * $("body").width(), 1000)
-      leftCodeTable.animate("width": originalLeftWidth, 1000)
       rightCodeTable.animate("left": originalLeftWidth, 1000)
     else
       Commit.isSideBySide = false
       # callapse to unified diff
-      #
-      #
+      $(document.body).animate("width": $("body").width() / 2, 1000, -> Commit.onSideBySideCallapsed() )
+      rightCodeTable.animate("left": 0, 1000)
+
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->
@@ -286,8 +286,10 @@ window.Commit =
 
   #after the side-by-side callapse animation is done, reset everything to the way it should be for unified diff
   onSideBySideCallapsed: () ->
-    leftCodeTable.find(".added > .codeText").css("visibility", "visible")
-
+    $(".codeLeft .added > .codeText").css("visibility", "visible")
+    Commit.setSideBySideCommentVisibility()
+    $(".codeRight").hide()
+    $(".codeLeft .rightNumber").show()
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
