@@ -147,7 +147,7 @@ window.Commit =
         commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
         Commit.setSideBySideCommentVisibility()
-        commentForm.find(".commentText").focus()
+        codeLine.find(".commentForm").first().find(".commentText").focus()
     })
 
   onCommentSubmit: (e) ->

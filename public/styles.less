@@ -551,7 +551,7 @@ table.commitsList, table.authorList {
   }
 
   #commitMetadata {
-    width: @pageWidth;
+    width: @pageWidth - 2 * 10 - 2;
     margin: 40px auto;
     padding: 10px;
     font-size: 0.8em;
@@ -682,6 +682,7 @@ table.commitsList, table.authorList {
     .comment, .commentForm {
       width: 849px;
       border-left: 0;
+      margin: 8px 0px;
       textarea { width: 847px; }
     }
   }
