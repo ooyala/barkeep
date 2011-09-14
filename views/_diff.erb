@@ -1,7 +1,7 @@
 <div class="file" filename="<%= file[:file_name_before] %>" >
   <div class="filename"> <%= file[:file_name_before] %></div>
   <div class="comments">
-  <% line_comments, comment_index = [], 0%>
+  <% line_comments, comment_index = [], 0 %>
     <% if commit_file = commit ? commit.commit_files_dataset[:filename => file[:file_name_before]] : nil %>
       <% commit_file.file_comments.each do |comment| %>
         <%= erb :_comment, :locals => {:comment => comment} %>
@@ -43,6 +43,7 @@
       <% end %>
     </table>
     <table class="data codeRight">
+      <% comment_index = 0 %>
       <% if file[:special_case] %>
         <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
       <% else %>

@@ -239,6 +239,8 @@ window.Commit =
       $(".codeLeft .rightNumber").hide()
       rightCodeTable.show()
       $(".codeRight .leftNumber").hide()
+      $(".codeRight .comment").css("visibility", "hidden")
+      $(".codeRight .commentForm").css("visibility", "hidden")
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
