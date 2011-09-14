@@ -3,10 +3,14 @@
   - saved_search: a SavedSearch object.
   - token: a stringified PagingToken given by the client
   - direction: "before" or "after"
+  - page_number: the page number we should display for this page. This doesn't need to be strictly accurate;
+    it's a best guess. It's managed by the client for continuity of user experience.
  %>
 <%
   min_commit_date = Time.now - 60 * 60 * 24 * saved_search.user.saved_search_time_period
-  commits, page, tokens = saved_search.commits(token, direction, min_commit_date)
+  # TODO(philc): change saved_search_time_period.commits to not return a page number any more. We now keep
+  # track of the current page number on the client.
+  commits, ignored_page, tokens = saved_search.commits(token, direction, min_commit_date)
   from = tokens[:from]
   to = tokens[:to]
 %>
@@ -57,7 +61,7 @@
 
   <div class="pageControls" style="<%= commits.empty? ? "display:none" : "" %>">
     <a href="#" class="pageLeftButton pageButton">&laquo;</a>
-    <span class="pageNumber"><%= page %></span>
+    <span class="pageNumber"><%= page_number %></span>
     <a href="#" class="pageRightButton pageButton">&raquo;</a>
   </div>
 </div>

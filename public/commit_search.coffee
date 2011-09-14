@@ -119,6 +119,7 @@ window.CommitSearch =
   # Shows the next page of a commit search.
   # direction: "before" or "after"
   showNextPage: (event, direction = "before") ->
+    event.preventDefault()
     return if @searching
 
     if event.type == "keydown"
@@ -142,6 +143,7 @@ window.CommitSearch =
       timeout 70, => button.removeClass("active")
 
     token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
+    currentPageNumber = parseInt(savedSearchElement.find(".pageNumber").text())
 
     animationComplete = false
     fetchedHtml = null
@@ -175,7 +177,8 @@ window.CommitSearch =
         showFetchedPage()
 
     $.ajax
-      url: "/saved_searches/#{savedSearchId}?token=#{token}&direction=#{direction}",
+      url: "/saved_searches/#{savedSearchId}",
+      data: { token: token, direction: direction, current_page_number: currentPageNumber },
       success: (html) =>
         fetchedHtml = html
         showFetchedPage()

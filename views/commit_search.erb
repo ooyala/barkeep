@@ -41,7 +41,7 @@
 
 <div id="savedSearches">
   <% saved_searches.each do |saved_search| %>
-    <%= erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :token => nil, :direction => "before" } %>
+    <%= erb :_saved_search, :layout => false, :locals => {
+        :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 } %>
   <% end %>
 </div>

@@ -232,16 +232,24 @@ class Barkeep < Sinatra::Base
       { :user_id => current_user.id, :user_order => incremented_user_order }.merge options
     )
     erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :token => nil, :direction => "before" }
+      :locals => { :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 }
   end
 
+  # Gets a page of a saved search.
+  # - token: a paging token representing the current page.
+  # - direction: the direction of the page to fetch -- either "before" or "after" the given page token.
+  # - current_page_number: the current page number the client is showing. This page number is for display
+  #   purposes only, because new commits which have been recently ingested will make the page number
+  #   inaccurate.
   get "/saved_searches/:id" do
     saved_search = SavedSearch[params[:id]]
     halt 400, "Bad saved search id." unless saved_search
     token = params[:token] && !params[:token].empty? ? params[:token] : nil
     direction = params[:direction] || "before"
-    erb :_saved_search, :layout => false,
-        :locals => { :saved_search => saved_search, :token => token, :direction => direction }
+    page_number = params[:current_page_number].to_i + (direction == "before" ? 1 : -1)
+    page_number = [page_number, 1].max
+    erb :_saved_search, :layout => false, :locals => {
+      :saved_search => saved_search, :token => token, :direction => direction, :page_number => page_number }
   end
 
   # Change the order of saved searches.
