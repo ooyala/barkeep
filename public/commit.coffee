@@ -288,7 +288,7 @@ window.Commit =
         slideDown(Commit.sideBySideSlideDuration)
       rightCodeTable.delay(Commit.sideBySideSlideDuration).animate({"left": 0}, Commit.sideBySideSplitDuration)
       $(document.body).delay(Commit.sideBySideSlideDuration).
-        animate {"width": Commit.originalBodyWidth}, Commit.sideBySideSplitDuration, () ->
+        animate {"width": Commit.originalBodyWidth - 1}, Commit.sideBySideSplitDuration, () ->
           #after the side-by-side callapse animation is done, reset everything to the way it should be for unified diff
           $(".codeLeft .added > .codeText").css("visibility", "visible")
           Commit.setSideBySideCommentVisibility()
