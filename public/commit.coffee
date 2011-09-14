@@ -240,13 +240,12 @@ window.Commit =
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
   toggleSideBySide: (event) ->
-    return if Commit.sideBySideAnimation
+    return if $(".codeRight").filter(":animated").length > 0
     # Only toggle if no other element on the page is selected
     return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
 
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
-    Commit.sideBySideAnimation = true
     unless Commit.isSideBySide
       Commit.isSideBySide = true
       originalLeftWidth = leftCodeTable.width()
@@ -263,7 +262,7 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      $(document.body).animate("width": 2 * $("body").width(), 1000, -> Commit.onSideBySideAnimationEnd() )
+      $(document.body).animate("width": 2 * $("body").width(), 1000 )
       rightCodeTable.animate("left": originalLeftWidth, 1000)
     else
       Commit.isSideBySide = false
@@ -296,10 +295,6 @@ window.Commit =
     Commit.setSideBySideCommentVisibility()
     $(".codeRight").hide()
     $(".codeLeft .rightNumber").show()
-    Commit.onSideBySideAnimationEnd()
-
-  onSideBySideAnimationEnd: () ->
-    Commit.sideBySideAnimation = false
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
