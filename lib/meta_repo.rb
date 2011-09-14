@@ -115,7 +115,7 @@ class MetaRepo
     # the limit and timestamp.
     token = search_options[:token].then { |token_string| PagingToken.from_s(token_string) }
     commits = (search_options[:direction] == "before") ?
-      find_commits_before(search_options, token, token.nil?, true) :
+      find_commits_before(search_options, token, token.nil?) :
       find_commits_after(search_options, token, false, true)
 
     return { :commits => [], :count => 0, :tokens => { :from => nil, :to => nil } } if commits.empty?
@@ -209,10 +209,8 @@ class MetaRepo
     total_added
   end
 
-  # TODO(caleb): the following two methods are too copy-pasta, but at the same time they're quite complex so
-  # when we combine them we should make sure that it is understandable what's happening.
-
-  def find_commits_before(search_options, token, inclusive, pad_results)
+  # Find commits before a certain date. This is used when going forward through pages (1 -> 2) of commits.
+  def find_commits_before(search_options, token, inclusive)
     repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
     limit = search_options[:limit]
     extra_options = token ? { :before => token.timestamp } : {}
@@ -229,15 +227,16 @@ class MetaRepo
       results = [] unless results
     end
 
-    # We've gone as far back as possible; return the last N resuls.
-    if results.size < limit && pad_results && token
-      results = find_commits_after(search_options.merge(:limit => limit - results.size), token,
-          !inclusive, false) + results
-    end
     results
   end
 
-  def find_commits_after(search_options, token, inclusive, pad_results)
+  # Find commits after a certain date. This is used when going backward through pages (2 -> 1) of commits.
+  # - should_pad_results: true if we should always try to return a full page of commits when we hit the
+  #   boundary of commits as defined by the paging token, even if some of those commits are *before* the token
+  #   we've been given. This is an important capability for the paging UX, when you go from the second page
+  #   back to the first page. If the first page has some new commits on it, we want to be sure to return a
+  #   full page worth of data instead of just a single commit.
+  def find_commits_after(search_options, token, inclusive, should_pad_results)
     repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
     limit = search_options[:limit]
     extra_options = { :after => token.timestamp }
@@ -254,10 +253,10 @@ class MetaRepo
       results = []
     end
 
-    # We've gone as far back as possible; return the last N resuls.
-    if results.size < limit && pad_results
+    # We've gone as far back as possible; return the last N resuls. See note on should_pad_results.
+    if results.size < limit && should_pad_results
       results += find_commits_before(search_options.merge(:limit => limit - results.size), token,
-          !inclusive, false)
+          !inclusive)
     end
     results
   end
@@ -416,6 +415,8 @@ class MetaRepo
     git_options = { :extended_regexp => true, :regexp_ignore_case => true }
 
     git_options[:author] = search_options[:authors].join("|") unless search_options[:authors].blank?
+
+    git_options[:after] = search_options[:after] unless search_options[:after].blank?
 
     git_arguments = search_options[:branches].blank? ? [] :
         search_options[:branches].map { |name| "origin/#{name}" }
