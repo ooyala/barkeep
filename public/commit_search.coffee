@@ -187,11 +187,10 @@ window.CommitSearch =
       success: => @afterSync()
 
   toggleUnapprovedCommits: (event) ->
-    @beforeSync()
     data = { unapproved_only: $(event.target).attr("checked") == "checked" }
     savedSearch = $(event.target).parents(".savedSearch")
     savedSearchId = (Number) savedSearch.attr("saved-search-id")
-    selected = $(".selected").parents(".savedSearch").is(savedSearch)
+    @beforeSync()
     $.ajax
       type: "POST"
       contentTypeType: "application/json"
@@ -199,10 +198,26 @@ window.CommitSearch =
       data: jQuery.toJSON(data)
       success: (newSavedSearchHtml) =>
         @afterSync()
+        @refreshSearch(savedSearch)
+
+  # Refresh a saved search with the latest from the server.
+  #  - savedSearch: a JQuery savedSearch div
+  refreshSearch: (savedSearch) ->
+    console.log "refresh"
+    savedSearchId = (Number) savedSearch.attr("saved-search-id")
+    selected = $(".selected").parents(".savedSearch").is(savedSearch)
+    @beforeSync()
+    $.ajax
+      url: "/saved_searches/#{savedSearchId}"
+      success: (newSavedSearchHtml) =>
+        @afterSync()
         newSavedSearch = $(newSavedSearchHtml)
         savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
         savedSearchElement.replaceWith newSavedSearch
         newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
+
+  refreshAllSearches: ->
+    @refreshSearch($(savedSearch)) for savedSearch in $("#savedSearches .savedSearch")
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
