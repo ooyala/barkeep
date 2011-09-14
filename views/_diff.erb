@@ -14,11 +14,12 @@
       <% if file[:special_case] %>
         <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
       <% else %>
-        <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array }.map(&:last) %>
-        <% first_break, last_break = breaks.first, breaks.last %>
+        <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array } %>
+        <% initial_break = (breaks.first && breaks.first[1] == 0) ? breaks.first[0] : nil %>
+        <% ending_break = (breaks.last && breaks.last[1] == file[:lines].size - 1) ? breaks.last[0] : nil %>
         <% file[:lines].each_with_index do |line, i| %>
           <% if line.is_a? Array %>
-            <% extra_class = i == first_break ? "firstBreak" : (i == last_break ? "lastBreak" : "") %>
+            <% extra_class = i == initial_break ? "firstBreak" : (i == ending_break ? "lastBreak" : "") %>
             <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
                 &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
           </div></td></tr>
