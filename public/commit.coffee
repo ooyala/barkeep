@@ -262,12 +262,12 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      $(document.body).animate("width": 2 * $("body").width(), 1000 )
+      $(document.body).animate("width": $("body").width() * 2 - 2, 1000 )
       rightCodeTable.animate("left": originalLeftWidth, 1000)
     else
       Commit.isSideBySide = false
       # callapse to unified diff
-      $(document.body).animate("width": $("body").width() / 2, 1000, -> Commit.onSideBySideCallapsed() )
+      $(document.body).animate("width": $("body").width() / 2 + 1, 1000, -> Commit.onSideBySideCallapsed() )
       rightCodeTable.animate("left": 0, 1000)
 
 
