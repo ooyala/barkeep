@@ -1,8 +1,8 @@
 # import common.coffee, jquery, and jquery-json
 
 window.Commit =
-  sideBySideSlideDuration: 500
-  sideBySideSplitDuration: 1000
+  sideBySideSlideDuration: 300
+  sideBySideSplitDuration: 700
 
   init: ->
     $(document).keydown (e) => @onKeydown e
@@ -243,7 +243,7 @@ window.Commit =
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
   toggleSideBySide: (event) ->
-    return if $(".codeRight").filter(":animated").length > 0
+    return if Commit.animating
     # Only toggle if no other element on the page is selected
     return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
 
@@ -251,10 +251,13 @@ window.Commit =
     leftCodeTable = $(".codeLeft")
     unless Commit.isSideBySide
       # split to side-by-side
+      Commit.animating = true
       Commit.isSideBySide = true
-      originalLeftWidth = leftCodeTable.width()
-      rightCodeTable.width(originalLeftWidth)
-      leftCodeTable.width(originalLeftWidth)
+      # save off size of code table so it doesn't drift after many animations
+      Commit.originalLeftWidth ?= leftCodeTable.width()
+      Commit.originalBodyWidth ?= $("body").width()
+      rightCodeTable.width(Commit.originalLeftWidth)
+      leftCodeTable.width(Commit.originalLeftWidth)
 
       # show and hide the appropriate elements in the 2 tables
       rightCodeTable.show()
@@ -266,26 +269,34 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      rightCodeTable.animate({"left": originalLeftWidth},  Commit.sideBySideSplitDuration)
-      $(document.body).animate({"width": $("body").width() * 2 - 2}, Commit.sideBySideSplitDuration)
+      rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.sideBySideSplitDuration)
+      $(document.body).animate({"width": Commit.originalBodyWidth * 2 - 2}, Commit.sideBySideSplitDuration)
       # slide up the replaced rows
-      leftCodeTable.find(".diffLine[tag='added'][replace='true']").find("div").
+      leftCodeTable.find(".diffLine[tag='added'][replace='true'] .slideDiv").
         delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
-      rightCodeTable.find(".diffLine[tag='removed'][replace='true']").find("div").
-        delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
+      rightCodeTable.find(".diffLine[tag='removed'][replace='true'] .slideDiv").
+        delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration, () -> Commit.animating = false)
     else
       # callapse to unified diff
+      Commit.animating = true
       Commit.isSideBySide = false
-      leftCodeTable.find(".diffLine[tag='added'][replace='true']").find("div").slideDown(Commit.sideBySideSlideDuration)
-      rightCodeTable.find(".diffLine[tag='removed'][replace='true']").find("div").slideDown(Commit.sideBySideSlideDuration)
+      leftCodeTable.find(".diffLine[tag='added'][replace='true'] .slideDiv").
+        slideDown(Commit.sideBySideSlideDuration)
+      rightCodeTable.find(".diffLine[tag='removed'][replace='true'] .slideDiv").
+        slideDown(Commit.sideBySideSlideDuration)
+      leftCodeTable.find(".diffLine[tag='added'][replace='true']").
+        slideDown(Commit.sideBySideSlideDuration)
+      rightCodeTable.find(".diffLine[tag='removed'][replace='true']").
+        slideDown(Commit.sideBySideSlideDuration)
       rightCodeTable.delay(Commit.sideBySideSlideDuration).animate({"left": 0}, Commit.sideBySideSplitDuration)
       $(document.body).delay(Commit.sideBySideSlideDuration).
-        animate {"width": $("body").width() / 2 + 1}, Commit.sideBySideSplitDuration, () ->
+        animate {"width": Commit.originalBodyWidth}, Commit.sideBySideSplitDuration, () ->
           #after the side-by-side callapse animation is done, reset everything to the way it should be for unified diff
           $(".codeLeft .added > .codeText").css("visibility", "visible")
           Commit.setSideBySideCommentVisibility()
           $(".codeRight").hide()
           $(".codeLeft .rightNumber").show()
+          Commit.animating = false
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->

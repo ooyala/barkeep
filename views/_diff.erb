@@ -32,11 +32,13 @@
             <% else %>
               <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
                 diff-line-number="<%= line.index %>" replace="<%= line.replace %>" tag="<%= line.tag %>">
-                <td class="lineNumber leftNumber"><div><%= line.line_num_before || "&nbsp;" %></div></td>
-                <td class="lineNumber rightNumber"><div><%= line.line_num_after || "&nbsp;" %></div></td>
+                <td class="lineNumber leftNumber"><div class="slideDiv"><%= line.line_num_before || "&nbsp;" %>
+                  </div></td>
+                <td class="lineNumber rightNumber"><div class="slideDiv"><%= line.line_num_after || "&nbsp;" %>
+                  </div></td>
                 <td class="code <%= line.tag %>">
-                  <div class="marginLine"></div>
-                  <div class="codeText"><%= line.formatted %></div>
+                  <div class="marginLine slideDiv"></div>
+                  <div class="codeText slideDiv"><%= line.formatted %></div>
                   <% # add line comments
                     while comment_index < line_comments.length &&
                       line_comments[comment_index].line_number == line.index + 1 %>
