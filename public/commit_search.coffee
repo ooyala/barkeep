@@ -34,7 +34,7 @@ window.CommitSearch =
       type: "POST",
       success: =>
         @refreshAllSearches()
-  
+
   onSavedSearchDelete: (event) ->
     target = $(event.target).parents(".savedSearch")
     searchId = (Number) target.attr("saved-search-id")
