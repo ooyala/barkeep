@@ -58,6 +58,8 @@ window.CommitSearch =
         @showNextPage(event, "after")
       when "l"
         @showNextPage(event, "before")
+      when "r"
+        @refreshAllSearches()
       when "return", "o"
         window.open $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
       else

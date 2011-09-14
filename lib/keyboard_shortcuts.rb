@@ -10,6 +10,7 @@ module KeyboardShortcuts
 
   # View-specific shortcuts
   COMMIT_SEARCH_SHORTCUTS = {
+    "r" => "Refresh saved searches",
     "j" => "Next commit",
     "k" => "Previous commit",
     "l" => "Next page of results",
