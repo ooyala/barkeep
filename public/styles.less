@@ -512,6 +512,7 @@ table.commitsList, table.authorList {
 #commitSearch {
   padding: 10px 8px;
   width: 80%;
+  position: relative;
 
   table { border-collapse: collapse; }
   td { padding: 0 3px; }
@@ -537,6 +538,20 @@ table.commitsList, table.authorList {
   .example {
     color: #999;
     font-size: 12px;
+  }
+
+  #timeRangeOptions {
+    text-align: right;
+    width: 180px;
+    position: absolute;
+    right: -190px;
+    top: 0;
+
+    span {
+      font-size: 13px;
+      margin-right: 3px;
+    }
+    select { font-size: 14px; }
   }
 }
 
