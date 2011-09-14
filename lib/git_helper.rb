@@ -178,7 +178,7 @@ class GitHelper
       if match_removed_file
         orig_line = match_removed_file[1].to_i - 1
         diff_line = nil
-        chunk = { orig_line => orig_line, :orig_length => match_removed_file[2].to_i, diff_line => nil,
+        chunk = { :orig_line => orig_line, :orig_length => match_removed_file[2].to_i, :diff_line => nil,
             :diff_length => 0, :tagged_lines => [] }
         chunks << chunk
         next
@@ -205,8 +205,44 @@ class GitHelper
             tag == :removed ? nil : diff_line, true)
       end
     end
-    chunks.each { |chunk| chunk[:tagged_lines][0].chunk_start = true }
+    chunks.each do |chunk|
+      chunk[:tagged_lines][0].chunk_start = true
+      process_chunk_for_replaced(chunk)
+    end
     chunks
+  end
+
+  # Process lines in each chunk to work out which lines were replaced, rather than newly added or completely removed.
+  # Needed for lining things up in side-by-side view
+  # NOTE(bochen): this can be done in the same pass as the lines.each in tag_diff, but the performance gain
+  #               is not worth making that code any more complex.
+  def self.process_chunk_for_replaced(chunk)
+    # index of the start of a block of replaced lines
+    block_start = 0
+    # change in number of lines, orig_lines - diff_lines, in current block
+    block_line_delta = 0
+    chunk[:tagged_lines].each_with_index do |line, i|
+      case line.tag
+        when :added
+          block_line_delta += 1
+        when :removed
+          block_line_delta -= 1
+        when :same
+          unless block_start == i
+            # end of a block
+            block_length = i - block_start
+            num_lines_replaced = (block_length - block_line_delta.abs) / 2
+            # mark equal number of added and removed as replaced lines.
+            # indexing into the same array that is been interated over should be ok if there is no change in item order
+            block = chunk[:tagged_lines][block_start...i]
+            block.select { |l| l.tag == :added }.take(num_lines_replaced).each { |l| l.replace = true }
+            block.select { |l| l.tag == :removed }.take(num_lines_replaced).each { |l| l.replace = true }
+            block_line_delta = 0
+          end
+          # initialize next block assuming its on the next line
+          block_start = i + 1
+      end
+    end
   end
 end
 
@@ -217,14 +253,17 @@ class LineDiff
     :added => "+"
   }
 
-  attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start, :index
-  def initialize(tag, data, line_num_before, line_num_after, chunk = false, chunk_start = false)
+  attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start, :index, :replace
+  def initialize(tag, data, line_num_before, line_num_after, chunk = false, chunk_start = false, replace = false)
     @tag = tag
     @data = data
     @line_num_before = line_num_before
     @line_num_after = line_num_after
     @chunk = chunk
     @chunk_start = chunk_start
+    # replaced indicates added lines that replace an existing line, or removed lines that will be replaced
+    # useful for lining up the side by side view
+    @replace = replace
   end
 
   def line_prefix() LINE_PREFIX[self.tag] end
