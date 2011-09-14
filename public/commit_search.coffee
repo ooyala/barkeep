@@ -172,7 +172,6 @@ window.CommitSearch =
       (Number) $(savedSearch).attr("saved-search-id")
     # Store from the bottom up so that adding new saved searches doesn't change all the numbers.
     state.reverse()
-    window.state = state
     $.ajax
       type: "POST"
       contentTypeType: "application/json"
