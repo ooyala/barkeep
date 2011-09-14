@@ -1,6 +1,9 @@
 # import common.coffee, jquery, and jquery-json
 
 window.Commit =
+  sideBySideSlideDuration: 500
+  sideBySideSplitDuration: 1000
+
   init: ->
     $(document).keydown (e) => @onKeydown e
     $(".diffLine").dblclick (e) => @onDiffLineDblClickOrReply e
@@ -247,6 +250,7 @@ window.Commit =
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     unless Commit.isSideBySide
+      # split to side-by-side
       Commit.isSideBySide = true
       originalLeftWidth = leftCodeTable.width()
       rightCodeTable.width(originalLeftWidth)
@@ -262,14 +266,26 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      $(document.body).animate("width": $("body").width() * 2 - 2, 1000 )
-      rightCodeTable.animate("left": originalLeftWidth, 1000)
+      rightCodeTable.animate({"left": originalLeftWidth},  Commit.sideBySideSplitDuration)
+      $(document.body).animate({"width": $("body").width() * 2 - 2}, Commit.sideBySideSplitDuration)
+      # slide up the replaced rows
+      leftCodeTable.find(".diffLine[tag='added'][replace='true']").find("div").
+        delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
+      rightCodeTable.find(".diffLine[tag='removed'][replace='true']").find("div").
+        delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
     else
-      Commit.isSideBySide = false
       # callapse to unified diff
-      $(document.body).animate("width": $("body").width() / 2 + 1, 1000, -> Commit.onSideBySideCallapsed() )
-      rightCodeTable.animate("left": 0, 1000)
-
+      Commit.isSideBySide = false
+      leftCodeTable.find(".diffLine[tag='added'][replace='true']").find("div").slideDown(Commit.sideBySideSlideDuration)
+      rightCodeTable.find(".diffLine[tag='removed'][replace='true']").find("div").slideDown(Commit.sideBySideSlideDuration)
+      rightCodeTable.delay(Commit.sideBySideSlideDuration).animate({"left": 0}, Commit.sideBySideSplitDuration)
+      $(document.body).delay(Commit.sideBySideSlideDuration).
+        animate {"width": $("body").width() / 2 + 1}, Commit.sideBySideSplitDuration, () ->
+          #after the side-by-side callapse animation is done, reset everything to the way it should be for unified diff
+          $(".codeLeft .added > .codeText").css("visibility", "visible")
+          Commit.setSideBySideCommentVisibility()
+          $(".codeRight").hide()
+          $(".codeLeft .rightNumber").show()
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->
@@ -288,13 +304,6 @@ window.Commit =
       $(".codeLeft .commentForm").css("visibility", "visible")
       $(".codeRight .comment").css("visibility", "hidden")
       $(".codeRight .commentForm").css("visibility", "hidden")
-
-  #after the side-by-side callapse animation is done, reset everything to the way it should be for unified diff
-  onSideBySideCallapsed: () ->
-    $(".codeLeft .added > .codeText").css("visibility", "visible")
-    Commit.setSideBySideCommentVisibility()
-    $(".codeRight").hide()
-    $(".codeLeft .rightNumber").show()
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.

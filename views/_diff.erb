@@ -31,9 +31,9 @@
               </td></tr>
             <% else %>
               <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
-                diff-line-number="<%= line.index %>">
-                <td class="lineNumber leftNumber"><%= line.line_num_before || "&nbsp;" %></td>
-                <td class="lineNumber rightNumber"><%= line.line_num_after || "&nbsp;" %></td>
+                diff-line-number="<%= line.index %>" replace="<%= line.replace %>" tag="<%= line.tag %>">
+                <td class="lineNumber leftNumber"><div><%= line.line_num_before || "&nbsp;" %></div></td>
+                <td class="lineNumber rightNumber"><div><%= line.line_num_after || "&nbsp;" %></div></td>
                 <td class="code <%= line.tag %>">
                   <div class="marginLine"></div>
                   <div class="codeText"><%= line.formatted %></div>
