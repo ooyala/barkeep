@@ -120,11 +120,9 @@ window.Commit =
   onDiffLineDblClickOrReply: (e) ->
     if $(e.target).hasClass("delete") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
-    if $(e.target).hasClass("reply")
-      codeLine = $(e.currentTarget).parents(".diffLine").find(".code")
-    else
-      codeLine = $(e.currentTarget).find(".code")
-    lineNumber = codeLine.parents(".diffLine").attr("diff-line-number")
+    lineNumber = $(e.target).parents(".diffLine").attr("diff-line-number")
+    #select line and add form to both left and right tables (so that the length of them stay the same
+    codeLine = $(e.target).parents(".dataWrapper").find(".diffLine[diff-line-number='" + lineNumber + "'] .code")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
     repoName = codeLine.parents("#commit").attr("repo")
@@ -143,9 +141,12 @@ window.Commit =
       success: (html) ->
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
+        #add a random id so matching comments on both sides of side-by-side can be shown
+        commentForm.attr("form-id", Math.floor(Math.random()*10000) )
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
         commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
+        Commit.setSideBySideCommentVisibility()
         commentForm.find(".commentText").focus()
     })
 
@@ -153,33 +154,45 @@ window.Commit =
     e.preventDefault()
     if $(e.currentTarget).find("textarea").val() == ""
       return
+    #make sure changes to form happen to both tables to maintain height
+    formId = $(e.currentTarget).attr("form-id")
+    form = $(e.currentTarget).parents(".dataWrapper").find(".commentForm[form-id='" + formId + "']")
     data = {}
     $(e.currentTarget).find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
       type: "POST",
       data: data,
       url: e.currentTarget.action,
-      success: (html) -> Commit.onCommentSubmitSuccess(html, e.currentTarget)
+      success: (html) -> Commit.onCommentSubmitSuccess(html, form)
 
   onCommentSubmitSuccess: (html, form) ->
     $(form).before(html)
     if $(form).parents(".diffLine").size() > 0
       $(form).remove()
+      Commit.setSideBySideCommentVisibility()
     else
       # Don't remove the comment box if it's for a commit-level comment
       $(form).find("textarea").val("")
 
   onCommentCancel: (e) ->
     e.stopPropagation()
-    $(e.target).parents(".commentForm").remove()
+    #make sure changes to form happen to both tables to maintain height
+    formId = $(e.currentTarget).parents(".commentForm").attr("form-id")
+    form = $(e.currentTarget).parents(".dataWrapper").find(".commentForm[form-id='" + formId + "']")
+    form.remove()
+    Commit.setSideBySideCommentVisibility()
 
   onCommentDelete: (e) ->
+    commentId = $(e.target).parents(".comment").attr("commentId")
     $.ajax({
       type: "post",
       url: "/delete_comment",
-      data: { comment_id: $(e.target).parents(".comment").attr("commentId") },
+      data: { comment_id: commentId },
       success: ->
-        $(e.target).parents(".comment").remove()
+        #make sure changes to form happen to both tables to maintain height
+        form = $(e.currentTarget).parents(".dataWrapper").find(".comment[commentId='" + commentId + "']")
+        form.remove()
+        Commit.setSideBySideCommentVisibility()
     })
 
   onApproveClicked: (e) ->
@@ -229,6 +242,7 @@ window.Commit =
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     if rightCodeTable.css("display") == "none"
+      Commit.isSideBySide = true
       originalLeftWidth = leftCodeTable.width()
       rightCodeTable.width(originalLeftWidth)
       leftCodeTable.width(originalLeftWidth)
@@ -236,11 +250,10 @@ window.Commit =
       # show and hide the appropriate elements in the 2 tables
       leftCodeTable.find(".added > .codeText").css("visibility", "hidden")
       rightCodeTable.find(".removed > .codeText").css("visibility", "hidden")
-      $(".codeLeft .rightNumber").hide()
+      leftCodeTable.find(".rightNumber").hide()
       rightCodeTable.show()
-      $(".codeRight .leftNumber").hide()
-      $(".codeRight .comment").css("visibility", "hidden")
-      $(".codeRight .commentForm").css("visibility", "hidden")
+      rightCodeTable.find(".leftNumber").hide()
+      Commit.setSideBySideCommentVisibility()
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
@@ -248,8 +261,32 @@ window.Commit =
       leftCodeTable.animate("width": originalLeftWidth, 1000)
       rightCodeTable.animate("left": originalLeftWidth, 1000)
     else
+      Commit.isSideBySide = false
       # callapse to unified diff
+      #
+      #
 
+  #set the correct visibility for comments in side By side
+  setSideBySideCommentVisibility: () ->
+    if Commit.isSideBySide
+      $(".codeLeft .comment").css("visibility", "hidden")
+      $(".codeLeft .commentForm").css("visibility", "hidden")
+      $(".codeLeft .removed .comment").css("visibility", "visible")
+      $(".codeLeft .removed .commentForm").css("visibility", "visible")
+
+      $(".codeRight .comment").css("visibility", "visible")
+      $(".codeRight .commentForm").css("visibility", "visible")
+      $(".codeRight .removed .comment").css("visibility", "hidden")
+      $(".codeRight .removed .commentForm").css("visibility", "hidden")
+    else
+      $(".codeLeft .comment").css("visibility", "visible")
+      $(".codeLeft .commentForm").css("visibility", "visible")
+      $(".codeRight .comment").css("visibility", "hidden")
+      $(".codeRight .commentForm").css("visibility", "hidden")
+
+  #after the side-by-side callapse animation is done, reset everything to the way it should be for unified diff
+  onSideBySideCallapsed: () ->
+    leftCodeTable.find(".added > .codeText").css("visibility", "visible")
 
 
 $(document).ready(-> Commit.init())
