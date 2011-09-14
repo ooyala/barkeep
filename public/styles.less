@@ -646,6 +646,7 @@ table.commitsList, table.authorList {
     .codeLeft {
       left: 0px;
     }
+
     .lineNumber {
       width: 4ex;
       div {
@@ -659,6 +660,10 @@ table.commitsList, table.authorList {
       display: none;
       top: 0px;
       left: 0px;
+
+      .rightNumber {
+        border-left: @standardBorder;
+      }
     }
   }
 
@@ -815,10 +820,6 @@ table.commitsList, table.authorList {
       vertical-align: text-top;
       padding: 0 5px;
       width: 1px;
-    }
-
-    .rightNumber {
-      border-left: @standardBorder;
     }
 
     .code {

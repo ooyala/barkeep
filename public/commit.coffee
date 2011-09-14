@@ -229,27 +229,26 @@ window.Commit =
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     if rightCodeTable.css("display") == "none"
-      # Set the width so that the numbers columns from right table end up in the middle
-      # Left table needs to be shorter because of the hidden number columns
-      numberColumnWidth = $(".leftNumber").outerWidth()
       originalLeftWidth = leftCodeTable.width()
-      finalLeftWidth = originalLeftWidth - 2 * numberColumnWidth
       rightCodeTable.width(originalLeftWidth)
       leftCodeTable.width(originalLeftWidth)
 
       # show and hide the appropriate elements in the 2 tables
-      $(".leftNumber").hide()
       leftCodeTable.find(".added > .codeText").css("visibility", "hidden")
-      rightCodeTable.show()
       rightCodeTable.find(".removed > .codeText").css("visibility", "hidden")
+      $(".codeLeft .rightNumber").hide()
+      rightCodeTable.show()
+      $(".codeRight .leftNumber").hide()
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      $(document.body).animate("width": 2 * $("body").width() - 2 * numberColumnWidth, 1000)
-      leftCodeTable.animate("width": finalLeftWidth, 1000)
-      rightCodeTable.animate("left": finalLeftWidth, 1000)
+      $(document.body).animate("width": 2 * $("body").width(), 1000)
+      leftCodeTable.animate("width": originalLeftWidth, 1000)
+      rightCodeTable.animate("left": originalLeftWidth, 1000)
     else
       # callapse to unified diff
+
+
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
