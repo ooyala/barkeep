@@ -202,7 +202,7 @@ class GitHelper
         end
         next unless tag
         chunk[:tagged_lines] << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
-            tag == :removed ? nil : diff_line, :chunk => true)
+            tag == :removed ? nil : diff_line, true)
       end
     end
     chunks.each { |chunk| chunk[:tagged_lines][0].chunk_start = true }
