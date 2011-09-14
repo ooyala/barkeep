@@ -51,11 +51,11 @@
       <div id="signInBox">
         <% if current_user %>
           <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
-          | <a class="logoutLink" href="#">logout</a>
-          <% #bullshittery to logout from google without getting stuck on their page %>
+          | <a class="logoutLink" href="#">log out</a>
+          <%# bullshittery to logout from google without getting stuck on their page %>
           <iframe id="logoutIFrame"></iframe>
         <% else %>
-          <a class="loginLink" href="/login">login</a>
+          <a class="loginLink" href="/login">log in</a>
         <% end %>
       </div>
   </header>
