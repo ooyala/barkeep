@@ -7,6 +7,9 @@ window.CommitSearch =
     $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
     $("#commitSearch input[name=filter_value]").keypress (e) => KeyboardShortcuts.beforeKeydown(e)
     $(document).keydown (e) => @onKeydown e
+
+    $("#commitSearch select[name='time_range']").change (e) => @timeRangeChanged(e)
+
     $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
       handle: ".dragHandle"
@@ -17,12 +20,21 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
     $("#savedSearches .savedSearch input[name='show_unapproved_commits']").live "click",
         (e) => @toggleUnapprovedCommits(e)
+
     @selectFirstDiff()
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
     @selectFirstDiff()
 
+  timeRangeChanged: (event) ->
+    new_time_period = $(event.target).val()
+    $.ajax
+      url: "/user_search_options?saved_search_time_period=#{new_time_period}",
+      type: "POST",
+      success: =>
+        @refreshAllSearches()
+  
   onSavedSearchDelete: (event) ->
     target = $(event.target).parents(".savedSearch")
     searchId = (Number) target.attr("saved-search-id")

@@ -208,6 +208,15 @@ class Barkeep < Sinatra::Base
     nil
   end
 
+  # Saves changes to the user-level search options.
+  post "/user_search_options" do
+    saved_search_time_period = params[:saved_search_time_period].to_i
+    # TODO(philc): We should move this into the model's validations.
+    halt(400) unless saved_search_time_period >=1 && saved_search_time_period <= 30
+    current_user.saved_search_time_period = saved_search_time_period
+    current_user.save
+  end
+
   # POST because this creates a saved search on the server.
   post "/search" do
     options = {}

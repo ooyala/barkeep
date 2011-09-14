@@ -24,7 +24,7 @@
     <div id="timeRangeOptions">
       <span>Limit to</span>
       <% days_ago = current_user.saved_search_time_period %>
-      <select name="timeRange" size="1">
+      <select name="time_range" size="1">
         <option <%= "selected" if days_ago == 1 %> value="1">1 day ago</option>
         <option <%= "selected" if days_ago == 3 %> value="3">3 days ago</option>
         <option <%= "selected" if days_ago == 7 %> value="7">1 week ago</option>
