@@ -12,6 +12,7 @@ class MetaRepoTest < Scope::TestCase
     @first_commit = "65a0045"
     # This commit added the file "strategies.txt" and has an author of "phil.crosby@gmail.com"
     @second_commit = "17de311"
+    @third_commit_on_master = "9f9c5d8"
 
     @repo_name = "test_git_repo"
   end
@@ -25,6 +26,10 @@ class MetaRepoTest < Scope::TestCase
     @@test_git_repo_path = File.join(File.dirname(__FILE__), "../fixtures/test_git_repo")
     MetaRepo.configure(Logger.new("/dev/null"), [@@test_git_repo_path])
     @@repo = MetaRepo.new
+
+    # TODO(philc): It would be nice to simply use the GritRepo MetaRepo has already created, but for now
+    # that's a private instance variable.
+    @@grit_repo = Grit::Repo.new(@@test_git_repo_path)
   end
 
   context "grit_commit" do
@@ -123,13 +128,17 @@ class MetaRepoTest < Scope::TestCase
       assert_equal [first_commit_on_cheese_branch, @first_commit], result[:commits].map(&:id_abbrev)
     end
 
-    context "commits_from_repo" do
-      setup_once do
-        # TODO(philc): It would be nice to simply use the GritRepo MetaRepo has already created, but for now
-        # that's a private instance variable.
-        @@grit_repo = Grit::Repo.new(@@test_git_repo_path)
-      end
+    should "filter out commits olrder than min_commit_date" do
+      min_commit_date = @@grit_repo.commit(@second_commit).date
+      options = @options.merge(:after => min_commit_date, :branches => ["master"], :limit => 100)
+      commit_ids = @@repo.find_commits(options)[:commits].map(&:id_abbrev)
 
+      # The first commit in the repo should be omitted, because it'so lder than min_commit_date.
+      expected = [@third_commit_on_master, @second_commit].sort
+      assert_equal expected, (commit_ids & (expected + [@first_commit])).sort
+    end
+
+    context "commits_from_repo" do
       setup do
         @git_options = { :author => "Phil Crosby", :cli_args => "master" }
       end
@@ -148,7 +157,6 @@ class MetaRepoTest < Scope::TestCase
       end
 
       should "page through commits and pass each page to commit_filter_proc" do
-        third_commit_on_master = "9f9c5d8"
         commits_being_filtered = []
         commit_filter_proc = Proc.new do |commits|
           commits_being_filtered.push(commits.map(&:id_abbrev))
@@ -158,7 +166,7 @@ class MetaRepoTest < Scope::TestCase
             map(&:id_abbrev)
 
         # commits_from_repo() pages through commits in pages of 2*limit at a time.
-        assert_equal [[third_commit_on_master, @second_commit], [@first_commit]], commits_being_filtered
+        assert_equal [[@third_commit_on_master, @second_commit], [@first_commit]], commits_being_filtered
         assert_equal [@first_commit], commit_ids
       end
     end

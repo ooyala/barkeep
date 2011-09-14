@@ -4,9 +4,12 @@
   - token: a stringified PagingToken given by the client
   - direction: "before" or "after"
  %>
-<% commits, page, tokens = saved_search.commits(token, direction) %>
-<% from = tokens[:from] %>
-<% to = tokens[:to] %>
+<%
+  min_commit_date = Time.now - 60 * 60 * 24 * saved_search.user.saved_search_time_period
+  commits, page, tokens = saved_search.commits(token, direction, min_commit_date)
+  from = tokens[:from]
+  to = tokens[:to]
+%>
 <div class="savedSearch" from-token="<%= from %>" to-token="<%= to %>"
      saved-search-id="<%= saved_search.id %>">
   <div class="header">

@@ -5,7 +5,7 @@ class SavedSearch < Sequel::Model
   PAGE_SIZE = 10
 
   # The list of commits this saved search represents.
-  def commits(token = nil, direction = "before")
+  def commits(token = nil, direction = "before", min_commit_date)
     result = MetaRepo.instance.find_commits(
       :repos => repos_list,
       :branches => branches_list,
@@ -14,6 +14,7 @@ class SavedSearch < Sequel::Model
       :token => token,
       :direction => direction,
       :commit_filter_proc => self.unapproved_only ? self.method(:select_unapproved_commits).to_proc : nil,
+      :after => min_commit_date,
       :limit => PAGE_SIZE)
     page = (result[:count] / PAGE_SIZE).to_i + 1
     [result[:commits], page, result[:tokens]]
