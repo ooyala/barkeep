@@ -72,9 +72,13 @@ class SavedSearch < Sequel::Model
 
   # This is used as a commit filter when fetching the commits which make up this saved search.
   def select_unapproved_commits(grit_commits)
+    return [] if grit_commits.empty?
+    repo = GitRepo.first(:name => grit_commits.first.repo_name)
+    raise "This commit does not have a repo_name set on it: #{grit_commits.first.sha}" unless repo
     # Note that the original order of commits should be preserved.
-    commit_ids = Set.new(Commit.select(:sha).
-        filter(:sha => grit_commits.map(&:sha), :approved_by_user_id => nil).all.map(&:sha))
+    commits_dataset = Commit.select(:sha).
+        filter(:sha => grit_commits.map(&:sha), :git_repo_id => repo.id, :approved_by_user_id => nil)
+    commit_ids = Set.new(commits_dataset.all.map(&:sha))
     grit_commits.select { |grit_commit| commit_ids.include?(grit_commit.sha) }
   end
 
