@@ -685,13 +685,6 @@ table.commitsList, table.authorList {
       overflow-x: auto;
     }
 
-    .lineNumber {
-      width: 4ex;
-      div {
-        width: 4ex;
-        position: absolute;
-      }
-    }
     //right side table for code is not diplayed initially, javascript will show it for side-by-side view
     .codeRight {
       position: absolute;
@@ -854,13 +847,16 @@ table.commitsList, table.authorList {
       color: @lightTextColor;
       border-right: @standardBorder;
       padding: 0 5px;
-      text-align: right;
       vertical-align: text-top;
+      width: 3ex;
+      min-width: 3ex;
 
-      .div {
+      div {
         height: 18px;
         width: 3ex;
         min-width: 3ex;
+        text-align: right;
+        margin-right: 0px;
       }
     }
 
