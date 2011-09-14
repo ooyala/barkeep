@@ -239,9 +239,9 @@ window.Commit =
 
       # show and hide the appropriate elements in the 2 tables
       $(".leftNumber").hide()
-      leftCodeTable.find(".added").css("visibility", "hidden")
+      leftCodeTable.find(".added > .codeText").css("visibility", "hidden")
       rightCodeTable.show()
-      rightCodeTable.find(".removed").css("visibility", "hidden")
+      rightCodeTable.find(".removed > .codeText").css("visibility", "hidden")
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
