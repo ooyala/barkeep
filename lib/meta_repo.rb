@@ -323,6 +323,11 @@ class MetaRepo
     git_command_options = git_command_options.dup
     filtered_results = []
 
+    # Only go back 20 pages. This will prevent us from spinning through a full git history if we
+    # ever encounter a dataset where commit_filter_proc continually returns false for each commit we find.
+    max_git_pages_to_search = 20
+    current_page_attempt = 0
+
     # If a filter_proc has been provided, we may need to make multiple invocations to git rev-list in case
     # the first list of commits we got from git rev-list were not all approved by the filter_proc.
     # We'll ask for more than we need if there's a filter_proc, so that we'll hopefully reduce how many
@@ -346,7 +351,8 @@ class MetaRepo
           git_command_options[:after] = newest_commit.timestamp + 1
         end
       end
-    end while (has_more && filtered_results.size < limit)
+      current_page_attempt += 1
+    end while (has_more && filtered_results.size < limit && current_page_attempt < max_git_pages_to_search)
 
     filtered_results.take(limit)
   end
