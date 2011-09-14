@@ -32,7 +32,7 @@ window.Commit =
         @toggleSideBySide(event)
       when "return"
         return if $(".commentCancel").length > 0
-        $(".diffLine.selected").dblclick()
+        $(".diffLine.selected").first().dblclick()
       when "escape"
         #TODO(kle): cancel comment forms
         @clearSelectedLine()
@@ -122,7 +122,7 @@ window.Commit =
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     lineNumber = $(e.target).parents(".diffLine").attr("diff-line-number")
     #select line and add form to both left and right tables (so that the length of them stay the same
-    codeLine = $(e.target).parents(".dataWrapper").find(".diffLine[diff-line-number='" + lineNumber + "'] .code")
+    codeLine = $(e.target).parents(".file").find(".diffLine[diff-line-number='" + lineNumber + "'] .code")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
     repoName = codeLine.parents("#commit").attr("repo")
@@ -156,7 +156,7 @@ window.Commit =
       return
     #make sure changes to form happen to both tables to maintain height
     formId = $(e.currentTarget).attr("form-id")
-    form = $(e.currentTarget).parents(".dataWrapper").find(".commentForm[form-id='" + formId + "']")
+    form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
     data = {}
     $(e.currentTarget).find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
@@ -178,7 +178,7 @@ window.Commit =
     e.stopPropagation()
     #make sure changes to form happen to both tables to maintain height
     formId = $(e.currentTarget).parents(".commentForm").attr("form-id")
-    form = $(e.currentTarget).parents(".dataWrapper").find(".commentForm[form-id='" + formId + "']")
+    form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
     form.remove()
     Commit.setSideBySideCommentVisibility()
 
@@ -190,7 +190,7 @@ window.Commit =
       data: { comment_id: commentId },
       success: ->
         #make sure changes to form happen to both tables to maintain height
-        form = $(e.currentTarget).parents(".dataWrapper").find(".comment[commentId='" + commentId + "']")
+        form = $(e.currentTarget).parents(".file").find(".comment[commentId='" + commentId + "']")
         form.remove()
         Commit.setSideBySideCommentVisibility()
     })
@@ -236,11 +236,13 @@ window.Commit =
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
   toggleSideBySide: (event) ->
+    return if Commit.sideBySideAnimation
     # Only toggle if no other element on the page is selected
     return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
 
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
+    Commit.sideBySideAnimation = true
     unless Commit.isSideBySide
       Commit.isSideBySide = true
       originalLeftWidth = leftCodeTable.width()
@@ -257,7 +259,7 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      $(document.body).animate("width": 2 * $("body").width(), 1000)
+      $(document.body).animate("width": 2 * $("body").width(), 1000, -> Commit.onSideBySideAnimationEnd() )
       rightCodeTable.animate("left": originalLeftWidth, 1000)
     else
       Commit.isSideBySide = false
@@ -290,6 +292,10 @@ window.Commit =
     Commit.setSideBySideCommentVisibility()
     $(".codeRight").hide()
     $(".codeLeft .rightNumber").show()
+    Commit.onSideBySideAnimationEnd()
+
+  onSideBySideAnimationEnd: () ->
+    Commit.sideBySideAnimation = false
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.

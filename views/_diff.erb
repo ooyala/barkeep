@@ -10,71 +10,75 @@
     <% end %>
   </div>
   <div class="dataWrapper">
-    <table class="data codeLeft">
-      <% if file[:special_case] %>
-        <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
-      <% else %>
-        <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array } %>
-        <% initial_break = (breaks.first && breaks.first[1] == 0) ? breaks.first[0] : nil %>
-        <% ending_break = (breaks.last && breaks.last[1] == file[:lines].size - 1) ? breaks.last[0] : nil %>
-        <% file[:lines].each_with_index do |line, i| %>
-          <% if line.is_a? Array %>
-            <% extra_class = i == initial_break ? "firstBreak" : (i == ending_break ? "lastBreak" : "") %>
-            <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
-                &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
-          </div></td></tr>
-          <% else %>
-            <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
-                diff-line-number="<%= line.index %>">
-              <td class="lineNumber leftNumber"><%= line.line_num_before || "&nbsp;" %></td>
-              <td class="lineNumber rightNumber"><%= line.line_num_after || "&nbsp;" %></td>
-              <td class="code <%= line.tag %>">
-                <div class="marginLine"></div>
-                <div class="codeText"><%= line.formatted %></div>
-                <% # add line comments
-                   while comment_index < line_comments.length &&
-                    line_comments[comment_index].line_number == line.index + 1 %>
-                      <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
-                    <% comment_index += 1 %>
-                <% end %>
-              </td>
-            </tr>
+    <div class="codeLeft">
+      <table class="data codeLeft">
+        <% if file[:special_case] %>
+          <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
+        <% else %>
+          <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array } %>
+          <% initial_break = (breaks.first && breaks.first[1] == 0) ? breaks.first[0] : nil %>
+          <% ending_break = (breaks.last && breaks.last[1] == file[:lines].size - 1) ? breaks.last[0] : nil %>
+          <% file[:lines].each_with_index do |line, i| %>
+            <% if line.is_a? Array %>
+              <% extra_class = i == initial_break ? "firstBreak" : (i == ending_break ? "lastBreak" : "") %>
+              <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
+                  &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
+            </div></td></tr>
+            <% else %>
+              <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
+                  diff-line-number="<%= line.index %>">
+                <td class="lineNumber leftNumber"><%= line.line_num_before || "&nbsp;" %></td>
+                <td class="lineNumber rightNumber"><%= line.line_num_after || "&nbsp;" %></td>
+                <td class="code <%= line.tag %>">
+                  <div class="marginLine"></div>
+                  <div class="codeText"><%= line.formatted %></div>
+                  <% # add line comments
+                     while comment_index < line_comments.length &&
+                      line_comments[comment_index].line_number == line.index + 1 %>
+                        <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
+                      <% comment_index += 1 %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>
-    </table>
-    <table class="data codeRight">
-      <% comment_index = 0 %>
-      <% if file[:special_case] %>
-        <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
-      <% else %>
-        <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array }.map(&:last) %>
-        <% first_break, last_break = breaks.first, breaks.last %>
-        <% file[:lines].each_with_index do |line, i| %>
-          <% if line.is_a? Array %>
-            <% extra_class = i == first_break ? "firstBreak" : (i == last_break ? "lastBreak" : "") %>
-            <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
-                &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
-          </div></td></tr>
-          <% else %>
-            <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
-                diff-line-number="<%= line.index %>">
-              <td class="lineNumber leftNumber"><%= line.line_num_before || "&nbsp;" %></td>
-              <td class="lineNumber rightNumber"><%= line.line_num_after || "&nbsp;" %></td>
-              <td class="code <%= line.tag %>">
-                <div class="marginLine"></div>
-                <div class="codeText"><%= line.formatted %></div>
-                <% # add line comments
-                   while comment_index < line_comments.length &&
-                    line_comments[comment_index].line_number == line.index + 1 %>
-                      <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
-                    <% comment_index += 1 %>
-                <% end %>
-              </td>
-            </tr>
+      </table>
+    </div>
+    <div class="codeRight">
+      <table class="data">
+        <% comment_index = 0 %>
+        <% if file[:special_case] %>
+          <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
+        <% else %>
+          <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array }.map(&:last) %>
+          <% first_break, last_break = breaks.first, breaks.last %>
+          <% file[:lines].each_with_index do |line, i| %>
+            <% if line.is_a? Array %>
+              <% extra_class = i == first_break ? "firstBreak" : (i == last_break ? "lastBreak" : "") %>
+              <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
+                  &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
+            </div></td></tr>
+            <% else %>
+              <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
+                  diff-line-number="<%= line.index %>">
+                <td class="lineNumber leftNumber"><%= line.line_num_before || "&nbsp;" %></td>
+                <td class="lineNumber rightNumber"><%= line.line_num_after || "&nbsp;" %></td>
+                <td class="code <%= line.tag %>">
+                  <div class="marginLine"></div>
+                  <div class="codeText"><%= line.formatted %></div>
+                  <% # add line comments
+                     while comment_index < line_comments.length &&
+                      line_comments[comment_index].line_number == line.index + 1 %>
+                        <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
+                      <% comment_index += 1 %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
           <% end %>
         <% end %>
-      <% end %>
-    </table>
+      </table>
+    </div>
   </div>
 </div>

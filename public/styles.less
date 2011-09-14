@@ -634,7 +634,6 @@ table.commitsList, table.authorList {
   }
 
   .dataWrapper {
-    overflow-x: auto;
     //relative position here to anchor the codeRight element that has absolute position
     position: relative;
     width: 100%;
@@ -643,8 +642,9 @@ table.commitsList, table.authorList {
       width: 100%;
       border-collapse: collapse;
     }
-    .codeLeft {
+    .codeLeft, .codeRight {
       left: 0px;
+      overflow-x: auto;
     }
 
     .lineNumber {
@@ -659,7 +659,6 @@ table.commitsList, table.authorList {
       position: absolute;
       display: none;
       top: 0px;
-      left: 0px;
 
       .rightNumber {
         border-left: @standardBorder;
