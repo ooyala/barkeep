@@ -36,21 +36,21 @@
         <tr>
           <td class="selectArrow"></td>
           <td>
-            <a href="/profile/<%= commit.author.user.id %>">
+            <a href="/profile/<%= commit.author.user.id %>" target="_blank">
               <div class="avatar">
                 <img src="<%= commit.author.user.gravatar %>"/>
               </div>
             </a>
           </td>
           <td class="author">
-            <a href="/profile/<%= commit.author.user.id %>"
+            <a href="/profile/<%= commit.author.user.id %>" target="_blank"
                 title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
           </td>
           <td class="commitId">
-            <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a>
+            <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
           </td>
           <td class="commitMessage">
-            <a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a>
+            <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
           </td>
           <td class="commitDate"><%= commit.date.to_pretty %></td>
           <td class="commitRepo"><%= commit.repo_name %></td>
