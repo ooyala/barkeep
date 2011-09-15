@@ -15,19 +15,19 @@
         <% if file[:special_case] %>
           <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
         <% else %>
-          <% breaks = file[:lines].each_with_index.select { |line, index| line.is_a? Array }.map(&:last) %>
+          <% breaks = file[:lines].each_with_index.select { |line, index| line == :break }.map(&:last) %>
           <% initial_break, final_break = breaks.first, breaks.last %>
           <% file[:lines].each_with_index do |line, i| %>
-            <% if line.is_a? Array %>
+            <% if line == :break %>
               <% if i == initial_break %>
-                <% extra_class = line[1] == i ? "initialBreak" : "" %>
+                <% extra_class = file[:lines][0].chunk ? "" : "initialBreak" %>
               <% elsif i == final_break %>
                 <% extra_class = file[:lines][i + 1].then { chunk } ? "" : "finalBreak" %>
               <% else %>
                 <% "" %>
               <% end %>
               <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
-                  &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
+                  <span class="breakMessage">&#149;&nbsp;&#149;&nbsp;&#149;</span>
               </td></tr>
             <% else %>
               <% replace = line.replace && ( table_class == :codeLeft && line.tag == :added ||

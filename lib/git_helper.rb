@@ -98,7 +98,7 @@ class GitHelper
           unless options[:cache_prime]
             data[:lines] = GitHelper.tag_file(before, after, diff.diff)
             index = 1
-            data[:lines].each { |line| line.index = index += 1 unless line.is_a? Array }
+            data[:lines].each { |line| line.index = index += 1 unless line == :break }
           end
         end
         data
@@ -124,20 +124,19 @@ class GitHelper
 
     chunks.each_with_index do |chunk, i|
       if chunk[:orig_line] && chunk[:orig_line] > orig_line
-        skipped_lines = chunk[:orig_line] - orig_line
         tagged_lines += before_lines[orig_line...chunk[:orig_line]].map do |data|
           diff_line += 1
           orig_line += 1
           LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
         end
-        tagged_lines += [[:break, skipped_lines ]]
+        tagged_lines << :break
       end
       tagged_lines += chunk[:tagged_lines]
       orig_line += chunk[:orig_length]
       diff_line += chunk[:diff_length]
     end
     if !before_lines.empty? && orig_line <= before_lines.count
-      tagged_lines += [[:break, before_lines.count - orig_line]]
+      tagged_lines << :break
       tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
