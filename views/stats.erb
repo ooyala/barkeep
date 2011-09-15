@@ -59,7 +59,9 @@
                   title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a></td>
             <td class="commitId">
               <a href="<%= commit.link %>" class="commitLink"><%= commit.id_abbrev %></a></td>
-            <td class="commitMessage"><a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a></td>
+            <td class="commitMessage">
+              <a href="<%= commit.link %>"><%= CGI::escapeHTML(commit.short_message) %></a>
+            </td>
             <td class="count"><%= count %> comments</td>
             <td class="commitDate">committed <%= commit.date.to_pretty %></td>
           </tr>
