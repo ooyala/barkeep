@@ -80,6 +80,8 @@ window.Commit =
   selectNextVisibleLine: ->
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
+    if Commit.isSideBySide
+      visibleLines = visibleLines.filter("[replace='false']")
     selectedLine.removeClass("selected")
     select = _(visibleLines).detect((x) => @lineVisible(x,"top"))
     $(select).addClass("selected")
@@ -87,6 +89,8 @@ window.Commit =
   selectNextLine: (next = true) ->
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
+    if Commit.isSideBySide
+      visibleLines = visibleLines.filter("[replace='false']")
     if selectedLine.length == 0 or not @lineVisible(selectedLine)
       @selectNextVisibleLine()
     else
@@ -271,9 +275,7 @@ window.Commit =
       rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.sideBySideSplitDuration)
       $(document.body).animate({"width": Commit.originalBodyWidth * 2 - 2}, Commit.sideBySideSplitDuration)
       # slide up the replaced rows
-      leftCodeTable.find(".diffLine[tag='added'][replace='true'] .slideDiv").
-        delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
-      rightCodeTable.find(".diffLine[tag='removed'][replace='true'] .slideDiv").
+      $(".diffLine[replace='true'] .slideDiv").
         delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
       timeout Commit.sideBySideSlideDuration + Commit.sideBySideSplitDuration, () ->
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").delay(1000)
@@ -285,14 +287,8 @@ window.Commit =
       Commit.isSideBySide = false
       rightCodeTable.find(".diffLine[tag='removed']").css({"background-color": "transparent"})
       leftCodeTable.find(".diffLine[tag='added']").css({"background-color": "transparent"})
-      leftCodeTable.find(".diffLine[tag='added'][replace='true'] .slideDiv").
-        slideDown(Commit.sideBySideSlideDuration)
-      rightCodeTable.find(".diffLine[tag='removed'][replace='true'] .slideDiv").
-        slideDown(Commit.sideBySideSlideDuration)
-      leftCodeTable.find(".diffLine[tag='added'][replace='true']").
-        slideDown(Commit.sideBySideSlideDuration)
-      rightCodeTable.find(".diffLine[tag='removed'][replace='true']").
-        slideDown(Commit.sideBySideSlideDuration)
+      $(".diffLine[replace='true'] .slideDiv").slideDown(Commit.sideBySideSlideDuration)
+      $(".diffLine[replace='true']").slideDown(Commit.sideBySideSlideDuration)
       rightCodeTable.delay(Commit.sideBySideSlideDuration).animate({"left": 0}, Commit.sideBySideSplitDuration)
       $(document.body).delay(Commit.sideBySideSlideDuration).
         animate {"width": Commit.originalBodyWidth}, Commit.sideBySideSplitDuration, () ->

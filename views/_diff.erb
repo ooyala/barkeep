@@ -10,7 +10,7 @@
     <% end %>
   </div>
   <div class="dataWrapper">
-    <% ["codeLeft", "codeRight"].each do |table_class| # make 2 identical tables for side-by-side diff %>
+    <% [:codeLeft, :codeRight].each do |table_class| # make 2 identical tables for side-by-side diff %>
       <div class="<%= table_class %>"><table class="data">
         <% if file[:special_case] %>
           <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
@@ -30,8 +30,10 @@
                   &rarr;<span class="breakMessage">skipping <%= line[1] %> lines</span>
               </td></tr>
             <% else %>
+              <% replace = line.replace && ( table_class == :codeLeft && line.tag == :added ||
+                                             table_class == :codeRight && line.tag == :removed ) %>
               <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
-                diff-line-number="<%= line.index %>" replace="<%= line.replace %>" tag="<%= line.tag %>">
+                diff-line-number="<%= line.index %>" replace="<%= replace %>" tag="<%= line.tag %>">
                 <td class="lineNumber leftNumber"><div class="slideDiv"><%= line.line_num_before || "&nbsp;" %>
                   </div></td>
                 <td class="lineNumber rightNumber"><div class="slideDiv"><%= line.line_num_after || "&nbsp;" %>
