@@ -147,7 +147,11 @@ window.CommitSearch =
 
     # If we're on page 1 and trying to go "after", then do a refresh instead of the normal sliding paging.
     if currentPageNumber == 1 && direction == "after"
-      @refreshSearch(savedSearchElement)
+      if @refreshing
+        @searching = false
+        return
+      @refreshing = true
+      @refreshSearch(savedSearchElement, => @refreshing = false)
       @searching = false
       return
 
@@ -221,11 +225,13 @@ window.CommitSearch =
       data: jQuery.toJSON(data)
       success: (newSavedSearchHtml) =>
         @afterSync()
-        @refreshSearch(savedSearch)
+        @refreshing = true
+        @refreshSearch(savedSearch, => @refreshing = false)
 
   # Refresh a saved search with the latest from the server.
   #  - savedSearch: a JQuery savedSearch div
-  refreshSearch: (savedSearch) ->
+  #  - callback: an optional callback called after the refresh is finished.
+  refreshSearch: (savedSearch, callback = null) ->
     overlayDiv = $("<div class='overlay'></div>")
     savedSearch.append(overlayDiv)
     overlayDiv.fadeTo 100, 0.6, => timeout 100, =>
@@ -240,9 +246,19 @@ window.CommitSearch =
           savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
           savedSearchElement.replaceWith newSavedSearch
           newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
+          callback.call() if callback?
 
   refreshAllSearches: ->
-    @refreshSearch($(savedSearch)) for savedSearch in $("#savedSearches .savedSearch")
+    return if @refreshingAll
+    @refreshingAll = true
+    savedSearches = $("#savedSearches .savedSearch")
+    @refreshed = 0
+    for savedSearch in savedSearches
+      @refreshSearch $(savedSearch), =>
+        @refreshed += 1
+        if @refreshed == savedSearches.size()
+          @selectFirstDiff()
+          @refreshingAll = false
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
