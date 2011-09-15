@@ -309,21 +309,17 @@ window.Commit =
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->
+    rightCodeTable = $(".codeRight")
+    leftCodeTable = $(".codeLeft")
     if Commit.isSideBySide
-      $(".codeLeft .comment").css("visibility", "hidden")
-      $(".codeLeft .commentForm").css("visibility", "hidden")
-      $(".codeLeft .removed .comment").css("visibility", "visible")
-      $(".codeLeft .removed .commentForm").css("visibility", "visible")
+      leftCodeTable.find(".comment, .commentForm").css("visibility": "hidden")
+      leftCodeTable.find(".removed").find(".comment, .commentForm").css("visibility", "visible")
 
-      $(".codeRight .comment").css("visibility", "visible")
-      $(".codeRight .commentForm").css("visibility", "visible")
-      $(".codeRight .removed .comment").css("visibility", "hidden")
-      $(".codeRight .removed .commentForm").css("visibility", "hidden")
+      rightCodeTable.find(".comment, .commentForm").css("visibility", "visible")
+      rightCodeTable.find(".removed").find(".comment, .commentForm").css("visibility", "hidden")
     else
-      $(".codeLeft .comment").css("visibility", "visible")
-      $(".codeLeft .commentForm").css("visibility", "visible")
-      $(".codeRight .comment").css("visibility", "hidden")
-      $(".codeRight .commentForm").css("visibility", "hidden")
+      leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
+      rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
