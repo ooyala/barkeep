@@ -1,4 +1,4 @@
-<script src="/js/commit.js"></script>
+<script src="/js/commit.js?bust=<%= Time.now.to_i %>"></script>
 
 <%# TODO(caleb): Make margin-size user-customizable. %>
 <div id="commit" sha="<%= commit.sha %>" repo="<%= commit.git_repo.name %>" margin-size="110">

@@ -1,6 +1,6 @@
 <script src="/flot/jquery.flot.min.js"></script>
 <script src="/flot/jquery.flot.pie.min.js"></script>
-<script src="/js/stats.js"></script>
+<script src="/js/stats.js?bust=<%= Time.now.to_i %>"></script>
 <div id="stats">
   <% if current_user %>
     <form id="statsRangeForm" action="/set_stats_time_range" method="post">
