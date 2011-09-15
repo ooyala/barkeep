@@ -145,6 +145,12 @@ window.CommitSearch =
     token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
     currentPageNumber = parseInt(savedSearchElement.find(".pageNumber").text())
 
+    # If we're on page 1 and trying to go "after", then do a refresh instead of the normal sliding paging.
+    if currentPageNumber == 1 && direction == "after"
+      @refreshSearch(savedSearchElement)
+      @searching = false
+      return
+
     animationComplete = false
     fetchedHtml = null
 
