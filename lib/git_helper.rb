@@ -65,10 +65,10 @@ class GitHelper
 
   # Returns an array of hashes representing the tagged and colorized lines of each file in the diff.
   # Where :special_case indicates if the file is an exception of some kind (binary file, corrupt/unparseable
-  # file, etc), otherwise :lines is the output of tag_file.
+  # file, etc), otherwise :lines and :breaks are the output of tag_file.
   # options:
   #  use_syntax_highlighting - whether we should use syntax highlighting when generating diffs.
-  # returns: [ { :binary, :lines}, ... ]
+  # returns: [ { :binary, :lines, :breaks}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
     begin
@@ -96,9 +96,7 @@ class GitHelper
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
           unless options[:cache_prime]
-            data[:lines] = GitHelper.tag_file(before, after, diff.diff)
-            index = 1
-            data[:lines].each { |line| line.index = index += 1 unless line == :break }
+            data.merge! GitHelper.tag_file(before, after, diff.diff)
           end
         end
         data
@@ -119,6 +117,7 @@ class GitHelper
   def self.tag_file(file_before, file_after, diff)
     before_lines, after_lines = [file_before, file_after].map { |file| file ? file.split("\n") : [] }
     tagged_lines = []
+    chunk_breaks = []
     orig_line, diff_line = 0, 0
     chunks = tag_diff(diff, before_lines, after_lines)
 
@@ -129,21 +128,22 @@ class GitHelper
           orig_line += 1
           LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
         end
-        tagged_lines << :break
+        chunk_breaks << tagged_lines.size
       end
       tagged_lines += chunk[:tagged_lines]
       orig_line += chunk[:orig_length]
       diff_line += chunk[:diff_length]
     end
+
     if !before_lines.empty? && orig_line <= before_lines.count
-      tagged_lines << :break
+      chunk_breaks << tagged_lines.size
       tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
         diff_line += 1
         orig_line += 1
         LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line )
       end
     end
-    tagged_lines
+    { :lines => tagged_lines, :breaks => chunk_breaks }
   end
 
   # parses unified diff into objects so that the rest of the file can be inserted around it.

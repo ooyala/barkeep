@@ -16,41 +16,39 @@
         <% if file[:special_case] %>
           <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
         <% else %>
-          <% breaks = file[:lines].each_with_index.select { |line, index| line == :break }.map(&:last) %>
-          <% initial_break, final_break = breaks.first, breaks.last %>
+          <% initial_break, final_break = file[:breaks].first, file[:breaks].last %>
           <% file[:lines].each_with_index do |line, i| %>
-            <% if line == :break %>
+            <% if file[:breaks].include? i %>
               <% if i == initial_break %>
                 <% extra_class = file[:lines][0].chunk ? "" : "initialBreak" %>
               <% elsif i == final_break %>
                 <% extra_class = file[:lines][i + 1].then { chunk } ? "" : "finalBreak" %>
               <% else %>
-                <% "" %>
+                <% extra_class = "" %>
               <% end %>
               <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
                   <span class="breakMessage">&#149;&nbsp;&#149;&nbsp;&#149;</span>
               </td></tr>
-            <% else %>
-              <% replace = line.replace && ( table_class == :codeLeft && line.tag == :added ||
-                                             table_class == :codeRight && line.tag == :removed ) %>
-              <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
-                diff-line-number="<%= line.index %>" replace="<%= replace %>" tag="<%= line.tag %>">
-                <td class="lineNumber leftNumber"><div class="slideDiv"><%= line.line_num_before || "&nbsp;" %>
-                  </div></td>
-                <td class="lineNumber rightNumber"><div class="slideDiv"><%= line.line_num_after || "&nbsp;" %>
-                  </div></td>
-                <td class="code <%= line.tag %>">
-                  <div class="marginLine slideDiv"></div>
-                  <div class="codeText slideDiv"><%= line.formatted %></div>
-                  <% # add line comments
-                    while comment_index < line_comments.length &&
-                      line_comments[comment_index].line_number == line.index %>
-                    <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
-                    <% comment_index += 1 %>
-                  <% end %>
-                </td>
-              </tr>
             <% end %>
+            <% replace = line.replace && ( table_class == :codeLeft && line.tag == :added ||
+                                           table_class == :codeRight && line.tag == :removed ) %>
+            <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
+              diff-line-number="<%= i + 1 %>" replace="<%= replace %>" tag="<%= line.tag %>">
+              <td class="lineNumber leftNumber"><div class="slideDiv"><%= line.line_num_before || "&nbsp;" %>
+                </div></td>
+              <td class="lineNumber rightNumber"><div class="slideDiv"><%= line.line_num_after || "&nbsp;" %>
+                </div></td>
+              <td class="code <%= line.tag %>">
+                <div class="marginLine slideDiv"></div>
+                <div class="codeText slideDiv"><%= line.formatted %></div>
+                <% # add line comments
+                  while comment_index < line_comments.length &&
+                    line_comments[comment_index].line_number == i + 1 %>
+                  <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
+                  <% comment_index += 1 %>
+                <% end %>
+              </td>
+            </tr>
           <% end %>
         <% end %>
       </table></div>
