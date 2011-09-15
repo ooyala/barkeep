@@ -1,8 +1,8 @@
 # import common.coffee, jquery, and jquery-json
 
 window.Commit =
-  sideBySideSlideDuration: 300
-  sideBySideSplitDuration: 700
+  SIDE_BY_SIDE_SLIDE_DURATION: 300
+  SIDE_BY_SIDE_SPLIT_DURATION: 700
 
   init: ->
     $(document).keydown (e) => @onKeydown e
@@ -282,22 +282,22 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.sideBySideSplitDuration)
-      $(document.body).animate({"width": Commit.originalBodyWidth * 2 - 2}, Commit.sideBySideSplitDuration)
+      rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.SIDE_BY_SIDE_SPLIT_DURATION)
+      $(document.body).animate({"width": Commit.originalBodyWidth * 2 - 2}, Commit.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
       $(".diffLine[replace='true'] .slideDiv").
-        delay(Commit.sideBySideSplitDuration).slideUp(Commit.sideBySideSlideDuration)
+        delay(Commit.SIDE_BY_SIDE_SPLIT_DURATION).slideUp(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
       leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
       rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
     else
       # callapse to unified diff
       Commit.isSideBySide = false
-      $(".diffLine[replace='true'] .slideDiv").slideDown(Commit.sideBySideSlideDuration)
-      $(".diffLine[replace='true']").slideDown(Commit.sideBySideSlideDuration)
-      rightCodeTable.delay(Commit.sideBySideSlideDuration).animate({ "left": 0 },
-                                                                   Commit.sideBySideSplitDuration)
-      $(document.body).delay(Commit.sideBySideSlideDuration).
-        animate {"width": Commit.originalBodyWidth}, Commit.sideBySideSplitDuration, () ->
+      $(".diffLine[replace='true'] .slideDiv").slideDown(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
+      $(".diffLine[replace='true']").slideDown(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
+      rightCodeTable.delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
+                                                                   Commit.SIDE_BY_SIDE_SPLIT_DURATION)
+      $(document.body).delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).
+        animate {"width": Commit.originalBodyWidth}, Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
           # after the side-by-side callapse animation is done,
           #  reset everything to the way it should be for unified diff
           rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
