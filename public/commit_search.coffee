@@ -37,7 +37,7 @@ window.CommitSearch =
 
   onSavedSearchDelete: (event) ->
     target = $(event.target).parents(".savedSearch")
-    searchId = (Number) target.attr("saved-search-id")
+    searchId = parseInt(target.attr("saved-search-id"))
     if $(".selected").parents(".savedSearch").is(target)
       @selectNewGroup(false) unless @selectNewGroup(true)
       removedSelected = true
@@ -192,7 +192,7 @@ window.CommitSearch =
   reorderSearches: ->
     @beforeSync()
     state = for savedSearch in $("#savedSearches .savedSearch")
-      (Number) $(savedSearch).attr("saved-search-id")
+      parseInt($(savedSearch).attr("saved-search-id"))
     # Store from the bottom up so that adding new saved searches doesn't change all the numbers.
     state.reverse()
     $.ajax
@@ -212,7 +212,7 @@ window.CommitSearch =
   toggleUnapprovedCommits: (event) ->
     data = { unapproved_only: $(event.target).attr("checked") == "checked" }
     savedSearch = $(event.target).parents(".savedSearch")
-    savedSearchId = (Number) savedSearch.attr("saved-search-id")
+    savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
     @beforeSync()
     $.ajax
       type: "POST"
@@ -229,7 +229,7 @@ window.CommitSearch =
     overlayDiv = $("<div class='overlay'></div>")
     savedSearch.append(overlayDiv)
     overlayDiv.fadeTo 100, 0.6, => timeout 100, =>
-      savedSearchId = (Number) savedSearch.attr("saved-search-id")
+      savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
       selected = $(".selected").parents(".savedSearch").is(savedSearch)
       @beforeSync()
       $.ajax

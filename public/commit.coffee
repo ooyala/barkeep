@@ -49,7 +49,7 @@ window.Commit =
   calculateMarginSize: ->
     commit = $("#commit")
     # We need to add 1 to account for the extra 'diff' character (" ", "+", or "-")
-    lineSize = Number(commit.attr("margin-size")) + 1
+    lineSize = parseInt(commit.attr("margin-size")) + 1
     maxLengthLine = ("a" for i in [1..lineSize]).join("")
     marginSizingDiv = $("<span id='marginSizing'>#{maxLengthLine}</span>")
     commit.append(marginSizingDiv)
