@@ -241,6 +241,15 @@ window.Commit =
     if firstNonChunk.css("display") == "none"
       $(".chunkBreak").hide()
       $(".diffLine").not(".chunk").show()
+
+      # Hiding and showing the .chunk-start lines is a hack to make them re-render properly in Webkit.
+      # Worse, the only way I could get it to work is by introducing a very slight delay (the 1ms argument to
+      # show().
+      #
+      # TODO(caleb): Figure out a less hacky solution
+      $(".diffLine.chunk-start").hide()
+      $(".diffLine.chunk-start").show(1)
+
       window.scrollTo(0, firstChunk.offset().top)
     else
       $(".diffLine").not(".chunk").hide()
