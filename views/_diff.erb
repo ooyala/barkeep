@@ -11,6 +11,7 @@
   </div>
   <div class="dataWrapper">
     <% [:codeLeft, :codeRight].each do |table_class| # make 2 identical tables for side-by-side diff %>
+      <% comment_index = 0 %>
       <div class="<%= table_class %>"><table class="data">
         <% if file[:special_case] %>
           <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
@@ -43,7 +44,7 @@
                   <div class="codeText slideDiv"><%= line.formatted %></div>
                   <% # add line comments
                     while comment_index < line_comments.length &&
-                      line_comments[comment_index].line_number == line.index + 1 %>
+                      line_comments[comment_index].line_number == line.index %>
                     <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
                     <% comment_index += 1 %>
                   <% end %>
