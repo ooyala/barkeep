@@ -144,6 +144,11 @@ window.CommitSearch =
 
     token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
     currentPageNumber = parseInt(savedSearchElement.find(".pageNumber").text())
+    if isNaN(currentPageNumber)
+      # Something is wrong
+      @selectFirstDiff()
+      @searching = false
+      return
 
     # If we're on page 1 and trying to go "after", then do a refresh instead of the normal sliding paging.
     if currentPageNumber == 1 && direction == "after"
