@@ -125,6 +125,7 @@ window.Commit =
 
   #Logic to add comments
   onDiffLineDblClickOrReply: (e) ->
+    window.getSelection().removeAllRanges()
     if $(e.target).hasClass("delete") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     if $(e.target).hasClass("reply")
