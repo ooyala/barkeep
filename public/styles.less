@@ -819,10 +819,13 @@ table.commitsList, table.authorList {
     background-color: @sunkenColor;
     color: @lightTextColor;
     td {
-      text-align: center;
-      padding-left: 5px;
       position: relative;
-      .breakMessage { font-size: 12px; }
+      .breakMessage {
+        text-align: right;
+        display: inline-block;
+        font-size: 12px;
+        width: 470px;
+      }
     }
     &:not(.initialBreak) { border-top: @standardBorder; }
     &:not(.finalBreak) { border-bottom: @standardBorder; }
