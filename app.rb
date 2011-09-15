@@ -430,7 +430,7 @@ class Barkeep < Sinatra::Base
     begin
       oidreq = @openid_consumer.begin(OPENID_DISCOVERY_ENDPOINT)
     rescue OpenID::DiscoveryFailure => why
-      "Sorry, we couldn't find your identifier #{openid}."
+      "Could not contact #{OPENID_DISCOVERY_ENDPOINT}. #{why}"
     else
       axreq = OpenID::AX::FetchRequest.new
       axreq.add(OpenID::AX::AttrInfo.new(OPENID_AX_EMAIL_SCHEMA, nil, true))
