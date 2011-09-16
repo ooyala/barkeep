@@ -344,7 +344,10 @@ class Barkeep < Sinatra::Base
     next if params[:filename].include?(".")
     asset_path = "public/#{params[:filename]}.less"
     content_type "text/css", :charset => "utf-8"
-    last_modified File.mtime(asset_path)
+    # Set the last modified to the most recently modified less file in the directory, as a quick way to get
+    # around the problem of included files not working with livecss.
+    last_modified Dir.glob(File.join(File.dirname(asset_path), "*.less")).map { |f| File.mtime(f) }.max
+    puts ">>> #{Dir.glob(File.join(File.dirname(asset_path), "*.less")).map { |f| File.mtime(f) }.max}"
     compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/lessc #{filename}`.chomp }
   end
 
@@ -413,14 +416,15 @@ class Barkeep < Sinatra::Base
   # performed on the asset before caching (e.g. compiling LESS css).
   def compile_asset_from_cache(asset_path, &block)
     # TODO(philc): We should not check the file's md5 more than once when we're running in production mode.
-    contents = File.read(asset_path)
-    md5 = Digest::MD5.hexdigest(contents)
-    cached_asset = $compiled_cache[asset_path]
-    if md5 != cached_asset[:md5]
-      cached_asset[:contents] = block_given? ? block.yield(asset_path) : File.read(contents)
-      cached_asset[:md5] = md5
-    end
-    cached_asset[:contents]
+    block.yield(asset_path)
+    #contents = File.read(asset_path)
+    #md5 = Digest::MD5.hexdigest(contents)
+    #cached_asset = $compiled_cache[asset_path]
+    #if md5 != cached_asset[:md5]
+      #cached_asset[:contents] = block_given? ? block.yield(asset_path) : File.read(contents)
+      #cached_asset[:md5] = md5
+    #end
+    #cached_asset[:contents]
   end
 
   # construct redirect url to google openid
