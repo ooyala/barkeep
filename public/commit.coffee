@@ -164,18 +164,21 @@ window.Commit =
 
   onCommentSubmit: (e) ->
     e.preventDefault()
-    if $(e.currentTarget).find("textarea").val() == ""
+    target = $(e.currentTarget)
+    if target.find("textarea").val() == ""
       return
     #make sure changes to form happen to both tables to maintain height
-    formId = $(e.currentTarget).attr("form-id")
-    form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
+    formId = target.attr("form-id")
+    file = target.parents(".file")
+    # file is the parent file for the comment, if the comment is a line-level comment.
+    form = if file.size() > 0 then file.find(".commentForm[form-id='" + formId + "']") else target
     data = {}
-    $(e.currentTarget).find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
+    target.find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
     $.ajax
       type: "POST",
       data: data,
       url: e.currentTarget.action,
-      success: (html) -> Commit.onCommentSubmitSuccess(html, form)
+      success: (html) => @onCommentSubmitSuccess(html, form)
 
   onCommentSubmitSuccess: (html, form) ->
     $(form).before(html)
@@ -196,16 +199,20 @@ window.Commit =
 
   onCommentDelete: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
-    $.ajax({
+    $.ajax
       type: "post",
       url: "/delete_comment",
       data: { comment_id: commentId },
-      success: ->
-        #make sure changes to form happen to both tables to maintain height
-        form = $(e.currentTarget).parents(".file").find(".comment[commentId='" + commentId + "']")
+      success: =>
+        # Make sure that changes to forms happen to both tables to maintain height if deleting a line comment.
+        target = $(e.currentTarget)
+        file = target.parents(".file")
+        if file.size() > 0
+          form = file.find(".comment[commentid='" + commentId + "']")
+        else
+          form = target.parents(".comment")
         form.remove()
-        Commit.setSideBySideCommentVisibility()
-    })
+        @setSideBySideCommentVisibility()
 
   onApproveClicked: (e) ->
     $.ajax({
