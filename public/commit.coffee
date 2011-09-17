@@ -294,21 +294,23 @@ window.Commit =
       # slide up the replaced rows
       $(".diffLine[replace='true'] .slideDiv").
         delay(Commit.SIDE_BY_SIDE_SPLIT_DURATION).slideUp(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
-      leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
-      rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
+      timeout Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
+        leftCodeTable.find(".diffLine[tag='added'][replace='false']").delay(1000).addClass "spacingLine"
+        rightCodeTable.find(".diffLine[tag='removed'][replace='false']").delay(1000).addClass "spacingLine"
     else
       # callapse to unified diff
       Commit.isSideBySide = false
       $(".diffLine[replace='true'] .slideDiv").slideDown(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
+      timeout Commit.SIDE_BY_SIDE_SLIDE_DURATION, () ->
+        rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
+        leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
       rightCodeTable.delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
                                                                    Commit.SIDE_BY_SIDE_SPLIT_DURATION)
       $(document.body).delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).
         animate {"width": Commit.originalBodyWidth}, Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
           # after the side-by-side callapse animation is done,
           #  reset everything to the way it should be for unified diff
-          rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
-          leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
           $(".codeLeft .added > .codeText").css("visibility", "visible")
           Commit.setSideBySideCommentVisibility()
           $(".codeRight").hide()
