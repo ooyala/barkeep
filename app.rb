@@ -150,8 +150,6 @@ class Barkeep < Sinatra::Base
   end
 
   get "/commits" do
-    p current_user
-    p current_user.saved_searches
     erb :commit_search,
         :locals => { :saved_searches => current_user ? current_user.saved_searches : [] }
   end
