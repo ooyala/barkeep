@@ -150,6 +150,8 @@ class Barkeep < Sinatra::Base
   end
 
   get "/commits" do
+    p current_user
+    p current_user.saved_searches
     erb :commit_search,
         :locals => { :saved_searches => current_user ? current_user.saved_searches : [] }
   end
@@ -186,10 +188,15 @@ class Barkeep < Sinatra::Base
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
+  post "/edit_comment" do
+    comment = validate_comment(params[:comment_id])
+    comment.text = params[:comment_text]
+    comment.save
+    return replace_shas_with_links(RedcarpetManager.redcarpet_pygments.render(params[:comment_text]))
+  end
+
   post "/delete_comment" do
-    comment = Comment[params[:comment_id]]
-    return 400 unless comment
-    return 403 unless comment.user.id == current_user.id
+    comment = validate_comment(params[:comment_id])
     comment.destroy
     nil
   end
@@ -442,5 +449,12 @@ class Barkeep < Sinatra::Base
       oidreq.add_extension(axreq)
       oidreq.redirect_url(root_url,root_url + "/login/complete")
     end
+  end
+
+  def validate_comment(comment_id)
+    comment = Comment[comment_id]
+    halt(404, "This comment no longer exists.") unless comment
+    halt(403, "Just what do you think you're doing?") unless comment.user.id == current_user.id
+    return comment
   end
 end

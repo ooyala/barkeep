@@ -13,6 +13,7 @@ window.Commit =
     $("#approveButton").live "click", (e) => @onApproveClicked e
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
+    $(".edit").live "click", (e) => @onCommentEdit e
 
   onKeydown: (event) ->
     return unless @beforeKeydown(event)
@@ -127,6 +128,7 @@ window.Commit =
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
     if $(e.target).hasClass("delete") then return
+    if $(e.target).hasClass("edit") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     if $(e.target).hasClass("reply")
       lineNumber = $(e.currentTarget).parents(".diffLine").attr("diff-line-number")
@@ -139,6 +141,45 @@ window.Commit =
     sha = codeLine.parents("#commit").attr("sha")
     repoName = codeLine.parents("#commit").attr("repo")
     Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
+
+  # Logic to edit comments
+  onCommentEdit: (e) ->
+    if $(e.target).parents(".diffLine").find(".commentEdit").size() > 0 then return
+
+    commentRaw = $(e.target).parents(".comment").data("commentRaw")
+    codeLine = $(e.target).parents(".code")
+
+    commentEdit = $("<div class='commentEdit'>").html("" +
+      "<textarea class='commentText' name='text'>#{ commentRaw }</textarea>" +
+      "<div class='commentControls'>" +
+        "<input class='commentSubmit' type='button' value='Save edit' />" +
+        "<input class='commentCancel' type='button' value='Cancel' />" +
+      "</div>")
+
+    commentEdit.find(".commentText").dblclick (e) -> e.stopPropagation()
+    commentEdit.find(".commentCancel").click ->
+      codeLine.find(".commentEdit").remove()
+      codeLine.find(".commentBody").show()
+    commentEdit.find(".commentSubmit").click ->
+      commentId = commentEdit.parents(".comment").attr("commentId")
+      commentText = commentEdit.find(".commentText").val()
+      $.ajax
+        type: "post",
+        url: "/edit_comment",
+        data: {
+          comment_id: commentId
+          comment_text: commentText
+        },
+        success: (html) ->
+          commentEdit.parents(".comment").data("commentRaw", commentText)
+          commentEdit.siblings(".commentBody").html(html)
+          commentEdit.find(".commentCancel").click()
+        error: (jqXHR) ->
+          alert jqXHR.responseText
+
+    codeLine.find(".commentBody").hide()
+    codeLine.find(".comment").append(commentEdit)
+    commentEdit.find(".commentText").focus()
 
   createCommentForm: (codeLine, repoName, sha, filename, lineNumber) ->
     $.ajax({
