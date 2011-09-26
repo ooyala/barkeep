@@ -96,7 +96,7 @@ class GitHelper
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
           unless options[:cache_prime]
-            data.merge! GitHelper.tag_file(before, after, diff.diff)
+            data.merge! GitHelper.tag_file(before, after, diff)
           end
         end
         data
@@ -122,17 +122,17 @@ class GitHelper
     chunks = tag_diff(diff, before_lines, after_lines)
 
     chunks.each_with_index do |chunk, i|
-      if chunk[:orig_line] && chunk[:orig_line] > orig_line
-        tagged_lines += before_lines[orig_line...chunk[:orig_line]].map do |data|
+      if chunk.original_line_start && chunk.original_line_start > orig_line
+        tagged_lines += before_lines[orig_line...chunk.original_line_start].map do |data|
           diff_line += 1
           orig_line += 1
           LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
         end
         chunk_breaks << tagged_lines.size
       end
-      tagged_lines += chunk[:tagged_lines]
-      orig_line += chunk[:orig_length]
-      diff_line += chunk[:diff_length]
+      tagged_lines += chunk.tagged_lines
+      orig_line += chunk.original_lines_changed
+      diff_line += chunk.new_lines_changed
     end
 
     if !before_lines.empty? && orig_line <= before_lines.count
@@ -154,31 +154,26 @@ class GitHelper
     orig_line = 0
     diff_line = 0
 
-    diff.split("\n").each do |line|
+    diff.diff.split("\n").each do |line|
       match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@$/.match(line)
       if match
-        orig_line = match[1].to_i - 1
-        diff_line = match[3].to_i - 1
-        chunk = { :orig_line => orig_line, :orig_length => match[2].to_i, :diff_line => diff_line,
-            :diff_length => match[4].to_i, :tagged_lines => [] }
+        chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, match[3].to_i - 1, match[4].to_i)
         chunks << chunk
         next
       end
       match_new_file = /^@@ \-(\d+) \+(\d+),(\d+) @@$/.match(line)
       if match_new_file
-        orig_line = nil
-        diff_line = match_new_file[2].to_i - 1
-        chunk = { orig_line => nil, :orig_length => 0, :diff_line => diff_line,
-            :diff_length => match_new_file[3].to_i, :tagged_lines => [] }
+        chunk = PatchChunk.new(nil, 0, match_new_file[2].to_i - 1, match_new_file[3].to_i)
         chunks << chunk
         next
       end
-      match_removed_file = /^@@ \-(\d+),(\d+) \+(\d+) @@$/.match(line)
-      if match_removed_file
-        orig_line = match_removed_file[1].to_i - 1
-        diff_line = nil
-        chunk = { :orig_line => orig_line, :orig_length => match_removed_file[2].to_i, :diff_line => nil,
-            :diff_length => 0, :tagged_lines => [] }
+      match = /^@@ \-(\d+),(\d+) \+(\d+) @@$/.match(line)
+      if match
+        if diff.deleted_file
+          chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, nil, 0)
+        elsif diff.new_file
+          chunk = PatchChunk.new(nil, 0, match[3].to_i - 1, 1)
+        end
         chunks << chunk
         next
       end
@@ -200,12 +195,12 @@ class GitHelper
             highlighted = before_highlighted[orig_line-1]
         end
         next unless tag
-        chunk[:tagged_lines] << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
+        chunk.tagged_lines << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line, true)
       end
     end
     chunks.each do |chunk|
-      chunk[:tagged_lines][0].chunk_start = true
+      chunk.tagged_lines[0].chunk_start = true
       process_chunk_for_replaced(chunk)
     end
     chunks
@@ -220,7 +215,7 @@ class GitHelper
     block_start = 0
     # change in number of lines, orig_lines - diff_lines, in current block
     block_line_delta = 0
-    chunk[:tagged_lines].each_with_index do |line, i|
+    chunk.tagged_lines.each_with_index do |line, i|
       case line.tag
         when :added
           block_line_delta += 1
@@ -233,7 +228,7 @@ class GitHelper
             num_lines_replaced = (block_length - block_line_delta.abs) / 2
             # mark equal number of added and removed as replaced lines.
             # indexing into the same array that is been interated over should be ok if there is no change in item order
-            block = chunk[:tagged_lines][block_start...i]
+            block = chunk.tagged_lines[block_start...i]
             block.select { |l| l.tag == :added }.take(num_lines_replaced).each { |l| l.replace = true }
             block.select { |l| l.tag == :removed }.take(num_lines_replaced).each { |l| l.replace = true }
             block_line_delta = 0
@@ -270,4 +265,18 @@ class LineDiff
   def formatted
     "<div class='#{@tag}'><pre>#{line_prefix + @data}</pre></div>"
   end
+end
+
+class PatchChunk
+  attr_accessor :original_line_start, :original_lines_changed, :new_line_start, :new_lines_changed,
+      :tagged_lines
+
+  def initialize(original_line_start, original_lines_changed, new_line_start, new_lines_changed)
+    @original_line_start = original_line_start
+    @original_lines_changed = original_lines_changed
+    @new_line_start = new_line_start
+    @new_lines_changed = new_lines_changed
+    @tagged_lines = []
+  end
+
 end
