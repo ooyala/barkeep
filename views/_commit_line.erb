@@ -5,7 +5,8 @@
  %>
 <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
 <tr>
-  <td class="selectArrow"></td>
+  <td class="selectArrow <%= "approved east" if db_commit.approved? %>"
+      title="Approved" rel="tipsy"></td>
   <td class="avatarCell">
     <a href="/profile/<%= commit.author.user.id %>" target="_blank">
       <div class="avatar">
@@ -19,11 +20,6 @@
   </td>
   <td class="commitId">
     <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
-  </td>
-  <td class="approval">
-    <% if db_commit.approved? %>
-      <a class="south" rel="tipsy" title="Approved"><img src="/images/checkmark.png" /></a>
-    <% end %>
   </td>
   <td class="commitMessage">
     <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>

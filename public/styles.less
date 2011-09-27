@@ -511,7 +511,7 @@ table.commitsList, table.authorList {
       font: 13px @monoFont;
       a { color: @lightTextColor; }
       text-align: right;
-      padding-right: 2px;
+      padding-right: 7px;
     }
     &.approval { padding-right: 4px; }
     &.commitMessage {
@@ -546,13 +546,12 @@ table.commitsList, table.authorList {
         color: @lightTextColor;
       }
     }
+    &.approved {
+      background: transparent url(/images/light_checkmark.png) no-repeat left center;
+    }
   }
-  .selectArrow {
-    min-width: 9px;
-  }
-  .selected .selectArrow {
-    background: url(/images/right_arrow.png) no-repeat 0px 2px;
-  }
+  .selectArrow { min-width: 7px; }
+  .selected .selectArrow { background: url(/images/right_arrow.png) no-repeat 0px 2px; }
 }
 
 #stats {
