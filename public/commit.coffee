@@ -290,7 +290,8 @@ window.Commit =
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
       rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.SIDE_BY_SIDE_SPLIT_DURATION)
-      $("#container").animate({"width": Commit.originalContainerWidth * 2 - 2}, Commit.SIDE_BY_SIDE_SPLIT_DURATION)
+      $("#container").animate({"width": Commit.originalContainerWidth * 2 - 2},
+        Commit.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
       $(".diffLine[replace='true'] .slideDiv").
         delay(Commit.SIDE_BY_SIDE_SPLIT_DURATION).slideUp(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
