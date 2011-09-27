@@ -275,7 +275,7 @@ window.Commit =
       Commit.isSideBySide = true
       # save off size of code table so it doesn't drift after many animations
       Commit.originalLeftWidth ?= leftCodeTable.width()
-      Commit.originalBodyWidth ?= $("body").width()
+      Commit.originalContainerWidth ?= $("#container").width()
       rightCodeTable.width(Commit.originalLeftWidth)
       leftCodeTable.width(Commit.originalLeftWidth)
 
@@ -290,7 +290,7 @@ window.Commit =
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
       rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.SIDE_BY_SIDE_SPLIT_DURATION)
-      $(document.body).animate({"width": Commit.originalBodyWidth * 2 - 2}, Commit.SIDE_BY_SIDE_SPLIT_DURATION)
+      $("#container").animate({"width": Commit.originalContainerWidth * 2 - 2}, Commit.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
       $(".diffLine[replace='true'] .slideDiv").
         delay(Commit.SIDE_BY_SIDE_SPLIT_DURATION).slideUp(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
@@ -307,8 +307,8 @@ window.Commit =
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
       rightCodeTable.delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
                                                                    Commit.SIDE_BY_SIDE_SPLIT_DURATION)
-      $(document.body).delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).
-        animate {"width": Commit.originalBodyWidth}, Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
+      $("#container").delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).
+        animate {"width": Commit.originalContainerWidth}, Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
           # after the side-by-side callapse animation is done,
           #  reset everything to the way it should be for unified diff
           $(".codeLeft .added > .codeText").css("visibility", "visible")
