@@ -21,9 +21,11 @@
     <a href="#" class="delete">x</a>
     <div class="unapproved">
       <label>
-        <input type="checkbox" name="show_unapproved_commits" class="emailCheckbox"
-            <%= saved_search.unapproved_only ? "checked" : nil %> />
-        show unapproved only
+        <a class="south" rel="tipsy" title="Show only unapproved commits">
+          <input type="checkbox" name="show_unapproved_commits" class="emailCheckbox"
+              <%= saved_search.unapproved_only ? "checked" : nil %> />
+          unapproved only
+        </a>
       </label>
     </div>
     <div class="name"><%= saved_search.title %></div>
@@ -44,7 +46,7 @@
             </a>
           </td>
           <td class="author">
-            <a rel="tipsy" href="/profile/<%= commit.author.user.id %>" target="_blank"
+            <a class="west" rel="tipsy" href="/profile/<%= commit.author.user.id %>" target="_blank"
                 title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
           </td>
           <td class="commitId">
@@ -52,7 +54,7 @@
           </td>
           <td class="approval">
             <% if db_commit.approved? %>
-              <a rel="tipsy" title="Approved"><img src="/images/checkmark.png" /></a>
+              <a class="south" rel="tipsy" title="Approved"><img src="/images/checkmark.png" /></a>
             <% end %>
           </td>
           <td class="commitMessage">
@@ -64,7 +66,7 @@
             <% comment_count = db_commit.comment_count %>
             <% if comment_count > 0 %>
               <% comment_count_hover_text = "#{comment_count} comment#{'s' unless comment_count == 1}" %>
-              <a class="noLink" rel="tipsy" title="<%= comment_count_hover_text %>">
+              <a class="noLink east" rel="tipsy" title="<%= comment_count_hover_text %>">
                 <span><%= comment_count %></span><img src="images/comment_bubble.png" />
               </a>
             <% end %>

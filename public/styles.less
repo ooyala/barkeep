@@ -215,7 +215,11 @@ button.standard, input[type=button], input[type=submit] {
 .noLink {
   cursor: default;
   text-decoration: none;
-  &:hover { text-decoration: none; }
+  background: transparent;
+  &:hover {
+    text-decoration: none;
+    background: transparent;
+  }
 }
 
 .webkit button.standard { font-weight: bold; }
@@ -405,6 +409,10 @@ header {
       margin-right: @dragHandleWidth + 28;
       padding-right: 5px;
       padding-top: 6px;
+      a {
+        .noLink;
+        color: @textColor;
+      }
     }
   }
 
@@ -659,7 +667,6 @@ table.commitsList, table.authorList {
         a {
           .noLink;
           color: @lightTextColor;
-          &:hover { background-color: transparent; }
         }
       }
     }

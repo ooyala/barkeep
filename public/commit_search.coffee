@@ -161,6 +161,7 @@ window.CommitSearch =
 
     animationComplete = false
     fetchedHtml = null
+    $(".tipsy").remove()
 
     # We're going to animate sliding the current page away, while at the same time fetching the new page.
     # When both of those events are done, showFetchedPage can then be called.
@@ -236,6 +237,7 @@ window.CommitSearch =
   #  - savedSearch: a JQuery savedSearch div
   #  - callback: an optional callback called after the refresh is finished.
   refreshSearch: (savedSearch, callback = null) ->
+    $(".tipsy").remove()
     overlayDiv = $("<div class='overlay'></div>")
     savedSearch.append(overlayDiv)
     overlayDiv.fadeTo 100, 0.6, => timeout 100, =>
