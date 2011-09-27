@@ -35,7 +35,7 @@
       <% commits.each do |commit| %>
         <tr>
           <td class="selectArrow"></td>
-          <td>
+          <td class="avatarCell">
             <a href="/profile/<%= commit.author.user.id %>" target="_blank">
               <div class="avatar">
                 <img src="<%= commit.author.user.gravatar %>"/>

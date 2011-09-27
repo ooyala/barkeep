@@ -463,11 +463,14 @@ header {
  */
 table.commitsList, table.authorList {
   width: 100%;
+  border-collapse: collapse;
+  @gravatarSize: 25px;
+  @rowSpacing: 2px;
 
   .avatar {
     margin-right: 4px;
     padding-right: 0px;
-    .gravatar(25px);
+    .gravatar(@gravatarSize);
   }
 
   font-size: 14px;
@@ -477,12 +480,14 @@ table.commitsList, table.authorList {
     color: @textColor;
     border: 0;
   }
+  tr { height: @gravatarSize + @rowSpacing * 2; }
   td {
     padding-right: 5px;
     a {
       &:active { background-color: transparent; }
       &:hover { text-decoration: underline; }
     }
+    &.avatarCell { padding: 0px 2px; }
     &.author { white-space: nowrap; }
     &.commitId {
       font: 13px @monoFont;
@@ -510,12 +515,10 @@ table.commitsList, table.authorList {
     }
   }
   .selectArrow {
-    padding-right: 3px;
-    min-width: 10px;
-    height: 10px;
+    min-width: 9px;
   }
   .selected .selectArrow {
-    background: url(/images/right_arrow.png) no-repeat 0px 7px;
+    background: url(/images/right_arrow.png) no-repeat 0px @rowSpacing;
   }
 }
 
