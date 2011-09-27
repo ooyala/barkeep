@@ -356,30 +356,36 @@ header {
 
 .handle { cursor: move; }
 
-.savedSearch {
+.savedSearch, .statistic {
   position: relative;
   /* We want the background of a saved search to be opaque while we're dragging it around. */
   background-image: url(/images/background.png);
   padding-bottom: 20px;
   margin-bottom: 8px;
   padding-right: 30px;
-  width: 100%;
   /* overflow is hidden because we slide pages of commits in saved searches off the edges of the page. */
   overflow: hidden;
-
   .header {
     margin-bottom: 5px;
     padding-bottom: 3px;
     border-bottom: @standardBorder;
 
     .name {
-      width: 750px;
-      overflow: hidden;
-      white-space: nowrap;
       font-size: 16px;
       font-weight: normal;
     }
+  }
+}
 
+.savedSearch, .statistic.chattyCommits {
+  width: 100%;
+
+  .header {
+    .name {
+      width: 750px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
     .dragHandle {
       position: absolute;
       right: 0;
@@ -473,7 +479,6 @@ header {
   }
 }
 
-
 /*
  * Styles for list of commits
  */
@@ -549,6 +554,48 @@ table.commitsList, table.authorList {
     background: url(/images/right_arrow.png) no-repeat 0px 2px;
   }
 }
+
+#stats {
+  #statistics {
+    .statistic {
+      border-collapse: collapse;
+      &.topReviewers {
+        margin-top: 30px;
+        display: inline-block;
+        .authorList {
+          width: @pageWidth * 0.5;
+          td.email {
+            color: @lightTextColor;
+            font-size: 90%;
+            text-align: right;
+          }
+          td.count {
+            width: 100%;
+            color: @lightTextColor;
+          }
+        }
+      }
+
+      &.reviewCoverage {
+        margin-top: 30px;
+        display: inline-block;
+        float: right;
+
+        .graph {
+          margin-top: 30px;
+          width: 300px;
+          height: 300px;
+        }
+      }
+
+      .commitsList {
+        width: @pageWidth;
+        td.selectArrow { max-width: 0; }
+      }
+    }
+  }
+}
+
 
 /*
  * Layout for the commits dashboard page.
@@ -1021,52 +1068,6 @@ table.commitsList, table.authorList {
             padding-top: 10px;
             font-style: italic;
           }
-        }
-      }
-    }
-  }
-}
-
-#stats {
-  #statistics {
-    .statistic {
-      margin-top: 50px;
-
-      h3 {
-        color: #636363;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #ADADAD;
-      }
-
-      &.topReviewers {
-        display: inline-block;
-
-        .authorList {
-          width: inherit;
-          td { padding: 0px 10px; }
-          .email {
-            color: #666666;
-            font-size: 0.9em;
-          }
-          .count { color: #666666; }
-        }
-      }
-
-      &.reviewCoverage {
-        display: inline-block;
-        float: right;
-
-        .graph {
-          width: 300px;
-          height: 300px;
-        }
-      }
-
-      .commitsList {
-        td { padding: 0px 10px; }
-        .count {
-          color: #666666;
-          white-space: nowrap;
         }
       }
     }
