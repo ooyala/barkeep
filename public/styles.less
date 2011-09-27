@@ -415,10 +415,6 @@ header {
       margin-right: @dragHandleWidth + 28;
       padding-right: 5px;
       padding-top: 6px;
-      a {
-        .noLink;
-        color: @textColor;
-      }
     }
   }
 
@@ -709,13 +705,7 @@ table.commitsList, table.authorList {
       vertical-align: middle;
       line-height: 1.25em;
 
-      .email, .date {
-        color: @lightTextColor;
-        a {
-          .noLink;
-          color: @lightTextColor;
-        }
-      }
+      .email, .date { color: @lightTextColor; }
     }
 
     td { vertical-align: top; }

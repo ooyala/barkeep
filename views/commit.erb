@@ -15,8 +15,10 @@
           <div class="authorInfo">
             <p class="author"><%= commit.user.name %></p>
             <p class="email"><%= commit.user.email %></p>
-            <p class="date"><a class="north" rel="tipsy"
-              title="<%= commit.date.strftime("%Y-%m-%d %H:%M:%S") %>"><%= commit.date.to_pretty %></a>
+            <p class="date">
+              <span class="north" rel="tipsy" title="<%= commit.date.strftime("%Y-%m-%d %H:%M:%S") %>">
+                <%= commit.date.to_pretty %>
+              </span>
             </p>
           </div>
         </td>
