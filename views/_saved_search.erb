@@ -49,6 +49,8 @@
           <td class="commitId">
             <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
           </td>
+          <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
+          <td class="approval <%= db_commit.approved? ? "approved" : "unapproved" %>" title="Approved"></td>
           <td class="commitMessage">
             <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
           </td>

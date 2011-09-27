@@ -482,7 +482,7 @@ table.commitsList, table.authorList {
   }
   tr { height: @gravatarSize + @rowSpacing * 2; }
   td {
-    padding-right: 5px;
+    padding-right: 7px;
     a {
       &:active { background-color: transparent; }
       &:hover { text-decoration: underline; }
@@ -493,6 +493,14 @@ table.commitsList, table.authorList {
       font: 13px @monoFont;
       a { color: @lightTextColor; }
       text-align: right;
+      padding-right: 2px;
+    }
+    &.approval {
+      &.approved {
+        background: url(/images/checkmark.png) no-repeat 0px @rowSpacing;
+        min-width: 10px;
+      }
+      padding-right: 4px;
     }
     &.commitMessage {
       width: 100%;
@@ -503,16 +511,15 @@ table.commitsList, table.authorList {
          * lines of text in this element, but they'll be hidden. */
         overflow: hidden;
         height: 1.2em;
-
       }
     }
-    &.commitRepo { font-variant: small-caps; }
     &.commitDate { text-align: right; }
     &.commitDate, &.commitRepo {
       white-space: nowrap;
       font-size: 90%;
       color: @lightTextColor;
     }
+    &.commitRepo { font-variant: small-caps; }
   }
   .selectArrow {
     min-width: 9px;
