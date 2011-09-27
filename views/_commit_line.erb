@@ -15,7 +15,7 @@
     </a>
   </td>
   <td class="author">
-    <a class="west" rel="tipsy" href="/profile/<%= commit.author.user.id %>" target="_blank"
+    <a class="south" rel="tipsy" href="/profile/<%= commit.author.user.id %>" target="_blank"
       title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
   </td>
   <td class="commitId">
@@ -30,7 +30,7 @@
     <% comment_count = db_commit.comment_count %>
     <% if comment_count > 0 %>
       <% comment_count_hover_text = "#{comment_count} comment#{'s' unless comment_count == 1}" %>
-      <a class="noLink east" rel="tipsy" title="<%= comment_count_hover_text %>">
+      <a class="noLink west" rel="tipsy" title="<%= comment_count_hover_text %>">
         <span><%= comment_count %></span><img src="images/comment_bubble.png" />
       </a>
     <% end %>
