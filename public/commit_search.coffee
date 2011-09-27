@@ -14,7 +14,11 @@ window.CommitSearch =
       placeholder: "savedSearchPlaceholder"
       handle: ".dragHandle"
       axis: "y"
-      stop: => @reorderSearches()
+      start: =>
+        $.fn.tipsy.disable()
+      stop: =>
+        $.fn.tipsy.enable()
+        @reorderSearches()
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage(e, "after")
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
