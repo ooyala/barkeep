@@ -18,6 +18,11 @@ class Commit < Sequel::Model
     comments_dataset.filter(:commit_id => id, :line_number => nil).order(:created_at).all
   end
 
+  # Total comments of all types pertaining to this commit (line comments + commit comments)
+  def comment_count
+    comments_dataset.filter(:commit_id => id).order(:created_at).count
+  end
+
   def approved?() !approved_by_user_id.nil? end
 
   def approve(user)

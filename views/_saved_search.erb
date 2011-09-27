@@ -33,6 +33,7 @@
   <% else %>
     <table class="commitsList">
       <% commits.each do |commit| %>
+        <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
         <tr>
           <td class="selectArrow"></td>
           <td class="avatarCell">
@@ -49,13 +50,23 @@
           <td class="commitId">
             <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
           </td>
-          <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
           <td class="approval <%= db_commit.approved? ? "approved" : "unapproved" %>" title="Approved"></td>
           <td class="commitMessage">
             <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
           </td>
           <td class="commitDate"><%= commit.date.to_pretty %></td>
           <td class="commitRepo"><%= commit.repo_name %></td>
+          <td class="commentCountAnchor">
+          <% comment_count = db_commit.comment_count %>
+          <% if comment_count > 0 %>
+            <div class="anchorDiv">
+              <% comment_count_hover_text = "#{comment_count} comment#{'s' unless comment_count == 1}" %>
+              <div class="commentCount" title="<%= comment_count_hover_text %>"><%= comment_count %></div>
+              <div class="commentBubble" title="<%= comment_count_hover_text %>">
+                <img src="images/comment_bubble.png" />
+              </div>
+            </div>
+          <% end %>
         </tr>
       <% end %>
     </table>

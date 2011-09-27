@@ -519,7 +519,26 @@ table.commitsList, table.authorList {
       font-size: 90%;
       color: @lightTextColor;
     }
-    &.commitRepo { font-variant: small-caps; }
+    &.commitRepo {
+      font-variant: small-caps;
+    }
+    &.commentCountAnchor {
+      height: 100%;
+      padding: 0;
+      div.anchorDiv { position: relative; }
+      div.commentCount {
+        position: absolute;
+        top: -7px;
+        right: -11px;
+        color: @lightTextColor;
+        font-size: 80%;
+      }
+      div.commentBubble {
+        position: absolute;
+        top: -13px;
+        right: -25px;
+      }
+    }
   }
   .selectArrow {
     min-width: 9px;
@@ -527,6 +546,12 @@ table.commitsList, table.authorList {
   .selected .selectArrow {
     background: url(/images/right_arrow.png) no-repeat 0px @rowSpacing;
   }
+}
+
+// This gets around some annoying relative/absolute positioning variance between browsers
+.webkit table td.commentCountAnchor {
+  div.commentCount { top: -5px; }
+  div.commentBubble { top: -11px; }
 }
 
 /*
