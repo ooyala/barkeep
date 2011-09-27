@@ -1,5 +1,5 @@
 @import "/code_styles/default";
-@import "/tipsy/src/stylesheets/tipsy.css";
+@import "/tipsy_styles";
 
 /* NOTE(caleb): There is a known issue where our web font flickers in FF. The solution is a JS
  * workaround:
@@ -209,6 +209,13 @@ button.standard, input[type=button], input[type=submit] {
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
   user-select: none;
+}
+
+// When we don't want text in anchors to have typical link properties
+.noLink {
+  cursor: default;
+  text-decoration: none;
+  &:hover { text-decoration: none; }
 }
 
 .webkit button.standard { font-weight: bold; }
@@ -463,7 +470,7 @@ header {
  * Styles for list of commits
  */
 table.commitsList, table.authorList {
-  width: 100%;
+  width: @pageWidth + 25px; // Extra 20px for the comment number bubbles
   border-collapse: collapse;
 
   .avatar {
@@ -494,10 +501,7 @@ table.commitsList, table.authorList {
       padding-right: 2px;
     }
     &.approval {
-      &.approved {
-        background: url(/images/checkmark.png) no-repeat 0px 2px;
-        min-width: 10px;
-      }
+      min-width: 10px;
       padding-right: 4px;
     }
     &.commitMessage {
@@ -520,21 +524,14 @@ table.commitsList, table.authorList {
     &.commitRepo {
       font-variant: small-caps;
     }
-    &.commentCountAnchor {
-      height: 100%;
-      padding: 0;
-      div.anchorDiv { position: relative; }
-      div.commentCount {
-        position: absolute;
-        top: -7px;
-        right: -11px;
-        color: @lightTextColor;
+    &.commentCount {
+      padding-bottom: 2px;
+      white-space: nowrap;
+      text-align: right;
+      a { .noLink; }
+      span {
         font-size: 80%;
-      }
-      div.commentBubble {
-        position: absolute;
-        top: -13px;
-        right: -25px;
+        color: @lightTextColor;
       }
     }
   }
@@ -544,12 +541,6 @@ table.commitsList, table.authorList {
   .selected .selectArrow {
     background: url(/images/right_arrow.png) no-repeat 0px 2px;
   }
-}
-
-// This gets around some annoying relative/absolute positioning variance between browsers
-.webkit table td.commentCountAnchor {
-  div.commentCount { top: -5px; }
-  div.commentBubble { top: -11px; }
 }
 
 /*
@@ -665,7 +656,14 @@ table.commitsList, table.authorList {
       vertical-align: middle;
       line-height: 1.25em;
 
-      .email, .date { color: @lightTextColor; }
+      .email, .date {
+        color: @lightTextColor;
+        a {
+          .noLink;
+          color: @lightTextColor;
+          &:hover { background-color: transparent; }
+        }
+      }
     }
 
     td { vertical-align: top; }

@@ -44,29 +44,31 @@
             </a>
           </td>
           <td class="author">
-            <a href="/profile/<%= commit.author.user.id %>" target="_blank"
+            <a rel="tipsy" href="/profile/<%= commit.author.user.id %>" target="_blank"
                 title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
           </td>
           <td class="commitId">
             <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
           </td>
-          <td class="approval <%= db_commit.approved? ? "approved" : "unapproved" %>" title="Approved"></td>
+          <td class="approval">
+            <% if db_commit.approved? %>
+              <a rel="tipsy" title="Approved"><img src="/images/checkmark.png" /></a>
+            <% end %>
+          </td>
           <td class="commitMessage">
             <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
           </td>
           <td class="commitDate"><%= commit.date.to_pretty %></td>
           <td class="commitRepo"><%= commit.repo_name %></td>
-          <td class="commentCountAnchor">
-          <% comment_count = db_commit.comment_count %>
-          <% if comment_count > 0 %>
-            <div class="anchorDiv">
+          <td class="commentCount">
+            <% comment_count = db_commit.comment_count %>
+            <% if comment_count > 0 %>
               <% comment_count_hover_text = "#{comment_count} comment#{'s' unless comment_count == 1}" %>
-              <div class="commentCount" title="<%= comment_count_hover_text %>"><%= comment_count %></div>
-              <div class="commentBubble" title="<%= comment_count_hover_text %>">
-                <img src="images/comment_bubble.png" />
-              </div>
-            </div>
-          <% end %>
+              <a class="noLink" rel="tipsy" title="<%= comment_count_hover_text %>">
+                <span><%= comment_count %></span><img src="images/comment_bubble.png" />
+              </a>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </table>
