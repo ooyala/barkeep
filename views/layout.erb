@@ -20,10 +20,11 @@
         $("body").addClass("gecko");
 
       // Load up tipsy tooltips
-      $(".north[rel=tipsy]").tipsy({opacity: 0.95, live: true, gravity: "n"});
-      $(".south[rel=tipsy]").tipsy({opacity: 0.95, live: true, gravity: "s"});
-      $(".east[rel=tipsy]").tipsy({opacity: 0.95, live: true, gravity: "e"});
-      $(".west[rel=tipsy]").tipsy({opacity: 0.95, live: true, gravity: "w"});
+      var default_tipsy_options = { opacity: 0.95, live: true, delayIn: 100, delayOut: 100 };
+      $(".north[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "n"}));
+      $(".south[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "s"}));
+      $(".east[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "e"}));
+      $(".west[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "w"}));
     });
 
     var preloadImage = function(url) {
