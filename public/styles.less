@@ -470,7 +470,7 @@ header {
  * Styles for list of commits
  */
 table.commitsList, table.authorList {
-  width: @pageWidth + 25px; // Extra 20px for the comment number bubbles
+  width: @pageWidth + 30px; // Extra 30px for the comment number bubbles
   border-collapse: collapse;
 
   .avatar {
@@ -500,10 +500,7 @@ table.commitsList, table.authorList {
       text-align: right;
       padding-right: 2px;
     }
-    &.approval {
-      min-width: 10px;
-      padding-right: 4px;
-    }
+    &.approval { padding-right: 4px; }
     &.commitMessage {
       width: 100%;
       a {
@@ -523,6 +520,7 @@ table.commitsList, table.authorList {
     }
     &.commitRepo {
       font-variant: small-caps;
+      padding-right: 5px;
     }
     &.commentCount {
       padding-bottom: 2px;
