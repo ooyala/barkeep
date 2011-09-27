@@ -1,4 +1,5 @@
 @import "/code_styles/default";
+@import "/tipsy/src/stylesheets/tipsy.css";
 
 /* NOTE(caleb): There is a known issue where our web font flickers in FF. The solution is a JS
  * workaround:
@@ -215,7 +216,7 @@ button.standard, input[type=button], input[type=submit] {
 /*
  * Page chrome styles.
  */
-body {
+#container {
   clear: both;
   width: @pageWidth;
   margin: 0 auto;
@@ -464,13 +465,11 @@ header {
 table.commitsList, table.authorList {
   width: 100%;
   border-collapse: collapse;
-  @gravatarSize: 25px;
-  @rowSpacing: 2px;
 
   .avatar {
     margin-right: 4px;
     padding-right: 0px;
-    .gravatar(@gravatarSize);
+    .gravatar(25px);
   }
 
   font-size: 14px;
@@ -480,14 +479,13 @@ table.commitsList, table.authorList {
     color: @textColor;
     border: 0;
   }
-  tr { height: @gravatarSize + @rowSpacing * 2; }
   td {
     padding-right: 7px;
     a {
       &:active { background-color: transparent; }
       &:hover { text-decoration: underline; }
     }
-    &.avatarCell { padding: 0px 2px; }
+    &.avatarCell { padding: 1px 2px; }
     &.author { white-space: nowrap; }
     &.commitId {
       font: 13px @monoFont;
@@ -497,7 +495,7 @@ table.commitsList, table.authorList {
     }
     &.approval {
       &.approved {
-        background: url(/images/checkmark.png) no-repeat 0px @rowSpacing;
+        background: url(/images/checkmark.png) no-repeat 0px 2px;
         min-width: 10px;
       }
       padding-right: 4px;
@@ -544,7 +542,7 @@ table.commitsList, table.authorList {
     min-width: 9px;
   }
   .selected .selectArrow {
-    background: url(/images/right_arrow.png) no-repeat 0px @rowSpacing;
+    background: url(/images/right_arrow.png) no-repeat 0px 2px;
   }
 }
 
@@ -952,7 +950,7 @@ table.commitsList, table.authorList {
   visibility: hidden;
   display: block;
 
-  #container {
+  .container {
     position: relative;
     margin: 0 auto;
     background: @textColor;
@@ -960,7 +958,7 @@ table.commitsList, table.authorList {
     width: @pageWidth - 100;
     box-shadow: 2px 2px 5px @textColor;
 
-    #shortcuts {
+    .shortcuts {
       background: transparent;
       color: @almostWhite;
       opacity: 1;

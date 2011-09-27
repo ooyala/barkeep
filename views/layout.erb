@@ -8,8 +8,9 @@
   <script src="/jquery-ui-1.8.14.custom.min.js"></script>
   <script src="/jquery.json-2.2.min.js"></script>
   <script src="/underscore-min.js"></script>
-	<script src="/livecss.js"></script>
-	<script src="/js/common.js?bust=<%= Time.now.to_i %>"></script>
+  <script src="/jquery.tipsy.js"></script>
+  <script src="/livecss.js"></script>
+  <script src="/js/common.js?bust=<%= Time.now.to_i %>"></script>
 
   <script>
     $(document).ready(function() {
@@ -17,6 +18,9 @@
         $("body").addClass("webkit");
       else if (jQuery.browser.mozilla)
         $("body").addClass("gecko");
+
+      // Load up tipsy tooltips
+      $("a[rel=tipsy]").tipsy();
     });
 
     var preloadImage = function(url) {
@@ -31,38 +35,40 @@
 </head>
 
 <body>
-  <header>
-      <div id="icon"></div>
+  <div id="container">
+    <header>
+        <div id="icon"></div>
 
-      <h1 title="Keep that code bar high."><a href="/">bar<span class="keep">keep</span></a></h1>
+        <h1 title="Keep that code bar high."><a href="/">bar<span class="keep">keep</span></a></h1>
 
-      <nav>
-        <ul>
-          <!-- These extra divs are needed for styling. -->
-          <li class="<%= current_page_if_url("commits") %>">
-            <div><a href="/commits">Commits</a></div>
-          </li>
-          <li class="<%= current_page_if_url("stats") %>">
-            <div><a href="/stats">Stats</a></div>
-          </li>
-        </ul>
-      </nav>
+        <nav>
+          <ul>
+            <!-- These extra divs are needed for styling. -->
+            <li class="<%= current_page_if_url("commits") %>">
+              <div><a href="/commits">Commits</a></div>
+            </li>
+            <li class="<%= current_page_if_url("stats") %>">
+              <div><a href="/stats">Stats</a></div>
+            </li>
+          </ul>
+        </nav>
 
-      <div id="signInBox">
-        <% if current_user %>
-          <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
-          | <a class="logoutLink" href="#">log out</a>
-          <%# bullshittery to logout from google without getting stuck on their page %>
-          <iframe id="logoutIFrame"></iframe>
-        <% else %>
-          <a class="loginLink" href="/login">log in</a>
-        <% end %>
-      </div>
-  </header>
+        <div id="signInBox">
+          <% if current_user %>
+            <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
+            | <a class="logoutLink" href="#">log out</a>
+            <%# bullshittery to logout from google without getting stuck on their page %>
+            <iframe id="logoutIFrame"></iframe>
+          <% else %>
+            <a class="loginLink" href="/login">log in</a>
+          <% end %>
+        </div>
+    </header>
 
-  <div id="body">
-    <%= yield %>
+    <div id="body">
+      <%= yield %>
+    </div>
+    <div id="overlay"></div>
   </div>
-	<div id="overlay"></div>
 </body>
 </html>

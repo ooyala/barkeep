@@ -20,7 +20,6 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
     $("#savedSearches .savedSearch input[name='show_unapproved_commits']").live "click",
         (e) => @toggleUnapprovedCommits(e)
-
     @selectFirstDiff()
 
   onSearchSaved: (responseHtml) ->
