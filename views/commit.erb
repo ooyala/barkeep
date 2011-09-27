@@ -39,7 +39,7 @@
     <br/>
   <% end %>
   <div class="comments">
-    <% commit.commit_comments.each do |comment| %>
+    <% commit.comments.each do |comment| %>
       <%= erb :_comment, :locals => { :comment => comment } %>
     <% end %>
   </div>
