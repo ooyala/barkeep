@@ -195,7 +195,7 @@ class GitHelper
             highlighted = before_highlighted[orig_line-1]
         end
         next unless tag
-        chunk.tagged_lines << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
+        chunk.tagged_lines << LineDiff.new(tag, highlighted || "", tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line, true)
       end
     end
