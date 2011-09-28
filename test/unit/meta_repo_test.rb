@@ -90,8 +90,6 @@ class MetaRepoTest < Scope::TestCase
       # NOTE(philc): This exposes a bug where we were improperly parsing the output of git rev-list.
       # git rev-list would return us a commit sha which matched our search criteria, but it was different
       # than the commit ID we were searching for. We needed to compare the two.
-
-
       assert_equal false, @@repo.search_options_match_commit?(@repo_name, @second_commit,
           { :paths => ["units.txt"] })
     end
@@ -171,5 +169,4 @@ class MetaRepoTest < Scope::TestCase
       end
     end
   end
-
 end

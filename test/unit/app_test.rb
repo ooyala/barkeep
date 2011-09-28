@@ -16,7 +16,7 @@ class AppTest < Scope::TestCase
     setup do
       @comment = Comment.new(:text => "howdy ho", :created_at => Time.now)
       stub(@comment).user { @user }
-      @commit = stub_commit(@user)
+      @commit = stub_commit("commit_id", @user)
       MetaRepo.configure(Logger.new(STDERR), [])
       @meta_repo = MetaRepo.new
       stub(MetaRepo).instance { @meta_repo }

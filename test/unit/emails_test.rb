@@ -20,7 +20,7 @@ class EmailsTest < Scope::TestCase
   context "email body" do
     setup do
       @user = User.new(:name => "jimbo")
-      @commit = stub_commit(@user)
+      @commit = stub_commit("commit_id", @user)
       stub(GitHelper).get_tagged_commit_diffs { [] }
     end
 
