@@ -2,6 +2,8 @@ class AlbinoFiletype
   EXTENSION_TO_FILETYPE = {
     ".rb" => :ruby,
     "Rakefile" => :ruby,
+    "Capfile" => :ruby,
+    "Gemfile" => :ruby,
     ".erb" => :rhtml,
     ".xml" => :xml,
     ".js" => :javascript,
@@ -14,7 +16,9 @@ class AlbinoFiletype
     ".h" => :c,
     ".as" => :actionscript,
     ".scala" => :scala,
-    ".sbt" => :scala
+    ".sbt" => :scala,
+    ".java" => :java,
+    ".jsp" => :jsp
   }
   def self.detect_filetype(filename)
     # if path, separate file from path
