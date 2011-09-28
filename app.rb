@@ -69,6 +69,7 @@ class Barkeep < Sinatra::Base
     set :dump_errors, false
 
     GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
+
     error do
       # Show a more developer-friendly error page and stack traces.
       content_type "text/plain"
@@ -406,7 +407,7 @@ class Barkeep < Sinatra::Base
   def cleanup_backtrace(backtrace_lines)
     # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like
     # /opt/local/lib/ruby/gems/1.8/gems/sinatra-1.2.0/lib/sinatra/base.rb:1125:in `call'
-    stop_at = backtrace_lines.index { |line| line.include?("sinatra") }
+    stop_at = backtrace_lines.index { |line| line.include?("sinatra") } || -1
     backtrace_lines[0...stop_at]
   end
 
