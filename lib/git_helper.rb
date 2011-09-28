@@ -115,7 +115,7 @@ class GitHelper
   # Parse unified diff and return an array of LineDiff objects, which have all the lines in the original file
   # as well as the changed (diff) lines.
   def self.tag_file(file_before, file_after, diff)
-    before_lines, after_lines = [file_before, file_after].map { |file| file ? file.split("\n") : [] }
+    before_lines, after_lines = [file_before, file_after].map { |file| file ? file.split("\n",-1) : [] }
     tagged_lines = []
     chunk_breaks = []
     orig_line, diff_line = 0, 0
@@ -195,7 +195,7 @@ class GitHelper
             highlighted = before_highlighted[orig_line-1]
         end
         next unless tag
-        chunk.tagged_lines << LineDiff.new(tag, highlighted || "", tag == :added ? nil : orig_line,
+        chunk.tagged_lines << LineDiff.new(tag, highlighted, tag == :added ? nil : orig_line,
             tag == :removed ? nil : diff_line, true)
       end
     end
