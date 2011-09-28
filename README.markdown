@@ -31,12 +31,12 @@ library. Otherwise you will get segfaults when sending emails over SSL:
 Running Barkeep Locally
 =======================
 
-Make sure you're up to date on Ruby gems ("bundle install") and on migrations
-("ruby run_migrations.rb").  After that, follow these steps:
+Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
+After that, follow these steps:
 
-    $ redis-server  # run Redis
+    $ redis-server # run Redis
     $ bin/rerun.sh # run the server
-    $ navigate to localhost:4567/commits
+    # navigate to localhost:4567/commits
 
 Viewing Repositories
 ====================
@@ -46,8 +46,10 @@ Once Barkeep is set up for development, look in `config/environment.rb`. By defa
 
 Create the directory and use normal `git clone` to add repositories. Now Barkeep can see them!
 
-Be careful about pointing at all of your local repositories.  It can take time to pull in all the
-commits, and you may get a very large database of commit records!
+You probably shouldn't point Barkeep at your own checkouts, because it will take some time to import lots of
+commits and your dev database will be huge. Additionally, although Barkeep should never make any changes
+(branch changes or new commits), it *will* fetch a lot in your repositories which may be confusing (you'll be
+behind on tracking branches a lot). Instead, clone a few small repositories into the barkeep repos directory.
 
 Deployment
 ==========
