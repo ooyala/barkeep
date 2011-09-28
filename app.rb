@@ -107,12 +107,6 @@ class Barkeep < Sinatra::Base
     def root_url
       request.url.match(/(^.*\/{2}[^\/]*)/)[1]
     end
-
-    def replace_shas_with_links(text)
-      # We assume the sha is linking to another commit in this repository.
-      repo_name = /\/commits\/([^\/]+)\//.match(request.url)[1] rescue ""
-      text.gsub(/([a-zA-Z0-9]{40})/) { |sha| "<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>" }
-    end
   end
 
   before do
@@ -190,7 +184,7 @@ class Barkeep < Sinatra::Base
     comment = validate_comment(params[:comment_id])
     comment.text = params[:comment_text]
     comment.save
-    return replace_shas_with_links(RedcarpetManager.redcarpet_pygments.render(params[:comment_text]))
+    comment.format
   end
 
   post "/delete_comment" do
@@ -451,8 +445,8 @@ class Barkeep < Sinatra::Base
 
   def validate_comment(comment_id)
     comment = Comment[comment_id]
-    halt(404, "This comment no longer exists.") unless comment
-    halt(403, "Just what do you think you're doing?") unless comment.user.id == current_user.id
-    return comment
+    halt 404, "This comment no longer exists." unless comment
+    halt 403, "Comment not originated from this user." unless comment.user.id == current_user.id
+    comment
   end
 end

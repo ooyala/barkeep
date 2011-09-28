@@ -10,6 +10,7 @@ window.Commit =
     $(".reply").live "click", (e) => @onDiffLineDblClickOrReply e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
+    $(".commentEditForm").live "submit", (e) => @onCommentEditSubmit e
     $("#approveButton").live "click", (e) => @onApproveClicked e
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
@@ -127,8 +128,7 @@ window.Commit =
   #Logic to add comments
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
-    if $(e.target).hasClass("delete") then return
-    if $(e.target).hasClass("edit") then return
+    if $(e.target).is(".delete, .edit, .commentText, .commentSubmit") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
     if $(e.target).hasClass("reply")
       lineNumber = $(e.currentTarget).parents(".diffLine").attr("diff-line-number")
@@ -142,44 +142,45 @@ window.Commit =
     repoName = codeLine.parents("#commit").attr("repo")
     Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
-  # Logic to edit comments
   onCommentEdit: (e) ->
-    if $(e.target).parents(".diffLine").find(".commentEdit").size() > 0 then return
+    if $(e.target).parents(".file").size() > 0
+      lineNumber = $(e.target).parents(".diffLine").attr("diff-line-number")
+      codeLine = $(e.target).parents(".file").find(".diffLine[diff-line-number='#{ lineNumber }'] .code")
+    comment = if codeLine then codeLine.find(".comment") else $(e.target).parents(".comment")
+    if comment.find(".commentEditForm").size() > 0 then return
 
-    commentRaw = $(e.target).parents(".comment").data("commentRaw")
-    codeLine = $(e.target).parents(".code")
+    commentEdit = $(CommentForm.create(true, true))
+    commentEdit.attr("form-id", Commit.generateFormId())
+    commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
+    commentEdit.find(".commentCancel").click(Commit.onCommentEditCancel)
+    comment.append(commentEdit).find(".commentBody").hide()
+    comment.find(".commentText").focus()
 
-    commentEdit = $("<div class='commentEdit'>").html("" +
-      "<textarea class='commentText' name='text'>#{ commentRaw }</textarea>" +
-      "<div class='commentControls'>" +
-        "<input class='commentSubmit' type='button' value='Save edit' />" +
-        "<input class='commentCancel' type='button' value='Cancel' />" +
-      "</div>")
+  onCommentEditCancel: (e) ->
+    if $(e.target).parents(".file").size() > 0
+      formId = $(e.target).parents(".commentEditForm").attr("form-id")
+      codeLine = $(e.target).parents(".file").find(".commentEditForm[form-id='#{ formId }']")
+    comment = if codeLine then codeLine.parents(".comment") else $(e.target).parents(".comment")
+    comment.find(".commentEditForm").remove()
+    comment.find(".commentBody").show()
 
-    commentEdit.find(".commentText").dblclick (e) -> e.stopPropagation()
-    commentEdit.find(".commentCancel").click ->
-      codeLine.find(".commentEdit").remove()
-      codeLine.find(".commentBody").show()
-    commentEdit.find(".commentSubmit").click ->
-      commentId = commentEdit.parents(".comment").attr("commentId")
-      commentText = commentEdit.find(".commentText").val()
-      $.ajax
-        type: "post",
-        url: "/edit_comment",
-        data: {
-          comment_id: commentId
-          comment_text: commentText
-        },
-        success: (html) ->
-          commentEdit.parents(".comment").data("commentRaw", commentText)
-          commentEdit.siblings(".commentBody").html(html)
-          commentEdit.find(".commentCancel").click()
-        error: (jqXHR) ->
-          alert jqXHR.responseText
-
-    codeLine.find(".commentBody").hide()
-    codeLine.find(".comment").append(commentEdit)
-    commentEdit.find(".commentText").focus()
+  onCommentEditSubmit: (e) ->
+    e.preventDefault()
+    target = $(e.currentTarget)
+    commentText = target.find(".commentText").val()
+    if commentText == "" then return
+    commentId = target.parents(".comment").attr("commentId")
+    $.ajax
+      type: "post",
+      url: "/edit_comment",
+      data: {
+        comment_id: commentId
+        comment_text: commentText
+      },
+      success: (html) ->
+        target.parents(".comment").data("commentRaw", commentText)
+        target.siblings(".commentBody").html(html)
+        target.find(".commentCancel").click()
 
   createCommentForm: (codeLine, repoName, sha, filename, lineNumber) ->
     $.ajax({
@@ -195,7 +196,7 @@ window.Commit =
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
         #add a random id so matching comments on both sides of side-by-side can be shown
-        commentForm.attr("form-id", Math.floor(Math.random()*10000) )
+        commentForm.attr("form-id", Commit.generateFormId())
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
         commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
@@ -370,6 +371,9 @@ window.Commit =
     else
       leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
+
+  generateFormId: ->
+    return Math.floor(Math.random() * 10000)
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.

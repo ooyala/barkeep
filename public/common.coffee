@@ -29,6 +29,30 @@ window.Constants =
   CONTEXT_BUFFER_PIXELS  : 100
   SCROLL_DISTANCE_PIXELS : 60 # Copied this setting from vimium
 
+window.CommentForm =
+  # Generates comment form html. This handles adding and editing comments
+  create: (inline, edit, hiddenFields) ->
+    formInfo =
+      className: if edit then "commentEditForm" else "commentForm"
+      action: if edit then "/comment" else "/edit_comment"
+      submitValue: if edit then "Save Edit" else "Post Comment"
+      headerAndHidden: if edit then "" else "
+       <div class='heading'><span class='addAComment'>Add a comment</span></div>
+       <input type='hidden' name='repo_name' value='#{ hiddenFields.repoName }' />
+       <input type='hidden' name='sha' value='#{ hiddenFields.sha }' />
+       <input type='hidden' name='filename' value='#{ hiddenFields.filename }' />
+       <input type='hidden' name='line_number' value='#{ hiddenFields.lineNumber }' />"
+
+    return "
+     <form class='#{ formInfo.className }' action='#{ formInfo.action }' type='POST'>
+     #{ formInfo.headerAndHidden }
+     <textarea class='commentText' name='text'></textarea>
+     <div class='commentControls'>
+     <input class='commentSubmit' type='submit' value='#{ formInfo.submitValue }' />
+     #{ if inline then "<input class='commentCancel' type='button' value='Cancel' />" }
+     </div>
+     </form>"
+
 window.ShortcutOverlay =
   init: ->
     $.ajax
