@@ -159,12 +159,16 @@ class GitHelper
       if match
         chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, match[3].to_i - 1, match[4].to_i)
         chunks << chunk
+        orig_line = chunk.original_line_start
+        diff_line = chunk.new_line_start
         next
       end
       match_new_file = /^@@ \-(\d+) \+(\d+),(\d+) @@$/.match(line)
       if match_new_file
         chunk = PatchChunk.new(nil, 0, match_new_file[2].to_i - 1, match_new_file[3].to_i)
         chunks << chunk
+        orig_line = chunk.original_line_start
+        diff_line = chunk.new_line_start
         next
       end
       match = /^@@ \-(\d+),(\d+) \+(\d+) @@$/.match(line)
@@ -175,6 +179,8 @@ class GitHelper
           chunk = PatchChunk.new(nil, 0, match[3].to_i - 1, 1)
         end
         chunks << chunk
+        orig_line = chunk.original_line_start
+        diff_line = chunk.new_line_start
         next
       end
       if chunk
