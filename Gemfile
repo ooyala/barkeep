@@ -18,7 +18,7 @@ gem "thin"
 gem "pygments.rb"
 gem "redis"
 gem "ruby-openid"
-gem "redcarpet", :git => "https://github.com/tanoku/redcarpet.git"
+gem "redcarpet", "= 2.0.0b3"
 gem "coffee-script"
 gem "methodchain"
 
