@@ -143,44 +143,38 @@ window.Commit =
     Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
   onCommentEdit: (e) ->
-    if $(e.target).parents(".file").size() > 0
-      lineNumber = $(e.target).parents(".diffLine").attr("diff-line-number")
-      codeLine = $(e.target).parents(".file").find(".diffLine[diff-line-number='#{ lineNumber }'] .code")
-    comment = if codeLine then codeLine.find(".comment") else $(e.target).parents(".comment")
+    # Use the comment ID instead of generating form ID since left and right tables have the same comments
+    comment = $(".comment[commentId='#{$(e.target).parents(".comment").attr("commentId")}']")
     if comment.find(".commentEditForm").size() > 0 then return
-
     commentEdit = $(CommentForm.create(true, true))
-    commentEdit.attr("form-id", Commit.generateFormId())
     commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
     commentEdit.find(".commentCancel").click(Commit.onCommentEditCancel)
     comment.append(commentEdit).find(".commentBody").hide()
     comment.find(".commentText").focus()
 
   onCommentEditCancel: (e) ->
-    if $(e.target).parents(".file").size() > 0
-      formId = $(e.target).parents(".commentEditForm").attr("form-id")
-      codeLine = $(e.target).parents(".file").find(".commentEditForm[form-id='#{ formId }']")
-    comment = if codeLine then codeLine.parents(".comment") else $(e.target).parents(".comment")
+    comment = $(".comment[commentId='#{$(e.target).parents(".comment").attr("commentId")}']")
     comment.find(".commentEditForm").remove()
     comment.find(".commentBody").show()
 
   onCommentEditSubmit: (e) ->
     e.preventDefault()
     target = $(e.currentTarget)
-    commentText = target.find(".commentText").val()
-    if commentText == "" then return
+    text = target.find(".commentText").val()
+    if text == "" then return
     commentId = target.parents(".comment").attr("commentId")
     $.ajax
       type: "post",
-      url: "/edit_comment",
+      url: e.currentTarget.action,
       data: {
         comment_id: commentId
-        comment_text: commentText
+        text: text
       },
       success: (html) ->
-        target.parents(".comment").data("commentRaw", commentText)
-        target.siblings(".commentBody").html(html)
-        target.find(".commentCancel").click()
+        comment = $(".comment[commentId='#{commentId}']")
+        comment.data("commentRaw", text)
+        comment.find(".commentBody").html(html)
+        comment.find(".commentCancel").click()
 
   createCommentForm: (codeLine, repoName, sha, filename, lineNumber) ->
     $.ajax({
@@ -196,7 +190,7 @@ window.Commit =
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
         #add a random id so matching comments on both sides of side-by-side can be shown
-        commentForm.attr("form-id", Commit.generateFormId())
+        commentForm.attr("form-id", Math.floor(Math.random() * 10000))
         commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
         commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
@@ -371,9 +365,6 @@ window.Commit =
     else
       leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
-
-  generateFormId: ->
-    return Math.floor(Math.random() * 10000)
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.

@@ -167,6 +167,12 @@ class Barkeep < Sinatra::Base
   end
 
   post "/comment" do
+    if params[:comment_id]
+      comment = validate_comment(params[:comment_id])
+      comment.text = params[:text]
+      comment.save
+      return comment.format
+    end
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     return 400 unless commit
     file = nil
@@ -178,13 +184,6 @@ class Barkeep < Sinatra::Base
     comment = Comment.create(:commit => commit, :commit_file => file, :line_number => line_number,
                              :user => current_user, :text => params[:text])
     erb :_comment, :layout => false, :locals => { :comment => comment }
-  end
-
-  post "/edit_comment" do
-    comment = validate_comment(params[:comment_id])
-    comment.text = params[:comment_text]
-    comment.save
-    comment.format
   end
 
   post "/delete_comment" do
