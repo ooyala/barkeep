@@ -21,7 +21,7 @@ class EmailsTest < Scope::TestCase
     setup do
       @user = User.new(:name => "jimbo")
       @commit = stub_commit("commit_id", @user)
-      stub(GitHelper).get_tagged_commit_diffs { [] }
+      stub(GitDiffUtils).get_tagged_commit_diffs { [] }
     end
 
     context "general comments" do
@@ -52,7 +52,9 @@ class EmailsTest < Scope::TestCase
       end
 
       should "trim out whitespace that's common to all lines of the diff" do
-        stub(GitHelper).get_tagged_commit_diffs { diffs_with_lines(@commit_file, ["  Line 1", "    Line 2"]) }
+        stub(GitDiffUtils).get_tagged_commit_diffs do
+          diffs_with_lines(@commit_file, ["  Line 1", "    Line 2"])
+        end
         email = Nokogiri::HTML(Emails.comment_email_body(@commit, [@line_comment]))
         diff_lines = email.css("pre").text.split("\n")[0..1]
         # Both lines had two leading spaces in common. The email should have factored those out.

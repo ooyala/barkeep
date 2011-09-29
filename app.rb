@@ -19,6 +19,7 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "config/environment"
 require "lib/ruby_extensions"
 require "lib/git_helper"
+require "lib/git_diff_utils"
 require "lib/keyboard_shortcuts"
 require "lib/meta_repo"
 require "lib/pretty_date"
@@ -68,7 +69,7 @@ class Barkeep < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
+    GitDiffUtils.setup(RedisManager.get_redis_instance)
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -87,13 +88,13 @@ class Barkeep < Sinatra::Base
   configure :test do
     set :show_exceptions, false
     set :dump_errors, false
-    GitHelper.initialize_git_helper(nil)
+    GitDiffUtils.setup(nil)
   end
 
   configure :production do
     enable :logging
     MetaRepo.logger.level = Logger::INFO
-    GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
+    GitDiffUtils.setup(RedisManager.get_redis_instance)
 
     Barkeep.start_background_batch_comment_emails_job
     Barkeep.start_background_deliver_comment_emails_job
@@ -153,7 +154,7 @@ class Barkeep < Sinatra::Base
     repo_name = params[:repo_name]
     commit = MetaRepo.instance.db_commit(repo_name, params[:sha])
     halt 404, "No such commit." unless commit
-    tagged_diff = GitHelper::get_tagged_commit_diffs(repo_name, commit.grit_commit,
+    tagged_diff = GitDiffUtils::get_tagged_commit_diffs(repo_name, commit.grit_commit,
         :use_syntax_highlighting => true)
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end

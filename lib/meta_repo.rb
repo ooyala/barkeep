@@ -172,7 +172,7 @@ class MetaRepo
           new_user.name = commit.author.name
         end
 
-        GitHelper::get_tagged_commit_diffs(repo_name, commit, :cache_prime => true)
+        GitDiffUtils::get_tagged_commit_diffs(repo_name, commit, :cache_prime => true)
 
         {
           :git_repo_id => repo_id,
@@ -440,6 +440,6 @@ end
 if __FILE__ == $0
   require "lib/script_environment"
   puts "Running commit importer as standalone script."
-  GitHelper.initialize_git_helper(RedisManager.get_redis_instance)
+  GitDiffUtils.setup(RedisManager.get_redis_instance)
   MetaRepo.instance.import_new_commits!
 end

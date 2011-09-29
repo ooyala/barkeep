@@ -1,6 +1,7 @@
 require "pony"
 require "tilt"
 require "lib/string_helper"
+require "lib/git_diff_utils"
 
 # Methods for sending various emails, like comment notifications and new commit notifications.
 class Emails
@@ -110,7 +111,7 @@ class Emails
   def self.comment_email_body(commit, comments)
     general_comments, file_comments = comments.partition(&:general_comment?)
 
-    tagged_diffs = GitHelper.get_tagged_commit_diffs(commit.git_repo.name, commit.grit_commit)
+    tagged_diffs = GitDiffUtils.get_tagged_commit_diffs(commit.git_repo.name, commit.grit_commit)
 
     diffs_by_file = tagged_diffs.group_by { |tagged_diff| tagged_diff[:file_name_after] }
     diffs_by_file.each { |filename, diffs| diffs_by_file[filename] = diffs.first }
