@@ -206,8 +206,8 @@ class GitHelper
     chunks
   end
 
-  # Process lines in each chunk to work out which lines were replaced, rather than newly added or completely removed.
-  # Needed for lining things up in side-by-side view
+  # Process lines in each chunk to work out which lines were replaced, rather than newly added or completely
+  # removed. Needed for lining things up in side-by-side view
   # NOTE(bochen): this can be done in the same pass as the lines.each in tag_diff, but the performance gain
   #               is not worth making that code any more complex.
   def self.process_chunk_for_replaced(chunk)
@@ -227,7 +227,8 @@ class GitHelper
             block_length = i - block_start
             num_lines_replaced = (block_length - block_line_delta.abs) / 2
             # mark equal number of added and removed as replaced lines.
-            # indexing into the same array that is been interated over should be ok if there is no change in item order
+            # indexing into the same array that is been interated over should be ok if there is no change in
+            # item order
             block = chunk.tagged_lines[block_start...i]
             block.select { |l| l.tag == :added }.take(num_lines_replaced).each { |l| l.replace = true }
             block.select { |l| l.tag == :removed }.take(num_lines_replaced).each { |l| l.replace = true }
@@ -248,7 +249,8 @@ class LineDiff
   }
 
   attr_accessor :tag, :data, :line_num_before, :line_num_after, :chunk, :chunk_start, :index, :replace
-  def initialize(tag, data, line_num_before, line_num_after, chunk = false, chunk_start = false, replace = false)
+  def initialize(tag, data, line_num_before, line_num_after, chunk = false, chunk_start = false,
+                 replace = false)
     @tag = tag
     @data = data
     @line_num_before = line_num_before
