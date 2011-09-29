@@ -4,6 +4,9 @@ gem "rack"
 gem "sinatra"
 gem "rerun"
 
+# Resque is used for managing background jobs.
+gem "resque"
+
 # For invoking the Less CSS compiler, written in javascript, from Ruby.
 # This would be slightly nicer than using the lessc binary directly, but it
 # doesn't seem to be compatible with ruby 1.9.
