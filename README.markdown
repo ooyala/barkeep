@@ -72,3 +72,18 @@ Also install:
     pip
     pygments
 
+Authors
+-------
+
+Barkeep was written by the following Ooyala engineers:
+
+* Bo Chen ([bo-chen](https://github.com/bo-chen))
+* Phil Crosby ([philc](https://github.com/philc))
+* Kevin Le ([bkad](https://github.com/bkad))
+* Daniel MacDougall ([dmacdougall](https://github.com/dmacdougall))
+* Caleb Spare ([cespare](https://github.com/cespare))
+
+and with contributions from:
+
+* [Noah Gibbs](mailto:noah@ooyala.com)
+* Brian Zhou ([zdyn](https://github.com/zdyn))
