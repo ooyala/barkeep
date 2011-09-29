@@ -5,6 +5,29 @@ This file summarizes changes between tagged Barkeep versions. It lists tags in r
 Each tag is followed by a description of the changes it represents. This is not in a typical Changelog format,
 but rather general markdown text describing important notes about the versions and progress of Barkeep.
 
+0.1.1
+-----
+
+### Minor features and bugfixes
+
+* [Fixed a confusing saved search title bug where the branch name was omitted](https://github.com/ooyala/barkeep/issues/76)
+* [Commenter names are bold in comment emails to make them easier to spot](https://github.com/ooyala/barkeep/commit/b90d5130ac0cc83e1bbfd3314ebe433a28367d49)
+* Better instructions for running Barkeep locally
+* [Exclude commits from the saved search view that are not yet in the DB](https://github.com/ooyala/barkeep/issues/73)
+* [Fixed the seam on the background image](https://github.com/ooyala/barkeep/issues/45)
+* [Java is now syntax-highlighted](https://github.com/ooyala/barkeep/commit/a32656a99b465108a0c43288654e4aa2e2013e8b)
+* [Trailing newlines are no longer omitted from the diff view](https://github.com/ooyala/barkeep/issues/64)
+* Nice tooltips for certain items on the page
+* [Stats page style overhauled to be more consistent with saved search view](https://github.com/ooyala/barkeep/commit/1d3a23da9af5d4f1366bfb5042d77501ff1b51fe)
+* [There is a checkmark indicator in the saved search view that shows which commits have been approved](https://github.com/ooyala/barkeep/issues/67)
+* [The diff parser now correctly handles single line changes](https://github.com/ooyala/barkeep/issues/64)
+* [Line numbers are now unselectable](https://github.com/ooyala/barkeep/commit/3e81c5634fada33b51e4289b0a12ba4255c4ef4f)
+* [Switched to our own custom syntax theme, and dropped in multiple themes to allow for user-selected swapping in the future](https://github.com/ooyala/barkeep/commit/f683134ca6674efe9bc33e1e7488393c596520dd)
+* [Fixed bug where added and deleted commit comments were not reflected in the UI](https://github.com/ooyala/barkeep/issues/56)
+* Fixes for Google openid failures
+* Comment emails now explain why the recipients are receiving mail
+* Many page and code style tweaks and fixes
+
 0.1.0
 -----
 
