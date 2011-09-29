@@ -108,12 +108,6 @@ class Barkeep < Sinatra::Base
     def root_url
       request.url.match(/(^.*\/{2}[^\/]*)/)[1]
     end
-
-    def replace_shas_with_links(text)
-      # We assume the sha is linking to another commit in this repository.
-      repo_name = /\/commits\/([^\/]+)\//.match(request.url)[1] rescue ""
-      text.gsub(/([a-zA-Z0-9]{40})/) { |sha| "<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>" }
-    end
   end
 
   before do
@@ -174,6 +168,12 @@ class Barkeep < Sinatra::Base
   end
 
   post "/comment" do
+    if params[:comment_id]
+      comment = validate_comment(params[:comment_id])
+      comment.text = params[:text]
+      comment.save
+      return comment.format
+    end
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     return 400 unless commit
     file = nil
@@ -188,9 +188,7 @@ class Barkeep < Sinatra::Base
   end
 
   post "/delete_comment" do
-    comment = Comment[params[:comment_id]]
-    return 400 unless comment
-    return 403 unless comment.user.id == current_user.id
+    comment = validate_comment(params[:comment_id])
     comment.destroy
     nil
   end
@@ -443,5 +441,12 @@ class Barkeep < Sinatra::Base
       oidreq.add_extension(axreq)
       oidreq.redirect_url(root_url,root_url + "/login/complete")
     end
+  end
+
+  def validate_comment(comment_id)
+    comment = Comment[comment_id]
+    halt 404, "This comment no longer exists." unless comment
+    halt 403, "Comment not originated from this user." unless comment.user.id == current_user.id
+    comment
   end
 end

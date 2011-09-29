@@ -1,5 +1,5 @@
 <% if comment %>
-  <div class="comment" commentId="<%=comment.id%>">
+  <div class="comment" commentId="<%=comment.id%>" data-comment-raw="<%= CGI::escapeHTML(comment.text) %>">
     <div class="heading">
       <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
       <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
@@ -10,11 +10,11 @@
           <button class="reply standard">Reply</button>
         <% end %>
         <% if current_user && current_user.id == comment.user_id %>
+          <button class="edit standard">Edit</button>
           <button class="delete standard">Delete</button>
         <% end %>
       </div>
     </div>
-    <div class="commentBody"> <%= replace_shas_with_links(
-      RedcarpetManager.redcarpet_pygments.render(comment.text)) %> </div>
+    <div class="commentBody"> <%= comment.format %> </div>
   </div>
 <% end %>
