@@ -22,6 +22,8 @@ class MetaRepo
     end
   end
 
+  attr_reader :repos
+
   def initialize
     Thread.abort_on_exception = true
     @@logger.info "Initializing #{@@repo_paths.size} git repositories."
