@@ -789,15 +789,20 @@ table.commitsList, table.authorList {
   .file {
     .embossedPanel;
     // The styles for inline comments are slightly different than general comments -- they have no left border.
-    .comment, .commentForm {
+    .comment, .commentForm, .commentEditForm {
       width: 849px;
       border-left: 0;
       margin: 8px 0px;
       textarea { width: 847px; }
     }
+
+    // The comment edit form, unlike general comment form, lives inside a comment div, so no margins needed
+    .commentEditForm {
+      margin: 0;
+    }
   }
 
-  .comment, .commentForm {
+  .comment, .commentForm, .commentEditForm {
     .raisedPanel;
     background-color: @almostWhite;
     margin: 8px auto;
@@ -841,6 +846,8 @@ table.commitsList, table.authorList {
         top: 4px;
         right: 4px;
         button { height: 30px; }
+        // Sets reply button further left from edit and delete buttons
+        .reply { margin-right: 8px; }
       }
     }
 
@@ -886,6 +893,14 @@ table.commitsList, table.authorList {
         margin-right: 10px;
       }
     }
+  }
+
+  // Comment edit form is not a panel, so doesn't need panel CSS
+  .commentEditForm {
+    margin: 0;
+    border-left: 0;
+    border-bottom: 0;
+    box-shadow: none;
   }
 
   .fileSpecial {
