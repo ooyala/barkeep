@@ -353,7 +353,14 @@ class MetaRepo
       current_page_attempt += 1
     end while (has_more && filtered_results.size < limit && current_page_attempt < max_git_pages_to_search)
 
-    filtered_results.take(limit)
+    if retain == :last
+      # We want the end of this list of commits in the case where we're paging to the left (backwards) through
+      # commits.
+      start = [filtered_results.size - limit, 0].max
+      filtered_results[start, limit]
+    else
+      filtered_results.take(limit)
+    end
   end
 
   # Number of commits preceding the token. Right now this is actually only a close estimate (it doesn't deal
