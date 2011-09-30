@@ -10,7 +10,7 @@ class AlbinoFiletype
     ".coffee" => :coffeescript,
     ".sh" => :bash,
     ".css" => :css,
-    ".less" => :css,
+    ".less" => :scss,
     ".py" => :python,
     ".c" => :c,
     ".h" => :c,
