@@ -3,6 +3,8 @@
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/script_environment"
+require "resque"
+require "resque_jobs/db_commit_ingest"
 
 class FetchCommits
   # Returns the names of the remotes which were modified.
@@ -14,22 +16,21 @@ class FetchCommits
 
     # Note: invoking grit_repo.remotes refreshes the remotes, so "remote.commit" will be fresh.
     modified_remotes = grit_repo.remotes.select { |remote| head_of_remote[remote.name] != remote.commit.sha }
-    modified_remotes.map(&:name)
+    modified_remotes.map(&:name).reject { |name| name == "origin/HEAD" }
   end
 
   def fetch_commits(grit_repos)
     grit_repos.each do |repo|
       modified_remotes = fetch_commits_for_repo(repo)
-      unless modified_remotes.empty?
-        # TODO(philc): Queue up a job.
-      end
+      puts "Fetched new commits in repo #{repo.name}" unless modified_remotes.empty?
+      modified_remotes.each { |remote| Resque.enqueue(DbCommitIngest, repo.name, remote) }
     end
   end
 
   def run
     logger = Logging.logger = Logging.create_logger("fetch_commits.log")
     MetaRepo.logger = logger
-    fetch_commits([MetaRepo.instance.repos[2]])
+    fetch_commits(MetaRepo.instance.repos)
   end
 end
 
