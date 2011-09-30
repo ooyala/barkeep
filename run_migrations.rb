@@ -14,7 +14,7 @@ if ARGV.include?("rollback")
   migrate_to_version = versions[-2]
 end
 
-command = "sequel -m migrations/"
+command = "bundle exec sequel -m migrations/"
 command += " -M #{migrate_to_version}" if migrate_to_version
 
 host_string = case DB_TYPE
