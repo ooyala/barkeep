@@ -2,6 +2,11 @@ require "lib/git_helper"
 
 # Performs diffs and syntax highlighting for a diff blob.
 class GitDiffUtils
+  @@syntax_highlighter = nil
+  def self.setup(redis)
+    @@syntax_highlighter ||= SyntaxHighlighter.new(redis)
+  end
+
   # Returns an array of hashes representing the tagged and colorized lines of each file in the diff.
   # Where :special_case indicates if the file is an exception of some kind (binary file, corrupt/unparseable
   # file, etc), otherwise :lines and :breaks are the output of tag_file.

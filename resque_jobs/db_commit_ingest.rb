@@ -38,7 +38,7 @@ class DbCommitIngest
         end
 
         # TODO(philc): Queue up a job to cache tagged diffs for this file.
-        Resque.enqueue(GenerateTaggedCommitDiffs, repo_name, commit.sha)
+        Resque.enqueue(GenerateTaggedDiffs, repo_name, commit.sha)
 
         {
           :git_repo_id => db_repo.id,

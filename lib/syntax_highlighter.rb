@@ -11,7 +11,7 @@ class SyntaxHighlighter
   def colorize_blob(repo_name, file_type, blob)
     return "" if blob.nil?
     if @redis
-      cache_key = self.key(repo_name, blob)
+      cache_key = SyntaxHighlighter.redis_cache_key(repo_name, blob)
       cached = @redis.get(cache_key)
       return cached if cached
     end
@@ -32,7 +32,7 @@ class SyntaxHighlighter
         :stripnl => false, :stripall => false })
   end
 
-  def key(repo_name, blob)
+  def self.redis_cache_key(repo_name, blob)
     return "#{repo_name}::#{blob.id}"
   end
 end
