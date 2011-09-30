@@ -1,4 +1,8 @@
 require "rake/testtask"
+require "resque/tasks"
+
+$LOAD_PATH.push("./") unless $LOAD_PATH.include?("./")
+require "resque_jobs/db_commit_ingest"
 
 task :test => ["test:units"]
 
