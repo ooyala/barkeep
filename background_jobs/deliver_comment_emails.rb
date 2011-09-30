@@ -68,7 +68,7 @@ end
 
 if $0 == __FILE__
   logger = Logging.create_logger("deliver_comment_emails.log")
-  MetaRepo.configure(logger, REPO_PATHS)
+  MetaRepo.configure(logger, REPOS_ROOT)
   MetaRepo.instance
   DeliverCommentEmails.new(logger).run
 end

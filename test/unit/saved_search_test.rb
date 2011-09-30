@@ -6,10 +6,6 @@ require "nokogiri"
 class SavedSearchTest < Scope::TestCase
   include StubHelper
 
-  setup_once do
-    MetaRepo.configure(Logger.new("/dev/null"), [])
-  end
-
   context "titles" do
     should "generate a title for all commits" do
       assert_equal "All commits", SavedSearch.new.title

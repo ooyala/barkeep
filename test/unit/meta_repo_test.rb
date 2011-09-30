@@ -23,13 +23,13 @@ class MetaRepoTest < Scope::TestCase
     Commit.first rescue nil
 
     # Initialize against sample repo.
-    @@test_git_repo_path = File.join(File.dirname(__FILE__), "../fixtures/test_git_repo")
-    MetaRepo.configure(Logger.new("/dev/null"), [@@test_git_repo_path])
-    @@repo = MetaRepo.new
+    git_repo_fixtures = File.join(File.dirname(__FILE__), "../fixtures")
+    MetaRepo.configure(Logger.new("/dev/null"), git_repo_fixtures)
+    @@repo = MetaRepo.instance
 
     # TODO(philc): It would be nice to simply use the GritRepo MetaRepo has already created, but for now
     # that's a private instance variable.
-    @@grit_repo = Grit::Repo.new(@@test_git_repo_path)
+    @@grit_repo = Grit::Repo.new(git_repo_fixtures + "/test_git_repo")
   end
 
   context "grit_commit" do

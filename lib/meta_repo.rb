@@ -14,30 +14,30 @@ require "lib/git_helper"
 class MetaRepo
   # This is the singleton instance that the app and all models use.
   class << self
+    attr_reader :instance
     def logger=(logger); @@logger = logger; end
-    def instance; @instance ||= MetaRepo.new; end
-    def configure(logger, repo_paths)
+    def configure(logger, repos_root)
       @@logger = logger
-      @@repo_paths = repo_paths
+      @instance = MetaRepo.new(repos_root)
     end
   end
 
   attr_reader :repos
 
-  def initialize
-    Thread.abort_on_exception = true
-    @@logger.info "Initializing #{@@repo_paths.size} git repositories."
-    # Let's keep this mapping in memory at all times -- we'll be hitting it all the time.
-    @repo_name_to_id = {}
+  def initialize(repos_root)
     @repos = []
-    # A convenient lookup table for Grit::Repos keyed by both string name and db id.
+    @repos_root = repos_root
     @repo_names_and_ids_to_repos = {}
-    @@repo_paths.each do |path|
-      # Canonical path
-      path = Pathname.new(path).realpath.to_s
+    @repo_name_to_id = {}
+
+    Thread.abort_on_exception = true
+
+    repo_paths = Dir.glob("#{repos_root}/*/")
+
+    repo_paths.each do |path|
+      path = Pathname.new(path).realpath.to_s # Canonical path
       name = File.basename(path)
       @@logger.info "Initializing repo '#{name}' at #{path}."
-      raise "Error: Already have repo named #{name}" if @repo_name_to_id[name]
       id = GitRepo.find_or_create(:name => name, :path => path).id
       grit_repo = grit_repo_for_name(name)
       @repos << grit_repo
@@ -47,9 +47,10 @@ class MetaRepo
     end
   end
 
-  def self.grit_repo_for_name(repo_name)
-    path = Pathname.new(path).realpath.to_s
-    name = File.basename(path)
+  def get_grit_repo(name_or_id) @repo_names_and_ids_to_repos[name_or_id] end
+
+  def grit_repo_for_name(repo_name)
+    path = Pathname.new(File.join(@repos_root, repo_name)).realpath.to_s
     grit_repo = Grit::Repo.new(path)
     grit_repo.name = repo_name
     grit_repo
@@ -63,7 +64,7 @@ class MetaRepo
   # (because the repo was removed or mistakenly rebased).
   def grit_commit(repo_name_or_id, sha)
     # The grit_repo can be nil if the user has removed the repo from disk.
-    grit_repo = @repo_names_and_ids_to_repos[repo_name_or_id]
+    grit_repo = get_grit_repo(repo_name_or_id)
     return nil unless grit_repo
 
     grit_commit = grit_repo.commit(sha)
@@ -82,7 +83,7 @@ class MetaRepo
   #   - branches: a list of branch names
   def search_options_match_commit?(repo_id_or_name, commit_sha, search_options)
     git_command_options = MetaRepo.git_command_options(search_options)
-    grit_repo = @repo_names_and_ids_to_repos[repo_id_or_name]
+    grit_repo = get_grit_repo(repo_id_or_name)
     grit_commit = grit_repo.commit(commit_sha)
 
     # Building up this rev-list command is a bit tricky. --all is added to the CL args if we're searching
@@ -333,10 +334,7 @@ class MetaRepo
 
   # Returns the repos which have names matching any of the given regular expressions.
   def repos_which_match(repo_names)
-    repos = @repo_name_to_id.map do |name, id|
-      repo_names.include?(name) ? @repo_names_and_ids_to_repos[id] : nil
-    end
-    repos.compact.uniq
+    @repos.select { |repo| repo_names.include?(repo.name) }
   end
 
   # Converts the given search filter options to an arguments array and git CLI options, to be passed to git
