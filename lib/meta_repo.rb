@@ -39,13 +39,20 @@ class MetaRepo
       @@logger.info "Initializing repo '#{name}' at #{path}."
       raise "Error: Already have repo named #{name}" if @repo_name_to_id[name]
       id = GitRepo.find_or_create(:name => name, :path => path).id
-      grit_repo = Grit::Repo.new(path)
-      grit_repo.name = name
+      grit_repo = grit_repo_for_name(name)
       @repos << grit_repo
       @repo_name_to_id[name] = id
       @repo_names_and_ids_to_repos[name] = grit_repo
       @repo_names_and_ids_to_repos[id] = grit_repo
     end
+  end
+
+  def self.grit_repo_for_name(repo_name)
+    path = Pathname.new(path).realpath.to_s
+    name = File.basename(path)
+    grit_repo = Grit::Repo.new(path)
+    grit_repo.name = repo_name
+    grit_repo
   end
 
   def db_commit(repo_name, sha)
