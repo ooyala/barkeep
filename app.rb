@@ -51,11 +51,6 @@ class Barkeep < Sinatra::Base
     IO.popen(command)
   end
 
-  def self.start_background_commit_importer
-    command = "ruby " + File.join(File.dirname(__FILE__),  "background_jobs/commit_importer.rb")
-    IO.popen(command)
-  end
-
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
   # files have changed.
   $compiled_cache = Hash.new { |hash, key| hash[key] = {} }
@@ -82,7 +77,6 @@ class Barkeep < Sinatra::Base
 
     Barkeep.start_background_batch_comment_emails_job
     Barkeep.start_background_deliver_comment_emails_job
-    Barkeep.start_background_commit_importer
   end
 
   configure :test do
@@ -98,7 +92,6 @@ class Barkeep < Sinatra::Base
 
     Barkeep.start_background_batch_comment_emails_job
     Barkeep.start_background_deliver_comment_emails_job
-    Barkeep.start_background_commit_importer
   end
 
   helpers do
