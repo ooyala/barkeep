@@ -18,3 +18,10 @@ namespace :test do
     task.test_files = FileList["test/integration/*"]
   end
 end
+
+namespace :resque do
+  task :run_all_workers do
+    ENV["QUEUE"] = "*"
+    Rake::Task["resque:work"].invoke
+  end
+end
