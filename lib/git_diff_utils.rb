@@ -6,7 +6,9 @@ class GitDiffUtils
   # Where :special_case indicates if the file is an exception of some kind (binary file, corrupt/unparseable
   # file, etc), otherwise :lines and :breaks are the output of tag_file.
   # options:
-  #  use_syntax_highlighting - whether we should use syntax highlighting when generating diffs.
+  #  - use_syntax_highlighting: whether we should use syntax highlighting when generating diffs.
+  #  - warm_the_cache: true if we're just calling this to warm the cache, which is done as part of the commit
+  #    ingestion process. We do less work in this case.
   # returns: [ { :binary, :lines, :breaks}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
@@ -22,7 +24,7 @@ class GitDiffUtils
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data[:special_case] = "This is a binary file."
         else
-          if options[:use_syntax_highlighting] || options[:cache_prime]
+          if options[:use_syntax_highlighting] || options[:warm_the_cache]
             begin
               before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
               after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
@@ -34,9 +36,8 @@ class GitDiffUtils
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
-          unless options[:cache_prime]
-            data.merge! GitHelper.tag_file(before, after, diff)
-          end
+
+          data.merge! GitDiffUtils.tag_file(before, after, diff) unless options[:warm_the_cache]
         end
         data
       end
