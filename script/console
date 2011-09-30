@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require "rubygems"
-
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/script_environment"
 require "lib/git_helper"
