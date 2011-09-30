@@ -20,7 +20,7 @@
         $("body").addClass("gecko");
 
       // Load up tipsy tooltips
-      var default_tipsy_options = { opacity: 0.95, live: true, delayIn: 100, delayOut: 100 };
+      var default_tipsy_options = { opacity: 0.95, live: true };
       $(".north[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "n"}));
       $(".south[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "s"}));
       $(".east[rel=tipsy]").tipsy($.extend({}, default_tipsy_options, {gravity: "e"}));
