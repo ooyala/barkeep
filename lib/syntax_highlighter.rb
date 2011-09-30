@@ -1,4 +1,11 @@
-require "pygments"
+silence_stream(STDERR) do
+  require "pygments"
+  RubyPython.start
+  # This generates an annoying, one-time import error from within the Pygments gem. Force the import now,
+  # while we're silencing this stream.
+  RubyPython.import("pygments")
+end
+
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/logging"
 
