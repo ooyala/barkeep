@@ -99,6 +99,7 @@ PLATFORMS
 DEPENDENCIES
   clockwork
   coffee-script
+  daemons
   fezzik
   grit
   json

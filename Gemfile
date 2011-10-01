@@ -28,6 +28,9 @@ gem "methodchain"
 # Clockwork is a cron implementation in Ruby. We use it for periodically fetching new commits.
 gem "clockwork"
 
+# Used for running some of our scripts as daemons.
+gem "daemons"
+
 # For sending emails.
 gem "pony"
 
