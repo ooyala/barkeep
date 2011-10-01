@@ -72,7 +72,7 @@ class GitHelper
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
     begin
-      commit.show.map do |diff|
+      commit.diffs.map do |diff|
         a_path = diff.a_path
         b_path = diff.b_path
         data = {
@@ -82,8 +82,6 @@ class GitHelper
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data[:special_case] = "This is a binary file."
-        elsif diff.diff.empty?
-          data[:special_case] = "This file is empty."
         else
           if options[:use_syntax_highlighting] || options[:cache_prime]
             begin
