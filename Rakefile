@@ -26,3 +26,13 @@ namespace :resque do
     Rake::Task["resque:work"].invoke
   end
 end
+
+namespace :clockwork_jobs do
+  task :start do
+    puts `script/clockwork_jobs.rb start`
+  end
+
+  task :stop do
+    puts `script/clockwork_jobs.rb stop`
+  end
+end
