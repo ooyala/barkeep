@@ -87,3 +87,8 @@ and with contributions from:
 
 * [Noah Gibbs](mailto:noah@ooyala.com)
 * Brian Zhou ([zdyn](https://github.com/zdyn))
+
+License
+-------
+
+Barkeep is released under [the MIT license](http://www.opensource.org/licenses/mit-license.php).
