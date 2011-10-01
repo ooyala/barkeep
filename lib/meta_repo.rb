@@ -37,7 +37,6 @@ class MetaRepo
     repo_paths.each do |path|
       path = Pathname.new(path).realpath.to_s # Canonical path
       name = File.basename(path)
-      @@logger.info "Initializing repo '#{name}' at #{path}."
       id = GitRepo.find_or_create(:name => name, :path => path).id
       grit_repo = grit_repo_for_name(name)
       @repos << grit_repo
