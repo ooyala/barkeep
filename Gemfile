@@ -25,6 +25,9 @@ gem "redcarpet", "= 2.0.0b3"
 gem "coffee-script"
 gem "methodchain"
 
+# Clockwork is a cron implementation in Ruby. We use it for periodically fetching new commits.
+gem "clockwork"
+
 # For sending emails.
 gem "pony"
 

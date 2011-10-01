@@ -2,6 +2,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     blankslate (2.1.2.4)
+    clockwork (0.2.4)
     coderay (0.9.8)
     coffee-script (2.2.0)
       coffee-script-source
@@ -96,6 +97,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  clockwork
   coffee-script
   fezzik
   grit
