@@ -10,6 +10,8 @@ class Commit < Sequel::Model
   one_to_many :comments
   many_to_one :approved_by_user, :class => User
 
+  add_association_dependencies :comments => :destroy, :commit_files => :delete
+
   def grit_commit
     @grit_commit ||= MetaRepo.instance.grit_commit(git_repo_id, sha)
   end
