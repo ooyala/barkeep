@@ -17,11 +17,6 @@ This is how it works on our Mac OS dev laptops; YMMV:
     $ npm install less
     $ mysqladmin5 -u root create barkeep  # create the 'barkeep' database
     $ ruby run_migrations.rb # db migrations
-    $ redis-server  # run Redis
-    $ bin/rerun.sh # run the server
-
-Then you should be able to navigate to navigate to
-[http://localhost:4567/commits](http://localhost:4567/commits).
 
 If you're running a Mac using Macports with rvm, ensure your ruby is compiled against the macports openssl
 library. Otherwise you will get segfaults when sending emails over SSL:
@@ -30,13 +25,17 @@ library. Otherwise you will get segfaults when sending emails over SSL:
 
 Running Barkeep Locally
 -----------------------
-
 Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
-After that, follow these steps:
+
+    $ bin/rerun.sh # run the server
+    # navigate to localhost:4567
+    
+These are somewhat optional services to run while developing. These background jobs periodically fetch new
+commits, pre-generate commit diffs, and send emails when comments are posted.
 
     $ redis-server # run Redis
-    $ bin/rerun.sh # run the server
-    # navigate to localhost:4567/commits
+    $ rake clockwork_jobs:start # start running periodic cron jobs
+    $ rake resque:run_all_workers # run work which gets added to the Resque queue.
 
 Viewing Repositories
 --------------------
