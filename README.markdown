@@ -34,7 +34,7 @@ These are somewhat optional services to run while developing. These background j
 commits, pre-generate commit diffs, and send emails when comments are posted.
 
     $ redis-server # run Redis
-    $ rake clockwork_jobs:start # start running periodic cron jobs
+    $ rake clockwork:start # start running periodic cron jobs
     $ rake resque:run_all_workers # run work which gets added to the Resque queue.
 
 Viewing Repositories

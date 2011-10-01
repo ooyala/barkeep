@@ -28,7 +28,7 @@ namespace :resque do
   end
 end
 
-namespace :clockwork_jobs do
+namespace :clockwork do
   desc "Start running periodic jobs."
   task :start do
     puts `script/clockwork_jobs.rb start`
