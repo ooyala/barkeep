@@ -1,6 +1,13 @@
 # A more sane ordering of arguments for setTimeout.
 window.timeout = (milliseconds, callback) -> setTimeout callback, milliseconds
 
+# A timeout that doesn't delay if jQuery.fx.off == true
+window.animateTimeout = (milliseconds, callback) ->
+  if jQuery.fx.off
+    callback()
+  else
+    timeout milliseconds, callback
+
 window.Constants =
   KEY_CODES:
     13  : "return"
@@ -138,5 +145,29 @@ window.ScrollWithContext = (selector, scroll="all") ->
   else if windowBottom - selectionBottom < Constants.CONTEXT_BUFFER_PIXELS and
       (scroll == "all" or scroll == "bottom")
     window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
+
+# some utlility functions for reading/writing cookies and string manipulation
+
+window.createCookie = (name, value, expires) ->
+  document.cookie = name + "=" + value + "; expires=" + expires + "; path=/"
+
+window.readCookie = (name) ->
+  nameEq = name + "="
+  for pair in document.cookie.split(';')
+    trimmedPair = pair.ltrim()
+    return trimmedPair.substring(nameEq.length) if trimmedPair.startsWith(nameEq)
+  null
+
+String.prototype.trim = () ->
+  this.replace(/^\s+|\s+$/g,"")
+
+String.prototype.ltrim = () ->
+  this.replace(/^\s+/,"")
+
+String.prototype.rtrim = () ->
+  this.replace(/\s+$/,"")
+
+String.prototype.startsWith = (s) ->
+  this.indexOf(s) == 0
 
 $(document).ready(-> Login.init())

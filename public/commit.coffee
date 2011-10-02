@@ -3,6 +3,7 @@
 window.Commit =
   SIDE_BY_SIDE_SLIDE_DURATION: 300
   SIDE_BY_SIDE_SPLIT_DURATION: 700
+  SIDE_BY_SIDE_COOKIE: "sideBySide"
 
   init: ->
     $(document).keydown (e) => @onKeydown e
@@ -15,6 +16,8 @@ window.Commit =
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
+    # eventually this should be a user preference stored server side, for now. Its just a cookie
+    @toggleSideBySide(false) if readCookie(@.SIDE_BY_SIDE_COOKIE) == "true"
 
   onKeydown: (event) ->
     return unless @beforeKeydown(event)
@@ -34,7 +37,7 @@ window.Commit =
       when "p"
         @scrollChunk(false)
       when "b"
-        @toggleSideBySide(event)
+        @handleSideBySideKeyPress(event)
       when "return"
         return if $(".commentCancel").length > 0
         $(".diffLine.selected").first().dblclick()
@@ -299,16 +302,25 @@ window.Commit =
       $(".chunkBreak").show()
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
-  toggleSideBySide: (event) ->
-    return if $(".slideDiv, body, .codeRight").filter(":animated").length > 0
+  handleSideBySideKeyPress: (event) ->
     # Only toggle if no other element on the page is selected
     return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
+    @toggleSideBySide(true)
+
+
+  toggleSideBySide: (animate = true) ->
+    return if $(".slideDiv, body, .codeRight").filter(":animated").length > 0
+
+    # for now, use the jquery.fx.off switch to make sidebyside toggle without animations.
+    originalJQueryFxOff = jQuery.fx.off
+    jQuery.fx.off = !animate
 
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     unless Commit.isSideBySide
       # split to side-by-side
       Commit.isSideBySide = true
+      createCookie @.SIDE_BY_SIDE_COOKIE, "true", 2^30
       # save off size of code table so it doesn't drift after many animations
       Commit.originalLeftWidth ?= leftCodeTable.width()
       Commit.originalContainerWidth ?= $("#container").width()
@@ -325,33 +337,36 @@ window.Commit =
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      rightCodeTable.animate({"left": Commit.originalLeftWidth},  Commit.SIDE_BY_SIDE_SPLIT_DURATION)
-      $("#container").animate({"width": Commit.originalContainerWidth * 2 - 2},
-        Commit.SIDE_BY_SIDE_SPLIT_DURATION)
+      rightCodeTable.animate({"left": @.originalLeftWidth},  @.SIDE_BY_SIDE_SPLIT_DURATION)
+      $("#container").animate({"width": @.originalContainerWidth * 2 - 2},
+        @.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
-      $(".diffLine[replace='true'] .slideDiv").
-        delay(Commit.SIDE_BY_SIDE_SPLIT_DURATION).slideUp(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
-      timeout Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
-        leftCodeTable.find(".diffLine[tag='added'][replace='false']").delay(1000).addClass "spacingLine"
-        rightCodeTable.find(".diffLine[tag='removed'][replace='false']").delay(1000).addClass "spacingLine"
+      animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
+        $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
+        leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
+        rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
+      animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
+        jQuery.fx.off = originalJQueryFxOff
     else
       # callapse to unified diff
       Commit.isSideBySide = false
-      $(".diffLine[replace='true'] .slideDiv").slideDown(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
-      $(".diffLine[replace='true']").slideDown(Commit.SIDE_BY_SIDE_SLIDE_DURATION)
-      timeout Commit.SIDE_BY_SIDE_SLIDE_DURATION, () ->
+      createCookie @.SIDE_BY_SIDE_COOKIE, "false", 2^30
+      $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
+      $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
+      animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
-      rightCodeTable.delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
-                                                                   Commit.SIDE_BY_SIDE_SPLIT_DURATION)
-      $("#container").delay(Commit.SIDE_BY_SIDE_SLIDE_DURATION).
-        animate {"width": Commit.originalContainerWidth}, Commit.SIDE_BY_SIDE_SPLIT_DURATION, () ->
-          # after the side-by-side callapse animation is done,
-          #  reset everything to the way it should be for unified diff
-          $(".codeLeft .added > .codeText").css("visibility", "visible")
-          Commit.setSideBySideCommentVisibility()
-          $(".codeRight").hide()
-          $(".codeLeft .rightNumber").show()
+      rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
+          @.SIDE_BY_SIDE_SPLIT_DURATION)
+      $("#container").delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
+          animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
+            # after the side-by-side callapse animation is done,
+            #  reset everything to the way it should be for unified diff
+            $(".codeLeft .added > .codeText").css("visibility", "visible")
+            @.setSideBySideCommentVisibility()
+            $(".codeRight").hide()
+            $(".codeLeft .rightNumber").show()
+            jQuery.fx.off = originalJQueryFxOff
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->
