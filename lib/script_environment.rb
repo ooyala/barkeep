@@ -4,6 +4,7 @@
 require "rubygems"
 require "bundler/setup"
 require "grit"
+require "resque"
 
 $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 

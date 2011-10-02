@@ -38,19 +38,6 @@ OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
 
-  #
-  # To be called from within the configure blocks, tehse methods must be defined prior to them.
-  #
-  def self.start_background_deliver_comment_emails_job
-    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/deliver_comment_emails.rb")
-    IO.popen(command)
-  end
-
-  def self.start_background_batch_comment_emails_job
-    command = "ruby " + File.join(File.dirname(__FILE__), "background_jobs/batch_comment_emails.rb")
-    IO.popen(command)
-  end
-
   # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
   # files have changed.
   $compiled_cache = Hash.new { |hash, key| hash[key] = {} }
@@ -74,9 +61,6 @@ class Barkeep < Sinatra::Base
       puts message
       message
     end
-
-    Barkeep.start_background_batch_comment_emails_job
-    Barkeep.start_background_deliver_comment_emails_job
   end
 
   configure :test do
@@ -89,9 +73,6 @@ class Barkeep < Sinatra::Base
     enable :logging
     MetaRepo.logger.level = Logger::INFO
     GitDiffUtils.setup(RedisManager.get_redis_instance)
-
-    Barkeep.start_background_batch_comment_emails_job
-    Barkeep.start_background_deliver_comment_emails_job
   end
 
   helpers do

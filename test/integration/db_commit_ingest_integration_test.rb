@@ -20,7 +20,7 @@ class DbCommitIngestIntegrationTest < Scope::TestCase
 
   should "import commits which are not yet in the database" do
     head = @@test_repo.head.commit
-    Commit.filter(:sha => head.sha).delete
+    Commit.filter(:sha => head.sha).destroy
     DbCommitIngest.perform("test_git_repo", "master")
 
     commits = Commit.filter(:sha => @@test_repo.head.commit.sha).all
