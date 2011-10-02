@@ -16,6 +16,9 @@ class DbCommitIngest
     logger.info "Importing new commits from #{repo_name}:#{remote_name} into the database."
     MetaRepo.logger = logger
 
+    # Reconnect to the database if our connection has timed out.
+    Comment.select(1).first rescue nil
+
     # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
     # importing a brand new repository. Setting this page size to 2,000 will result in a stack overflow --
     # Grit must fetch commits recursively.
