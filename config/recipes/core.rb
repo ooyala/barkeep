@@ -82,14 +82,15 @@ namespace :fezzik do
     puts "starting from #{capture_output { run "readlink #{current_path}" }}"
     run "cd #{current_path} && source config/environment.sh" +
         " && ./bin/run_app.sh"
+    run "cd #{current_path} && source config/environment.sh && rake resque:start clockwork:start"
   end
 
   desc "kills the application by searching for the specified process name"
   remote_task :stop do
     puts "stopping app"
+    # TODO(philc): We should be using unicorn here, and we should use pid files instead of kill.
     run "(kill -9 `ps aux | grep 'thin start -p 80' | grep -v grep | awk '{print $2}'` || true)"
-    # kill any rogue background jobs still running
-    run "(kill -9 `ps aux | grep 'background_jobs' | grep -v grep | awk '{print $2}'` || true)"
+    run "cd #{current_path} && source config/environment.sh && rake clockwork:stop resque:stop"
   end
 
   desc "restarts the application"
