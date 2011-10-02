@@ -27,7 +27,8 @@ module KeyboardShortcuts
     "enter" => "New comment on selected line",
     "n" => "Next diff chunk in commit",
     "p" => "Previous diff chunk in commit",
-    "e" => "Toggle full diff view"
+    "e" => "Toggle full diff view",
+    "b" => "Toggle side-by-side diff view"
   }
 
   def self.shortcuts(view)
