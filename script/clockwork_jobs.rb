@@ -23,6 +23,7 @@ Daemons.run_proc("clockwork_jobs.rb", daemonize_options) do
   $LOAD_PATH.push(project_root) unless $LOAD_PATH.include?(project_root)
   require "clockwork"
   require "resque_jobs/fetch_commits"
+  require "resque_jobs/batch_comment_emails"
 
   def clear_resque_queue(queue_name) Resque.redis.del("queue:#{queue_name}") end
 
@@ -37,10 +38,15 @@ Daemons.run_proc("clockwork_jobs.rb", daemonize_options) do
     when "fetch_commits"
       clear_resque_queue("fetch_commits")
       Resque.enqueue(FetchCommits)
+    when "batch_comment_emails"
+      clear_resque_queue("batch_comment_emails")
+      Resque.enqueue(BatchCommentEmails)
     end
   end
 
   Clockwork.every(45.seconds, "fetch_commits")
+
+  Clockwork.every(10.seconds, "batch_comment_emails")
 
   Clockwork.run # This is a blocking call.
 end
