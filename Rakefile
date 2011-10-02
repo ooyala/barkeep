@@ -2,11 +2,6 @@ require "rake/testtask"
 require "resque/tasks"
 
 $LOAD_PATH.push("./") unless $LOAD_PATH.include?("./")
-require "resque_jobs/db_commit_ingest"
-require "resque_jobs/generate_tagged_diffs"
-require "resque_jobs/fetch_commits"
-require "resque_jobs/batch_comment_emails"
-require "resque_jobs/deliver_comment_emails"
 
 task :test => ["test:units", "test:integrations"]
 
