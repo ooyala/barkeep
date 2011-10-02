@@ -22,6 +22,8 @@ class FetchCommits
   def self.fetch_commits(grit_repos)
     Logging.logger.info "Fetching new commits."
     grit_repos.each do |repo|
+      # In case a repo was removed or moved since this job began, just continue along.
+      next unless File.exists?(repo.path)
       db_repo = GitRepo.first(:name => repo.name)
       is_first_time_import = db_repo.commits_dataset.first.nil?
       remotes_to_ingest = fetch_commits_for_repo(repo)
