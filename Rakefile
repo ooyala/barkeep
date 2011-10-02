@@ -23,10 +23,14 @@ namespace :test do
 end
 
 namespace :resque do
-  desc "Watch all resque queues and perform any work that shows up."
-  task :run_all_workers do
-    ENV["QUEUE"] = "*"
-    Rake::Task["resque:work"].invoke
+  desc "Start running all resque workers."
+  task :start do
+    puts `script/resque_workers.rb start`
+  end
+
+  desc "Stop running all resque workers."
+  task :stop do
+    puts `script/resque_workers.rb stop`
   end
 end
 

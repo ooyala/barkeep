@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 # Clockwork is a gem which provides cron-like functionality in Ruby. This script is run as a daemon:
-# clockwork_jobs.rb start
-# clockwork_jobs.rb stop
+#   clockwork_jobs.rb start
+#   clockwork_jobs.rb stop
 # When developing and debugging, run it in the foreground, not as a daemon:
-# clockwork_jobs.rb run
+#   clockwork_jobs.rb run
 require "rubygems"
 require "daemons"
 

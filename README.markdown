@@ -35,7 +35,7 @@ commits, pre-generate commit diffs, and send emails when comments are posted.
 
     $ redis-server # run Redis
     $ rake clockwork:start # start running periodic cron jobs
-    $ rake resque:run_all_workers # process any jobs which get added to the Resque queue.
+    $ rake resque:start # start processing any jobs which get added to the Resque queue.
 
 You can view the Resque dashboard and inspect failed Resque jobs by navigating to http://localhost:4567/resque.
 
