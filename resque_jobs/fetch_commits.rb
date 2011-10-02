@@ -16,9 +16,10 @@ class FetchCommits
   end
 
   def self.fetch_commits(grit_repos)
+    Logging.logger.info "Fetching new commits."
     grit_repos.each do |repo|
       modified_remotes = fetch_commits_for_repo(repo)
-      puts "Fetched new commits in repo #{repo.name}" unless modified_remotes.empty?
+      Logging.logger.info "Fetched new commits in repo #{repo.name}" unless modified_remotes.empty?
       modified_remotes.each { |remote| Resque.enqueue(DbCommitIngest, repo.name, remote) }
     end
   end
