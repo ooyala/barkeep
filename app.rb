@@ -344,7 +344,8 @@ class Barkeep < Sinatra::Base
     erb :inspire, :locals => { :quote => Inspire.new.quote }
   end
 
-  # A page to help in troubleshooting Barkeep's background processes, like emails and commit ingestion.
+  # A page to help keep track of Barkeep's data models and background processes. Also see the Resque dashboard
+  # (/resque).
   get "/admin/?" do
     erb :admin, :locals => {
       :most_recent_commit => Commit.order(:id.desc).first,
@@ -352,8 +353,6 @@ class Barkeep < Sinatra::Base
       :failed_email_count => CompletedEmail.filter(:result => "failure").count,
       :recently_failed_emails =>
           CompletedEmail.filter(:result => "failure").order(:created_at.desc).limit(10).all,
-      :pending_background_jobs => BackgroundJob.order(:id.asc).limit(10).all,
-      :pending_background_jobs_count => BackgroundJob.count,
       :pending_comments => Comment.filter(:has_been_emailed => false).order(:id.asc).limit(10).all,
       :pending_comments_count => Comment.filter(:has_been_emailed => false).count,
     }

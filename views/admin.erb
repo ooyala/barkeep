@@ -6,8 +6,6 @@
   # - most_recent_comment
   # - failed_email_count
   # - recently_failed_emails
-  # - pending_background_jobs_count
-  # - pending_background_jobs
   # - pending_comments
   # - pending_comments_count
 %>
@@ -53,26 +51,6 @@
     </p>
   <% end %>
 
-  <h2>Pending background jobs, oldest first (<%= pending_background_jobs_count %> total)</h2>
-  <% unless pending_background_jobs.empty? %>
-    <table>
-      <tr>
-        <th>id</th>
-        <th>created_at</th>
-        <th>job_type</th>
-        <th>params</th>
-      </tr>
-      <% pending_background_jobs.each do |job| %>
-      <tr>
-        <td><%= job.id %></td>
-        <td><%= job.created_at.to_pretty %></td>
-        <td><%= job.job_type %></td>
-        <td><%= job.params %></td>
-      </tr>
-      <% end %>
-    </table>
-  <% end %>
-
   <h2>Comments waiting to be emailed, oldest first (<%= pending_comments_count %> total)</h2>
   <% unless pending_comments.empty? %>
     <table>
@@ -92,7 +70,7 @@
       <% end %>
     </table>
   <% end %>
-  
+
 
   <h2>Recently failed email tasks (<%= failed_email_count %> total)</h2>
   <% unless recently_failed_emails.empty? %>
