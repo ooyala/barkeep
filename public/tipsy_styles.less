@@ -1,14 +1,11 @@
+@import "/mixins";
+
 /*
  * Tipsy tooltip styles (custom, based on packaged css)
  */
 
-// NOTE(caleb): Unfortunately, these two constants are copied from styles.less. I deemed this less heinous
-// than bloating our already-huge style file by another couple hundred lines.
-@textColor: #333;
-@almostWhite: #FDFDFD;
-
 .tipsy {
-  font-size: 12px;
+  font-size: 13px;
   position: absolute;
   padding: 5px;
   z-index: 1000;
@@ -19,6 +16,11 @@
   max-width: 200px;
   padding: 5px 8px 4px 8px;
   text-align: center;
+  font-family: @sansFont;
+  code {
+    font-family: @monoFont;
+    text-shadow: -1px -1px 1px @textShadowColor;
+  }
 }
 
 .tipsy-arrow {
