@@ -5,9 +5,7 @@ require "resque_jobs/generate_tagged_diffs"
 class DbCommitIngestIntegrationTest < Scope::TestCase
   setup_once do
     test_repos = File.join(File.dirname(__FILE__), "../fixtures")
-    logger = Logger.new("/dev/null")
-    MetaRepo.configure(logger, test_repos)
-    DbCommitIngest.logger = logger
+    MetaRepo.configure(Logger.new("/dev/null"), test_repos)
     @@test_repo = MetaRepo.instance.grit_repo_for_name("test_git_repo")
   end
 

@@ -8,10 +8,12 @@ require "resque"
 
 class DbCommitIngest
   @queue = :db_commit_ingest
-  def self.logger=(logger) @@logger = logger end
 
   # Called by Resque.
   def self.perform(repo_name, remote_name)
+    logger = Logging.logger = Logging.create_logger("db_commit_ingest.log")
+    MetaRepo.logger = logger
+
     # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
     # importing a brand new repository. Setting this page size to 2,000 will result in a stack overflow --
     # Grit must fetch commits recursively.
@@ -58,12 +60,12 @@ class DbCommitIngest
       page += 1
 
       # Give some progress output for really big imports.
-      @@logger.info "Imported #{page_size * page} commits..." if (page % 10 == 0)
+      logger.info "Imported #{page_size * page} commits..." if (page % 10 == 0)
     rescue Exception => error
-      @@logger.info "Exception raised while inserting new commits into the DB:"
-      @@logger.info "#{error.class}"
-      @@logger.info "#{error.message}"
-      @@logger.info "#{error.backtrace}"
+      logger.info "Exception raised while inserting new commits into the DB:"
+      logger.info "#{error.class}"
+      logger.info "#{error.message}"
+      logger.info "#{error.backtrace}"
       raise error
     end until commits.empty?
   end
