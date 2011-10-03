@@ -31,7 +31,7 @@ window.ShortcutOverlay =
     $.ajax
       url: "/keyboard_shortcuts#{location.pathname}"
       success: (html) =>
-        $(body).append html
+        $("body").append html
         $(".kbShortcuts.overlay .container").focus -> $(".kbShortcuts.overlay").css("visibility", "visible")
         $(".kbShortcuts.overlay .container").blur -> $(".kbShortcuts.overlay").css("visibility", "hidden")
 
@@ -40,6 +40,7 @@ window.ShortcutOverlay =
         KeyboardShortcuts.registerPageShortcut "shift+/", -> $(".kbShortcuts.overlay .container").focus()
         KeyboardShortcuts.registerShortcut $(".kbShortcuts.overlay .container"), "esc", ->
           $(".kbShortcuts.overlay .container").blur()
+          false
         $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> $(".kbShortcuts.overlay .container").blur()
 
 window.KeyboardShortcuts =

@@ -15,6 +15,7 @@ window.Commit =
     $(".edit").live "click", (e) => @onCommentEdit e
 
     # Set up hotkeys
+    KeyboardShortcuts.registerPageShortcut "a", => @approveOrDisapprove()
     KeyboardShortcuts.registerPageShortcut "j", => @selectNextLine true
     KeyboardShortcuts.registerPageShortcut "k", => @selectNextLine false
     KeyboardShortcuts.registerPageShortcut "shift+n", => @scrollFile true
@@ -38,14 +39,37 @@ window.Commit =
     # We need to add 1 to account for the extra 'diff' character (" ", "+", or "-")
     lineSize = parseInt(commit.attr("margin-size")) + 1
     maxLengthLine = ("a" for i in [1..lineSize]).join("")
-    marginSizingDiv = $(Snippets.marginSizingDiv(maxLengthLine))
-    commit.append(marginSizingDiv)
-    marginSize = marginSizingDiv.width()
-    marginSizingDiv.remove()
+    marginSizer = $(Snippets.marginSizer(maxLengthLine))
+    commit.append(marginSizer)
+    marginSize = marginSizer.width()
+    marginSizer.remove()
     $("#commit .marginLine").css("left", "#{marginSize}px")
 
+  # Display a popup prompt when the user hits 'a' to confirm that they want to approve.
+  approveOrDisapprove: ->
+    if $("#approveButton").size() > 0
+      approveOrDisapprove = "approve"
+    else if $("#disapproveButton").size() > 0
+      approveOrDisapprove = "disapprove"
+    else
+      return
+    approvalOverlay = $(Snippets.approvalPopup(approveOrDisapprove))
+    $("body").append approvalOverlay
+    approvalOverlay.css("visibility", "visible")
+    KeyboardShortcuts.createShortcutContext $(".approvalPopup.overlay .container")
+    $(".approvalPopup.overlay .container").blur ->
+      $(".approvalPopup.overlay").remove()
+    KeyboardShortcuts.registerShortcut $(".approvalPopup.overlay .container"), "esc", ->
+      $(".approvalPopup.overlay .container").blur()
+      false
+    KeyboardShortcuts.registerShortcut $(".approvalPopup.overlay .container"), "a", ->
+      $(".approvalPopup.overlay .container").blur()
+      $("#approveButton, #disapproveButton").click()
+      false
+    $(".approvalPopup.overlay .container").focus()
+
   # Returns true if the diff line is within the user's scroll context
-  lineVisible: (line,visible = "all") ->
+  lineVisible: (line, visible = "all") ->
     lineTop = $(line).offset().top
     windowTop = $(window).scrollTop()
     lineBottom = lineTop + $(line).height()

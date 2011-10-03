@@ -146,19 +146,26 @@
 // Full-screen overlays
 .overlay {
   position: fixed;
-  text-align: center;
   left: 0px;
+  top: 0px;
   width: 100%;
-  top: 100px;
+  height: 100%;
   z-index: 10;
-  display: block;
+  display: table;
   visibility: hidden;
 
-  .container {
-    position: relative;
-    margin: 0 auto;
-    background: @textColor;
-    opacity: 0.95;
-    box-shadow: 2px 2px 5px @textColor;
+  .cellWrapper {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+
+    .container {
+      margin-left: auto;
+      margin-right: auto;
+      background: @textColor;
+      color: @almostWhite;
+      opacity: 0.95;
+      .roundedCorners(3px);
+    }
   }
 }

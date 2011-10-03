@@ -24,6 +24,12 @@ window.Snippets =
       </form>"
     """
 
-  marginSizingDiv: (maxLengthLine) -> "<span id='marginSizing'>#{maxLengthLine}</span>"
-  approveButton: "<button id='approveButton' class='fancy'>Approve Commit</button>"
   maskingOverlay: "<div class='maskingOverlay'></div>"
+  marginSizer: (maxLengthLine) -> "<span id='marginSizing'>#{maxLengthLine}</span>"
+  approveButton: "<button id='approveButton' class='fancy'>Approve Commit</button>"
+  approvalPopup: (approveOrDisapprove) ->
+    """
+      <div class="approvalPopup overlay"><div class="cellWrapper"><div class="container">
+        <div>Press <code>a</code> again to #{approveOrDisapprove} this commit.</div>
+      </div></div></div>
+    """

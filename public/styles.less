@@ -856,70 +856,95 @@ table.commitsList, table.authorList {
   }
 }
 
+// Approval popup overlay
+.approvalPopup.overlay {
+  .cellWrapper {
+    .container {
+      font-size: 18px;
+      width: 400px;
+      height: 60px;
+      position: relative;
+      div {
+        width: 100%;
+        position: absolute;
+        height: 20px;
+        top: 50%;
+        margin-top: -12px;
+        code {
+          font-family: @monoFont;
+          text-shadow: -1px -1px 1px @textShadowColor;
+        }
+      }
+    }
+  }
+}
+
 /*
  * Keyboard shortcut overlay.
  */
 .kbShortcuts.overlay {
-  .container {
-    width: @pageWidth - 100;
+  .cellWrapper {
+    .container {
+      width: @pageWidth - 100;
+      position: relative;
 
-    .shortcuts {
-      background: transparent;
-      color: @almostWhite;
-      opacity: 1;
-      padding: 10px;
+      .shortcuts {
+        background: transparent;
+        opacity: 1;
+        padding: 10px;
 
-      .title {
-        font-size: 30px;
-        text-shadow: 0px -1px 2px @textShadowColor;
-      }
+        .title {
+          font-size: 30px;
+          text-shadow: 0px -1px 2px @textShadowColor;
+        }
 
-      .close {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        margin: 15px;
-        a { .closeLinks; }
-      }
+        .close {
+          position: absolute;
+          top: 0px;
+          right: 0px;
+          margin: 15px;
+          a { .closeLinks; }
+        }
 
-      .tableWrapper {
-        width: 100%;
-        margin: 10px 0;
-        td { width: 50%; }
+        .tableWrapper {
+          width: 100%;
+          margin: 10px 0;
+          td { width: 50%; }
 
-        .shortcutList {
-          vertical-align: top;
-          .label {
-            font-size: 18px;
-            margin-bottom: 5px;
-          }
+          .shortcutList {
+            vertical-align: top;
+            .label {
+              font-size: 18px;
+              margin-bottom: 5px;
+            }
 
-          table {
-            border-collapse: collapse;
-            width: 100%;
-            tr {
-              td {
-                padding: 0 10px;
-                line-height: 150%;
+            table {
+              border-collapse: collapse;
+              width: 100%;
+              tr {
+                td {
+                  padding: 0 10px;
+                  line-height: 150%;
 
-                &.keys {
-                  width: 30%;
-                  font: 14px @monoFont;
-                  text-align: right;
-                  text-shadow: -1px -1px 1px @textShadowColor;
-                }
-                &.description {
-                  width: 70%;
-                  text-align: left;
-                  border-left: 2px solid @coreRed;
+                  &.keys {
+                    width: 30%;
+                    font: 14px @monoFont;
+                    text-align: right;
+                    text-shadow: -1px -1px 1px @textShadowColor;
+                  }
+                  &.description {
+                    width: 70%;
+                    text-align: left;
+                    border-left: 2px solid @coreRed;
+                  }
                 }
               }
             }
-          }
 
-          .noShortcuts {
-            padding-top: 10px;
-            font-style: italic;
+            .noShortcuts {
+              padding-top: 10px;
+              font-style: italic;
+            }
           }
         }
       }
