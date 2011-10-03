@@ -108,6 +108,13 @@ class Emails
     end
   end
 
+  # The email body for commit ingestion emails.
+  def self.commit_email_body(commit)
+    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/commit_email.erb"))
+    template.render(self, :commit => commit)
+  end
+
+  # The email body for comment emails.
   def self.comment_email_body(commit, comments)
     general_comments, file_comments = comments.partition(&:general_comment?)
 
@@ -143,5 +150,20 @@ class Emails
       line_diffs.pop
     end
     line_diffs
+  end
+
+  # Returns the string that git log formats when you pass --stat to git log. It's a terse representation
+  # of all files which have changed.
+  def self.diff_stat(grit_repo, commit_sha)
+    diff_stat_line_width = 90
+    git_log_options = {
+      :stat => diff_stat_line_width,
+      :M => true, # detect renames.
+      :n => 1,
+      :pretty => "format:" # include no information except the diff stat.
+    }
+    output = grit_repo.git.log(git_log_options, [commit_sha])
+    # Trim off the first line, which is blank because of our --pretty=format: argument.
+    output.strip
   end
 end
