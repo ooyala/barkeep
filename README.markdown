@@ -1,6 +1,8 @@
 Overview
 --------
-Coming soon!
+Barkeep is a fast, fun way to review code. Engineering organizations can use it to keep the bar high.
+
+More details coming soon!
 
 Setting up Barkeep for development
 ----------------------------------
