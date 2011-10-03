@@ -38,7 +38,7 @@ window.Commit =
     # We need to add 1 to account for the extra 'diff' character (" ", "+", or "-")
     lineSize = parseInt(commit.attr("margin-size")) + 1
     maxLengthLine = ("a" for i in [1..lineSize]).join("")
-    marginSizingDiv = $("<span id='marginSizing'>#{maxLengthLine}</span>")
+    marginSizingDiv = $(Snippets.marginSizingDiv(maxLengthLine))
     commit.append(marginSizingDiv)
     marginSize = marginSizingDiv.width()
     marginSizingDiv.remove()
@@ -132,7 +132,7 @@ window.Commit =
     # Use the comment ID instead of generating form ID since left and right tables have the same comments
     comment = $(".comment[commentId='#{$(e.target).parents(".comment").attr("commentId")}']")
     if comment.find(".commentEditForm").size() > 0 then return
-    commentEdit = $(CommentForm.create(true, true))
+    commentEdit = $(Snippets.commentForm(true, true))
     commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
     commentEdit.find(".commentCancel").click(Commit.onCommentEditCancel)
     comment.append(commentEdit).find(".commentBody").hide()
@@ -262,7 +262,7 @@ window.Commit =
         commit_sha: $("#commit").attr("sha")
       }
       success: ->
-        $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
+        $("#approvedBanner").replaceWith(Snippets.approveButton)
     })
 
   toggleFullDiff: ->

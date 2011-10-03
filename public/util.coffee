@@ -26,29 +26,6 @@ window.Util =
         (scroll == "all" or scroll == "bottom")
       window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
 
-window.CommentForm =
-  # Generates comment form html. This handles adding and editing comments
-  create: (inline, edit, hiddenFields) ->
-    className = if edit then "commentEditForm" else "commentForm"
-    submitValue = if edit then "Save Edit" else "Post Comment"
-    header = if edit then "" else """
-      <div class='heading'><span class='addAComment'>Add a comment</span></div>
-      <input type='hidden' name='repo_name' value='#{hiddenFields.repoName}' />
-      <input type='hidden' name='sha' value='#{hiddenFields.sha}' />
-      <input type='hidden' name='filename' value='#{hiddenFields.filename}' />
-      <input type='hidden' name='line_number' value='#{hiddenFields.lineNumber}' />
-    """
-    """
-      <form class='#{className}' action='/comment' type='POST'>
-        #{header}
-        <textarea class='commentText' name='text'></textarea>
-        <div class='commentControls'>
-          <input class='commentSubmit' type='submit' value='#{submitValue}' />
-          #{if inline then "<input class='commentCancel' type='button' value='Cancel' />"}
-        </div>
-      </form>"
-    """
-
 window.ShortcutOverlay =
   init: ->
     $.ajax
