@@ -43,7 +43,7 @@ window.CommitSearch =
       @selectNewGroup(false) unless @selectNewGroup(true)
       removedSelected = true
     target.remove()
-    ScrollWithContext(".selected") if removedSelected
+    Util.scrollWithContext(".selected") if removedSelected
     @deleteSearch(searchId)
     false
 
@@ -54,7 +54,7 @@ window.CommitSearch =
         @smartSearch.search()
       when "escape"
         @smartSearch.unfocus()
-        ScrollWithContext(".selected")
+        Util.scrollWithContext(".selected")
 
   onKeydown: (event) ->
     return unless KeyboardShortcuts.beforeKeydown(event)
@@ -93,7 +93,7 @@ window.CommitSearch =
       return false if group.size() == 0
       newlySelected = if next then group.find("tr:first-of-type") else group.find("tr:last-of-type")
     @selectNewDiff(newlySelected)
-    ScrollWithContext(".selected")
+    Util.scrollWithContext(".selected")
     true
 
   selectFirstDiff: ->
@@ -102,7 +102,7 @@ window.CommitSearch =
       selected = selectedGroup.find(".commitsList tr:first-of-type")
       if selected.size() > 0
         @selectNewDiff(selected)
-        ScrollWithContext(".selected")
+        Util.scrollWithContext(".selected")
         break
       selectedGroup = selectedGroup.next()
 
@@ -113,7 +113,7 @@ window.CommitSearch =
     newlySelected = if next then selected.next() else selected.prev()
     if newlySelected.size() > 0
       @selectNewDiff(newlySelected)
-      ScrollWithContext(".selected")
+      Util.scrollWithContext(".selected")
       return true
     @selectNewGroup(next)
 
