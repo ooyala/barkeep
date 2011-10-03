@@ -1,4 +1,8 @@
 # A saved search represents a list of commits, some read and some unread.
+#
+# Columns:
+# - email_commits: true if the user should be emailed when new commits are made which match this search.
+# - email_comments: true if the user should be emailed when new comments are made.
 class SavedSearch < Sequel::Model
   many_to_one :user
 
