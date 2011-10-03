@@ -1,5 +1,3 @@
-# import common.coffee, jquery, and jquery-json
-
 window.Commit =
   SIDE_BY_SIDE_SLIDE_DURATION: 300
   SIDE_BY_SIDE_SPLIT_DURATION: 700
@@ -341,11 +339,11 @@ window.Commit =
       $("#container").animate({"width": @.originalContainerWidth * 2 - 2},
         @.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
-      animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
+      Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
         $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
-      animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
+      Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         jQuery.fx.off = originalJQueryFxOff
     else
       # callapse to unified diff
@@ -353,7 +351,7 @@ window.Commit =
       createCookie @.SIDE_BY_SIDE_COOKIE, "false", 2^30
       $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
-      animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
+      Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
       rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },

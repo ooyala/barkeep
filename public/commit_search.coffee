@@ -1,5 +1,3 @@
-# import common.coffee, smart_search.coffee, jquery, jquery UI, and jquery-json
-
 window.CommitSearch =
   init: ->
     @smartSearch = new SmartSearch
@@ -143,7 +141,7 @@ window.CommitSearch =
     # If it's a keypress, highlight the button for a moment as if the user clicked on it.
     if keypress
       button.addClass("active")
-      timeout 70, => button.removeClass("active")
+      Util.timeout 70, => button.removeClass("active")
 
     token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
     currentPageNumber = parseInt(savedSearchElement.find(".pageNumber").text())
@@ -244,7 +242,7 @@ window.CommitSearch =
     $(".tipsy").remove()
     overlayDiv = $("<div class='overlay'></div>")
     savedSearch.append(overlayDiv)
-    overlayDiv.fadeTo 100, 0.6, => timeout 100, =>
+    overlayDiv.fadeTo 100, 0.6, => Util.timeout 100, =>
       savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
       selected = $(".selected").parents(".savedSearch").is(savedSearch)
       @beforeSync()
