@@ -7,6 +7,11 @@ require "nokogiri"
 class EmailsTest < Scope::TestCase
   include StubHelper
 
+  setup do
+    @user = User.new(:name => "jimbo")
+    @commit = stub_commit("commit_id", @user)
+  end
+
   context "strip_unchanged_blank_lines" do
     should "remove unchanged blank lines from both sides of the array" do
       line_diffs = [
@@ -17,10 +22,8 @@ class EmailsTest < Scope::TestCase
     end
   end
 
-  context "email body" do
+  context "comment email body" do
     setup do
-      @user = User.new(:name => "jimbo")
-      @commit = stub_commit("commit_id", @user)
       stub(GitDiffUtils).get_tagged_commit_diffs { [] }
     end
 

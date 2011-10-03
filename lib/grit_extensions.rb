@@ -23,5 +23,11 @@ module Grit
     def user
       @user ||= User.find(:email => self.email)
     end
+
+    # The default to_s() for Actor only includes the author's name, not email.
+    def display_string
+      # If the author's display name is empty, which it sometimes is, strip() will eliminate the whitespace.
+      "#{self.to_s} <#{self.email}>".strip
+    end
   end
 end

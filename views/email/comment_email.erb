@@ -13,11 +13,11 @@
 
 <font face="monospace" size="3">
 
-<a href="
-    http://<%= BARKEEP_HOSTNAME %>/commits/<%= commit.git_repo.name %>/<%= commit.grit_commit.id %>">
+<a href="http://<%= BARKEEP_HOSTNAME %>/commits/<%= commit.git_repo.name %>/<%= commit.sha %>">
 <%= commit.grit_commit.id_abbrev %></a>
-<%= commit.grit_commit.author %> - <%= commit.grit_commit.short_message %><br/>
-<%= StringHelper.short_date(commit.grit_commit.date) %>
+<%= CGI.escape_html(commit.grit_commit.author.display_string) %>
+ <%= StringHelper.short_date(commit.grit_commit.date) %><br/>
+<%= commit.grit_commit.short_message %><br/>
 
 <br/><br/>
 

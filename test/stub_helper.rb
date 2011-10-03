@@ -14,7 +14,8 @@ module StubHelper
     grit_commit = OpenStruct.new(
         :id => sha, :sha => sha, :id_abbrev => sha,
         :repo_name => "my_repo",
-        :short_message => "message", :author => commit_author, :date => Time.now, :diffs => [])
+        :short_message => "message", :author => Grit::Actor.new(user.name, user.email),
+        :date => Time.now, :diffs => [])
     stub(commit).grit_commit { grit_commit }
     commit
   end
