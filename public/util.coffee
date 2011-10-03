@@ -5,10 +5,7 @@ window.Util =
 
   # A timeout that doesn't delay if jQuery.fx.off == true
   animateTimeout: (milliseconds, callback) ->
-    if jQuery.fx.off
-      callback()
-    else
-      @timeout milliseconds, callback
+    if jQuery.fx.off then callback() else @timeout milliseconds, callback
 
   # Keep some amount of context on-screen to pad the selection position
   scrollWithContext: (selector, scroll="all") ->
