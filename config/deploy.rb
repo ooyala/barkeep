@@ -14,7 +14,7 @@ set :user, "role-barkeep"
 # We do not want to check these into the repository, and so they should be stored in a file in
 # $BARKEEP_CREDENTIALS. It should be of the form:
 #   destination :prod do
-#     env :gmail_username, "..."
+#     env :gmail_address, "..."
 #     env :gmail_password, "..."
 #   end
 #

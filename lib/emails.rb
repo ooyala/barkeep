@@ -10,27 +10,34 @@ class Emails
   class RecoverableEmailError < StandardError
   end
 
-  # Sends an email notification of a comment.
+  # Sends an email notification for one or more comments.
   # Upon success or non-recoverable failure, an entry in the completed_emails table is added to record the
   # email.
   def self.send_comment_email(commit, comments, send_immediately = false)
     grit_commit = commit.grit_commit
-    subject = "Comments for #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
+    subject = "Commit #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
         "#{grit_commit.short_message[0..60]}"
     html_body = comment_email_body(commit, comments)
 
     # TODO(philc): Provide a plaintext email as well.
 
     all_previous_commenters = commit.comments.map { |comment| comment.user.email }
-    to = ([commit.user.email] +
-          users_with_saved_searches_matching(commit).map(&:email) +
+    to = commit.user.email
+    cc = (users_with_saved_searches_matching(commit).map(&:email) +
           all_previous_commenters).uniq
 
-    completed_email = CompletedEmail.new(:to => to.join(","), :subject => subject,
+    completed_email = CompletedEmail.new(:to => ([to] + cc).join(","), :subject => subject,
         :result => "success", :comment_ids => comments.map(&:id).join(","))
 
+    user, domain = GMAIL_ADDRESS.split("@")
+    pony_options = pony_options_for_commit(commit).merge({
+      :cc => cc.join(","),
+      # Make the From: address e.g. "barkeep+comments@gmail.com" so it's easily filterable.
+      :from => "#{user}+comments@#{domain}"
+    })
+
     begin
-      deliver_mail(to.join(","), subject, html_body, pony_options_for_commit(commit))
+      deliver_mail(to, subject, html_body, pony_options)
     rescue Exception => error
       unless error.is_a?(RecoverableEmailError)
         completed_email.result = "failure"
@@ -87,7 +94,7 @@ class Emails
         :address => "smtp.gmail.com",
         :port => "587",
         :enable_starttls_auto => true,
-        :user_name => GMAIL_USERNAME,
+        :user_name => GMAIL_ADDRESS,
         :password => GMAIL_PASSWORD,
         :authentication => :plain,
         # the HELO domain provided by the client to the server
