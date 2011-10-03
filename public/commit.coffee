@@ -4,7 +4,6 @@ window.Commit =
   SIDE_BY_SIDE_COOKIE: "sideBySide"
 
   init: ->
-    $(document).keydown (e) => @onKeydown e
     $(".diffLine").dblclick (e) => @onDiffLineDblClickOrReply e
     $(".reply").live "click", (e) => @onDiffLineDblClickOrReply e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
@@ -14,40 +13,25 @@ window.Commit =
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
+
+    # Set up hotkeys
+    KeyboardShortcuts.registerPageShortcut "j", => @selectNextLine true
+    KeyboardShortcuts.registerPageShortcut "k", => @selectNextLine false
+    KeyboardShortcuts.registerPageShortcut "shift+n", => @scrollFile true
+    KeyboardShortcuts.registerPageShortcut "shift+p", => @scrollFile false
+    KeyboardShortcuts.registerPageShortcut "e", => @toggleFullDiff()
+    KeyboardShortcuts.registerPageShortcut "n", => @scrollChunk true
+    KeyboardShortcuts.registerPageShortcut "p", => @scrollChunk false
+    KeyboardShortcuts.registerPageShortcut "b", => @toggleSideBySide true
+    KeyboardShortcuts.registerPageShortcut "return", =>
+      return if $(".commentCancel").length > 0
+      $(".diffLine.selected").first().dblclick()
+    KeyboardShortcuts.registerPageShortcut "esc", =>
+      #TODO(kle): cancel comment forms
+      @clearSelectedLine()
+
     # eventually this should be a user preference stored server side, for now. Its just a cookie
     @toggleSideBySide(false) if $.cookies(@.SIDE_BY_SIDE_COOKIE) == "true"
-
-  onKeydown: (event) ->
-    return unless @beforeKeydown(event)
-    switch KeyboardShortcuts.keyCombo(event)
-      when "j"
-        @selectNextLine(true)
-      when "k"
-        @selectNextLine(false)
-      when "s_n"
-        @scrollFile(true)
-      when "s_p"
-        @scrollFile(false)
-      when "e"
-        @toggleFullDiff(event)
-      when "n"
-        @scrollChunk(true)
-      when "p"
-        @scrollChunk(false)
-      when "b"
-        @handleSideBySideKeyPress(event)
-      when "return"
-        return if $(".commentCancel").length > 0
-        $(".diffLine.selected").first().dblclick()
-      when "escape"
-        #TODO(kle): cancel comment forms
-        @clearSelectedLine()
-      else
-        KeyboardShortcuts.globalOnKeydown(event)
-
-  beforeKeydown: (event) ->
-    return false if $(document.activeElement).is("textarea")
-    KeyboardShortcuts.beforeKeydown(event)
 
   calculateMarginSize: ->
     commit = $("#commit")
@@ -141,6 +125,7 @@ window.Commit =
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
     repoName = codeLine.parents("#commit").attr("repo")
+    console.log repoName
     Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
   onCommentEdit: (e) ->
@@ -151,7 +136,10 @@ window.Commit =
     commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
     commentEdit.find(".commentCancel").click(Commit.onCommentEditCancel)
     comment.append(commentEdit).find(".commentBody").hide()
-    comment.find(".commentText").focus()
+    textarea = comment.find(".commentText")
+    KeyboardShortcuts.createShortcutContext textarea
+    textarea.focus()
+    KeyboardShortcuts.registerShortcut textarea, "esc", => textarea.blur()
 
   onCommentEditCancel: (e) ->
     comment = $(".comment[commentId='#{$(e.target).parents(".comment").attr("commentId")}']")
@@ -192,11 +180,13 @@ window.Commit =
         commentForm.click (e) -> e.stopPropagation()
         #add a random id so matching comments on both sides of side-by-side can be shown
         commentForm.attr("form-id", Math.floor(Math.random() * 10000))
-        commentForm.find(".commentText").keydown (e) -> e.stopPropagation()
         commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
         Commit.setSideBySideCommentVisibility()
-        codeLine.find(".commentForm").first().find(".commentText").focus()
+        textarea = codeLine.find(".commentForm").first().find(".commentText")
+        KeyboardShortcuts.createShortcutContext textarea
+        textarea.focus()
+        KeyboardShortcuts.registerShortcut textarea, "esc", => textarea.blur()
     })
 
   onCommentSubmit: (e) ->
@@ -275,9 +265,7 @@ window.Commit =
         $("#approvedBanner").replaceWith("<button id='approveButton' class='fancy'>Approve Commit</button>")
     })
 
-  toggleFullDiff: (event) ->
-    # Only toggle the full diff if no other element on the page is selected
-    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
+  toggleFullDiff: ->
     # Performance optimization: instead of using toggle(), which checks each element if it's visible,
     # only check the first diffLine on the page to see if we need to show() or hide().
     firstNonChunk = $(document).find(".diffLine").not(".chunk").filter(":first")
@@ -299,12 +287,6 @@ window.Commit =
       $(".diffLine").not(".chunk").hide()
       $(".chunkBreak").show()
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
-
-  handleSideBySideKeyPress: (event) ->
-    # Only toggle if no other element on the page is selected
-    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
-    @toggleSideBySide(true)
-
 
   toggleSideBySide: (animate = true) ->
     return if $(".slideDiv, body, .codeRight").filter(":animated").length > 0

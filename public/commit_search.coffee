@@ -1,12 +1,33 @@
 window.CommitSearch =
   init: ->
-    @smartSearch = new SmartSearch
+    @smartSearch = new SmartSearch $("#commitSearch input[name=filter_value]")
     $("#commitSearch .submit").click (e) => @smartSearch.search()
-    $("#commitSearch input[name=filter_value]").keydown (e) => @onKeydownInSearchbox e
-    $("#commitSearch input[name=filter_value]").keypress (e) => KeyboardShortcuts.beforeKeydown(e)
-    $(document).keydown (e) => @onKeydown e
-
     $("#commitSearch select[name='time_range']").change (e) => @timeRangeChanged(e)
+
+    # Register shortcuts
+    KeyboardShortcuts.registerPageShortcut "j", => @selectDiff true
+    KeyboardShortcuts.registerPageShortcut "k", => @selectDiff false
+    KeyboardShortcuts.registerPageShortcut "h", (e) => @showNextPage "after"
+    KeyboardShortcuts.registerPageShortcut "l", (e) => @showNextPage "before"
+    KeyboardShortcuts.registerPageShortcut "r", (e) => @refreshAllSearches()
+    for shortcut in ["return", "o"]
+      KeyboardShortcuts.registerPageShortcut shortcut, (e) =>
+        window.open $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
+    searchBox = $("#commitSearch input[name=filter_value]")
+    KeyboardShortcuts.createShortcutContext searchBox
+    KeyboardShortcuts.registerPageShortcut "/", (e) =>
+      window.scroll 0, 0
+      $("#commitSearch input[name=filter_value]").focus()
+      $("#commitSearch input[name=filter_value]").select()
+      # We need to return false because this event is fired before we have focus on the input element (any
+      # events fired once we have focus will be handled appropriately by jquery.hotkeys.
+      false
+    KeyboardShortcuts.registerShortcut searchBox, "return", (e) =>
+      @smartSearch.search()
+      $("#commitSearch input[name=filter_value]").blur()
+    KeyboardShortcuts.registerShortcut searchBox, "esc", (e) =>
+      $("#commitSearch input[name=filter_value]").blur()
+      Util.scrollWithContext(".selected")
 
     $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
@@ -18,8 +39,8 @@ window.CommitSearch =
         $.fn.tipsy.enable()
         @reorderSearches()
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
-    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage(e, "after")
-    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage(e, "before")
+    $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage "after", e
+    $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage "before", e
     $("#savedSearches .savedSearch input[name='show_unapproved_commits']").live "click",
         (e) => @toggleUnapprovedCommits(e)
     @selectFirstDiff()
@@ -46,37 +67,6 @@ window.CommitSearch =
     Util.scrollWithContext(".selected") if removedSelected
     @deleteSearch(searchId)
     false
-
-  onKeydownInSearchbox: (event) ->
-    return unless KeyboardShortcuts.beforeKeydown(event)
-    switch KeyboardShortcuts.keyCombo(event)
-      when "return"
-        @smartSearch.search()
-      when "escape"
-        @smartSearch.unfocus()
-        Util.scrollWithContext(".selected")
-
-  onKeydown: (event) ->
-    return unless KeyboardShortcuts.beforeKeydown(event)
-    switch KeyboardShortcuts.keyCombo(event)
-      when "/"
-        window.scroll(0, 0)
-        @smartSearch.focus()
-        return false
-      when "j"
-        @selectDiff(true)
-      when "k"
-        @selectDiff(false)
-      when "h"
-        @showNextPage(event, "after")
-      when "l"
-        @showNextPage(event, "before")
-      when "r"
-        @refreshAllSearches()
-      when "return", "o"
-        window.open $("#savedSearches .commitsList tr.selected .commitLink").attr("href")
-      else
-        KeyboardShortcuts.globalOnKeydown(event)
 
   # Swap the current selection for a new one
   selectNewDiff: (next) ->
@@ -119,16 +109,15 @@ window.CommitSearch =
 
   # Shows the next page of a commit search.
   # direction: "before" or "after"
-  showNextPage: (event, direction = "before") ->
-    event.preventDefault()
+  showNextPage: (direction = "before", event = null) ->
     return if @searching
 
-    if event.type == "keydown"
-      savedSearch = $(".selected").parents(".savedSearch")
-      keypress = true
-    else # event.type == "click"
+    if event? # Triggered by click
       savedSearch = $(event.target).parents(".savedSearch")
       keypress = false
+    else # Triggered by hotkey
+      savedSearch = $(".selected").parents(".savedSearch")
+      keypress = true
 
     savedSearchId = savedSearch.attr("saved-search-id")
     savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")

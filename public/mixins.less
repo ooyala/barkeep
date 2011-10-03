@@ -131,3 +131,14 @@
     background: transparent;
   }
 }
+
+// There are cases where we want focus for tooltips but we don't want to show an outline
+.noFocusOutline {
+  // FF
+  -moz-outline-style: none;
+  outline-style: none;
+  outline-width: 0px;
+  outline-color: -moz-use-text-color;
+  // Chrome
+  outline: none
+}

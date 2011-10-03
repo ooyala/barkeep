@@ -34,7 +34,7 @@ window.CommentForm =
   create: (inline, edit, hiddenFields) ->
     className = if edit then "commentEditForm" else "commentForm"
     submitValue = if edit then "Save Edit" else "Post Comment"
-    header = """
+    header = if edit then "" else """
       <div class='heading'><span class='addAComment'>Add a comment</span></div>
       <input type='hidden' name='repo_name' value='#{hiddenFields.repoName}' />
       <input type='hidden' name='sha' value='#{hiddenFields.sha}' />
@@ -43,7 +43,7 @@ window.CommentForm =
     """
     """
       <form class='#{className}' action='/comment' type='POST'>
-        #{if edit then header else ""}
+        #{header}
         <textarea class='commentText' name='text'></textarea>
         <div class='commentControls'>
           <input class='commentSubmit' type='submit' value='#{submitValue}' />
@@ -58,51 +58,62 @@ window.ShortcutOverlay =
       url: "/keyboard_shortcuts#{location.pathname}"
       success: (html) =>
         $("#overlay").html html
-        $("#overlay #shortcuts .close a").click (e) => @hide()
+        $("#overlay .container").focus -> $("#overlay").css("visibility", "visible")
+        $("#overlay .container").blur -> $("#overlay").css("visibility", "hidden")
 
-  show: ->
-    @showing = true
-    $("#overlay").css("visibility", "visible")
-
-  hide: ->
-    @showing = false
-    $("#overlay").css("visibility", "hidden")
+        # Set up the keyboard shortcuts
+        KeyboardShortcuts.createShortcutContext $("#overlay .container")
+        KeyboardShortcuts.registerPageShortcut "shift+/", -> $("#overlay .container").focus()
+        KeyboardShortcuts.registerShortcut $("#overlay .container"), "esc", ->
+          $("#overlay .container").blur()
+        $("#overlay .shortcuts .close a").click (e) -> $("#overlay .container").blur()
 
 window.KeyboardShortcuts =
-  # Translate a keydown event (or similar) to a nice string (e.g. control-alt-c => "ac_c")
-  keyCombo: (event) ->
-    modifiers = (m[0] for m in ["altKey", "ctrlKey", "metaKey", "shiftKey"] when event[m])
-    modifier_string = modifiers.join("")
-    modifier_string += "_" unless modifier_string == ""
-    modifier_string + Constants.KEY_CODES[event.which]
+  init: ->
+    @suspended = false
+    @registerGlobals()
 
-  # Call before handling an event. The return value of this indicates whether to continue handling.
-  beforeKeydown: (event) ->
-    event.stopPropagation()
-    if ShortcutOverlay.showing
-      ShortcutOverlay.hide()
-      return false
-    true
+  # Register some shortcut on a page element.
+  # element - some jquery element
+  # shortcut - the jquery.hotkeys-formatted shortcut string
+  # callback - the associated callback
+  registerShortcut: (element, shortcut, callback) ->
+    # Dumb special-casing we have to do for FF on Mac, because it doesn't give any keycodes when you press
+    # shift-/ (question mark).
+    if shortcut == "shift+/"
+      element.keypress (e) =>
+        return unless e.which == 63
+        return if @suspended and not $(e.target).is(element)
+        return if not $(e.target).is(element) and e.target.type == "text"
+        callback.call(e)
+      return
+    element.bind "keydown", shortcut, (e) =>
+      return if @suspended and not $(e.target).is(element)
+      callback.call(e)
 
-  globalOnKeydown: (event) ->
-    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
-    @beforeKeydown(event)
-    switch @keyCombo(event)
-      when "c"
-        window.location.href = "/commits"
-      when "s"
-        window.location.href = "/stats"
-      when "i"
-        window.location.href = "/inspire"
+  registerPageShortcut: (shortcut, callback) -> @registerShortcut($(document), shortcut, callback)
 
-  # This is a hack to get around the fact that it's not possible to detect a ? being pressed using the keydown
-  # event in Firefox. This is the only shortcut for which we use this event.
-  globalQuestionPress: (event) ->
-    return if $.inArray(event.target.tagName, ["BODY", "HTML"]) == -1
-    @beforeKeydown(event)
-    switch @keyCombo(event)
-      when "s_?"
-        ShortcutOverlay.show()
+  # A convenience function for specifying that an element is its own "shortcut context", which means that when
+  # it is focused, page and global keyboard shortcuts will not apply.
+  #
+  # element - jquery element
+  createShortcutContext: (element) ->
+    # Make blur be fired for non-input elements. This terrible, wonderful hack courtesy of
+    # http://www.barryvan.com.au/2009/01/onfocus-and-onblur-for-divs-in-fx/
+    unless element.attr("tabindex")?
+      element.attr("tabindex", -1)
+      element.addClass "noFocusOutline"
+    element.focus =>
+      @suspended = true
+      true
+    element.blur =>
+      @suspended = false
+      true
+
+  registerGlobals: ->
+    @registerPageShortcut "c", -> window.location.href = "/commits"
+    @registerPageShortcut "s", -> window.location.href = "/stats"
+    @registerPageShortcut "i", -> window.location.href = "/inspire"
 
 window.Login =
   init: ->
@@ -117,5 +128,4 @@ window.Login =
 $(document).ready ->
   ShortcutOverlay.init()
   Login.init()
-  $(document).keydown (e) => KeyboardShortcuts.globalOnKeydown e
-  $(document).keypress (e) => KeyboardShortcuts.globalQuestionPress e
+  KeyboardShortcuts.init()
