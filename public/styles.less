@@ -287,7 +287,7 @@ header {
   }
 
   /* This is the transparent overlay that grays out a savedSearch. */
-  .overlay {
+  .maskingOverlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -859,24 +859,9 @@ table.commitsList, table.authorList {
 /*
  * Keyboard shortcut overlay.
  */
-
-#overlay {
-  position: fixed;
-  text-align: center;
-  left: 0px;
-  width: 100%;
-  top: 100px;
-  z-index: 10;
-  display: block;
-  visibility: hidden;
-
+.kbShortcuts.overlay {
   .container {
-    position: relative;
-    margin: 0 auto;
-    background: @textColor;
-    opacity: 0.95;
     width: @pageWidth - 100;
-    box-shadow: 2px 2px 5px @textColor;
 
     .shortcuts {
       background: transparent;

@@ -57,16 +57,16 @@ window.ShortcutOverlay =
     $.ajax
       url: "/keyboard_shortcuts#{location.pathname}"
       success: (html) =>
-        $("#overlay").html html
-        $("#overlay .container").focus -> $("#overlay").css("visibility", "visible")
-        $("#overlay .container").blur -> $("#overlay").css("visibility", "hidden")
+        $(body).append html
+        $(".kbShortcuts.overlay .container").focus -> $(".kbShortcuts.overlay").css("visibility", "visible")
+        $(".kbShortcuts.overlay .container").blur -> $(".kbShortcuts.overlay").css("visibility", "hidden")
 
         # Set up the keyboard shortcuts
-        KeyboardShortcuts.createShortcutContext $("#overlay .container")
-        KeyboardShortcuts.registerPageShortcut "shift+/", -> $("#overlay .container").focus()
-        KeyboardShortcuts.registerShortcut $("#overlay .container"), "esc", ->
-          $("#overlay .container").blur()
-        $("#overlay .shortcuts .close a").click (e) -> $("#overlay .container").blur()
+        KeyboardShortcuts.createShortcutContext $(".kbShortcuts.overlay .container")
+        KeyboardShortcuts.registerPageShortcut "shift+/", -> $(".kbShortcuts.overlay .container").focus()
+        KeyboardShortcuts.registerShortcut $(".kbShortcuts.overlay .container"), "esc", ->
+          $(".kbShortcuts.overlay .container").blur()
+        $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> $(".kbShortcuts.overlay .container").blur()
 
 window.KeyboardShortcuts =
   init: ->

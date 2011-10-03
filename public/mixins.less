@@ -142,3 +142,23 @@
   // Chrome
   outline: none
 }
+
+// Full-screen overlays
+.overlay {
+  position: fixed;
+  text-align: center;
+  left: 0px;
+  width: 100%;
+  top: 100px;
+  z-index: 10;
+  display: block;
+  visibility: hidden;
+
+  .container {
+    position: relative;
+    margin: 0 auto;
+    background: @textColor;
+    opacity: 0.95;
+    box-shadow: 2px 2px 5px @textColor;
+  }
+}

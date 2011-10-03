@@ -229,7 +229,7 @@ window.CommitSearch =
   #  - callback: an optional callback called after the refresh is finished.
   refreshSearch: (savedSearch, callback = null) ->
     $(".tipsy").remove()
-    overlayDiv = $("<div class='overlay'></div>")
+    overlayDiv = $("<div class='maskingOverlay'></div>")
     savedSearch.append(overlayDiv)
     overlayDiv.fadeTo 100, 0.6, => Util.timeout 100, =>
       savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
