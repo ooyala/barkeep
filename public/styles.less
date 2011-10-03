@@ -662,6 +662,7 @@ table.commitsList, table.authorList {
       border-left: 0;
       margin: 8px 0px;
       textarea { width: 847px; }
+      .commentBody { img { max-width: 839px; } }
     }
 
     // The comment edit form, unlike general comment form, lives inside a comment div, so no margins needed
@@ -724,6 +725,8 @@ table.commitsList, table.authorList {
       line-height: 1.5em;
 
       p, div { margin-bottom: 8px; }
+
+      img { max-width: @pageWidth - 10px; }
 
       code {
         display: inline;
