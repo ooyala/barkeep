@@ -38,9 +38,11 @@ window.ShortcutOverlay =
         # Set up the keyboard shortcuts
         KeyboardShortcuts.createShortcutContext $(".kbShortcuts.overlay .container")
         KeyboardShortcuts.registerPageShortcut "shift+/", -> $(".kbShortcuts.overlay .container").focus()
-        KeyboardShortcuts.registerShortcut $(".kbShortcuts.overlay .container"), "esc", ->
-          $(".kbShortcuts.overlay .container").blur()
-          false
+        # Hitting both "escape" and "?" again will get rid of the overlay
+        for shortcut in ["esc", "shift+/"]
+          KeyboardShortcuts.registerShortcut $(".kbShortcuts.overlay .container"), shortcut, ->
+            $(".kbShortcuts.overlay .container").blur()
+            false
         $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> $(".kbShortcuts.overlay .container").blur()
 
 window.KeyboardShortcuts =
