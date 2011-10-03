@@ -25,27 +25,3 @@ window.Constants =
 
   CONTEXT_BUFFER_PIXELS  : 100
   SCROLL_DISTANCE_PIXELS : 60 # Copied this setting from vimium
-
-# TODO(caleb): Remove in subsequent commit.
-# some utlility functions for reading/writing cookies and string manipulation
-window.createCookie = (name, value, expires) ->
-  document.cookie = name + "=" + value + "; expires=" + expires + "; path=/"
-
-window.readCookie = (name) ->
-  nameEq = name + "="
-  for pair in document.cookie.split(';')
-    trimmedPair = pair.ltrim()
-    return trimmedPair.substring(nameEq.length) if trimmedPair.startsWith(nameEq)
-  null
-
-String.prototype.trim = () ->
-  this.replace(/^\s+|\s+$/g,"")
-
-String.prototype.ltrim = () ->
-  this.replace(/^\s+/,"")
-
-String.prototype.rtrim = () ->
-  this.replace(/\s+$/,"")
-
-String.prototype.startsWith = (s) ->
-  this.indexOf(s) == 0

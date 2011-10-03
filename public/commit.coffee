@@ -15,7 +15,7 @@ window.Commit =
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
     # eventually this should be a user preference stored server side, for now. Its just a cookie
-    @toggleSideBySide(false) if readCookie(@.SIDE_BY_SIDE_COOKIE) == "true"
+    @toggleSideBySide(false) if $.cookies(@.SIDE_BY_SIDE_COOKIE) == "true"
 
   onKeydown: (event) ->
     return unless @beforeKeydown(event)
@@ -318,7 +318,7 @@ window.Commit =
     unless Commit.isSideBySide
       # split to side-by-side
       Commit.isSideBySide = true
-      createCookie @.SIDE_BY_SIDE_COOKIE, "true", 2^30
+      $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
       # save off size of code table so it doesn't drift after many animations
       Commit.originalLeftWidth ?= leftCodeTable.width()
       Commit.originalContainerWidth ?= $("#container").width()
@@ -348,7 +348,7 @@ window.Commit =
     else
       # callapse to unified diff
       Commit.isSideBySide = false
-      createCookie @.SIDE_BY_SIDE_COOKIE, "false", 2^30
+      $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
       $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
