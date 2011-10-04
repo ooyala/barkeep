@@ -190,6 +190,7 @@ class Emails
     }
     output = grit_repo.git.log(git_log_options, [commit_sha])
     # Trim off the first line, which is blank because of our --pretty=format: argument.
-    output.strip
+    # git log prints each line of stat information with 1 leading space. Strip that.
+    output.strip.split("\n").map(&:strip).join("\n")
   end
 end
