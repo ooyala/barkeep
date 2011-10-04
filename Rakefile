@@ -34,10 +34,7 @@ namespace :resque do
 
   # These tasks must be defined for Resque to be able to run tasks on these queues.
   task :require_resque_tasks do
-    resque_jobs = Dir.glob("resque_jobs/*.rb")
-    resque_jobs.each do |file_name|
-      require file_name.sub(".rb", "")
-    end
+    Dir.glob("resque_jobs/*.rb").each { |file_name| require file_name.sub(".rb", "") }
   end
 end
 
