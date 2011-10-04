@@ -73,7 +73,7 @@ class Emails
   # This can take up to 0.5 seconds per saved search, as it calls out to git for every repo tracked
   # unless the saved search limits by repo.
   def self.users_with_saved_searches_matching(commit, saved_search_filter_options = {})
-    searches = SavedSearch.eager(:user).filter(saved_search_filter_options).all
+    searches = SavedSearch.filter(saved_search_filter_options).eager(:user).all
     searches_by_user = searches.group_by(&:user)
     users_with_matching_searches = searches_by_user.map do |user, searches|
       searches.any? { |search| search.matches_commit?(commit) } ? user : nil

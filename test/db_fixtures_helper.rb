@@ -7,3 +7,8 @@ def create_comment(commit, user, created_at, other_options = {})
       :created_at => created_at, :updated_at => created_at,
       :has_been_emailed => false }.merge(other_options))
 end
+
+def create_commit(grit_commit, user, db_repo)
+  Commit.create(:sha => grit_commit.sha, :message => grit_commit.message, :date => grit_commit.authored_date,
+    :user_id => user.id, :git_repo_id => db_repo.id)
+end
