@@ -10,20 +10,21 @@ class Emails
   class RecoverableEmailError < StandardError
   end
 
+  def self.subject_for_commit_email(grit_commit)
+    "Commit #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - #{grit_commit.short_message[0..60]}"
+  end
+
   # Sends an email notification for one or more comments.
   # Upon success or non-recoverable failure, an entry in the completed_emails table is added to record the
   # email.
-  def self.send_comment_email(commit, comments, send_immediately = false)
+  def self.send_comment_email(commit, comments)
     grit_commit = commit.grit_commit
-    subject = "Commit #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
-        "#{grit_commit.short_message[0..60]}"
+    subject = subject_for_commit_email(grit_commit)
     html_body = comment_email_body(commit, comments)
-
-    # TODO(philc): Provide a plaintext email as well.
 
     all_previous_commenters = commit.comments.map { |comment| comment.user.email }
     to = commit.user.email
-    cc = (users_with_saved_searches_matching(commit).map(&:email) +
+    cc = (users_with_saved_searches_matching(commit, :email_comments => true).map(&:email) +
           all_previous_commenters).uniq
 
     completed_email = CompletedEmail.new(:to => ([to] + cc).join(","), :subject => subject,
@@ -50,11 +51,29 @@ class Emails
     completed_email.save
   end
 
+  # Sends an email notification for a new commit.
+  def self.send_commit_email(commit)
+    grit_commit = commit.grit_commit
+    subject = subject_for_commit_email(grit_commit)
+    html_body = commit_email_body(commit)
+    to = users_with_saved_searches_matching(commit, :email_commits => true).map(&:email).uniq
+
+    return if to.empty? # Sometimes... there's just nobody listening.
+
+    user, domain = GMAIL_ADDRESS.split("@")
+    pony_options = pony_options_for_commit(commit).merge({
+      # Make the From: address e.g. "barkeep+commits@gmail.com" so it's easily filterable.
+      :from => "#{user}+commits@#{domain}"
+    })
+
+    deliver_mail(to.join(","), subject, html_body, pony_options)
+  end
+
   # Returns a list of User objects who have saved searches which match the given commit.
   # This can take up to 0.5 seconds per saved search, as it calls out to git for every repo tracked
   # unless the saved search limits by repo.
-  def self.users_with_saved_searches_matching(commit)
-    searches = SavedSearch.eager(:user).all
+  def self.users_with_saved_searches_matching(commit, saved_search_filter_options = {})
+    searches = SavedSearch.eager(:user).filter(saved_search_filter_options).all
     searches_by_user = searches.group_by(&:user)
     users_with_matching_searches = searches_by_user.map do |user, searches|
       searches.any? { |search| search.matches_commit?(commit) } ? user : nil
