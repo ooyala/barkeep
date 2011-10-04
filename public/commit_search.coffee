@@ -257,7 +257,7 @@ window.CommitSearch =
   changeEmailOptions: (event) ->
     savedSearch = $(event.target).parents(".savedSearch")
     savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
-    form = $($(event.target).parents(".emailOptionsMenu"))
+    form = $($(event.target).parents(".searchOptionsMenu"))
     requestBody = {
       email_commits: form.find("input[name=email_commits]").attr("checked") == "checked",
       email_comments: form.find("input[name=email_comments]").attr("checked") == "checked",
