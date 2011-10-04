@@ -246,10 +246,12 @@ class Barkeep < Sinatra::Base
   end
 
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
-  post "/saved_searches/:id/show_unapproved_commits" do
-    unapproved_only = JSON.parse(request.body.read)["unapproved_only"] || false
+  post "/saved_searches/:id/search_options" do
     saved_search = SavedSearch[:id => params[:id].to_i]
-    saved_search.unapproved_only = unapproved_only
+    body_params = JSON.parse(request.body.read)
+    [:unapproved_only, :email_commits, :email_comments].each do |setting|
+      saved_search.send("#{setting}=", body_params[setting.to_s]) unless body_params[setting.to_s].nil?
+    end
     saved_search.save
     "OK"
   end

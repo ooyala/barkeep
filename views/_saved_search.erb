@@ -19,12 +19,29 @@
   <div class="header">
     <div class="dragHandle"></div>
     <a href="#" class="delete">x</a>
-    <div class="unapproved">
-      <label>
-        <input type="checkbox" name="show_unapproved_commits" class="emailCheckbox"
-            <%= saved_search.unapproved_only ? "checked" : nil %> />
-        only show unapproved
-      </label>
+    <div class="searchOptions">
+      <a href="#" class="searchOptionsLink">Search options</a>
+
+      <div class="searchOptionsMenu" style="display:none">
+        <ul>
+          <li>
+            <label>
+              <input type="checkbox" name="show_unapproved_commits" class="emailCheckbox"
+                  <%= "checked" if saved_search.unapproved_only %>/>Only show unapproved
+            </label>
+          </li>
+          <li>
+            <label><input type="checkbox" name="email_commits"
+                <%= "checked" if saved_search.email_commits %> />Email me new commits
+            </label>
+          </li>
+          <li>
+            <label><input type="checkbox" name="email_comments"
+                <%= "checked" if saved_search.email_comments %> />Email me comments
+            </label>
+          </li>
+        </ul>
+      </div>
     </div>
     <div class="name"><%= saved_search.title %></div>
   </div>

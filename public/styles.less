@@ -276,13 +276,35 @@ header {
       .closeLinks;
     }
 
-    .unapproved {
+    .searchOptions {
       font-size: 12px;
       position: absolute;
       right: 0;
       margin-right: @dragHandleWidth + 28;
       padding-right: 5px;
       padding-top: 6px;
+
+      a.searchOptionsLink {
+        /* Horizontal padding so that when you click on the link, the background fill looks nicer. */
+        padding: 0 2px;
+        padding-top: 1px;
+      }
+
+      .searchOptionsMenu {
+        top: 21px;
+        left: -40px;
+        position: absolute;
+        .raisedPanel;
+        background-color: @almostWhite;
+        padding: 5px 8px;
+        white-space: nowrap;
+        ul {
+          list-style-type: none;
+          padding: 0;
+          li { margin: 5px 0; }
+        }
+        input[type=checkbox] { margin-right: 3px; }
+      }
     }
   }
 

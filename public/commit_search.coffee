@@ -41,8 +41,15 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage "after", e
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage "before", e
-    $("#savedSearches .savedSearch input[name='show_unapproved_commits']").live "click",
+
+    # We save separate event handlers for these checkboxes, even though they're related, because 
+    # toggling show_unapproved_commits requires a full search refresh while the others do not.
+    $(".searchOptions input[name='show_unapproved_commits']").live "change",
         (e) => @toggleUnapprovedCommits(e)
+    $(".searchOptions input[name='email_commits']").live "change", (e) => @changeEmailOptions(e)
+    $(".searchOptions input[name='email_comments']").live "change", (e) => @changeEmailOptions(e)
+    $(".searchOptionsLink").live "click", (e) => @toggleSearchOptionsMenu(e)
+
     @selectFirstDiff()
 
   onSearchSaved: (responseHtml) ->
@@ -209,20 +216,43 @@ window.CommitSearch =
       url: "/saved_searches/#{id}"
       success: => @afterSync()
 
+  toggleSearchOptionsMenu: (event) ->
+    event.preventDefault()
+    searchOptionsMenu = $(event.target).parent().find(".searchOptionsMenu")
+    if searchOptionsMenu.css("display") == "none"
+      searchOptionsMenu.show()
+    else
+      searchOptionsMenu.hide()
+
   toggleUnapprovedCommits: (event) ->
-    data = { unapproved_only: $(event.target).attr("checked") == "checked" }
     savedSearch = $(event.target).parents(".savedSearch")
     savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
+    requestBody = { unapproved_only: $(event.target).attr("checked") == "checked" }
     @beforeSync()
     $.ajax
       type: "POST"
-      contentTypeType: "application/json"
-      url: "/saved_searches/#{savedSearchId}/show_unapproved_commits"
-      data: jQuery.toJSON(data)
-      success: (newSavedSearchHtml) =>
+      contentType: "application/json"
+      url: "/saved_searches/#{savedSearchId}/search_options"
+      data: jQuery.toJSON(requestBody)
+      success: () =>
         @afterSync()
         @refreshing = true
         @refreshSearch(savedSearch, => @refreshing = false)
+
+  changeEmailOptions: (event) ->
+    savedSearch = $(event.target).parents(".savedSearch")
+    savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
+    form = $($(event.target).parents(".emailOptionsMenu"))
+    requestBody = {
+      email_commits: form.find("input[name=email_commits]").attr("checked") == "checked",
+      email_comments: form.find("input[name=email_comments]").attr("checked") == "checked",
+    }
+
+    $.ajax
+      type: "POST"
+      contentType: "application/json"
+      url: "/saved_searches/#{savedSearchId}/search_options"
+      data: jQuery.toJSON(requestBody)
 
   # Refresh a saved search with the latest from the server.
   #  - savedSearch: a JQuery savedSearch div
