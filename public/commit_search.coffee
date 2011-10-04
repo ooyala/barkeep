@@ -219,10 +219,25 @@ window.CommitSearch =
   toggleSearchOptionsMenu: (event) ->
     event.preventDefault()
     searchOptionsMenu = $(event.target).parent().find(".searchOptionsMenu")
-    if searchOptionsMenu.css("display") == "none"
+    searchOptionsMenu.stop(true, true) # Stop any previous animations.
+
+    # We perform a bouncing animation as the menu slides in.
+    dropShadowHeight = 6
+    startingPosition = searchOptionsMenu.outerHeight() + dropShadowHeight
+
+    firstTimeShown = searchOptionsMenu.css("display") == "none"
+    if firstTimeShown
+      searchOptionsMenu.css("top", -startingPosition)
       searchOptionsMenu.show()
+
+    bouncePadding = 18
+
+    if (searchOptionsMenu.attr("animatingDirection") == "in")
+      searchOptionsMenu.attr("animatingDirection", "out")
+      searchOptionsMenu.animate({ top: -startingPosition }, 210, null)
     else
-      searchOptionsMenu.hide()
+      searchOptionsMenu.attr("animatingDirection", "in")
+      searchOptionsMenu.animate({ top: -bouncePadding }, 210, "easeOutBack")
 
   toggleUnapprovedCommits: (event) ->
     savedSearch = $(event.target).parents(".savedSearch")

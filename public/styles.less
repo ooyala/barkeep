@@ -290,20 +290,34 @@ header {
         padding-top: 1px;
       }
 
-      .searchOptionsMenu {
-        top: 21px;
-        left: -40px;
+      /* This container encompasses the saved options menu. It has "overflow: hidden" so that the search
+       * options menu can appear to slide in from the top of this container. */
+      .searchOptionsMenuContainer {
+        top: 22px;
+        left: -39px;
         position: absolute;
-        .raisedPanel;
-        background-color: @almostWhite;
-        padding: 5px 8px;
-        white-space: nowrap;
-        ul {
-          list-style-type: none;
-          padding: 0;
-          li { margin: 5px 0; }
+        overflow: hidden;
+        /* We don't want this invisible, transparent container to capture mouse clicks. */
+        pointer-events: none;
+        height: 100px;
+        width: 200px;
+
+        .searchOptionsMenu {
+          .raisedPanel;
+          position: absolute;
+          pointer-events: auto;
+          background-color: @almostWhite;
+          padding: 5px 8px;
+          /* This menu bounces in when it first appears, and a bounce animation requires extra height. */
+          padding-top: 20px;
+          white-space: nowrap;
+          ul {
+            list-style-type: none;
+            padding: 0;
+            li { margin: 5px 0; }
+          }
+          input[type=checkbox] { margin-right: 3px; }
         }
-        input[type=checkbox] { margin-right: 3px; }
       }
     }
   }
