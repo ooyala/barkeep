@@ -23,11 +23,6 @@ Daemons.run_proc("resque_workers.rb", daemonize_options) do
   $LOAD_PATH.push(project_root) unless $LOAD_PATH.include?(project_root)
   require "rake"
   require "resque/tasks"
-  require "resque_jobs/db_commit_ingest"
-  require "resque_jobs/generate_tagged_diffs"
-  require "resque_jobs/fetch_commits"
-  require "resque_jobs/batch_comment_emails"
-  require "resque_jobs/deliver_comment_emails"
 
   # You specify which Resque worker to run via the QUEUE env variable.
   ENV["QUEUE"] = "*"
