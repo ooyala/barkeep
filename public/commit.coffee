@@ -149,7 +149,6 @@ window.Commit =
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
     repoName = codeLine.parents("#commit").attr("repo")
-    console.log repoName
     Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
   onCommentEdit: (e) ->
