@@ -7,7 +7,7 @@
 <%= commit.grit_commit.id_abbrev %></a>
 <%= CGI.escape_html(commit.grit_commit.author.display_string) %>
  <%= StringHelper.short_date(commit.grit_commit.date) %><br/><br/>
-<%= commit.grit_commit.message.gsub("\n", "<br/>") %><br/><br/>
+<%= CGI.escape_html(commit.grit_commit.message).gsub("\n", "<br/>") %><br/><br/>
 
 <%= diff_stat(commit.grit_commit.repo, commit.sha).gsub("\n", "<br/>") %>
 
