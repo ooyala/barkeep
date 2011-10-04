@@ -44,9 +44,6 @@ class DbCommitIngest
           new_user.name = commit.author.name
         end
 
-        # TODO(philc): Queue up a job to cache tagged diffs for this file.
-        Resque.enqueue(GenerateTaggedDiffs, repo_name, commit.sha)
-
         {
           :git_repo_id => db_repo.id,
           :sha => commit.sha,
@@ -61,6 +58,11 @@ class DbCommitIngest
 
       # A single multi-insert statement is ~2x faster than doing insert statements one at a time.
       Commit.multi_insert(rows_to_insert)
+
+      rows_to_insert.each do |row|
+        Resque.enqueue(DeliverCommitEmails, repo_name, row[:sha])
+        Resque.enqueue(GenerateTaggedDiffs, repo_name, row[:sha])
+      end
 
       page += 1
 

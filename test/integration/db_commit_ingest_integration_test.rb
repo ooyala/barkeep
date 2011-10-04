@@ -1,6 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../integration_test_helper.rb"))
 require "resque_jobs/db_commit_ingest"
 require "resque_jobs/generate_tagged_diffs"
+require "resque_jobs/deliver_commit_emails"
 
 class DbCommitIngestIntegrationTest < Scope::TestCase
   include IntegrationTestHelper
@@ -24,7 +25,10 @@ class DbCommitIngestIntegrationTest < Scope::TestCase
     assert_equal head.author.email, commit.user.email
     assert_equal head.message, commit.message
     # We enqueue a job to pregenerate this commit's highlighted diffs.
-    assert_equal [GenerateTaggedDiffs, test_repo.name, commit.sha], @enqueued_jobs.first
+    expected_tasks = [
+      [DeliverCommitEmails, test_repo.name, commit.sha],
+      [GenerateTaggedDiffs, test_repo.name, commit.sha]]
+    assert_equal expected_tasks, @enqueued_jobs[0, 2]
 
     Commit.filter(:sha => head.sha).delete
   end
