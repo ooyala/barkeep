@@ -23,6 +23,7 @@ Daemons.run_proc("resque_workers.rb", daemonize_options) do
   $LOAD_PATH.push(project_root) unless $LOAD_PATH.include?(project_root)
   require "rake"
   require "resque/tasks"
+  Dir.glob(File.join(project_root, "resque_jobs/*.rb")).each { |file_name| require file_name }
 
   # You specify which Resque worker to run via the QUEUE env variable.
   ENV["QUEUE"] = "*"
