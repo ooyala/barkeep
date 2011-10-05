@@ -17,8 +17,9 @@ class GitDiffUtils
   # returns: [ { :binary, :lines, :breaks}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
+    repo = MetaRepo.instance.grit_repo_for_name(repo_name)
     begin
-      commit.diffs.map do |diff|
+      GitDiffUtils.show(repo, commit).map do |diff|
         a_path = diff.a_path
         b_path = diff.b_path
         data = {
@@ -167,6 +168,22 @@ class GitDiffUtils
       process_chunk_for_replaced(chunk)
     end
     chunks
+  end
+
+  def self.show(repo, commit)
+    if commit.parents.size > 0
+      diff = repo.git.native(:diff, {:full_index => true, :find_renames => true}, commit.parents[0].id,
+          commit.id)
+    else
+      diff = repo.git.native(:show, {:full_index => true, :pretty => "raw"}, commit.id)
+      if diff =~ /diff --git a/
+        diff = diff.sub(/.+?(diff --git a)/m, '\1')
+      else
+        diff = ""
+      end
+    end
+
+    Grit::Diff.list_from_string(repo, diff)
   end
 
   # Process lines in each chunk to work out which lines were replaced, rather than newly added or completely
