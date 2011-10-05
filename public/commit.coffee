@@ -322,11 +322,10 @@ window.Commit =
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     unless Commit.isSideBySide
-      # split to side-by-side
       Commit.isSideBySide = true
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
 
-      # save off size of code table so it doesn't drift after many animations
+      # Save size of the code table so it doesn't drift after many animations.
       Commit.originalLeftWidth ?= leftCodeTable.width()
       Commit.originalContainerWidth ?= $("#container").width()
       rightCodeTable.width(Commit.originalLeftWidth)
@@ -334,16 +333,16 @@ window.Commit =
 
       # show and hide the appropriate elements in the 2 tables
       rightCodeTable.show()
-      leftCodeTable.find(".added > .codeText").css({"visibility": "hidden"})
-      rightCodeTable.find(".removed > .codeText").css({"visibility": "hidden"})
+      leftCodeTable.find(".added > .codeText").css(visibility: "hidden")
+      rightCodeTable.find(".removed > .codeText").css(visibility: "hidden")
       leftCodeTable.find(".rightNumber").hide()
       rightCodeTable.find(".leftNumber").hide()
       Commit.setSideBySideCommentVisibility()
 
       # animations to split the 2 tables
-      # TODO(bochen): don't animate when there are too many lines on the page (its too slow)
-      rightCodeTable.animate({"left": @.originalLeftWidth},  @.SIDE_BY_SIDE_SPLIT_DURATION)
-      $("#container").animate({"width": @.originalContainerWidth * 2 - 2},
+      # TODO(bochen): don't animate when there are too many lines on the page (it's too slow).
+      rightCodeTable.animate({ "left": @.originalLeftWidth },  @.SIDE_BY_SIDE_SPLIT_DURATION)
+      $("#container").animate({ "width": @.originalContainerWidth * 2 - 2},
         @.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
