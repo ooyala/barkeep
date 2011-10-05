@@ -14,18 +14,17 @@
 
         </td>
         <td>
-          <span id="approveButtonSpan">
-            <% if commit.approved? %>
-              <%= erb :_approved_banner, :layout => false,
-                  :locals => { :commit => commit } %>
-            <% else %>
-              <% if current_user %>
-                <button id="approveButton" class="fancy">Approve Commit</button>
-              <% end %>
+          <% if commit.approved? %>
+            <%= erb :_approved_banner, :layout => false, :locals => { :commit => commit } %>
+          <% else %>
+            <% if current_user %>
+              <button id="approveButton" class="fancy">Approve Commit</button>
             <% end %>
-          </span>
+          <% end %>
         </td>
       </tr>
+    </table>
+    <table>
       <tr>
         <td>
           <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
@@ -40,9 +39,7 @@
           </div>
         </td>
         <td>
-          <span id="sideBySideButtonSpan">
-            <button id="sideBySideButton" class="standard">View Side-By-Side</button>
-          </span>
+          <button id="sideBySideButton" class="standard">View Side-By-Side</button>
         </td>
       </tr>
     </table>
