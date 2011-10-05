@@ -13,6 +13,7 @@ window.Commit =
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
+    $("#sideBySideButton").live "click", => @toggleSideBySide true
 
     # Set up hotkeys
     KeyboardShortcuts.registerPageShortcut "a", => @approveOrDisapprove()
@@ -324,6 +325,7 @@ window.Commit =
       # split to side-by-side
       Commit.isSideBySide = true
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
+
       # save off size of code table so it doesn't drift after many animations
       Commit.originalLeftWidth ?= leftCodeTable.width()
       Commit.originalContainerWidth ?= $("#container").width()
@@ -348,6 +350,8 @@ window.Commit =
         $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
+        # change toggle button text
+        $("#sideBySideButton").text("View Unified")
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         jQuery.fx.off = originalJQueryFxOff
     else
@@ -359,6 +363,8 @@ window.Commit =
       Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
+        # change the button text
+        $("#sideBySideButton").text("View Side-By-Side")
       rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
           @.SIDE_BY_SIDE_SPLIT_DURATION)
       $("#container").delay(@.SIDE_BY_SIDE_SLIDE_DURATION).

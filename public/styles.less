@@ -657,6 +657,40 @@ table.commitsList, table.authorList {
       font-size: 12px;
       margin-bottom: 4px;
     }
+
+    #approveButtonSpan {
+      button {
+        width: 150px;
+      }
+    }
+
+    #sideBySideButtonSpan {
+      button {
+        background-color: @almostWhite;
+        margin-top: 25px;
+        margin-bottom: 0px;
+        font-size: 10px;
+        width: 150px;
+        /* copied from standard button with different color, probably should refactor that */
+        @darkButtonGrey: #E2E1DF;
+        background-image: -webkit-gradient(linear, left top, left bottom,
+            color-stop(0, @darkButtonGrey), color-stop(0.90, darken(@darkButtonGrey, 8%)));
+        background-image: -moz-linear-gradient(top, @darkButtonGrey 0%, darken(@darkButtonGrey, 8%) 95%);
+
+        &:hover {
+          background-image: -webkit-gradient(linear, left top, left bottom,
+            color-stop(0, lighten(@darkButtonGrey, 2%)), color-stop(0.95, darken(@darkButtonGrey, 5%)));
+          background-image: -moz-linear-gradient(top, lighten(@darkButtonGrey, 2%) 0%,
+            darken(@darkButtonGrey, 5%) 95%);
+        }
+
+        &:active {
+          background-image: -webkit-gradient(linear, left top, left bottom,
+            color-stop(0, darken(@darkButtonGrey, 8%)), color-stop(0.95, @darkButtonGrey));
+          background-image: -moz-linear-gradient(top, darken(@darkButtonGrey, 8%), @darkButtonGrey 95%);
+        }
+      }
+    }
   }
 
   .dataWrapper {

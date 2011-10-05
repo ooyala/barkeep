@@ -11,6 +11,23 @@
           <span class="repoName">| <%= commit.git_repo.name %></span>
           </p>
           <p class="message"><%= CGI::escapeHTML(commit.message).gsub("\n", "<br/>") %></p>
+
+        </td>
+        <td>
+          <span id="approveButtonSpan">
+            <% if commit.approved? %>
+              <%= erb :_approved_banner, :layout => false,
+                  :locals => { :commit => commit } %>
+            <% else %>
+              <% if current_user %>
+                <button id="approveButton" class="fancy">Approve Commit</button>
+              <% end %>
+            <% end %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
           <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
           <div class="authorInfo">
             <p class="author"><%= commit.user.name %></p>
@@ -23,14 +40,9 @@
           </div>
         </td>
         <td>
-          <% if commit.approved? %>
-            <%= erb :_approved_banner, :layout => false,
-                :locals => { :commit => commit } %>
-          <% else %>
-            <% if current_user %>
-              <button id="approveButton" class="fancy">Approve Commit</button>
-            <% end %>
-          <% end %>
+          <span id="sideBySideButtonSpan">
+            <button id="sideBySideButton" class="standard">View Side-By-Side</button>
+          </span>
         </td>
       </tr>
     </table>
