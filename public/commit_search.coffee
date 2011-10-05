@@ -42,13 +42,13 @@ window.CommitSearch =
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage "after", e
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage "before", e
 
-    # We save separate event handlers for these checkboxes, even though they're related, because 
+    # We save separate event handlers for these checkboxes, even though they're related, because
     # toggling show_unapproved_commits requires a full search refresh while the others do not.
     $(".searchOptions input[name='show_unapproved_commits']").live "change",
         (e) => @toggleUnapprovedCommits(e)
     $(".searchOptions input[name='email_commits']").live "change", (e) => @changeEmailOptions(e)
     $(".searchOptions input[name='email_comments']").live "change", (e) => @changeEmailOptions(e)
-    $(".searchOptionsLink").live "click", (e) => @toggleSearchOptionsMenu(e)
+    $(".searchOptionsLink").live "click", (e) => @onSearchOptionsClicked(e)
 
     @selectFirstDiff()
 
@@ -216,28 +216,40 @@ window.CommitSearch =
       url: "/saved_searches/#{id}"
       success: => @afterSync()
 
-  toggleSearchOptionsMenu: (event) ->
+  onSearchOptionsClicked: (event) ->
     event.preventDefault()
     searchOptionsMenu = $(event.target).parent().find(".searchOptionsMenu")
-    searchOptionsMenu.stop(true, true) # Stop any previous animations.
+    @showSearchOptionsMenu searchOptionsMenu, !(searchOptionsMenu.attr("animatingDirection") == "in")
+
+  showSearchOptionsMenu: (searchOptionsMenu, shouldShow) ->
+    searchOptionsMenu.stop(true, true) # Stop any currently-running animations.
 
     # We perform a bouncing animation as the menu slides in.
     dropShadowHeight = 6
     startingPosition = searchOptionsMenu.outerHeight() + dropShadowHeight
+    bouncePadding = 18
 
     firstTimeShown = searchOptionsMenu.css("display") == "none"
     if firstTimeShown
       searchOptionsMenu.css("top", -startingPosition)
       searchOptionsMenu.show()
 
-    bouncePadding = 18
-
-    if (searchOptionsMenu.attr("animatingDirection") == "in")
-      searchOptionsMenu.attr("animatingDirection", "out")
-      searchOptionsMenu.animate({ top: -startingPosition }, 210, null)
-    else
+    if shouldShow
       searchOptionsMenu.attr("animatingDirection", "in")
       searchOptionsMenu.animate({ top: -bouncePadding }, 210, "easeOutBack")
+
+      # We listen for clicks outside of this menu, so we can dismiss this menu.
+      dismissMenu = (event) =>
+        isClickWithinMenu = $(event.target).parents().filter(searchOptionsMenu).size() > 0
+        return if isClickWithinMenu
+        $(document).unbind("click", dismissMenu)
+        if searchOptionsMenu.attr("animatingDirection") == "in"
+          @showSearchOptionsMenu(searchOptionsMenu, false)
+
+      $(document).click(dismissMenu)
+    else
+      searchOptionsMenu.attr("animatingDirection", "out")
+      searchOptionsMenu.animate({ top: -startingPosition }, 210, null)
 
   toggleUnapprovedCommits: (event) ->
     savedSearch = $(event.target).parents(".savedSearch")
