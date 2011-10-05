@@ -28,6 +28,8 @@ class GitDiffUtils
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data[:special_case] = "This is a binary file."
+        elsif diff.new_file && diff.diff.empty?
+          data[:special_case] = "This is an empty file."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
             begin
