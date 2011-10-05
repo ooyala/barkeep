@@ -103,7 +103,8 @@ class GitDiffUtils
     diff_line = 0
 
     diff.diff.split("\n").each do |line|
-      match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@$/.match(line)
+      match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@/.match(line)
+      # most diffs
       if match
         chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, match[3].to_i - 1, match[4].to_i)
         chunks << chunk
@@ -111,19 +112,25 @@ class GitDiffUtils
         diff_line = chunk.new_line_start
         next
       end
-      match_new_file = /^@@ \-(\d+) \+(\d+),(\d+) @@$/.match(line)
-      if match_new_file
-        chunk = PatchChunk.new(nil, 0, match_new_file[2].to_i - 1, match_new_file[3].to_i)
+      # new files, one line deleted files
+      match = /^@@ \-(\d+) \+(\d+),(\d+) @@/.match(line)
+      if match
+        if diff.new_file
+          chunk = PatchChunk.new(nil, 0, match[2].to_i - 1, match[3].to_i)
+        elsif match[2].to_i == 0 && match[3].to_i == 0
+          chunk = PatchChunk.new(match[1].to_i - 1, 1, nil, 0)
+        end
         chunks << chunk
         orig_line = chunk.original_line_start
         diff_line = chunk.new_line_start
         next
       end
-      match = /^@@ \-(\d+),(\d+) \+(\d+) @@$/.match(line)
+      # deleted files, one line new files, and one line additions to empty files
+      match = /^@@ \-(\d+),(\d+) \+(\d+) @@/.match(line)
       if match
         if diff.deleted_file
           chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, nil, 0)
-        elsif diff.new_file
+        elsif match[1].to_i == 0 && match[2].to_i == 0
           chunk = PatchChunk.new(nil, 0, match[3].to_i - 1, 1)
         end
         chunks << chunk
