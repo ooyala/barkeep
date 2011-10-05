@@ -100,6 +100,7 @@ DEPENDENCIES
   clockwork
   coffee-script
   daemons
+  diff-lcs
   fezzik
   grit
   json

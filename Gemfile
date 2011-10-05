@@ -37,6 +37,9 @@ gem "pony"
 # For rendering erb outside of views.
 gem "tilt"
 
+# For generating unified diffs
+gem "diff-lcs"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"

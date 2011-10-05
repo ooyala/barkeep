@@ -1,4 +1,6 @@
 require "lib/git_helper"
+require "diff/lcs"
+require "diff/lcs/hunk"
 
 # Performs diffs and syntax highlighting for a diff blob.
 class GitDiffUtils
@@ -25,12 +27,15 @@ class GitDiffUtils
         data = {
           :file_name_before => a_path,
           :file_name_after => b_path,
+          :renamed => diff.renamed_file
         }
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data[:special_case] = "This is a binary file."
         elsif diff.new_file && diff.diff.empty?
           data[:special_case] = "This is an empty file."
+        elsif diff.renamed_file && diff.diff.empty?
+          data[:special_case] = "File was renamed, but no other changes were made."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
             begin
@@ -44,8 +49,9 @@ class GitDiffUtils
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
+          raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
 
-          data.merge! GitDiffUtils.tag_file(before, after, diff) unless options[:warm_the_cache]
+          data.merge! GitDiffUtils.tag_file(before, after, diff, raw_diff) unless options[:warm_the_cache]
         end
         data
       end
@@ -62,12 +68,12 @@ class GitDiffUtils
 
   # Parse unified diff and return an array of LineDiff objects, which have all the lines in the original file
   # as well as the changed (diff) lines.
-  def self.tag_file(file_before, file_after, diff)
+  def self.tag_file(file_before, file_after, diff, raw_diff)
     before_lines, after_lines = [file_before, file_after].map { |file| file ? file.split("\n",-1) : [] }
     tagged_lines = []
     chunk_breaks = []
     orig_line, diff_line = 0, 0
-    chunks = tag_diff(diff, before_lines, after_lines)
+    chunks = tag_diff(diff, raw_diff, before_lines, after_lines)
 
     chunks.each_with_index do |chunk, i|
       if chunk.original_line_start && chunk.original_line_start > orig_line
@@ -99,13 +105,13 @@ class GitDiffUtils
 
   # parses unified diff into objects so that the rest of the file can be inserted around it.
   # returns [{ :orig_line, :orig_length, :diff_line, :diff_length, [ DiffLines... ] }, ...]
-  def self.tag_diff(diff, before_highlighted, after_highlighted)
+  def self.tag_diff(diff, raw_diff, before_highlighted, after_highlighted)
     chunks = []
     chunk = nil
     orig_line = 0
     diff_line = 0
 
-    diff.diff.split("\n").each do |line|
+    raw_diff.split("\n").each do |line|
       match = /^@@ \-(\d+),(\d+) \+(\d+),(\d+) @@/.match(line)
       # most diffs
       if match
@@ -118,7 +124,7 @@ class GitDiffUtils
       # new files, one line deleted files
       match = /^@@ \-(\d+) \+(\d+),(\d+) @@/.match(line)
       if match
-        if diff.new_file
+        if diff.new_file || (match[1].to_i == 1 && match[2].to_i ==1)
           chunk = PatchChunk.new(nil, 0, match[2].to_i - 1, match[3].to_i)
         elsif match[2].to_i == 0 && match[3].to_i == 0
           chunk = PatchChunk.new(match[1].to_i - 1, 1, nil, 0)
@@ -184,6 +190,37 @@ class GitDiffUtils
     end
 
     Grit::Diff.list_from_string(repo, diff)
+  end
+
+  def self.diff(blob_a, blob_b)
+    output = ""
+    file_length_difference = 0
+    context_lines = 3
+    data_a, data_b = [blob_a, blob_b].map { |blob| blob ? blob.data.split("\n", -1).map(&:chomp) : [] }
+    diffs = Difference::LCS.diff(data_a, data_b)
+    return patch if diffs.empty?
+
+    hunk_old = nil
+    diffs.each do |piece|
+      begin
+        hunk = Difference::LCS::Hunk.new(data_a, data_b, piece, context_lines, file_length_difference)
+        file_length_difference = hunk.file_length_difference
+
+        next unless hunk_old
+
+        if hunk.overlaps?(hunk_old)
+          hunk.unshift(hunk_old)
+        else
+          output << hunk_old.diff(:unified)
+        end
+      ensure
+        hunk_old = hunk
+        output << "\n"
+      end
+    end
+
+    output << hunk_old.diff(:unified)
+    output.lstrip
   end
 
   # Process lines in each chunk to work out which lines were replaced, rather than newly added or completely
