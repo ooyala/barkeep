@@ -4,6 +4,7 @@ class AlbinoFiletype
     "Rakefile" => :ruby,
     "Capfile" => :ruby,
     "Gemfile" => :ruby,
+    "Makefile" => :make,
     ".erb" => :rhtml,
     ".xml" => :xml,
     ".js" => :javascript,
@@ -13,7 +14,10 @@ class AlbinoFiletype
     ".less" => :scss,
     ".py" => :python,
     ".c" => :c,
-    ".h" => :c,
+    ".h" => :cpp,
+    ".hpp" => :cpp,
+    ".cpp" => :cpp,
+    ".inl" => :cpp,
     ".as" => :actionscript,
     ".scala" => :scala,
     ".sbt" => :scala,
@@ -22,9 +26,9 @@ class AlbinoFiletype
   }
   def self.detect_filetype(filename)
     # if path, separate file from path
-    filename = filename.include?("/") ? filename[filename.index(%r{/[^/]+$})..-1] : filename
-    return :text unless filename.include?(".")
-    extension = filename[filename.index(/\.[^\.]+$/)..-1]
+    filename = filename.include?("/") ? filename[(filename.index(%r{/[^/]+$}) + 1)..-1] : filename
+    extension_index = filename.index(/\.[^\.]+$/)
+    extension = extension_index ? filename[extension_index..-1] : nil
     filetype = extension ? EXTENSION_TO_FILETYPE[extension] : EXTENSION_TO_FILETYPE[filename]
     filetype || :text
   end
