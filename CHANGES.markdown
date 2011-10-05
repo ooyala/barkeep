@@ -5,6 +5,31 @@ This file summarizes changes between tagged Barkeep versions. It lists tags in r
 Each tag is followed by a description of the changes it represents. This is not in a typical Changelog format,
 but rather general markdown text describing important notes about the versions and progress of Barkeep.
 
+0.2.0
+-----
+
+TODO(caleb): UNTAGGED (pending polish)
+
+### Major features
+
+* Side-by-side diff view is now officially released, complete with toggle button and keyboard shortcut.
+* [Emails are now sent upon commit ingestion.](https://github.com/ooyala/barkeep/issues/10)
+
+### Minor features and bugfixes
+
+* We now highlight C++ source files. https://github.com/ooyala/barkeep/issues/101
+* [There is now a dropdown menu for each saved search to toggle email and search preferences.](https://github.com/ooyala/barkeep/commit/cc1805dbfbf718f9f57518741ba2ff66cd9f2be0)
+* Background jobs now run with Resque instead of our own background jobs logic.
+* Periodic jobs are now scheduled with Clockwork.
+* [Images in comment boxes are resized so they don't overflow.](https://github.com/ooyala/barkeep/issues/93)
+* [There is now a keyboard shortcut for approving/disapproving commits (a)](https://github.com/ooyala/barkeep/issues/25)
+* [Eliminated potentially confusing red borders around characters in diffs.](https://github.com/ooyala/barkeep/issues/77)
+* [Rewrite of keyboard shortcuts for sanity.](https://github.com/ooyala/barkeep/commit/82c5f86305ab9ab53f41f13261e768cf49370cdd)
+* [Side-by-side now persists between page views via a cookie.](https://github.com/ooyala/barkeep/issues/48)
+* [Using the MIT open-source license](https://github.com/ooyala/barkeep/issues/87)
+* [Commits are now editable (our first outside contribution!)](https://github.com/ooyala/barkeep/issues/23)
+* Readme fixes including a project description.
+
 0.1.1
 -----
 
