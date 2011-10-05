@@ -27,6 +27,14 @@ namespace :resque do
   task :stop do
     puts `script/resque_workers.rb stop`
   end
+
+  # The resque:work task is defined by the Resque gem. Before running it, we need to require the workers.
+  task :work => :require_resque_tasks
+
+  # These tasks must be defined for Resque to be able to run tasks on these queues.
+  task :require_resque_tasks do
+    Dir.glob("resque_jobs/*.rb").each { |file_name| require file_name }
+  end
 end
 
 namespace :clockwork do
