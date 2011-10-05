@@ -27,6 +27,7 @@ module KeyboardShortcuts
     "enter" => "New comment on selected line",
     "n" => "Next diff chunk in commit",
     "p" => "Previous diff chunk in commit",
+    "a then a" => "Toggle approval of commit",
     "e" => "Toggle full diff view",
     "b" => "Toggle side-by-side diff view"
   }
