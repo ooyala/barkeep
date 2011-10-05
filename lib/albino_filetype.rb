@@ -17,6 +17,7 @@ class AlbinoFiletype
     ".h" => :cpp,
     ".hpp" => :cpp,
     ".cpp" => :cpp,
+    ".cc" => :cpp,
     ".inl" => :cpp,
     ".as" => :actionscript,
     ".scala" => :scala,
