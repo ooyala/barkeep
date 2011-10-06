@@ -27,7 +27,9 @@ class GitDiffUtils
         data = {
           :file_name_before => a_path,
           :file_name_after => b_path,
-          :renamed => diff.renamed_file
+          :renamed => diff.renamed_file,
+          :lines_added => 0,
+          :lines_removed => 0,
         }
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
