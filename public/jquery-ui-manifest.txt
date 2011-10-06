@@ -1,0 +1,14 @@
+This minified version of jQuery UI uses the following components.
+Please update this file if you add or remove components to jQuery UI.
+
+UI Core
+* Core
+* Widget
+* Mouse
+* Position
+
+Interactions
+* Sortable
+
+Widgets
+* Autocomplete
