@@ -14,6 +14,35 @@ class Emails
     "Commit #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - #{grit_commit.short_message[0..60]}"
   end
 
+  # Sends an email notification for review requests.
+  def self.send_review_request_email(requester, commit, emails)
+    grit_commit = commit.grit_commit
+    subject = subject_for_commit_email(grit_commit)
+    html_body = review_request_email_body(commit, requester)
+
+    completed_email = CompletedEmail.new(:to => emails.join(","), :subject => subject,
+        :result => "success")
+
+    user, domain = GMAIL_ADDRESS.split("@")
+    pony_options = pony_options_for_commit(commit).merge({
+      # Make the From: address e.g. "barkeep+requests@gmail.com" so it's easily filterable.
+      :from => "#{user}+requests@#{domain}"
+    })
+
+    begin
+      deliver_mail(emails.join(","), subject, html_body, pony_options)
+    rescue Exception => error
+      unless error.is_a?(RecoverableEmailError)
+        completed_email.result = "failure"
+        completed_email.failure_reason = "#{error.class} #{error.message}\n#{error.backtrace.join("\n")}"
+        completed_email.save
+      end
+      raise error
+    end
+
+    completed_email.save
+  end
+
   # Sends an email notification for one or more comments.
   # Upon success or non-recoverable failure, an entry in the completed_emails table is added to record the
   # email.
@@ -138,6 +167,12 @@ class Emails
   def self.commit_email_body(commit)
     template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/commit_email.erb"))
     template.render(self, :commit => commit)
+  end
+
+  # The email body for review request emails.
+  def self.review_request_email_body(commit, requester)
+    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/review_request_email.erb"))
+    template.render(self, :commit => commit, :requester => requester)
   end
 
   # The email body for comment emails.

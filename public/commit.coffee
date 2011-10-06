@@ -460,10 +460,13 @@ window.Commit =
 
   submitReviewRequest: (e) ->
     emails = $("#authorInput").val()
+    sha = $("#commit").attr("sha")
     $.ajax
       type: "post"
       url: "/request_review"
-      data: { emails: emails }
+      data:
+        sha: sha
+        emails: emails
       success: ->
         console.log "reviews requested"
 

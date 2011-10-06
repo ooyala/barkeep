@@ -1,0 +1,21 @@
+<%# The email which is sent when a review is requested.
+  #  - commit
+  #  - requester
+%>
+
+<%= CGI.escape_html(requester.name) %> <<%= CGI.escape_html(requester.email) %>> has requested you review this commit.
+<br/><br/>
+
+<font face="monospace" size="3">
+
+<a href="http://<%= BARKEEP_HOSTNAME %>/commits/<%= commit.git_repo.name %>/<%= commit.sha %>">
+<%= commit.grit_commit.id_abbrev %></a>
+<%= CGI.escape_html(commit.grit_commit.author.display_string) %>
+ <%= StringHelper.short_date(commit.grit_commit.date) %><br/><br/>
+<%= CGI.escape_html(commit.grit_commit.message).gsub("\n", "<br/>") %><br/>
+<%# This diff stat information needs to be wrapped in a <pre>, because there's significant whitespace. %>
+<pre><%= diff_stat(commit.grit_commit.repo, commit.sha).gsub("\n", "<br/>") %></pre>
+
+</font>
+--<br/>
+You're receiving this email because you were requested to review it.

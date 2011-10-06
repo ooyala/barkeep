@@ -369,8 +369,9 @@ class Barkeep < Sinatra::Base
   end
 
   post "/request_review" do
+    commit = Commit.first(:sha => params[:sha])
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
-    puts "\n\n\n#{emails}\n\n\n"
+    Emails.send_review_request_email(current_user, commit, emails)
     ""
   end
 
