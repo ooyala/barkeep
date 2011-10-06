@@ -694,7 +694,7 @@ table.commitsList, table.authorList {
         }
 
         a {
-          color: #666666;
+          color: @lightTextColor;
           &:active { background: none; }
         }
       }
@@ -731,9 +731,12 @@ table.commitsList, table.authorList {
     padding: 5px;
     background-color: @sunkenColor;
     border-bottom: @standardBorder;
-    color: #666666;
     font-family: @monoFont;
     font-size: 0.9em;
+    a {
+      color: @lightTextColor;
+      &:active { background: none; }
+    }
   }
 
   .file {
