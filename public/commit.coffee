@@ -1,7 +1,7 @@
 window.Commit =
   SIDE_BY_SIDE_SLIDE_DURATION: 300
   SIDE_BY_SIDE_SPLIT_DURATION: 700
-  SIDE_BY_SIDE_CODE_WIDTH: 820
+  SIDE_BY_SIDE_CODE_WIDTH: 830
   SIDE_BY_SIDE_COOKIE: "sideBySide"
 
   init: ->
@@ -331,8 +331,11 @@ window.Commit =
       # Save size of the code table so it doesn't drift after many animations.
       @originalLeftWidth ?= leftCodeTable.width()
       @originalContainerWidth ?= $("#container").width()
+      @numberColumnOuterWidth ?= leftCodeTable.find(".leftNumber").outerWidth()
+      @numberColumnWidth ?= leftCodeTable.find(".leftNumber").width()
       rightCodeTable.width(@originalLeftWidth)
       leftCodeTable.width(@originalLeftWidth)
+      rightCodeTable.css("left" : @numberColumnOuterWidth)
 
       # show and hide the appropriate elements in the 2 tables
       rightCodeTable.show()
@@ -352,9 +355,11 @@ window.Commit =
       # slide up the replaced rows
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
         $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
+        # Add grey background to spacing lines
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
+        #finalize animation
         jQuery.fx.off = originalJQueryFxOff
         @sideBySideAnimating = false
     else
@@ -363,15 +368,20 @@ window.Commit =
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
       # change the button text
       $("#sideBySideButton").text("View Side-By-Side")
+      # slide the extra lines out
       $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
+      # remove grey from extra lines
       Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
-      rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0, "width" : @originalLeftWidth },
-          @.SIDE_BY_SIDE_SPLIT_DURATION)
+      # move right table to the middle, and make it width of rest of page
+      rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate(
+          { "left": @numberColumnOuterWidth, "width" : @originalLeftWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+      # expand left table to width of rest of the page
       leftCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "width" : @originalLeftWidth },
           @.SIDE_BY_SIDE_SPLIT_DURATION)
+      # reduce container width
       $("#container").delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
           animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
             # after the side-by-side callapse animation is done,
