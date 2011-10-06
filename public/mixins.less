@@ -42,13 +42,13 @@
 }
 
 // Basic horizontal flexbox
-.flexbox {
+.flexbox (@orientation: horizontal) {
   display: -webkit-box;
   display: -moz-box;
   display: box;
-  -webkit-box-orient: horizontal;
-  -moz-box-orient: horizontal;
-  box-orient: horizontal;
+  -webkit-box-orient: @orientation;
+  -moz-box-orient: @orientation;
+  box-orient: @orientation;
 }
 
 .flex (@weight: 1) {
