@@ -665,6 +665,42 @@ table.commitsList, table.authorList {
     }
   }
 
+  #commitSummary {
+    margin: 40px auto;
+    width: @pageWidth - 2;
+
+    #filesChanged {
+      font-family: @monoFont;
+      font-size: 14px;
+
+      border-collapse: collapse;
+      width: 100%;
+
+      tr:last-of-type { border-bottom: @standardBorder; }
+      td {
+        border-top: @standardBorder;
+        padding: 2px 0px;
+        list-style: none;
+
+        &.linesAdded, &.linesRemoved {
+          width: 30px;
+          text-align: right;
+        }
+
+        &.linesAdded { color: #58BC0F; }
+        &.linesRemoved {
+          color: #E11D1E;
+          padding-right: 10px;
+        }
+
+        a {
+          color: #666666;
+          &:active { background: none; }
+        }
+      }
+    }
+  }
+
   .dataWrapper {
     //relative position here to anchor the codeRight element that has absolute position
     position: relative;

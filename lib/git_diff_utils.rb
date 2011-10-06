@@ -88,7 +88,10 @@ class GitDiffUtils
         LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line )
       end
     end
-    { :lines => tagged_lines, :breaks => chunk_breaks }
+    lines_added = tagged_lines.select { |line| line.tag == :added }.count
+    lines_removed = tagged_lines.select { |line| line.tag == :removed }.count
+    { :lines => tagged_lines, :breaks => chunk_breaks,
+        :lines_added => lines_added, :lines_removed => lines_removed }
   end
 
   # parses unified diff into objects so that the rest of the file can be inserted around it.
