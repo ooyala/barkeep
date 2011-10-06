@@ -322,15 +322,15 @@ window.Commit =
 
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
+    container = $("#container")
     unless @isSideBySide
       @isSideBySide = true
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
-      # change toggle button text
       $("#sideBySideButton").text("View Unified")
 
       # Save size of the code table so it doesn't drift after many animations.
       @originalLeftWidth ?= leftCodeTable.width()
-      @originalContainerWidth ?= $("#container").width()
+      @originalContainerWidth ?= container.width()
       @numberColumnOuterWidth ?= leftCodeTable.find(".leftNumber").outerWidth()
       @numberColumnWidth ?= leftCodeTable.find(".leftNumber").width()
       rightCodeTable.width(@originalLeftWidth)
@@ -350,8 +350,7 @@ window.Commit =
       newCodeWidth = @SIDE_BY_SIDE_CODE_WIDTH
       rightCodeTable.animate({ "left": newCodeWidth, "width": newCodeWidth },  @.SIDE_BY_SIDE_SPLIT_DURATION)
       leftCodeTable.animate({ "width" : newCodeWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
-      $("#container").animate({ "width": newCodeWidth * 2 + 2},
-        @.SIDE_BY_SIDE_SPLIT_DURATION)
+      container.animate({ "width": newCodeWidth * 2 + 2 }, @.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
         $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
@@ -366,8 +365,8 @@ window.Commit =
       # callapse to unified diff
       @isSideBySide = false
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
-      # change the button text
       $("#sideBySideButton").text("View Side-By-Side")
+
       # slide the extra lines out
       $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
@@ -382,7 +381,7 @@ window.Commit =
       leftCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "width" : @originalLeftWidth },
           @.SIDE_BY_SIDE_SPLIT_DURATION)
       # reduce container width
-      $("#container").delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
+      container.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
           animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
             # after the side-by-side callapse animation is done,
             #  reset everything to the way it should be for unified diff
