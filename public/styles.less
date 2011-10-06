@@ -577,91 +577,120 @@ table.commitsList, table.authorList {
   }
 
   #commitMetadata {
+    .flexbox;
     width: @pageWidth - 2 * 10 - 2;
     margin: 40px auto;
     padding: 10px;
     font-size: 0.8em;
 
-    .avatar {
-      .gravatar(50px);
-      display: inline-block;
-      margin-right: 5px;
-    }
+    #messageAndAuthor {
+      .flexbox(vertical);
+      width: 730px;
 
-    .name {
-      margin-bottom: 10px;
-        color: @lightTextColor;
-      .repoName {
-        font: 18px @sansFont;
-        font-variant: small-caps;
+      #messageMetadata {
+        .flexbox(vertical);
+        .flex;
+
+        .name {
+          margin-bottom: 10px;
+            color: @lightTextColor;
+          .repoName {
+            font: 18px @sansFont;
+            font-variant: small-caps;
+          }
+          .sha {
+            font-family: @monoFont;
+          }
+        }
+
+        .message {
+          margin-bottom: 10px;
+          font-family: @monoFont;
+        }
+
       }
-      .sha {
-        font-family: @monoFont;
+
+      #authorMetadata {
+        .flexbox(vertical);
+
+        .avatar {
+          .gravatar(50px);
+          display: inline-block;
+          margin-right: 5px;
+        }
+
+        .authorInfo {
+          display: inline-block;
+          vertical-align: middle;
+          line-height: 1.25em;
+
+          .email, .date { color: @lightTextColor; }
+        }
       }
     }
 
-    .message {
-      margin-bottom: 10px;
-      font-family: @monoFont;
-    }
+    #metadataButtons {
+      .flexbox(vertical);
+      .boxAlign(end);
+      .flex;
 
-    .authorInfo {
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 1.25em;
+      button {
+        display: block;
+        font-size: 14px;
+        white-space: nowrap;
+      }
 
-      .email, .date { color: @lightTextColor; }
-    }
+      #disapproveButton { margin-bottom: 8px; }
 
-    td { vertical-align: top; }
-    td:nth-of-type(1) { width: 100%; }
+      #approveButton {
+        margin-bottom: 40px;
 
-    button {
-      font-size: 14px;
-      margin-bottom: 8px;
-      white-space: nowrap;
-    }
+        /* These styles were taken from our "fancy button" style definition. Only the color is different. */
+        @greenApproveButton: #42C050;
 
-    #approveButton {
-      /* These styles were taken from our "fancy button" style definition. Only the color is different. */
-      @greenApproveButton: #42C050;
+        border: 1px solid darken(@greenApproveButton, 20%);
+        /* This darker border helps distinguish the drop shadow. */
+        border-bottom: 1px solid darken(@greenApproveButton, 25%);
+        text-shadow: 0px -1px 1px darken(@greenApproveButton, 30%);
 
-      border: 1px solid darken(@greenApproveButton, 20%);
-      /* This darker border helps distinguish the drop shadow. */
-      border-bottom: 1px solid darken(@greenApproveButton, 25%);
-      text-shadow: 0px -1px 1px darken(@greenApproveButton, 30%);
-
-      background-color: darken(@greenApproveButton, 18%);
-
-      background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, lighten(@greenApproveButton, 3%)), color-stop(0.95, darken(@greenApproveButton, 10%)));
-      background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 3%) 0%,
-        darken(@greenApproveButton, 15%) 95%);
-
-      &:hover {
-        border: 1px solid darken(#890128, 25%);
+        background-color: darken(@greenApproveButton, 18%);
 
         background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, lighten(@greenApproveButton, 8%)),
-          color-stop(0.95, darken(@greenApproveButton, 10%)));
-        background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 10%) 0%,
+          color-stop(0, lighten(@greenApproveButton, 3%)), color-stop(0.95, darken(@greenApproveButton, 10%)));
+        background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 3%) 0%,
           darken(@greenApproveButton, 15%) 95%);
+
+        &:hover {
+          border: 1px solid darken(#890128, 25%);
+
+          background-image: -webkit-gradient(linear, left top, left bottom,
+            color-stop(0, lighten(@greenApproveButton, 8%)),
+            color-stop(0.95, darken(@greenApproveButton, 10%)));
+          background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 10%) 0%,
+            darken(@greenApproveButton, 15%) 95%);
+        }
+
+        &:active { background-image: none; }
       }
 
-      &:active { background-image: none; }
-    }
+      .approvedBy, .approvedAt {
+        color: @lightTextColor;
+        text-align: center;
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
 
-    .approvedBy, .approvedAt {
-      color: @lightTextColor;
-      text-align: center;
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
+      #minorButtons {
+        .flexbox(vertical);
+        .boxPack(end);
+        .flex;
 
-    #sideBySideButton {
-      margin-top: 25px;
-      margin-bottom: 0px;
-      font-size: 11px;
+        button {
+          font-size: 11px;
+          width: 132px;
+          margin-top: 8px;
+        }
+      }
     }
   }
 
