@@ -351,6 +351,8 @@ window.Commit =
       rightCodeTable.animate({ "left": newCodeWidth, "width": newCodeWidth },  @.SIDE_BY_SIDE_SPLIT_DURATION)
       leftCodeTable.animate({ "width" : newCodeWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
       container.animate({ "width": newCodeWidth * 2 + 2 }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+      # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
+      container.css("overflow", "visible")
       # slide up the replaced rows
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
         $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
@@ -367,6 +369,26 @@ window.Commit =
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
       $("#sideBySideButton").text("View Side-By-Side")
 
+      collapseCodeTablesIntoOne = () =>
+        # move right table to the middle, and make it width of rest of page
+        rightCodeTable.animate(
+            { "left": @numberColumnOuterWidth, "width" : @originalLeftWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+        # expand left table to width of rest of the page
+        leftCodeTable.animate({ "width" : @originalLeftWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+      
+        container.animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
+              # after the side-by-side callapse animation is done,
+              #  reset everything to the way it should be for unified diff
+              $(".codeLeft .added > .codeText").css("visibility", "visible")
+              @.setSideBySideCommentVisibility()
+              $(".codeRight").hide()
+              $(".codeLeft .rightNumber").show()
+              jQuery.fx.off = originalJQueryFxOff
+              @sideBySideAnimating = false
+        # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
+        container.css("overflow", "visible")
+
+      # Animate the diff lines; when we're done, animate collapsing both sides of hte diff into one.
       # slide the extra lines out
       $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
@@ -374,23 +396,7 @@ window.Commit =
       Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
-      # move right table to the middle, and make it width of rest of page
-      rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate(
-          { "left": @numberColumnOuterWidth, "width" : @originalLeftWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
-      # expand left table to width of rest of the page
-      leftCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "width" : @originalLeftWidth },
-          @.SIDE_BY_SIDE_SPLIT_DURATION)
-      # reduce container width
-      container.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
-          animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
-            # after the side-by-side callapse animation is done,
-            #  reset everything to the way it should be for unified diff
-            $(".codeLeft .added > .codeText").css("visibility", "visible")
-            @.setSideBySideCommentVisibility()
-            $(".codeRight").hide()
-            $(".codeLeft .rightNumber").show()
-            jQuery.fx.off = originalJQueryFxOff
-            @sideBySideAnimating = false
+        collapseCodeTablesIntoOne()
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->
