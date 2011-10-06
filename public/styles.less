@@ -696,6 +696,19 @@ table.commitsList, table.authorList {
     }
   }
 
+  #reviewRequest {
+    display: none;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 40px;
+
+    #authorInput {
+      width: 300px;
+      height: 18px;
+      margin-left: 5px;
+    }
+  }
+
   #commitSummary {
     margin: 0px auto 40px auto;
     width: @pageWidth;
@@ -1078,6 +1091,30 @@ table.commitsList, table.authorList {
       margin-top: 37px;
       font-weight: bold;
     }
+  }
+}
+
+// jQuery autocomplete styles
+.ui-widget {
+  // This needs some width set, but it will fit itself to the
+  // size of the autocompleting input box.
+  width: 0px;
+  border: @standardBorder;
+  background: @almostWhite;
+
+  li {
+    list-style: none;
+
+    a {
+      display: inline-block;
+      width: 298px;
+      padding: 2px;
+      font-size: 14px;
+      color: @textColor;
+      &:hover { text-decoration: none; }
+    }
+
+    #ui-active-menuitem { background: #B8D2FA; }
   }
 }
 

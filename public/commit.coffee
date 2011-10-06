@@ -15,6 +15,7 @@ window.Commit =
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
+    $("#requestReviewButton").click (e) => @showReviewRequest()
 
     commitComment = $("#commitComments .commentText")
     KeyboardShortcuts.createShortcutContext commitComment
@@ -30,6 +31,7 @@ window.Commit =
       "n": => @scrollChunk true
       "p": => @scrollChunk false
       "b": => @toggleSideBySide true
+      "r": => @showReviewRequest()
       "shift+c": =>
         commitComment.focus()
         false
@@ -38,9 +40,41 @@ window.Commit =
       "esc": => @clearSelectedLine()
 
     KeyboardShortcuts.registerPageShortcut(shortcut, action) for shortcut, action of shortcuts
+    KeyboardShortcuts.createShortcutContext $("#reviewRequest #authorInput")
+    KeyboardShortcuts.registerShortcut $("#reviewRequest #authorInput"), "return", =>
+      @submitReviewRequest() unless $(".ui-autocomplete").is(":visible")
 
     # eventually this should be a user preference stored server side, for now. Its just a cookie
     @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
+
+    # Review request author autocompletion
+    $("#reviewRequest #authorInput").autocomplete
+      source: (request, callback) ->
+        prefixMatch = $("#authorInput").val().match(/(^([^,]*)$|,\s*([^,]*)$)/)
+        prefix = prefixMatch[2] || prefixMatch[3]
+        $.ajax
+          type: "get"
+          url: "/autocomplete/users"
+          data: { prefix: prefix }
+          dataType: "json"
+          success: (completion) -> callback(completion.values)
+          error: -> callback ""
+      select: (event, ui) ->
+        # The focus event already populated the input,
+        # so we don't need to change anything here.
+        return false
+      focus: (event, ui) ->
+        # Match all emails input so far, retrieve the email of the
+        # currently selected user, and set the input value as the
+        # concatenation of the two.
+        prefix = $("#authorInput").val().match(/(.*)(,|^)/)[1]
+        prefix = "#{prefix}, " unless prefix == ""
+        selection = ui.item.label.match(/<([^>]+)>/)[1] + ", "
+        $("#authorInput").val("#{prefix}#{selection}")
+        return false
+      search: (event, ui) ->
+        # Don't attempt to search if the input value ends with a comma and whitespace.
+        return false if $("#authorInput").val().match(/,\s*$/)
 
   calculateMarginSize: ->
     commit = $("#commit")
@@ -418,6 +452,20 @@ window.Commit =
     else
       leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
+
+  showReviewRequest: ->
+    $("#reviewRequest").show()
+    $("#reviewRequest #authorInput").focus()
+    return false
+
+  submitReviewRequest: (e) ->
+    emails = $("#authorInput").val()
+    $.ajax
+      type: "post"
+      url: "/request_review"
+      data: { emails: emails }
+      success: ->
+        console.log "reviews requested"
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.

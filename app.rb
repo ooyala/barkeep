@@ -368,8 +368,23 @@ class Barkeep < Sinatra::Base
     Statusz.commit_info params[:sha_part]
   end
 
+  post "/request_review" do
+    emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
+    puts "\n\n\n#{emails}\n\n\n"
+    ""
+  end
 
-  # 
+  #
+  # Routes for autocompletion.
+  #
+
+  get "/autocomplete/users" do
+    users = User.filter("`email` LIKE ?", "%#{params[:prefix]}%").
+        or("`name` LIKE ?", "%#{params[:prefix]}%").distinct(:email).limit(10)
+    { :values => users.map { |user| "#{user.name} <#{user.email}>" } }.to_json
+  end
+
+  #
   # Routes used for development purposes.
   #
 
