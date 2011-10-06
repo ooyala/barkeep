@@ -1,6 +1,7 @@
 window.Commit =
   SIDE_BY_SIDE_SLIDE_DURATION: 300
   SIDE_BY_SIDE_SPLIT_DURATION: 700
+  SIDE_BY_SIDE_CODE_WIDTH: 820
   SIDE_BY_SIDE_COOKIE: "sideBySide"
 
   init: ->
@@ -92,7 +93,7 @@ window.Commit =
   selectNextVisibleLine: ->
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
-    if Commit.isSideBySide
+    if @isSideBySide
       visibleLines = visibleLines.filter("[replace='false']")
     selectedLine.removeClass("selected")
     select = _(visibleLines).detect((x) => @lineVisible(x,"top"))
@@ -101,7 +102,7 @@ window.Commit =
   selectNextLine: (next = true) ->
     selectedLine = $(".diffLine.selected")
     visibleLines = $(".diffLine").filter(":visible")
-    if Commit.isSideBySide
+    if @isSideBySide
       visibleLines = visibleLines.filter("[replace='false']")
     if selectedLine.length == 0 or not @lineVisible(selectedLine)
       @selectNextVisibleLine()
@@ -131,7 +132,7 @@ window.Commit =
         break
     window.scroll(0, if next then currentPosition else previousPosition)
     selectedLine = $(".diffLine.selected")
-    return if selectedLine.length == 0 or @lineVisible(selectedLine)
+    return if selectedLine.length == 0 or @linenewCodeWidthVisible(selectedLine)
     @selectNextVisibleLine()
 
 
@@ -321,17 +322,17 @@ window.Commit =
 
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
-    unless Commit.isSideBySide
-      Commit.isSideBySide = true
+    unless @isSideBySide
+      @isSideBySide = true
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
       # change toggle button text
       $("#sideBySideButton").text("View Unified")
 
       # Save size of the code table so it doesn't drift after many animations.
-      Commit.originalLeftWidth ?= leftCodeTable.width()
-      Commit.originalContainerWidth ?= $("#container").width()
-      rightCodeTable.width(Commit.originalLeftWidth)
-      leftCodeTable.width(Commit.originalLeftWidth)
+      @originalLeftWidth ?= leftCodeTable.width()
+      @originalContainerWidth ?= $("#container").width()
+      rightCodeTable.width(@originalLeftWidth)
+      leftCodeTable.width(@originalLeftWidth)
 
       # show and hide the appropriate elements in the 2 tables
       rightCodeTable.show()
@@ -339,12 +340,14 @@ window.Commit =
       rightCodeTable.find(".removed > .codeText").css(visibility: "hidden")
       leftCodeTable.find(".rightNumber").hide()
       rightCodeTable.find(".leftNumber").hide()
-      Commit.setSideBySideCommentVisibility()
+      @setSideBySideCommentVisibility()
 
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (it's too slow).
-      rightCodeTable.animate({ "left": @.originalLeftWidth },  @.SIDE_BY_SIDE_SPLIT_DURATION)
-      $("#container").animate({ "width": @.originalContainerWidth * 2 - 2},
+      newCodeWidth = @SIDE_BY_SIDE_CODE_WIDTH
+      rightCodeTable.animate({ "left": newCodeWidth, "width": newCodeWidth },  @.SIDE_BY_SIDE_SPLIT_DURATION)
+      leftCodeTable.animate({ "width" : newCodeWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+      $("#container").animate({ "width": newCodeWidth * 2 + 2},
         @.SIDE_BY_SIDE_SPLIT_DURATION)
       # slide up the replaced rows
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
@@ -356,7 +359,7 @@ window.Commit =
         @sideBySideAnimating = false
     else
       # callapse to unified diff
-      Commit.isSideBySide = false
+      @isSideBySide = false
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
       # change the button text
       $("#sideBySideButton").text("View Side-By-Side")
@@ -365,7 +368,9 @@ window.Commit =
       Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
-      rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
+      rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0, "width" : @originalLeftWidth },
+          @.SIDE_BY_SIDE_SPLIT_DURATION)
+      leftCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "width" : @originalLeftWidth },
           @.SIDE_BY_SIDE_SPLIT_DURATION)
       $("#container").delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
           animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
@@ -382,7 +387,7 @@ window.Commit =
   setSideBySideCommentVisibility: () ->
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
-    if Commit.isSideBySide
+    if @isSideBySide
       leftCodeTable.find(".comment, .commentForm").css("visibility": "hidden")
       leftCodeTable.find(".removed").find(".comment, .commentForm").css("visibility", "visible")
 
