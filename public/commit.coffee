@@ -313,8 +313,8 @@ window.Commit =
       $(".diffLine.selected").filter(":hidden").removeClass("selected")
 
   toggleSideBySide: (animate = true) ->
-    return if $(".slideDiv, body, .codeRight").filter(":animated").length > 0
-
+    return if @sideBySideAnimating
+    @sideBySideAnimating = true
     # for now, use the jquery.fx.off switch to make sidebyside toggle without animations.
     originalJQueryFxOff = jQuery.fx.off
     jQuery.fx.off = !animate
@@ -324,6 +324,8 @@ window.Commit =
     unless Commit.isSideBySide
       Commit.isSideBySide = true
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
+      # change toggle button text
+      $("#sideBySideButton").text("View Unified")
 
       # Save size of the code table so it doesn't drift after many animations.
       Commit.originalLeftWidth ?= leftCodeTable.width()
@@ -349,21 +351,20 @@ window.Commit =
         $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
-        # change toggle button text
-        $("#sideBySideButton").text("View Unified")
       Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         jQuery.fx.off = originalJQueryFxOff
+        @sideBySideAnimating = false
     else
       # callapse to unified diff
       Commit.isSideBySide = false
       $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
+      # change the button text
+      $("#sideBySideButton").text("View Side-By-Side")
       $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
       Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
-        # change the button text
-        $("#sideBySideButton").text("View Side-By-Side")
       rightCodeTable.delay(@.SIDE_BY_SIDE_SLIDE_DURATION).animate({ "left": 0 },
           @.SIDE_BY_SIDE_SPLIT_DURATION)
       $("#container").delay(@.SIDE_BY_SIDE_SLIDE_DURATION).
@@ -375,6 +376,7 @@ window.Commit =
             $(".codeRight").hide()
             $(".codeLeft .rightNumber").show()
             jQuery.fx.off = originalJQueryFxOff
+            @sideBySideAnimating = false
 
   #set the correct visibility for comments in side By side
   setSideBySideCommentVisibility: () ->
