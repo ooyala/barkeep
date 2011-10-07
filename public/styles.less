@@ -583,7 +583,7 @@ table.commitsList, table.authorList {
   #commitMetadata {
     .flexbox;
     width: @pageWidth - 2 * 10 - 2;
-    margin: 40px auto;
+    margin: 23px auto;
     padding: 10px;
     font-size: 0.8em;
 
@@ -707,22 +707,25 @@ table.commitsList, table.authorList {
       width: 100%;
 
       tr:last-of-type { border-bottom: @standardBorder; }
+      th {
+        font: 14px @sansFont;
+        font-weight: bold;
+        text-align: center;
+      }
       td {
         border-top: @standardBorder;
         padding: 3px 5px 1px 5px;
         list-style: none;
-
+        &.path { width: 100%; }
         &.linesAdded, &.linesRemoved {
-          width: 30px;
+          padding: 0 5px;
           text-align: right;
         }
-
         &.linesAdded { color: #58BC0F; }
         &.linesRemoved {
           color: #E11D1E;
           padding-right: 10px;
         }
-
         a {
           color: @lightTextColor;
           &:active { background: none; }
