@@ -5,11 +5,13 @@ window.CommitSearch =
     $("#commitSearch select[name='time_range']").change (e) => @timeRangeChanged(e)
 
     # Register shortcuts
-    KeyboardShortcuts.registerPageShortcut "j", => @selectDiff true
-    KeyboardShortcuts.registerPageShortcut "k", => @selectDiff false
-    KeyboardShortcuts.registerPageShortcut "h", (e) => @showNextPage "after"
-    KeyboardShortcuts.registerPageShortcut "l", (e) => @showNextPage "before"
-    KeyboardShortcuts.registerPageShortcut "r", (e) => @refreshAllSearches()
+    shortcuts =
+      "j": => @selectDiff true
+      "k": => @selectDiff false
+      "h": (e) => @showNextPage "after"
+      "l": (e) => @showNextPage "before"
+      "r": (e) => @refreshAllSearches()
+    KeyboardShortcuts.registerPageShortcut(shortcut, action) for shortcut, action of shortcuts
     for shortcut in ["return", "o"]
       KeyboardShortcuts.registerPageShortcut shortcut, (e) =>
         window.open $("#savedSearches .commitsList tr.selected .commitLink").attr("href")

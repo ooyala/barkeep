@@ -16,22 +16,21 @@ window.Commit =
     $(".edit").live "click", (e) => @onCommentEdit e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
 
-    # Set up hotkeys
-    KeyboardShortcuts.registerPageShortcut "a", => @approveOrDisapprove()
-    KeyboardShortcuts.registerPageShortcut "j", => @selectNextLine true
-    KeyboardShortcuts.registerPageShortcut "k", => @selectNextLine false
-    KeyboardShortcuts.registerPageShortcut "shift+n", => @scrollFile true
-    KeyboardShortcuts.registerPageShortcut "shift+p", => @scrollFile false
-    KeyboardShortcuts.registerPageShortcut "e", => @toggleFullDiff()
-    KeyboardShortcuts.registerPageShortcut "n", => @scrollChunk true
-    KeyboardShortcuts.registerPageShortcut "p", => @scrollChunk false
-    KeyboardShortcuts.registerPageShortcut "b", => @toggleSideBySide true
-    KeyboardShortcuts.registerPageShortcut "return", =>
-      return if $(".commentCancel").length > 0
-      $(".diffLine.selected").first().dblclick()
-    KeyboardShortcuts.registerPageShortcut "esc", =>
-      #TODO(kle): cancel comment forms
-      @clearSelectedLine()
+    shortcuts =
+      "a": => @approveOrDisapprove()
+      "j": => @selectNextLine true
+      "k": => @selectNextLine false
+      "shift+n": => @scrollFile true
+      "shift+p": => @scrollFile false
+      "e": => @toggleFullDiff()
+      "n": => @scrollChunk true
+      "p": => @scrollChunk false
+      "b": => @toggleSideBySide true
+      "return": => $(".diffLine.selected").first().dblclick() unless $(".commentCancel").length > 0
+      # TODO(kle): cancel comment forms
+      "esc": => @clearSelectedLine()
+
+    KeyboardShortcuts.registerPageShortcut(shortcut, action) for shortcut, action of shortcuts
 
     # eventually this should be a user preference stored server side, for now. Its just a cookie
     @toggleSideBySide(false) if $.cookies(@.SIDE_BY_SIDE_COOKIE) == "true"
@@ -58,17 +57,17 @@ window.Commit =
     approvalOverlay = $(Snippets.approvalPopup(approveOrDisapprove))
     $("body").append approvalOverlay
     approvalOverlay.css("visibility", "visible")
-    KeyboardShortcuts.createShortcutContext $(".approvalPopup.overlay .container")
-    $(".approvalPopup.overlay .container").blur ->
-      $(".approvalPopup.overlay").remove()
-    KeyboardShortcuts.registerShortcut $(".approvalPopup.overlay .container"), "esc", ->
-      $(".approvalPopup.overlay .container").blur()
+    approvalPopup = $(".approvalPopup.overlay .container")
+    KeyboardShortcuts.createShortcutContext approvalPopup
+    approvalPopup.blur -> approvalPopup.remove()
+    KeyboardShortcuts.registerShortcut approvalPopup, "esc", ->
+      approvalPopup.blur()
       false
-    KeyboardShortcuts.registerShortcut $(".approvalPopup.overlay .container"), "a", ->
-      $(".approvalPopup.overlay .container").blur()
+    KeyboardShortcuts.registerShortcut approvalPopup, "a", ->
+      approvalPopup.blur()
       $("#approveButton, #disapproveButton").click()
       false
-    $(".approvalPopup.overlay .container").focus()
+    approvalPopup.focus()
 
   # Returns true if the diff line is within the user's scroll context
   lineVisible: (line, visible = "all") ->
