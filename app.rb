@@ -323,7 +323,6 @@ class Barkeep < Sinatra::Base
     # Set the last modified to the most recently modified less file in the directory, as a quick way to get
     # around the problem of included files not working with livecss.
     last_modified Dir.glob(File.join(File.dirname(asset_path), "*.less")).map { |f| File.mtime(f) }.max
-    puts ">>> #{Dir.glob(File.join(File.dirname(asset_path), "*.less")).map { |f| File.mtime(f) }.max}"
     compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/lessc #{filename}`.chomp }
   end
 
