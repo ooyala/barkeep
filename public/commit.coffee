@@ -33,7 +33,7 @@ window.Commit =
     KeyboardShortcuts.registerPageShortcut(shortcut, action) for shortcut, action of shortcuts
 
     # eventually this should be a user preference stored server side, for now. Its just a cookie
-    @toggleSideBySide(false) if $.cookies(@.SIDE_BY_SIDE_COOKIE) == "true"
+    @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
 
   calculateMarginSize: ->
     commit = $("#commit")
@@ -324,7 +324,7 @@ window.Commit =
     container = $("#container")
     unless @isSideBySide
       @isSideBySide = true
-      $.cookies(@.SIDE_BY_SIDE_COOKIE, "true")
+      $.cookies(@SIDE_BY_SIDE_COOKIE, "true")
       $("#sideBySideButton").text("View Unified")
 
       # Save size of the code table so it doesn't drift after many animations.
@@ -347,39 +347,39 @@ window.Commit =
       # animations to split the 2 tables
       # TODO(bochen): don't animate when there are too many lines on the page (it's too slow).
       newCodeWidth = @SIDE_BY_SIDE_CODE_WIDTH
-      rightCodeTable.animate({ "left": newCodeWidth, "width": newCodeWidth },  @.SIDE_BY_SIDE_SPLIT_DURATION)
-      leftCodeTable.animate({ "width" : newCodeWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
-      container.animate({ "width": newCodeWidth * 2 + 2 }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+      rightCodeTable.animate({ "left": newCodeWidth, "width": newCodeWidth },  @SIDE_BY_SIDE_SPLIT_DURATION)
+      leftCodeTable.animate({ "width" : newCodeWidth }, @SIDE_BY_SIDE_SPLIT_DURATION)
+      container.animate({ "width": newCodeWidth * 2 + 2 }, @SIDE_BY_SIDE_SPLIT_DURATION)
       # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
       container.css("overflow", "visible")
       # slide up the replaced rows
-      Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION, () ->
-        $(".diffLine[replace='true'] .slideDiv").slideUp @.SIDE_BY_SIDE_SLIDE_DURATION
+      Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION, () ->
+        $(".diffLine[replace='true'] .slideDiv").slideUp @SIDE_BY_SIDE_SLIDE_DURATION
         # Add grey background to spacing lines
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
-      Util.animateTimeout @.SIDE_BY_SIDE_SPLIT_DURATION + @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
+      Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION + @SIDE_BY_SIDE_SLIDE_DURATION, () =>
         #finalize animation
         jQuery.fx.off = originalJQueryFxOff
         @sideBySideAnimating = false
     else
       # callapse to unified diff
       @isSideBySide = false
-      $.cookies(@.SIDE_BY_SIDE_COOKIE, "false")
+      $.cookies(@SIDE_BY_SIDE_COOKIE, "false")
       $("#sideBySideButton").text("View Side-By-Side")
 
       collapseCodeTablesIntoOne = () =>
         # move right table to the middle, and make it width of rest of page
         rightCodeTable.animate({ "left": @numberColumnOuterWidth, "width" :
-            @originalLeftWidth - @numberColumnOuterWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+            @originalLeftWidth - @numberColumnOuterWidth }, @SIDE_BY_SIDE_SPLIT_DURATION)
         # expand left table to width of rest of the page
-        leftCodeTable.animate({ "width" : @originalLeftWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION)
+        leftCodeTable.animate({ "width" : @originalLeftWidth}, @SIDE_BY_SIDE_SPLIT_DURATION)
 
-        container.animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
+        container.animate {"width": @originalContainerWidth}, @SIDE_BY_SIDE_SPLIT_DURATION, () =>
               # after the side-by-side callapse animation is done,
               #  reset everything to the way it should be for unified diff
               $(".codeLeft .added > .codeText").css("visibility", "visible")
-              @.setSideBySideCommentVisibility()
+              @setSideBySideCommentVisibility()
               $(".codeRight").hide()
               $(".codeLeft .rightNumber").show()
               jQuery.fx.off = originalJQueryFxOff
@@ -390,10 +390,10 @@ window.Commit =
       # Animate the diff lines; when we're done, animate collapsing both sides of the diff into one.
       # slide the extra lines out
       linesToCollapse = $(".diffLine[replace='true']")
-      linesToCollapse.find(".slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
-      linesToCollapse.slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
+      linesToCollapse.find(".slideDiv").slideDown(@SIDE_BY_SIDE_SLIDE_DURATION)
+      linesToCollapse.slideDown(@SIDE_BY_SIDE_SLIDE_DURATION)
       # remove grey from extra lines (don't wait for the previous animation if there's nothing happening).
-      Util.animateTimeout linesToCollapse.length && @.SIDE_BY_SIDE_SLIDE_DURATION, =>
+      Util.animateTimeout linesToCollapse.length && @SIDE_BY_SIDE_SLIDE_DURATION, =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
         collapseCodeTablesIntoOne()
