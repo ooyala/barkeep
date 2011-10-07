@@ -333,9 +333,9 @@ window.Commit =
       @originalContainerWidth ?= container.width()
       @numberColumnOuterWidth ?= leftCodeTable.find(".leftNumber").outerWidth()
       @numberColumnWidth ?= leftCodeTable.find(".leftNumber").width()
-      rightCodeTable.width(@originalLeftWidth)
       leftCodeTable.width(@originalLeftWidth)
       rightCodeTable.css("left" : @numberColumnOuterWidth)
+      rightCodeTable.width(@originalLeftWidth - @numberColumnOuterWidth)
 
       # show and hide the appropriate elements in the 2 tables
       rightCodeTable.show()
@@ -371,11 +371,11 @@ window.Commit =
 
       collapseCodeTablesIntoOne = () =>
         # move right table to the middle, and make it width of rest of page
-        rightCodeTable.animate(
-            { "left": @numberColumnOuterWidth, "width" : @originalLeftWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
+        rightCodeTable.animate({ "left": @numberColumnOuterWidth, "width" :
+            @originalLeftWidth - @numberColumnOuterWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
         # expand left table to width of rest of the page
-        leftCodeTable.animate({ "width" : @originalLeftWidth }, @.SIDE_BY_SIDE_SPLIT_DURATION)
-      
+        leftCodeTable.animate({ "width" : @originalLeftWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION)
+
         container.animate {"width": @.originalContainerWidth}, @.SIDE_BY_SIDE_SPLIT_DURATION, () =>
               # after the side-by-side callapse animation is done,
               #  reset everything to the way it should be for unified diff
