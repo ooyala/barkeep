@@ -42,14 +42,13 @@
 
     <div id="commitSummary">
       <table id="filesChanged">
-        <tr><th></th><th>+</th><th>/</th><th>-</th></tr>
+        <tr><th></th><th>+</th><th>-</th></tr>
         <% tagged_diff.each do |diff| %>
           <tr>
             <td class="path">
               <a href="#<%= diff[:file_name_before] %>"><%= diff[:display_file_name] %></a>
             </td>
             <td class="linesAdded"><%= diff[:lines_added] if diff[:lines_added] > 0%></td>
-            <td></td>
             <td class="linesRemoved"><%= diff[:lines_removed] if diff[:lines_removed] > 0%></td>
           </tr>
         <% end %>
