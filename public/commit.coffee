@@ -16,6 +16,10 @@ window.Commit =
     $(".edit").live "click", (e) => @onCommentEdit e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
 
+    commitComment = $("#commitComments .commentText")
+    KeyboardShortcuts.createShortcutContext commitComment
+    KeyboardShortcuts.registerShortcut commitComment, "esc", => commitComment.blur()
+
     shortcuts =
       "a": => @approveOrDisapprove()
       "j": => @selectNextLine true
@@ -26,6 +30,9 @@ window.Commit =
       "n": => @scrollChunk true
       "p": => @scrollChunk false
       "b": => @toggleSideBySide true
+      "shift+c": =>
+        commitComment.focus()
+        false
       "return": => $(".diffLine.selected").first().dblclick() unless $(".commentCancel").length > 0
       # TODO(kle): cancel comment forms
       "esc": => @clearSelectedLine()
