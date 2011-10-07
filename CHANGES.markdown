@@ -8,8 +8,6 @@ but rather general markdown text describing important notes about the versions a
 0.2.0
 -----
 
-TODO(caleb): UNTAGGED (pending polish)
-
 ### Major features
 
 * Side-by-side diff view is now officially released, complete with toggle button and keyboard shortcut.
