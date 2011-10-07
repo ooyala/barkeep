@@ -75,11 +75,22 @@ Also install:
     pip
     pygments
 
+You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you can
+install a very recent version from the git-core ppa:
+
+    $ sudo add-apt-repository ppa:git-core/ppa
+    $ sudo apt-get update
+    $ sudo apt-get install git-core
+
 Setting up email
 ----------------
 Set the email address and password of the Gmail account you want to use with Barkeep in `config/environment.rb`.
 
-Note that emails for new commits are sent from user**+commits**@example.com and comments are sent from user**+comments**@example.com. By default, Gmail won't allow your account to send from these addresses [without explicitly allowing them](https://mail.google.com/support/bin/answer.py?answer=22370). Enabling this is easy -- log in to the Gmail account you're going to use with Barkeep and add these two addresses in [Settings > Accounts and Import > Send Mail As](http://mail.google.com/mail/#settings/accounts).
+Note that emails for new commits are sent from user**+commits**@example.com and comments are sent from
+user**+comments**@example.com. By default, Gmail won't allow your account to send from these addresses
+[without explicitly allowing them](https://mail.google.com/support/bin/answer.py?answer=22370). Enabling this
+is easy -- log in to the Gmail account you're going to use with Barkeep and add these two addresses in
+[Settings > Accounts and Import > Send Mail As](http://mail.google.com/mail/#settings/accounts).
 
 Authors
 -------
