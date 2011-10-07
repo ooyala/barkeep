@@ -36,14 +36,15 @@ window.ShortcutOverlay =
         $(".kbShortcuts.overlay .container").blur -> $(".kbShortcuts.overlay").css("visibility", "hidden")
 
         # Set up the keyboard shortcuts
-        KeyboardShortcuts.createShortcutContext $(".kbShortcuts.overlay .container")
-        KeyboardShortcuts.registerPageShortcut "shift+/", -> $(".kbShortcuts.overlay .container").focus()
+        shortcutsPopup = $(".kbShortcuts.overlay .container")
+        KeyboardShortcuts.createShortcutContext shortcutsPopup
+        KeyboardShortcuts.registerPageShortcut "shift+/", -> shortcutsPopup.focus()
         # Hitting both "escape" and "?" again will get rid of the overlay
         for shortcut in ["esc", "shift+/"]
-          KeyboardShortcuts.registerShortcut $(".kbShortcuts.overlay .container"), shortcut, ->
-            $(".kbShortcuts.overlay .container").blur()
+          KeyboardShortcuts.registerShortcut shortcutsPopup, shortcut, ->
+            shortcutsPopup.blur()
             false
-        $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> $(".kbShortcuts.overlay .container").blur()
+        $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> shortcutsPopup.blur()
 
 window.KeyboardShortcuts =
   init: ->
