@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "lib/git_helper"
 require "diff/lcs"
 require "diff/lcs/hunk"
@@ -27,6 +29,7 @@ class GitDiffUtils
         data = {
           :file_name_before => a_path,
           :file_name_after => b_path,
+          :display_file_name => a_path == b_path ? a_path : "#{a_path} → #{b_path}",
           :renamed => diff.renamed_file,
           :lines_added => 0,
           :lines_removed => 0,

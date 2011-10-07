@@ -1,7 +1,6 @@
 <a name="<%= file[:file_name_before] %>"></a>
 <div class="file" filename="<%= file[:file_name_before] %>" >
-  <div class="filename"><a href="#<%= file[:file_name_before] %>"><%= file[:renamed] ?
-    "#{file[:file_name_before]} => #{file[:file_name_after]}" : file[:file_name_before] %></a></div>
+  <div class="filename"><a href="#<%= file[:file_name_before] %>"><%= file[:display_file_name] %></a></div>
   <div class="comments">
   <% line_comments, comment_index = [], 0 %>
     <% if commit_file = commit ? commit.commit_files_dataset[:filename => file[:file_name_before]] : nil %>
