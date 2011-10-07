@@ -14,10 +14,16 @@ TODO(caleb): UNTAGGED (pending polish)
 
 * Side-by-side diff view is now officially released, complete with toggle button and keyboard shortcut.
 * [Emails are now sent upon commit ingestion.](https://github.com/ooyala/barkeep/issues/10)
+* [We now show a list of changes at the top of the commit view.](https://github.com/ooyala/barkeep/issues/61)
+* [Commits are now editable (our first outside contribution!)](https://github.com/ooyala/barkeep/issues/23)
 
 ### Minor features and bugfixes
 
-* We now highlight C++ source files. https://github.com/ooyala/barkeep/issues/101
+* [Two bug fixes for automatic commit links.](https://github.com/ooyala/barkeep/commit/f57255b9fc74007121874b5fe0e456e78cad6741)
+* [File renames are now reflected in the commit view.](https://github.com/ooyala/barkeep/commit/c996e0ba20fe3040f4754284b2aa1f5444432bc3)
+* [New empty files now show up in the commit view.](https://github.com/ooyala/barkeep/issues/71)
+* [Changes to symlinks are now reflected in the commit view.](https://github.com/ooyala/barkeep/issues/14)
+* [We now highlight C++ source files.](https://github.com/ooyala/barkeep/issues/101)
 * [There is now a dropdown menu for each saved search to toggle email and search preferences.](https://github.com/ooyala/barkeep/commit/cc1805dbfbf718f9f57518741ba2ff66cd9f2be0)
 * Background jobs now run with Resque instead of our own background jobs logic.
 * Periodic jobs are now scheduled with Clockwork.
@@ -27,7 +33,6 @@ TODO(caleb): UNTAGGED (pending polish)
 * [Rewrite of keyboard shortcuts for sanity.](https://github.com/ooyala/barkeep/commit/82c5f86305ab9ab53f41f13261e768cf49370cdd)
 * [Side-by-side now persists between page views via a cookie.](https://github.com/ooyala/barkeep/issues/48)
 * [Using the MIT open-source license](https://github.com/ooyala/barkeep/issues/87)
-* [Commits are now editable (our first outside contribution!)](https://github.com/ooyala/barkeep/issues/23)
 * Readme fixes including a project description.
 
 0.1.1
