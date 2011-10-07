@@ -22,11 +22,12 @@ module KeyboardShortcuts
   COMMIT_SHORTCUTS = {
     "j" => "Select next line",
     "k" => "Select previous line",
-    "shift+n" => "Next file in commit",
-    "shift+p" => "Previous file in commit",
+    "shift + n" => "Next file in commit",
+    "shift + p" => "Previous file in commit",
     "enter" => "New comment on selected line",
     "n" => "Next diff chunk in commit",
     "p" => "Previous diff chunk in commit",
+    "shift + c" => "Add a commit comment",
     "a then a" => "Toggle approval of commit",
     "e" => "Toggle full diff view",
     "b" => "Toggle side-by-side diff view"
