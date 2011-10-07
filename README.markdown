@@ -31,7 +31,7 @@ Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`
 
     $ bin/rerun.sh # run the server
     # navigate to localhost:4567
-    
+
 These are somewhat optional services to run while developing. These background jobs periodically fetch new
 commits, pre-generate commit diffs, and send emails when comments are posted.
 
