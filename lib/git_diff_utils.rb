@@ -183,15 +183,13 @@ class GitDiffUtils
 
   def self.show(repo, commit)
     if commit.parents.size > 0
-      diff = repo.git.native(:diff, {:full_index => true, :find_renames => true}, commit.parents[0].id,
+      diff = repo.git.native(:diff, { :full_index => true, :find_renames => true }, commit.parents[0].id,
           commit.id)
     else
-      diff = repo.git.native(:show, {:full_index => true, :pretty => "raw"}, commit.id)
-      if diff =~ /diff --git a/
-        diff = diff.sub(/.+?(diff --git a)/m, '\1')
-      else
-        diff = ""
-      end
+      raw_diff = repo.git.native(:show, { :full_index => true, :pretty => "raw" }, commit.id)
+      # git show has a lot of headers in the diff, we try to strip it out here
+      cutpoint = raw_diff.index("diff --git a")
+      diff = cutpoint ? raw_diff[cutpoint, raw_diff.length] : ""
     end
 
     Grit::Diff.list_from_string(repo, diff)
