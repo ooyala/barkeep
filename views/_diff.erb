@@ -20,13 +20,9 @@
           <% initial_break, final_break = file[:breaks].first, file[:breaks].last %>
           <% file[:lines].each_with_index do |line, i| %>
             <% if file[:breaks].include? i %>
-              <% if i == initial_break %>
-                <% extra_class = file[:lines][0].chunk ? "" : "initialBreak" %>
-              <% elsif i == final_break %>
-                <% extra_class = file[:lines][i + 1].then { chunk } ? "" : "finalBreak" %>
-              <% else %>
-                <% extra_class = "" %>
-              <% end %>
+              <% extra_class = "initialBreak" if (i == initial_break) && !file[:lines][0].chunk %>
+              <% extra_class = "finalBreak" if (i == final_break) && !file[:lines][i + 1].then { chunk } %>
+              <% extra_class ||= "" %>
               <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
                   <span class="breakMessage">&#149;&nbsp;&#149;&nbsp;&#149;</span>
               </td></tr>
