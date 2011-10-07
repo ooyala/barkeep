@@ -2,70 +2,72 @@
 
 <%# TODO(caleb): Make margin-size user-customizable. %>
 <div id="commit" sha="<%= commit.sha %>" repo="<%= commit.git_repo.name %>" margin-size="110">
-  <div id="commitMetadata" class="embossedPanel">
-    <div id="messageAndAuthor">
-      <div id="messageMetadata">
-        <p class="name">
-          <span class="sha"><%= commit.sha %></span>
-          <span class="repoName">| <%= commit.git_repo.name %></span>
-        </p>
-        <p class="message"><%= CGI::escapeHTML(commit.message).gsub("\n", "<br/>") %></p>
-      </div>
-      <div id="authorMetadata">
-        <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
-        <div class="authorInfo">
-          <p class="author"><%= commit.user.name %></p>
-          <p class="email"><%= commit.user.email %></p>
-          <p class="date">
-            <span class="north" rel="tipsy" title="<%= commit.date.strftime("%Y-%m-%d %H:%M:%S") %>">
-              <%= commit.date.to_pretty %>
-            </span>
+  <div id="center">
+    <div id="commitMetadata" class="embossedPanel">
+      <div id="messageAndAuthor">
+        <div id="messageMetadata">
+          <p class="name">
+            <span class="sha"><%= commit.sha %></span>
+            <span class="repoName">| <%= commit.git_repo.name %></span>
           </p>
+          <p class="message"><%= CGI::escapeHTML(commit.message).gsub("\n", "<br/>") %></p>
+        </div>
+        <div id="authorMetadata">
+          <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
+          <div class="authorInfo">
+            <p class="author"><%= commit.user.name %></p>
+            <p class="email"><%= commit.user.email %></p>
+            <p class="date">
+              <span class="north" rel="tipsy" title="<%= commit.date.strftime("%Y-%m-%d %H:%M:%S") %>">
+                <%= commit.date.to_pretty %>
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="metadataButtons">
+        <% if commit.approved? %>
+          <%= erb :_approved_banner, :layout => false, :locals => { :commit => commit } %>
+        <% else %>
+          <% if current_user %>
+            <button id="approveButton" class="fancy">Approve Commit</button>
+          <% end %>
+        <% end %>
+        <div id="minorButtons">
+          <button id="sideBySideButton" class="standard">View Side-By-Side</button>
         </div>
       </div>
     </div>
 
-    <div id="metadataButtons">
-      <% if commit.approved? %>
-        <%= erb :_approved_banner, :layout => false, :locals => { :commit => commit } %>
-      <% else %>
-        <% if current_user %>
-          <button id="approveButton" class="fancy">Approve Commit</button>
+    <div id="commitSummary">
+      <table id="filesChanged">
+        <% tagged_diff.each do |diff| %>
+          <tr>
+            <td><a href="#<%= diff[:file_name_before] %>"><%= diff[:display_file_name] %></a></td>
+            <td class="linesAdded"><%= diff[:lines_added] if diff[:lines_added] > 0%></td>
+            <td class="linesRemoved"><%= diff[:lines_removed] if diff[:lines_removed] > 0%></td>
+          </tr>
         <% end %>
-      <% end %>
-      <div id="minorButtons">
-        <button id="sideBySideButton" class="standard">View Side-By-Side</button>
-      </div>
+      </table>
     </div>
-  </div>
 
-  <div id="commitSummary">
-    <table id="filesChanged">
-      <% tagged_diff.each do |diff| %>
-        <tr>
-          <td><a href="#<%= diff[:file_name_before] %>"><%= diff[:display_file_name] %></a></td>
-          <td class="linesAdded"><%= diff[:lines_added] if diff[:lines_added] > 0%></td>
-          <td class="linesRemoved"><%= diff[:lines_removed] if diff[:lines_removed] > 0%></td>
-        </tr>
+    <% tagged_diff.each do |file| %>
+      <%= erb :_diff, :locals => { :commit => commit, :file => file } %>
+      <br/>
+    <% end %>
+    <div class="comments">
+      <% commit.comments.each do |comment| %>
+        <%= erb :_comment, :locals => { :comment => comment } %>
       <% end %>
-    </table>
-  </div>
-
-  <% tagged_diff.each do |file| %>
-    <%= erb :_diff, :locals => { :commit => commit, :file => file } %>
-    <br/>
-  <% end %>
-  <div class="comments">
-    <% commit.comments.each do |comment| %>
-      <%= erb :_comment, :locals => { :comment => comment } %>
+    </div>
+    <% if current_user %>
+      <%= erb :_comment_form, :locals => {
+        :repo_name => commit.git_repo.name,
+        :sha => commit.sha,
+        :filename => nil,
+        :line_number => nil
+      } %>
     <% end %>
   </div>
-  <% if current_user %>
-    <%= erb :_comment_form, :locals => {
-      :repo_name => commit.git_repo.name,
-      :sha => commit.sha,
-      :filename => nil,
-      :line_number => nil
-    } %>
-  <% end %>
 </div>
