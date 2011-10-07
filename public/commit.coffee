@@ -387,12 +387,13 @@ window.Commit =
         # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
         container.css("overflow", "visible")
 
-      # Animate the diff lines; when we're done, animate collapsing both sides of hte diff into one.
+      # Animate the diff lines; when we're done, animate collapsing both sides of the diff into one.
       # slide the extra lines out
-      $(".diffLine[replace='true'] .slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
-      $(".diffLine[replace='true']").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
-      # remove grey from extra lines
-      Util.animateTimeout @.SIDE_BY_SIDE_SLIDE_DURATION, () =>
+      linesToCollapse = $(".diffLine[replace='true']")
+      linesToCollapse.find(".slideDiv").slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
+      linesToCollapse.slideDown(@.SIDE_BY_SIDE_SLIDE_DURATION)
+      # remove grey from extra lines (don't wait for the previous animation if there's nothing happening).
+      Util.animateTimeout linesToCollapse.length && @.SIDE_BY_SIDE_SLIDE_DURATION, =>
         rightCodeTable.find(".diffLine[tag='removed']").removeClass "spacingLine"
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
         collapseCodeTablesIntoOne()
