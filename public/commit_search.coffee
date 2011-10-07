@@ -263,7 +263,7 @@ window.CommitSearch =
       contentType: "application/json"
       url: "/saved_searches/#{savedSearchId}/search_options"
       data: jQuery.toJSON(requestBody)
-      success: () =>
+      success: =>
         @afterSync()
         @refreshing = true
         @refreshSearch(savedSearch, => @refreshing = false)

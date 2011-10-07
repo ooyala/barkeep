@@ -353,12 +353,12 @@ window.Commit =
       # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
       container.css("overflow", "visible")
       # slide up the replaced rows
-      Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION, () ->
+      Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION, ->
         $(".diffLine[replace='true'] .slideDiv").slideUp @SIDE_BY_SIDE_SLIDE_DURATION
         # Add grey background to spacing lines
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
-      Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION + @SIDE_BY_SIDE_SLIDE_DURATION, () =>
+      Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION + @SIDE_BY_SIDE_SLIDE_DURATION, =>
         #finalize animation
         jQuery.fx.off = originalJQueryFxOff
         @sideBySideAnimating = false
@@ -368,14 +368,14 @@ window.Commit =
       $.cookies(@SIDE_BY_SIDE_COOKIE, "false")
       $("#sideBySideButton").text("View Side-By-Side")
 
-      collapseCodeTablesIntoOne = () =>
+      collapseCodeTablesIntoOne = =>
         # move right table to the middle, and make it width of rest of page
         rightCodeTable.animate({ "left": @numberColumnOuterWidth, "width" :
             @originalLeftWidth - @numberColumnOuterWidth }, @SIDE_BY_SIDE_SPLIT_DURATION)
         # expand left table to width of rest of the page
         leftCodeTable.animate({ "width" : @originalLeftWidth}, @SIDE_BY_SIDE_SPLIT_DURATION)
 
-        container.animate {"width": @originalContainerWidth}, @SIDE_BY_SIDE_SPLIT_DURATION, () =>
+        container.animate {"width": @originalContainerWidth}, @SIDE_BY_SIDE_SPLIT_DURATION, =>
               # after the side-by-side callapse animation is done,
               #  reset everything to the way it should be for unified diff
               $(".codeLeft .added > .codeText").css("visibility", "visible")
@@ -399,7 +399,7 @@ window.Commit =
         collapseCodeTablesIntoOne()
 
   #set the correct visibility for comments in side By side
-  setSideBySideCommentVisibility: () ->
+  setSideBySideCommentVisibility: ->
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     if @isSideBySide
