@@ -4,10 +4,28 @@
  * We can drop this in later if we want. It's kind of silly how firefox manages web fonts IMO.
  */
 @font-face {
-  font-family: 'DroidSansMonoSlashedRegular';
-  src: url('/droidsansmonoslashed.woff') format('woff');
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
+}
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-Bold-webfont.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-Italic-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-Bold-Italic-webfont.woff") format("woff");
+  font-weight: bold;
+  font-style: italic;
 }
 
 @pageWidth: 930px;
@@ -27,7 +45,7 @@
 
 // Fonts
 @sansFont: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
-@monoFont: "DroidSansMonoSlashedRegular", monospace;
+@monoFont: "Bitstream Vera Sans Mono", monospace;
 
 // Close links (Xs)
 .closeLinks {
