@@ -582,10 +582,16 @@ table.commitsList, table.authorList {
 
   #commitMetadata {
     .flexbox;
+    box-shadow: none;
     width: @pageWidth - 2 * 10 - 2;
-    margin: 23px auto;
+    margin: 23px auto 0px auto;
     padding: 10px;
     font-size: 0.8em;
+
+    // commitMetadata should appear above the reviewRequest box
+    // so the "roll up" action hides the reviewRequest behind commitMetadata.
+    position: relative;
+    z-index: 1;
 
     #messageAndAuthor {
       .flexbox(vertical);
@@ -697,7 +703,13 @@ table.commitsList, table.authorList {
   }
 
   #reviewRequest {
-    display: none;
+    .embossedPanel;
+    position: relative;
+    border: @standardBorder;
+    border-top: none;
+    width: 600px;
+    margin: -75px auto 0px auto;
+    padding: 30px 20px 20px 20px;
     text-align: center;
     font-size: 14px;
     margin-bottom: 10px;
@@ -710,7 +722,7 @@ table.commitsList, table.authorList {
   }
 
   #commitSummary {
-    margin: 0px auto 40px auto;
+    margin: 23px auto 40px auto;
     width: @pageWidth;
 
     #filesChanged {

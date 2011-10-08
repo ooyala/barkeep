@@ -15,7 +15,7 @@ window.Commit =
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
-    $("#requestReviewButton").click (e) => @showReviewRequest()
+    $("#requestReviewButton").click (e) => @toggleReviewRequest()
 
     commitComment = $("#commitComments .commentText")
     KeyboardShortcuts.createShortcutContext commitComment
@@ -31,7 +31,7 @@ window.Commit =
       "n": => @scrollChunk true
       "p": => @scrollChunk false
       "b": => @toggleSideBySide true
-      "r": => @showReviewRequest()
+      "r": => @toggleReviewRequest(true)
       "shift+c": =>
         commitComment.focus()
         false
@@ -453,10 +453,17 @@ window.Commit =
       leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
 
-  showReviewRequest: ->
-    $("#reviewRequest").show()
-    $("#reviewRequest #authorInput").focus()
+  toggleReviewRequest: (showRequest = null )->
+    reviewRequest = $("#reviewRequest")
+    if reviewRequest.attr("animatingDirection") == "in" || showRequest
+      reviewRequest.animate({ marginTop: -10 }, 210, "easeOutBack")
+      reviewRequest.attr("animatingDirection", "out")
+      reviewRequest.find("#authorInput").focus()
+    else
+      reviewRequest.animate({ marginTop: -75 }, 100)
+      reviewRequest.attr("animatingDirection", "in")
     return false
+
 
   submitReviewRequest: (e) ->
     emails = $("#authorInput").val()
