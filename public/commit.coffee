@@ -241,39 +241,39 @@ window.Commit =
         comment.find(".commentBody").html(html)
         comment.find(".commentCancel").click()
 
+  # TODO(caleb): Add a Snippet for comment forms instead of contacting the server (there's no server logic
+  # needed here).
   createCommentForm: (codeLine, repoName, sha, filename, lineNumber) ->
-    $.ajax({
-      type: "get",
-      url: "/comment_form",
-      data: {
-        repo_name: repoName,
-        sha: sha,
-        filename: filename,
+    $.ajax
+      type: "get"
+      url: "/comment_form"
+      data:
+        repo_name: repoName
+        sha: sha
+        filename: filename
         line_number: lineNumber
-      },
       success: (html) ->
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
-        #add a random id so matching comments on both sides of side-by-side can be shown
+        # Add a random id so matching comments on both sides of side-by-side can be shown.
         commentForm.attr("form-id", Math.floor(Math.random() * 10000))
         commentForm.find(".commentCancel").click(Commit.onCommentCancel)
         codeLine.append(commentForm)
         Commit.setSideBySideCommentVisibility()
-        textarea = codeLine.find(".commentForm").first().find(".commentText")
+        textarea = codeLine.find(".commentForm .commentText").filter(-> $(@).css("visibility") == "visible")
         KeyboardShortcuts.createShortcutContext textarea
         textarea.focus()
         KeyboardShortcuts.registerShortcut textarea, "esc", => textarea.blur()
-    })
 
   onCommentSubmit: (e) ->
     e.preventDefault()
     target = $(e.currentTarget)
     if target.find("textarea").val() == ""
       return
-    #make sure changes to form happen to both tables to maintain height
+    # Make sure changes to form happen to both tables to maintain height.
     formId = target.attr("form-id")
     file = target.parents(".file")
-    # file is the parent file for the comment, if the comment is a line-level comment.
+    # File is the parent file for the comment if the comment is a line-level comment.
     form = if file.size() > 0 then file.find(".commentForm[form-id='" + formId + "']") else target
     data = {}
     target.find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
@@ -294,7 +294,7 @@ window.Commit =
 
   onCommentCancel: (e) ->
     e.stopPropagation()
-    #make sure changes to form happen to both tables to maintain height
+    # Make sure changes to form happen to both tables to maintain height.
     formId = $(e.currentTarget).parents(".commentForm").attr("form-id")
     form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
     form.remove()
