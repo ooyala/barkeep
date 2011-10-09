@@ -58,12 +58,12 @@ window.Commit =
     # Review request author autocompletion
     $("#reviewRequest #authorInput").autocomplete
       source: (request, callback) ->
-        prefixMatch = $("#authorInput").val().match(/(^([^,]*)$|,\s*([^,]*)$)/)
-        prefix = prefixMatch[2] || prefixMatch[3]
+        substringMatch = $("#authorInput").val().match(/(^([^,]*)$|,\s*([^,]*)$)/)
+        substring = substringMatch[2] || substringMatch[3]
         $.ajax
           type: "get"
           url: "/autocomplete/users"
-          data: { prefix: prefix }
+          data: { substring: substring }
           dataType: "json"
           success: (completion) -> callback(completion.values)
           error: -> callback ""
