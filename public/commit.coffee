@@ -16,6 +16,7 @@ window.Commit =
     $(".edit").live "click", (e) => @onCommentEdit e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
     $("#requestReviewButton").click (e) => @toggleReviewRequest()
+    $("#requestInput button").click (e) => @submitReviewRequest()
 
     commitComment = $("#commitComments .commentText")
     KeyboardShortcuts.createShortcutContext commitComment
@@ -453,29 +454,36 @@ window.Commit =
       leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
 
-  toggleReviewRequest: (showRequest = null )->
+  toggleReviewRequest: (showRequest = null) ->
     reviewRequest = $("#reviewRequest")
-    if reviewRequest.attr("animatingDirection") == "in" || showRequest
+    if reviewRequest.attr("animatingDirection") == "in" && showRequest == null || showRequest
       reviewRequest.animate({ marginTop: -10 }, 210, "easeOutBack")
       reviewRequest.attr("animatingDirection", "out")
       reviewRequest.find("#authorInput").focus()
     else
-      reviewRequest.animate({ marginTop: -75 }, 100)
       reviewRequest.attr("animatingDirection", "in")
+      reviewRequest.animate({ marginTop: -77 }, 100, "linear", ->
+        reviewRequest.find("#requestSubmitted").hide()
+        reviewRequest.find("#requestInput").show()
+        reviewRequest.find("#authorInput").blur()
+      )
     return false
 
-
   submitReviewRequest: (e) ->
-    emails = $("#authorInput").val()
+    emails = $("#authorInput").val().replace(/,?\s*$/, "")
+    console.log emails
     sha = $("#commit").attr("sha")
+    $("#reviewRequest #requestInput").hide()
+    $("#reviewRequest #authorInput").val("")
+    $("#reviewRequest #requestSubmitted span").html(" " + emails)
+    $("#reviewRequest #requestSubmitted").show()
     $.ajax
       type: "post"
       url: "/request_review"
       data:
         sha: sha
         emails: emails
-      success: ->
-        console.log "reviews requested"
+        complete: => setTimeout "Commit.toggleReviewRequest(false)", 2000
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.

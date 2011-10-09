@@ -708,16 +708,30 @@ table.commitsList, table.authorList {
     border: @standardBorder;
     border-top: none;
     width: 600px;
-    margin: -75px auto 0px auto;
+    margin: -77px auto 0px auto;
     padding: 30px 20px 20px 20px;
     text-align: center;
     font-size: 14px;
     margin-bottom: 10px;
 
-    #authorInput {
-      width: 300px;
-      height: 18px;
-      margin-left: 5px;
+    #requestInput {
+      #authorInput {
+        width: 300px;
+        height: 19px;
+        margin-left: 5px;
+      }
+
+      button {
+        display: inline-block;
+        margin-left: 5px;
+        padding: 4px;
+      }
+    }
+
+    #requestSubmitted {
+      display: none;
+      color: green;
+      height: 23px;
     }
   }
 
@@ -1119,10 +1133,12 @@ table.commitsList, table.authorList {
 
     a {
       display: inline-block;
-      width: 298px;
+      width: 99%;
       padding: 2px;
       font-size: 14px;
       color: @textColor;
+      font-family: @monoFont;
+      font-size: 12px;
       &:hover { text-decoration: none; }
     }
 
