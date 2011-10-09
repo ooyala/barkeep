@@ -593,7 +593,7 @@ table.commitsList, table.authorList {
     // commitMetadata should appear above the reviewRequest box
     // so the "roll up" action hides the reviewRequest behind commitMetadata.
     position: relative;
-    z-index: 1;
+    z-index: 2;
 
     #messageAndAuthor {
       .flexbox(vertical);
@@ -708,6 +708,7 @@ table.commitsList, table.authorList {
     width: @pageWidth;
     margin: 0 auto;
     position: relative;
+    z-index: 1;
 
     #reviewRequest {
       .raisedPanel;
