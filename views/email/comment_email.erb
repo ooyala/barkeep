@@ -27,7 +27,7 @@
   <%= "-" * title.size %><br/>
 
   <% general_comments.each do |comment| %>
-    &lt;<b><a href="<%= "#{commit_url}#comment-#{comment.id}" %>"><%= CGI.escape_html(comment.user.name) %></a>&gt;</b>
+    &lt;<b><a href="<%= "#{commit_url}#comment-#{comment.id}" %>"><%= CGI.escape_html(comment.user.name) %></a></b>&gt;
     <%= CGI.escape_html(comment.text) %><br/><br/>
   <% end  %>
 <% end %>
