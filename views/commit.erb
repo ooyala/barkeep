@@ -62,7 +62,7 @@
           <tr>
             <td class="path">
               <a href="#<%= diff[:file_name_before] %>">
-                <%= diff[:display_file_name].truncate(100, :truncate_front => true) %>
+                <%= diff[:display_file_name].truncate_front(100) %>
               </a>
             </td>
             <td class="linesAdded"><%= diff[:lines_added] if diff[:lines_added] > 0%></td>

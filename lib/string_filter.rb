@@ -40,17 +40,11 @@ module StringFilter
     self.gsub("\n", "<br/>")
   end
 
-  def truncate(max_length, options = {})
-    options[:abbreviator] ||= "..."
-    options[:truncate_front] ||= false
+  def truncate_front(max_length)
+    abbreviator = "..."
     if length > max_length
-      if options[:truncate_front]
-        start_position = length - (max_length - options[:abbreviator].length)
-        return options[:abbreviator] + self[start_position...length]
-      else
-        end_position = max_length - options[:abbreviator].length
-        return self[0...end_position] + options[:abbreviator]
-      end
+      start_position = length - (max_length - abbreviator.length)
+      abbreviator + self[start_position...length]
     else
       self
     end
