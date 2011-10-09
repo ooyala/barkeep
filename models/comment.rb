@@ -18,12 +18,7 @@ class Comment < Sequel::Model
   def file_comment?() !commit_file_id.nil? end
 
   def format
-    replace_shas_with_links(RedcarpetManager.redcarpet_pygments.render(text))
-  end
-
-  def replace_shas_with_links(text)
-    # We assume the sha is linking to another commit in this repository.
-    repo_name = commit.git_repo.name
-    text.gsub(/([a-zA-Z0-9]{40})/) { |sha| "<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>" }
+    text.pygmentize
+        .replace_shas_with_links(commit.git_repo.name)
   end
 end

@@ -1,9 +1,9 @@
 <% if comment %>
   <a name="comment-<%= comment.id %>"></a>
-  <div class="comment" commentId="<%= comment.id %>" data-comment-raw="<%= CGI::escapeHTML(comment.text) %>">
+  <div class="comment" commentId="<%= comment.id %>" data-comment-raw="<%= comment.text.escape_html %>">
     <div class="heading">
       <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
-      <span class="name"><%=CGI::escapeHTML(comment.user.name)%></span>
+      <span class="name"><%= comment.user.name.escape_html %></span>
       <span class="permalink"><a href="#comment-<%= comment.id %>">commented</a></span>
       <span class="date"><%= comment.created_at.to_pretty %> </span>
       <div class="buttonContainer">

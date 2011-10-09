@@ -38,4 +38,10 @@ class Commit < Sequel::Model
     self.approved_by_user_id = nil
     save
   end
+
+  def format_message
+    message.escape_html
+           .newlines_to_html
+           .link_github_issue("ooyala", git_repo.name)
+  end
 end

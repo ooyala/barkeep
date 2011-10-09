@@ -11,7 +11,7 @@
             <span class="sha"><%= commit.sha %></span>
             <span class="repoName">| <%= commit.git_repo.name %></span>
           </p>
-          <p class="message"><%= CGI::escapeHTML(commit.message).gsub("\n", "<br/>") %></p>
+          <p class="message"><%= commit.format_message %></p>
         </div>
         <div id="authorMetadata">
           <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
