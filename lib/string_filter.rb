@@ -31,7 +31,7 @@ module StringFilter
   end
 
   # Converts an embedded image (![alt][link]) to also include
-  # a link to the same image
+  # a link to the same image.
   def link_embedded_images
     self.gsub(/!\[.*\]\((.*)\)/) { |match| "[#{match}](#{$1})" }
   end
