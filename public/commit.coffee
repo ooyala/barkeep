@@ -456,7 +456,7 @@ window.Commit =
 
   toggleReviewRequest: (showRequest = null) ->
     reviewRequest = $("#reviewRequest")
-    if reviewRequest.attr("animatingDirection") == "in" && showRequest == null || showRequest
+    if (reviewRequest.attr("animatingDirection") == "in" && !showRequest?) || showRequest
       reviewRequest.animate({ marginTop: -10 }, 210, "easeOutBack")
       reviewRequest.attr("animatingDirection", "out")
       reviewRequest.find("#authorInput").focus()
