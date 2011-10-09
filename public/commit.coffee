@@ -495,6 +495,14 @@ window.Commit =
       data: { sha: sha, emails: emails }
       complete: => Util.timeout 2000, => @toggleReviewRequest(false)
 
+  # This is called when the user attempts to navigate away. Let's prompt them if there are any unsaved comment
+  # boxes with content on the page.
+  confirmNavigation: ->
+    for textarea in $("textarea.commentText")
+      unless $.trim(textarea.value) == ""
+        return "You have an unsaved comment. Are you sure you want to leave?"
+
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
 $(window).load(-> Commit.calculateMarginSize())
+$(window).bind "beforeunload", -> Commit.confirmNavigation()
