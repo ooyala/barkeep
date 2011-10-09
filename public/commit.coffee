@@ -471,7 +471,7 @@ window.Commit =
 
   submitReviewRequest: (e) ->
     emails = $("#authorInput").val().replace(/,?\s*$/, "")
-    console.log emails
+    return if emails == ""
     sha = $("#commit").attr("sha")
     $("#reviewRequest #requestInput").hide()
     $("#reviewRequest #authorInput").val("")
