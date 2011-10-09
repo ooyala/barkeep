@@ -492,7 +492,7 @@ window.Commit =
       type: "post"
       url: "/request_review"
       data: { sha: sha, emails: emails }
-      complete: => setTimeout "Commit.toggleReviewRequest(false)", 2000
+      complete: => Util.timeout 2000, => @toggleReviewRequest(false)
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
