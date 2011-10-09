@@ -480,10 +480,8 @@ window.Commit =
     $.ajax
       type: "post"
       url: "/request_review"
-      data:
-        sha: sha
-        emails: emails
-        complete: => setTimeout "Commit.toggleReviewRequest(false)", 2000
+      data: { sha: sha, emails: emails }
+      complete: => setTimeout "Commit.toggleReviewRequest(false)", 2000
 
 $(document).ready(-> Commit.init())
 # This needs to happen on page load because we need the styles to be rendered.
