@@ -582,7 +582,9 @@ table.commitsList, table.authorList {
 
   #commitMetadata {
     .flexbox;
+    .embossedPanel;
     box-shadow: none;
+
     width: @pageWidth - 2 * 10 - 2;
     margin: 23px auto 0px auto;
     padding: 10px;
@@ -702,35 +704,42 @@ table.commitsList, table.authorList {
     }
   }
 
-  #reviewRequest {
-    .embossedPanel;
+  #reviewRequestContainer {
+    width: @pageWidth;
+    margin: 0 auto 0 auto;
     position: relative;
-    border-top: none;
-    width: 600px;
-    margin: -77px auto 0px auto;
-    padding: 30px 20px 20px 20px;
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 10px;
 
-    #requestInput {
-      #authorInput {
-        width: 300px;
-        height: 19px;
-        margin-left: 5px;
-      }
-
-      button {
-        display: inline-block;
-        margin-left: 5px;
-        padding: 4px;
-      }
-    }
-
-    #requestSubmitted {
+    #reviewRequest {
+      .raisedPanel;
+      position: absolute;
+      left: (@pageWidth - 600px) / 2;
+      bottom: 0;
+      width: 600px;
+      height: 100px;
+      text-align: center;
+      font-size: 14px;
       display: none;
-      color: green;
-      height: 23px;
+
+      #requestInput {
+        margin-top: 50px;
+        #authorInput {
+          width: 300px;
+          height: 19px;
+          margin-left: 5px;
+        }
+
+        button {
+          display: inline-block;
+          margin-left: 5px;
+          padding: 4px;
+        }
+      }
+
+      #requestSubmitted {
+        display: none;
+        color: green;
+        height: 23px;
+      }
     }
   }
 
