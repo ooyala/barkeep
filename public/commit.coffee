@@ -47,6 +47,7 @@ window.Commit =
       @submitReviewRequest() unless $(".ui-autocomplete").is(":visible")
     KeyboardShortcuts.registerShortcut reviewRequestInput, "esc", =>
       @toggleReviewRequest()
+      # Return false to prevent clearing the text box.
       false
 
     # eventually this should be a user preference stored server side, for now. Its just a cookie
