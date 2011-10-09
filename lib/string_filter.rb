@@ -21,9 +21,9 @@ module StringFilter
     end
   end
 
+  # See https://github.com/blog/831-issues-2-0-the-next-generation
+  # for the list of issue linking synonyms.
   def link_github_issue(github_username, github_repo)
-    # See https://github.com/blog/831-issues-2-0-the-next-generation
-    # for the list of issue linking synonyms.
     self.gsub(/(#|gh-)(\d+)/i) do
       "<a href='https://github.com/#{github_username}/#{github_repo}/issues/#{$2}' target='_blank'>" +
           "#{$1}#{$2}</a>"
