@@ -63,7 +63,7 @@ window.Commit =
       select: (event, ui) ->
         # The focus event already populated the input,
         # so we don't need to change anything here.
-        return false
+        false
       focus: (event, ui) ->
         # Match all emails input so far, retrieve the email of the
         # currently selected user, and set the input value as the
@@ -72,10 +72,10 @@ window.Commit =
         prefix = "#{prefix}, " unless prefix == ""
         selection = ui.item.label.match(/<([^>]+)>/)[1] + ", "
         $("#authorInput").val("#{prefix}#{selection}")
-        return false
+        false
       search: (event, ui) ->
         # Don't attempt to search if the input value ends with a comma and whitespace.
-        return false if $("#authorInput").val().match(/,\s*$/)
+        false if $("#authorInput").val().match(/,\s*$/)
 
   calculateMarginSize: ->
     commit = $("#commit")
@@ -467,7 +467,7 @@ window.Commit =
         reviewRequest.find("#requestInput").show()
         reviewRequest.find("#authorInput").blur()
       )
-    return false
+    false
 
   submitReviewRequest: (e) ->
     emails = $("#authorInput").val().replace(/,?\s*$/, "")
