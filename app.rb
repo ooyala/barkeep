@@ -373,7 +373,7 @@ class Barkeep < Sinatra::Base
     commit = Commit.first(:sha => params[:sha])
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
     Emails.send_review_request_email(current_user, commit, emails)
-    ""
+    "OK"
   end
 
   #
