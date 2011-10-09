@@ -8,7 +8,6 @@
 #
 # Possible extensions:
 # * Convert APP-XXX to jira links
-# * Convert an image link (![alt][link] syntax) to a be a link to the image as well
 # * Make @username link to profile pages
 
 module StringFilter
@@ -29,6 +28,12 @@ module StringFilter
       "<a href='https://github.com/#{github_username}/#{github_repo}/issues/#{$2}' target='_blank'>" +
           "#{$1}#{$2}</a>"
     end
+  end
+
+  # Converts an embedded image (![alt][link]) to also include
+  # a link to the same image
+  def link_embedded_images
+    self.gsub(/!\[.*\]\((.*)\)/) { |match| "[#{match}](#{$1})" }
   end
 
   def newlines_to_html
