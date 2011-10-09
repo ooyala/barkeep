@@ -18,7 +18,7 @@ class Comment < Sequel::Model
   def file_comment?() !commit_file_id.nil? end
 
   def format
-    text.pygmentize
+    text.markdown
         .replace_shas_with_links(commit.git_repo.name)
   end
 end

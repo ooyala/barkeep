@@ -12,7 +12,7 @@
 # * Make @username link to profile pages
 
 module StringFilter
-  def pygmentize
+  def markdown
     RedcarpetManager.redcarpet_pygments.render(self)
   end
 
