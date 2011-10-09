@@ -706,22 +706,23 @@ table.commitsList, table.authorList {
 
   #reviewRequestContainer {
     width: @pageWidth;
-    margin: 0 auto 0 auto;
+    margin: 0 auto;
     position: relative;
 
     #reviewRequest {
       .raisedPanel;
       position: absolute;
       left: (@pageWidth - 600px) / 2;
-      bottom: 0;
+      top: -100px;
       width: 600px;
-      height: 100px;
+      min-height: 100px;
       text-align: center;
       font-size: 14px;
       display: none;
 
+      div { margin: 50px 30px 30px 30px; }
+
       #requestInput {
-        margin-top: 50px;
         #authorInput {
           width: 300px;
           height: 19px;
@@ -738,7 +739,6 @@ table.commitsList, table.authorList {
       #requestSubmitted {
         display: none;
         color: green;
-        height: 23px;
       }
     }
   }

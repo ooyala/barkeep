@@ -468,12 +468,12 @@ window.Commit =
     reviewRequest = $("#reviewRequest")
     if (reviewRequest.attr("animatingDirection") == "in" && !showRequest?) || showRequest
       reviewRequest.show()
-      reviewRequest.animate({ bottom: -80; }, 210, "easeOutBack")
+      reviewRequest.animate({ top: -20 }, 210, "easeOutBack")
       reviewRequest.attr("animatingDirection", "out")
       reviewRequest.find("#authorInput").focus()
     else
       reviewRequest.attr("animatingDirection", "in")
-      reviewRequest.animate({ bottom: 0 }, 100, "linear", ->
+      reviewRequest.animate({ top: -100 }, 100, "linear", ->
         reviewRequest.find("#requestSubmitted").hide()
         reviewRequest.find("#requestInput").show()
         reviewRequest.find("#authorInput").blur()
