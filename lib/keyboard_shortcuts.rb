@@ -30,7 +30,8 @@ module KeyboardShortcuts
     "shift + c" => "Add a commit comment",
     "a then a" => "Toggle approval of commit",
     "e" => "Toggle full diff view",
-    "b" => "Toggle side-by-side diff view"
+    "b" => "Toggle side-by-side diff view",
+    "r" => "Request code review"
   }
 
   def self.shortcuts(view)
