@@ -887,9 +887,14 @@ table.commitsList, table.authorList {
       padding: 8px 5px 0 5px;
       line-height: 1.5em;
 
-      p, div { margin-bottom: 8px; }
-
+      p, div, ol, ul { margin-bottom: 8px; }
       img { max-width: @pageWidth - 10px; }
+      ul, ol { margin-left: 20px; }
+      blockquote {
+        border-left: 5px solid lighten(@lightTextColor, 30%);
+        padding-left: 4px;
+        color: @lightTextColor;
+      }
 
       code {
         display: inline;
