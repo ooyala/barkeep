@@ -52,6 +52,9 @@ window.Commit =
     # eventually this should be a user preference stored server side, for now. Its just a cookie
     @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
 
+    # Put the approval overlay message div on the page.
+    $("body").append $(Snippets.approvalOverlay)
+
     # Review request author autocompletion
     $("#reviewRequest #authorInput").autocomplete
       source: (request, callback) ->
@@ -95,17 +98,19 @@ window.Commit =
   # Display a popup prompt when the user hits 'a' to confirm that they want to approve.
   approveOrDisapprove: ->
     if $("#approveButton").size() > 0
-      approveOrDisapprove = "approve"
+      choice = "approve"
     else if $("#disapproveButton").size() > 0
-      approveOrDisapprove = "disapprove"
+      choice = "disapprove"
     else
       return
-    approvalOverlay = $(Snippets.approvalPopup(approveOrDisapprove))
-    $("body").append approvalOverlay
+    approvalOverlay = $(".approvalPopup.overlay")
     approvalOverlay.css("visibility", "visible")
     approvalPopup = $(".approvalPopup.overlay .container")
+    approvalPopup.append $(Snippets.approvalPopup(choice))
     KeyboardShortcuts.createShortcutContext approvalPopup
-    approvalPopup.blur -> approvalPopup.remove()
+    approvalPopup.blur ->
+      approvalPopup.empty()
+      approvalOverlay.css("visibility", "hidden")
     KeyboardShortcuts.registerShortcut approvalPopup, "esc", ->
       approvalPopup.blur()
       false
