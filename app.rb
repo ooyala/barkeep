@@ -31,6 +31,7 @@ require "lib/string_filter"
 require "lib/inspire"
 require "lib/redis_manager"
 require "lib/redcarpet_extensions"
+require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_IDP_ENDPOINT = "https://www.google.com/accounts/o8/ud"
@@ -382,7 +383,8 @@ class Barkeep < Sinatra::Base
   post "/request_review" do
     commit = Commit.first(:sha => params[:sha])
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
-    Emails.send_review_request_email(current_user, commit, emails)
+    Resque.enqueue(DeliverReviewRequestEmails,
+        commit.git_repo.name, commit.sha, current_user.email, emails)
     "OK"
   end
 
