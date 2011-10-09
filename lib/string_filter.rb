@@ -40,6 +40,22 @@ module StringFilter
     self.gsub("\n", "<br/>")
   end
 
+  def truncate(max_length, options = {})
+    options[:abbreviator] ||= "..."
+    options[:truncate_front] ||= false
+    if length > max_length
+      if options[:truncate_front]
+        start_position = length - (max_length - options[:abbreviator].length)
+        return options[:abbreviator] + self[start_position...length]
+      else
+        end_position = max_length - options[:abbreviator].length
+        return self[0...end_position] + options[:abbreviator]
+      end
+    else
+      self
+    end
+  end
+
   def escape_html
     CGI::escapeHTML(self)
   end
