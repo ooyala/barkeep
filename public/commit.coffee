@@ -41,9 +41,13 @@ window.Commit =
       "esc": => @clearSelectedLine()
 
     KeyboardShortcuts.registerPageShortcut(shortcut, action) for shortcut, action of shortcuts
-    KeyboardShortcuts.createShortcutContext $("#reviewRequest #authorInput")
-    KeyboardShortcuts.registerShortcut $("#reviewRequest #authorInput"), "return", =>
+    reviewRequestInput = $("#reviewRequest #authorInput")
+    KeyboardShortcuts.createShortcutContext reviewRequestInput
+    KeyboardShortcuts.registerShortcut reviewRequestInput, "return", =>
       @submitReviewRequest() unless $(".ui-autocomplete").is(":visible")
+    KeyboardShortcuts.registerShortcut reviewRequestInput, "esc", =>
+      @toggleReviewRequest()
+      false
 
     # eventually this should be a user preference stored server side, for now. Its just a cookie
     @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
