@@ -13,8 +13,8 @@
 
 <font face="monospace" size="3">
 
-<a href="http://<%= BARKEEP_HOSTNAME %>/commits/<%= commit.git_repo.name %>/<%= commit.sha %>">
-<%= commit.grit_commit.id_abbrev %></a>
+<% commit_url = "http://#{BARKEEP_HOSTNAME}/commits/#{commit.git_repo.name}/#{commit.sha}" %>
+<a href="<%= commit_url %>"><%= commit.grit_commit.id_abbrev %></a>
 <%= CGI.escape_html(commit.grit_commit.author.display_string) %>
  <%= StringHelper.short_date(commit.grit_commit.date) %><br/>
 <%= CGI.escape_html(commit.grit_commit.short_message) %><br/>
@@ -27,7 +27,8 @@
   <%= "-" * title.size %><br/>
 
   <% general_comments.each do |comment| %>
-    &lt;<b><%= CGI.escape_html(comment.user.name) %>&gt;</b> <%= CGI.escape_html(comment.text) %><br/><br/>
+    &lt;<b><a href="<%= "#{commit_url}#comment-#{comment.id}" %>"><%= CGI.escape_html(comment.user.name) %></a>&gt;</b>
+    <%= CGI.escape_html(comment.text) %><br/><br/>
   <% end  %>
 <% end %>
 
