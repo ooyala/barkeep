@@ -8,6 +8,7 @@
 #
 # Possible extensions:
 # * Convert APP-XXX to jira links
+# * Convert an image link (![alt][link] syntax) to a be a link to the image as well
 # * Make @username link to profile pages
 
 module StringFilter
