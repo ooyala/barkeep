@@ -7,7 +7,6 @@
 # by re-opening StringFilter.
 #
 # Possible extensions:
-# * Convert APP-XXX to jira links
 # * Make @username link to profile pages
 
 module StringFilter
