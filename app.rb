@@ -363,6 +363,7 @@ class Barkeep < Sinatra::Base
     erb :admin, :locals => {
       :most_recent_commit => Commit.order(:id.desc).first,
       :most_recent_comment => Comment.order(:id.desc).first,
+      :repos => MetaRepo.instance.repos.map(&:name),
       :failed_email_count => CompletedEmail.filter(:result => "failure").count,
       :recently_failed_emails =>
           CompletedEmail.filter(:result => "failure").order(:created_at.desc).limit(10).all,

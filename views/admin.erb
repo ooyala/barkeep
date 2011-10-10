@@ -4,6 +4,7 @@
   # Params:
   # - most_recent_commit
   # - most_recent_comment
+  # - repos
   # - failed_email_count
   # - recently_failed_emails
   # - pending_comments
@@ -27,6 +28,7 @@
   p {
     margin: 10px 0;
   }
+  ul, ol { margin-left: 20px; }
 </style>
 
 <div id="admin">
@@ -50,6 +52,9 @@
       author: <%= most_recent_comment.user.name %>
     </p>
   <% end %>
+
+  <h2>Repositories</h2>
+  <ul><% repos.each { |repo| %><li><%= repo %></li><% } %></ul>
 
   <h2>Comments waiting to be emailed, oldest first (<%= pending_comments_count %> total)</h2>
   <% unless pending_comments.empty? %>
