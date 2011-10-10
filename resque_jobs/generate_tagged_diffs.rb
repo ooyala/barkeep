@@ -9,7 +9,7 @@ class GenerateTaggedDiffs
   @queue = :generate_tagged_diffs
 
   def self.perform(repo_name, commit_sha)
-    GitDiffUtils.setup(RedisManager.get_redis_instance)
+    GitDiffUtils.setup(RedisManager.redis_instance)
     grit_commit = MetaRepo.instance.get_grit_repo(repo_name).commits(commit_sha, 1).first
     unless grit_commit
       puts "Error: this commit is not found: #{repo_name} #{commit_sha}"

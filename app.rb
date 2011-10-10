@@ -53,7 +53,7 @@ class Barkeep < Sinatra::Base
     set :show_exceptions, false
     set :dump_errors, false
 
-    GitDiffUtils.setup(RedisManager.get_redis_instance)
+    GitDiffUtils.setup(RedisManager.redis_instance)
 
     error do
       # Show a more developer-friendly error page and stack traces.
@@ -74,7 +74,7 @@ class Barkeep < Sinatra::Base
   configure :production do
     enable :logging
     MetaRepo.logger.level = Logger::INFO
-    GitDiffUtils.setup(RedisManager.get_redis_instance)
+    GitDiffUtils.setup(RedisManager.redis_instance)
   end
 
   helpers do

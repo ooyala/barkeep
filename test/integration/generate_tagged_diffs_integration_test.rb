@@ -7,9 +7,9 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
 
   context "generating diffs" do
     setup do
-      stub(RedisManager.get_redis_instance).get { nil }
+      stub(RedisManager.redis_instance).get { nil }
       @written_keys = []
-      stub(RedisManager.get_redis_instance).set { |key, value| @written_keys.push(key) }
+      stub(RedisManager.redis_instance).set { |key, value| @written_keys.push(key) }
     end
 
     should "generate diffs for the given commit" do

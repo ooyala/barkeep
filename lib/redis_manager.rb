@@ -2,7 +2,7 @@ require "redis"
 
 class RedisManager
   @@redis = nil
-  def self.get_redis_instance
+  def self.redis_instance
     return @@redis if @@redis
     begin
       @@redis = Redis.new(:host => REDIS_HOST, :port => REDIS_PORT)

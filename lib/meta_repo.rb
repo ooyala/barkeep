@@ -365,6 +365,6 @@ end
 if __FILE__ == $0
   require "lib/script_environment"
   puts "Running commit importer as standalone script."
-  GitDiffUtils.setup(RedisManager.get_redis_instance)
+  GitDiffUtils.setup(RedisManager.redis_instance)
   MetaRepo.instance.import_new_commits!
 end
