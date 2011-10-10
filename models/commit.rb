@@ -43,5 +43,6 @@ class Commit < Sequel::Model
     message.escape_html
            .newlines_to_html
            .link_github_issue("ooyala", git_repo.name)
+           .link_jira_issue
   end
 end

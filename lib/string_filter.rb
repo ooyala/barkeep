@@ -21,6 +21,18 @@ module StringFilter
     end
   end
 
+  # NOTE(dmac): Capital letters, a dash and numbers are pretty general.
+  # For example, this would also pick up someone using the GH-1 github issue syntax.
+  # One way to fix this might be to require a prefix: "jira:APP-1234".
+  def link_jira_issue
+    self.gsub(/([A-Z]+)-(\d+)/) do |match|
+      group = Regexp.last_match(1)
+      number = Regexp.last_match(2)
+      "<a href='https://jira.corp.ooyala.com/browse/#{group}-#{number}' target='_blank'>" +
+          "#{match}</a>"
+    end
+  end
+
   # See https://github.com/blog/831-issues-2-0-the-next-generation
   # for the list of issue linking synonyms.
   def link_github_issue(github_username, github_repo)
