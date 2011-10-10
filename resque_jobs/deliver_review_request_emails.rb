@@ -20,8 +20,8 @@ class DeliverReviewRequestEmails
       return
     end
 
-    logger.info "Sending review emails requested by #{requester.email} " +"
-        to #{emails.join(",")} for commit #{commit.sha}"
+    logger.info "Sending review emails requested by #{requester.email} " +
+        "to #{emails.join(",")} for commit #{commit.sha}"
     email_has_been_sent = false
     attempts = 0
 
