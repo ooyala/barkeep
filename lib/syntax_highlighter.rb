@@ -11,6 +11,8 @@ require "lib/logging"
 
 class SyntaxHighlighter
 
+  WEEK = 60*60*24*7
+
   def initialize(redis=nil)
     @redis = redis
   end
@@ -20,13 +22,17 @@ class SyntaxHighlighter
     if @redis
       cache_key = SyntaxHighlighter.redis_cache_key(repo_name, blob)
       cached = @redis.get(cache_key)
+      @redis.expire(cache_key, WEEK)
       return cached if cached
     end
 
     highlighted = SyntaxHighlighter.pygmentize(file_type, blob.data)
 
     begin
-      @redis.set(cache_key, highlighted) if @redis
+      if @redis
+        @redis.set(cache_key, highlighted)
+        @redis.expire(cache_key, WEEK)
+      end
     rescue Exception => e
       Logging.logger.error("Redis failed with message: #{e.message}")
     end
