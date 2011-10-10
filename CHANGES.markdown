@@ -8,8 +8,6 @@ but rather general markdown text describing important notes about the versions a
 0.2.1
 -----
 
-TODO(dmac): Untagged pending additional features and polish.
-
 ### Major features
 * [Review requests.](https://github.com/ooyala/barkeep/issues/41)
 * [Framework for string filtering in comments and commit messages.](https://github.com/ooyala/barkeep/issues/114)
