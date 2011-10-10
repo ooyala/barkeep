@@ -12,7 +12,7 @@ gem "resque"
 # doesn't seem to be compatible with ruby 1.9.
 # gem "less"
 gem "json"
-gem "grit"
+gem "grit", :git => "http://github.com/bkad/grit.git"
 gem "sequel"
 gem "mysql"
 gem "sqlite3-ruby"
