@@ -201,7 +201,7 @@ class GitDiffUtils
     context_lines = 3
     data_a, data_b = [blob_a, blob_b].map { |blob| blob ? blob.data.split("\n", -1).map(&:chomp) : [] }
     diffs = Difference::LCS.diff(data_a, data_b)
-    return patch if diffs.empty?
+    return output if diffs.empty?
 
     hunk_old = nil
     diffs.each do |piece|
