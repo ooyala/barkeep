@@ -17,7 +17,7 @@ TODO(dmac): Untagged pending additional features and polish.
 ### Minor features and bugfixes
 * [Side-by-side view performance enhancements.](https://github.com/ooyala/barkeep/issues/113)
 * [Add a keyboard shortcut for focusing commit comment box (shift+c).](https://github.com/ooyala/barkeep/commit/5d1be41032ef63b47707d4f54b5145efde10cf5b)
-* [Add a small +/- header clarify commit summary.](https://github.com/ooyala/barkeep/commit/b698fc5914269da0d26b47c8951ba0ad6755d144)
+* [Add a small +/- header to clarify commit summary.](https://github.com/ooyala/barkeep/commit/b698fc5914269da0d26b47c8951ba0ad6755d144)
 * [Link commit messages to referenced Github issues.](https://github.com/ooyala/barkeep/commit/a4c5b138f5416151c8f38673e95c4f87986f52a1)
 * [Automatically add link to images when embedded in comments.](https://github.com/ooyala/barkeep/commit/4e255de9cb83c67ea162cb2a4598ecf61c640574)
 * [Truncate long file names in commit summary and diff views.](https://github.com/ooyala/barkeep/issues/108)
