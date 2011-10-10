@@ -2,7 +2,7 @@
 <div class="file" filename="<%= file.file_name_before %>" >
   <div class="filename">
     <a href="#<%= file.file_name_before %>">
-      <%= file.display_file_name.truncate_front(100) %>
+      <%= StringFilter.truncate_front(file.display_file_name, 100) %>
     </a>
   </div>
   <div class="comments">

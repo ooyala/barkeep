@@ -1,74 +1,62 @@
-# StringFilter is a module mixed in to the String class.
-# It defines filters that, when applied to the including String,
-# substitute some text for other text. We use this for things like
-# replacing shas in comments with a link to the commit.
+# StringFilter is used to attach filters to methods that return strings.
+# Filters are defined using `StringFilter.define_filter`.
+# It can then be mixed in to classes with `include StringFilter`.
 #
-# Additional filters can be easily plugged in here or externally
-# by re-opening StringFilter.
+# The including class gains the `add_filter` method, which accepts
+# a name of one of its instance methods to filter and a block
+# containing the filter code. The block may accept one or two
+# arguments. The first argument is the string to perform the
+# filter on. The second argument, if supplied, will be the instance
+# on which the filter is being called.
+#
+# When the filtered method is desired the client calls
+# `instance.filter_<method>`. For example, if the client wants a
+# filtered commit message, they would call `commit.filter_message`.
+#
+# Filters can also be called on plain strings outside the context
+# of a class.
+#
+# See commit.rb and comment.rb for examples.
 #
 # Possible extensions:
 # * Make @username link to profile pages
 
 module StringFilter
-  def markdown
-    RedcarpetManager.redcarpet_pygments.render(self)
+  def self.included(base)
+    base.extend ClassMethods
+    base.class_variable_set :@@filter_methods, Hash.new([])
   end
 
-  def replace_shas_with_links(repo_name)
-    self.gsub(/(\W|^)([0-9a-fA-F]{40})(\W|$)/) do
-      sha = Regexp.last_match(2)
-      "#{Regexp.last_match(1)}<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>#{Regexp.last_match(3)}"
+  module ClassMethods
+    # Successive calls to add_filter will build up a mapping of
+    # { method_name => [array of procs] }. When filter_<method>
+    # is called, each of the procs will be called on the return
+    # value of <method> and the final result is returned.
+    def add_filter(method_name, &filter_block)
+      filter_methods = self.class_variable_get(:@@filter_methods)
+      filter_methods.merge!({ method_name => filter_methods[method_name] + [filter_block] })
+      self.class_variable_set(:@@filter_methods, filter_methods)
+      unless respond_to? :"filter_#{method_name}"
+        send :define_method, :"filter_#{method_name}" do |*args|
+          filters = self.class.class_variable_get(:@@filter_methods)[method_name]
+          result = send method_name, *args
+          filters.each do |filter|
+            case filter.arity
+            when 1 then result = filter.call result
+            when 2 then result = filter.call result, self
+            else raise Exception, "String filters must accept 1 or 2 arguments"
+            end
+          end
+          result
+        end
+      end
     end
   end
 
-  # NOTE(dmac): Capital letters, a dash and numbers are pretty general.
-  # For example, this would also pick up someone using the GH-1 github issue syntax.
-  # One way to fix this might be to require a prefix: "jira:APP-1234".
-  def link_jira_issue
-    self.gsub(/([A-Z]+)-(\d+)/) do |match|
-      group = Regexp.last_match(1)
-      number = Regexp.last_match(2)
-      "<a href='https://jira.corp.ooyala.com/browse/#{group}-#{number}' target='_blank'>" +
-          "#{match}</a>"
-    end
+  # Calling StringFilter.define_filter simply adds another module method
+  # to the StringFilter module. It's not as scary as it looks.
+  # Seriously, don't worry about it.
+  def self.define_filter(name, &block)
+    (class << self; self; end).send :define_method, name, block
   end
-
-  # See https://github.com/blog/831-issues-2-0-the-next-generation
-  # for the list of issue linking synonyms.
-  def link_github_issue(github_username, github_repo)
-    self.gsub(/(#|gh-)(\d+)/i) do
-      prefix = Regexp.last_match(1)
-      number = Regexp.last_match(2)
-      "<a href='https://github.com/#{github_username}/#{github_repo}/issues/#{number}' target='_blank'>" +
-          "#{prefix}#{number}</a>"
-    end
-  end
-
-  # Converts an embedded image (![alt][link]) to also include
-  # a link to the same image.
-  def link_embedded_images
-    self.gsub(/!\[.*\]\((.*)\)/) { |match| "[#{match}](#{Regexp.last_match(1)})" }
-  end
-
-  def newlines_to_html
-    self.gsub("\n", "<br/>")
-  end
-
-  def truncate_front(max_length)
-    abbreviator = "..."
-    if length > max_length
-      start_position = length - (max_length - abbreviator.length)
-      abbreviator + self[start_position...length]
-    else
-      self
-    end
-  end
-
-  def escape_html
-    CGI::escapeHTML(self)
-  end
-end
-
-class String
-  include StringFilter
 end

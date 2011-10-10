@@ -3,7 +3,12 @@
 # - line_number
 # TODO(philc): What is file_version?
 # - file_version
+
+require "lib/string_filter"
+
 class Comment < Sequel::Model
+  include StringFilter
+
   VERSION_BEFORE = "before"
   VERSION_AFTER = "after"
 
@@ -11,16 +16,16 @@ class Comment < Sequel::Model
   many_to_one :commit_file
   many_to_one :commit
 
+  add_filter(:text) { |str| StringFilter.link_embedded_images(str) }
+  add_filter(:text) { |str| StringFilter.markdown(str) }
+  add_filter(:text) { |str| StringFilter.link_jira_issue(str) }
+  add_filter(:text) do |str, comment|
+    StringFilter.replace_shas_with_links(str, comment.commit.git_repo.name)
+  end
+
   # Some comments can be about the entire commit, and not about a specific line in a file.
   def general_comment?() commit_file_id.nil? end
 
   # True if this comment pertains to a particular file.
   def file_comment?() !commit_file_id.nil? end
-
-  def format
-    text.link_embedded_images
-        .markdown
-        .link_jira_issue
-        .replace_shas_with_links(commit.git_repo.name)
-  end
 end

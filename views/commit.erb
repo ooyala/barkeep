@@ -11,7 +11,7 @@
             <span class="sha"><%= commit.sha %></span>
             <span class="repoName">| <%= commit.git_repo.name %></span>
           </p>
-          <p class="message"><%= commit.format_message %></p>
+          <p class="message"><%= commit.filter_message %></p>
         </div>
         <div id="authorMetadata">
           <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
@@ -64,7 +64,7 @@
           <tr>
             <td class="path">
               <a href="#<%= diff.file_name_before %>">
-                <%= diff.display_file_name.truncate_front(100) %>
+                <%= StringFilter.truncate_front(diff.display_file_name, 100) %>
               </a>
             </td>
             <td class="linesAdded"><%= diff.lines_added if diff.lines_added > 0%></td>

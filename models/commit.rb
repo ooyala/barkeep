@@ -1,9 +1,12 @@
 require "lib/meta_repo"
+require "lib/string_filter"
 
 # Columns:
 # - approved_at: when the commit was approved.
 # - approved_by_user_id: the most recent user to approve the commit.
 class Commit < Sequel::Model
+  include StringFilter
+
   many_to_one :user
   many_to_one :git_repo
   one_to_many :commit_files
@@ -11,6 +14,16 @@ class Commit < Sequel::Model
   many_to_one :approved_by_user, :class => User
 
   add_association_dependencies :comments => :destroy, :commit_files => :delete
+
+  add_filter(:message) { |message| StringFilter.escape_html(message) }
+  add_filter(:message) { |message| StringFilter.newlines_to_html(message) }
+  add_filter(:message) do |message, commit|
+    StringFilter.link_github_issue(message, "ooyala", commit.git_repo.name)
+  end
+  add_filter(:message) { |message| StringFilter.link_jira_issue(message) }
+  add_filter(:message) do |message, commit|
+    StringFilter.replace_shas_with_links(message, commit.git_repo.name)
+  end
 
   def grit_commit
     @grit_commit ||= MetaRepo.instance.grit_commit(git_repo_id, sha)
@@ -37,13 +50,5 @@ class Commit < Sequel::Model
     self.approved_at = nil
     self.approved_by_user_id = nil
     save
-  end
-
-  def format_message
-    message.escape_html
-           .newlines_to_html
-           .link_github_issue("ooyala", git_repo.name)
-           .link_jira_issue
-           .replace_shas_with_links(git_repo.name)
   end
 end
