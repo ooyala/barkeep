@@ -25,8 +25,8 @@ module StringFilter
   # for the list of issue linking synonyms.
   def link_github_issue(github_username, github_repo)
     self.gsub(/(#|gh-)(\d+)/i) do
-      prefix = Regexp.last_match[1]
-      number = Regexp.last_match[2]
+      prefix = Regexp.last_match(1)
+      number = Regexp.last_match(2)
       "<a href='https://github.com/#{github_username}/#{github_repo}/issues/#{number}' target='_blank'>" +
           "#{prefix}#{number}</a>"
     end
@@ -35,7 +35,7 @@ module StringFilter
   # Converts an embedded image (![alt][link]) to also include
   # a link to the same image.
   def link_embedded_images
-    self.gsub(/!\[.*\]\((.*)\)/) { |match| "[#{match}](#{Regexp.last_match[1]})" }
+    self.gsub(/!\[.*\]\((.*)\)/) { |match| "[#{match}](#{Regexp.last_match(1)})" }
   end
 
   def newlines_to_html
