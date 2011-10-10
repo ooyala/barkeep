@@ -62,8 +62,9 @@
       output << ""
       # If there are multiple comments discussing the same line of code, place them right next to each other.
       comments.each do |comment|
-        output << "<b>&lt;" + CGI.escape_html(comment.user.name) + "&gt;</b> " +
-            CGI.escape_html(comment.text)
+        output << "&lt;<b><a href='#{commit_url}#comment-#{comment.id}' target='_blank'>" +
+            "#{CGI.escape_html(comment.user.name)}</a></b>&gt; " +
+            "#{CGI.escape_html(comment.text)}"
       end
       output << ""
 
