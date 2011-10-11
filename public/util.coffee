@@ -28,23 +28,17 @@ window.Util =
 
 window.ShortcutOverlay =
   init: ->
-    $.ajax
-      url: "/keyboard_shortcuts#{location.pathname}"
-      success: (html) =>
-        $("body").append html
-        $(".kbShortcuts.overlay .container").focus -> $(".kbShortcuts.overlay").css("visibility", "visible")
-        $(".kbShortcuts.overlay .container").blur -> $(".kbShortcuts.overlay").css("visibility", "hidden")
-
-        # Set up the keyboard shortcuts
-        shortcutsPopup = $(".kbShortcuts.overlay .container")
-        KeyboardShortcuts.createShortcutContext shortcutsPopup
-        KeyboardShortcuts.registerPageShortcut "shift+/", -> shortcutsPopup.focus()
-        # Hitting both "escape" and "?" again will get rid of the overlay
-        for shortcut in ["esc", "shift+/"]
-          KeyboardShortcuts.registerShortcut shortcutsPopup, shortcut, ->
-            shortcutsPopup.blur()
-            false
-        $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> shortcutsPopup.blur()
+    $(".kbShortcuts.overlay .container").focus -> $(".kbShortcuts.overlay").css("visibility", "visible")
+    $(".kbShortcuts.overlay .container").blur -> $(".kbShortcuts.overlay").css("visibility", "hidden")
+    shortcutsPopup = $(".kbShortcuts.overlay .container")
+    KeyboardShortcuts.createShortcutContext shortcutsPopup
+    KeyboardShortcuts.registerPageShortcut "shift+/", -> shortcutsPopup.focus()
+    # Hitting both "escape" and "?" again will get rid of the overlay
+    for shortcut in ["esc", "shift+/"]
+      KeyboardShortcuts.registerShortcut shortcutsPopup, shortcut, ->
+        shortcutsPopup.blur()
+        false
+    $(".kbShortcuts.overlay .shortcuts .close a").click (e) -> shortcutsPopup.blur()
 
 window.KeyboardShortcuts =
   init: ->
@@ -105,5 +99,5 @@ window.Login =
 
 $(document).ready ->
   ShortcutOverlay.init()
-  Login.init()
   KeyboardShortcuts.init()
+  Login.init()

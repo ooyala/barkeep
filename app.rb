@@ -92,7 +92,6 @@ class Barkeep < Sinatra::Base
     next if request.url =~ /^#{root_url}\/commits/
     next if request.url =~ /^#{root_url}\/stats/
     next if request.url =~ /^#{root_url}\/inspire/
-    next if request.url =~ /^#{root_url}\/keyboard_shortcuts/
     next if request.url =~ /^#{root_url}\/admin/
     next if request.url =~ /^#{root_url}\/statusz/
     next if request.url =~ /^#{root_url}\/.*\.css/
@@ -288,10 +287,6 @@ class Barkeep < Sinatra::Base
         User.new(:email => email, :name => email).save unless User.find :email => email
         redirect request.cookies["login_started_url"] || "/"
     end
-  end
-
-  get %r{/keyboard_shortcuts/(.*)$} do
-    erb :_keyboard_shortcuts, :layout => false, :locals => { :view => params[:captures].first }
   end
 
   get "/stats" do
