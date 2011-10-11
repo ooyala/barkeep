@@ -15,8 +15,9 @@ module StringFilter
   end
 
   def replace_shas_with_links(repo_name)
-    self.gsub(/([a-zA-Z0-9]{40})/) do |sha|
-      "<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>"
+    self.gsub(/([^\w]|^)([0-9a-fA-F]{40})([^\w]|$)/) do
+      sha = Regexp.last_match(2)
+      "#{Regexp.last_match(1)}<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>#{Regexp.last_match(3)}"
     end
   end
 
