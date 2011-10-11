@@ -73,16 +73,15 @@ namespace :fezzik do
   desc "runs migrations from root of project directory"
   remote_task :run_migrations do
     print "running migrations... "
-    run "cd #{current_path} && ./run_migrations.rb"
+    run "cd #{current_path} && bundle exec ruby run_migrations.rb"
     print "done\n"
   end
 
   desc "runs the executable in project/bin"
   remote_task :start do
     puts "starting from #{capture_output { run "readlink #{current_path}" }}"
-    run "cd #{current_path} && source config/environment.sh" +
-        " && ./bin/run_app.sh"
-    run "cd #{current_path} && source config/environment.sh && rake resque:start clockwork:start"
+    run "cd #{current_path} && source config/environment.sh && ./bin/run_app.sh"
+    run "cd #{current_path} && source config/environment.sh && bundle exec rake resque:start clockwork:start"
   end
 
   desc "kills the application by searching for the specified process name"
