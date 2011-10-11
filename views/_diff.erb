@@ -1,13 +1,13 @@
-<a name="<%= file[:file_name_before] %>"></a>
-<div class="file" filename="<%= file[:file_name_before] %>" >
+<a name="<%= file.file_name_before %>"></a>
+<div class="file" filename="<%= file.file_name_before %>" >
   <div class="filename">
-    <a href="#<%= file[:file_name_before] %>">
-      <%= file[:display_file_name].truncate_front(100) %>
+    <a href="#<%= file.file_name_before %>">
+      <%= file.display_file_name.truncate_front(100) %>
     </a>
   </div>
   <div class="comments">
   <% line_comments, comment_index = [], 0 %>
-    <% if commit_file = commit ? commit.commit_files_dataset[:filename => file[:file_name_before]] : nil %>
+    <% if commit_file = commit ? commit.commit_files_dataset[:filename => file.file_name_before] : nil %>
       <% commit_file.file_comments.each do |comment| %>
         <%= erb :_comment, :locals => {:comment => comment} %>
       <% end %>
@@ -18,14 +18,14 @@
     <% [:codeLeft, :codeRight].each do |table_class| # make 2 identical tables for side-by-side diff %>
       <% comment_index = 0 %>
       <div class="<%= table_class %>"><table class="data">
-        <% if file[:special_case] %>
-          <tr><td class="fileSpecial"><%= file[:special_case] %></td></tr>
+        <% if file.special_case %>
+          <tr><td class="fileSpecial"><%= file.special_case %></td></tr>
         <% else %>
-          <% initial_break, final_break = file[:breaks].first, file[:breaks].last %>
-          <% file[:lines].each_with_index do |line, i| %>
-            <% if file[:breaks].include? i %>
-              <% extra_class = "initialBreak" if (i == initial_break) && !file[:lines][0].chunk %>
-              <% extra_class = "finalBreak" if (i == final_break) && !file[:lines][i + 1].then { chunk } %>
+          <% initial_break, final_break = file.breaks.first, file.breaks.last %>
+          <% file.lines.each_with_index do |line, i| %>
+            <% if file.breaks.include? i %>
+              <% extra_class = "initialBreak" if (i == initial_break) && !file.lines[0].chunk %>
+              <% extra_class = "finalBreak" if (i == final_break) && !file.lines[i + 1].then { chunk } %>
               <% extra_class ||= "" %>
               <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
                   <span class="breakMessage">&#149;&nbsp;&#149;&nbsp;&#149;</span>

@@ -95,9 +95,7 @@ class EmailsTest < Scope::TestCase
 
   # A helper for creating test data
   def diffs_with_lines(commit_file, lines)
-    [{
-      :file_name_after => commit_file.filename,
-      :lines => lines.each_with_index.map { |line, index| LineDiff.new(:added, line, nil, index, index) }
-    }]
+    [TaggedDiff.new(:file_name_after => commit_file.filename,
+        :lines => lines.each_with_index.map { |line, index| LineDiff.new(:added, line, nil, index, index) })]
   end
 end

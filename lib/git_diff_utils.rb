@@ -26,28 +26,23 @@ class GitDiffUtils
       GitDiffUtils.show(repo, commit).map do |diff|
         a_path = diff.a_path
         b_path = diff.b_path
-        data = {
-          :file_name_before => a_path,
-          :file_name_after => b_path,
-          :display_file_name => a_path == b_path ? a_path : "#{a_path} → #{b_path}",
-          :renamed => diff.renamed_file,
-          :lines_added => 0,
-          :lines_removed => 0,
-        }
+        data = TaggedDiff.new(:file_name_before => a_path, :file_name_after => b_path,
+            :renamed => diff.renamed_file, :new_file => diff.new_file, :deleted => diff.deleted_file)
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
-          data[:special_case] = "This is a binary file."
+          data.binary = true
+          data.special_case = "This is a binary file."
         elsif diff.new_file && diff.diff.empty?
-          data[:special_case] = "This is an empty file."
+          data.special_case = "This is an empty file."
         elsif diff.renamed_file && diff.diff.empty?
-          data[:special_case] = "File was renamed, but no other changes were made."
+          data.special_case = "File was renamed, but no other changes were made."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
             begin
               before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
               after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
             rescue RubyPython::PythonError
-              data[:special_case] = "This file contains unexpected characters."
+              data.special_case = "This file contains unexpected characters."
               next data
             end
           else
@@ -56,7 +51,12 @@ class GitDiffUtils
           end
           raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
 
-          data.merge! GitDiffUtils.tag_file(before, after, diff, raw_diff) unless options[:warm_the_cache]
+          unless options[:warm_the_cache]
+            new_data = GitDiffUtils.tag_file(before, after, diff, raw_diff)
+            [:lines, :lines_added, :lines_removed, :breaks].each do |symbol|
+              data.send(:"#{symbol}=", new_data[symbol])
+            end
+          end
         end
         data
       end
@@ -64,10 +64,8 @@ class GitDiffUtils
       # NOTE/TODO(dmac): Grit will die when trying to diff huge commits.
       # Here we're returning an skeleton diff so we can actually display something in the UI.
       # It's pretty lame, but gets around any exceptions for now.
-      [{:file_name_before => "Error processing commit diff",
-        :file_name_after => "",
-        :special_case => "This commit is too large to process."
-      }]
+      [TaggedDiff.new(:file_name_before => "Error processing commit diff", :file_name_after => "",
+          :special_case => "This commit is too large to process.")]
     end
   end
 
@@ -301,4 +299,38 @@ class PatchChunk
     @tagged_lines = []
   end
 
+end
+
+class TaggedDiff
+  attr_accessor :file_name_before, :file_name_after, :renamed, :binary, :lines_added, :lines_removed,
+      :special_case, :lines, :breaks, :new_file
+
+  def initialize(params)
+    @file_name_before = params[:file_name_before]
+    @file_name_after = params[:file_name_after]
+    @renamed = params[:renamed] || false
+    @new_file = params[:new_file] || false
+    @deleted = params[:deleted] || false
+    @binary = params[:binary] || false
+    @lines_added = params[:lines_added] || 0
+    @lines_removed = params[:lines_removed] || 0
+    @special_case = params[:special_case]
+    @lines = params[:lines] || []
+    @breaks = params[:breaks] || []
+  end
+
+  def display_file_name
+    if @renamed
+      "#{@file_name_before} → #{@file_name_after}"
+    elsif @new
+      @file_name_after
+    else
+      @file_name_before
+    end
+  end
+
+  def binary?(); @binary end
+  def deleted?(); @deleted end
+  def new?(); @new_file end
+  def renamed?(); @renamed end
 end

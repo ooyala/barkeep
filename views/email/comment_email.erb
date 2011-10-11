@@ -41,7 +41,7 @@
     comments_by_line_number.map do |line_number, comments|
       lines_of_context = 4
 
-      lines = diffs_by_file[filename][:lines]
+      lines = diffs_by_file[filename].lines
       lines_before = lines[[line_number - lines_of_context, 0].max, lines_of_context]
       lines_after = lines[line_number, lines_of_context]
 
