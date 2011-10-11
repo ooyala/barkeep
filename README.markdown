@@ -62,7 +62,8 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
 1.  Install required packages:
 
         $ sudo apt-get install curl mysql-server mysql-client libmysqlclient-dev sqlite3 libsqlite3-dev \
-        openssl libopenssl-ruby libssl-dev python-setuptools redis-server python-software-properties
+        openssl libopenssl-ruby libssl-dev python-setuptools redis-server python-software-properties \
+        build-essential
 
 2.  You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you
     can install a very recent version from the git-core ppa:
@@ -100,12 +101,48 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
         $ ./configure && make
         $ sudo make install
 
+7. Create the target installation directories (if your user doesn't have the permissions):
+
+        $ sudo mkdir /deploy/path # This is specified in config/deploy.rb
+        $ sudo chown username:username /deploy/path
+
 You should now be able to deploy to the server. The deployment tasks will install the required gems and take
 care of any remaining setup tasks.
 
+    $ bundle exec fez prod deploy
+
+Vagrant
+-------
+
+You can test deployment (or do all development) on a [Vagrant](http://vagrantup.com/) box. This is also highly
+recommended if you are trying to test deployment changes or are altering packages which may behave differently
+on your development system from the target production environment.
+
+First, you'll need to install vagrant and get the lucid32 box:
+
+    $ $ gem install vagrant
+    $ vagrant box add base http://files.vagrantup.com/lucid32.box
+    $ cd path/to/barkeep/project/root
+    $ vagrant up
+
+Next ssh into the running vagrant box (`vagrant ssh`) and do the setup tasks described under 'Deployment'.
+Now, you need to set up passwordless ssh so that you can deploy to the vagrant box.
+
+    $ vagrant ssh_config >> ~/.ssh/config
+    # Edit ~/.ssh/config and change "Host default" to "Host barkeep_vagrant"
+    $ ssh barkeep_vagrant 'echo hello' # Test that it's working -- you should see 'hello' printed
+
+Finally, deploy to the vagrant box:
+
+    $ bundle exec fez vagrant deploy
+
+If everything's working, you should be able to check Barkeep at
+[http://localhost:5678](http://localhost:5678).
+
 Setting up email
 ----------------
-Set the email address and password of the Gmail account you want to use with Barkeep in `config/environment.rb`.
+Set the email address and password of the Gmail account you want to use with Barkeep in
+`config/environment.rb`.
 
 Note that emails for new commits are sent from user**+commits**@example.com and comments are sent from
 user**+comments**@example.com. By default, Gmail won't allow your account to send from these addresses

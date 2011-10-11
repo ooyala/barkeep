@@ -67,14 +67,17 @@ namespace :fezzik do
     puts "installing gems"
 
     run "(gem list bundler | grep bundler > /dev/null || gem install bundler --no-ri --no-rdoc)" +
-        " && cd #{current_path} && bundle install"
+        " && rbenv rehash && cd #{current_path} && bundle install"
   end
 
   desc "runs migrations from root of project directory"
   remote_task :run_migrations do
+    print "creating the database if it doesn't exist..."
+    run "mysqladmin -uroot create barkeep 2> >(grep -v 'database exists') || true"
+    puts "done"
     print "running migrations... "
     run "cd #{current_path} && bundle exec ruby run_migrations.rb"
-    print "done\n"
+    puts "done"
   end
 
   desc "runs the executable in project/bin"

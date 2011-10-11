@@ -50,7 +50,7 @@ destination :prod do
 end
 
 destination :vagrant do
-  set :domain, "vagrant@vagrant"
+  set :domain, "barkeep_vagrant"
   env :db_location, "DBI:Mysql:barkeep:localhost"
   env :db_user, "root"
   env :db_password, ""
