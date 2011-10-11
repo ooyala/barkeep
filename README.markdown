@@ -7,16 +7,16 @@ More details coming soon!
 Setting up Barkeep for development
 ----------------------------------
 
-This is how it works on our Mac OS dev laptops; YMMV:
+This is how it works on our Mac OS dev laptops; YMMV. First, ensure you've installed
+[rbenv](https://github.com/sstephenson/rbenv) and Ruby 1.9.2-p290. (You can get this by installing
+[ruby-build](https://github.com/sstephenson/ruby-build) and running `rbenv install 1.9.2-p290`).
 
     $ easy_install pip
     $ pip install pygments
     $ gem install bundler
     $ bundle install
     $ port install nodejs # or brew install node
-      # Note: you may need to "port deactivate c-ares" before installing nodejs
-    $ curl http://npmjs.org/install.sh | sh # install npm
-    $ npm install less
+      # Note: you may need to "port deactivate c-ares" before installing nodejs if you're using macports
     $ mysqladmin5 -u root create barkeep  # create the 'barkeep' database
     $ ruby run_migrations.rb # db migrations
 
@@ -57,30 +57,51 @@ behind on tracking branches a lot). Instead, clone a few small repositories into
 Deployment
 ----------
 
-These packages will need to be installed on a linux server before a deploy will work. `apt-get` the following:
+We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before we can deploy Barkeep.
 
-    mysql-server
-    mysql-client
-    libmysqlclient-dev
-    sqlite3
-    libsqlite3-dev
-    openssl
-    libopenssl-ruby
-    libssl-dev
-    python-setuptools
-    redis-server
+1.  Install required packages:
 
-Also install:
+        $ sudo apt-get install curl mysql-server mysql-client libmysqlclient-dev sqlite3 libsqlite3-dev \
+        openssl libopenssl-ruby libssl-dev python-setuptools redis-server python-software-properties
 
-    pip
-    pygments
+2.  You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you
+    can install a very recent version from the git-core ppa:
 
-You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you can
-install a very recent version from the git-core ppa:
+        $ sudo add-apt-repository ppa:git-core/ppa
+        $ sudo apt-get update
+        $ sudo apt-get install git-core
 
-    $ sudo add-apt-repository ppa:git-core/ppa
-    $ sudo apt-get update
-    $ sudo apt-get install git-core
+3.  Install the required Python packages:
+
+        $ sudo easy_install pip
+        $ sudo pip install pygments
+
+4.  Install [rbenv](https://github.com/sstephenson/rbenv):
+
+        $ git clone git://github.com/sstephenson/rbenv.git .rbenv
+        # Put the following lines at the top of ~/.bashrc:
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+        # Ensure that ~/.bash_profile sources ~/.bashrc:
+          source "$HOME/.bashrc"
+        $ exec $SHELL
+
+5.  Install [ruby-build](https://github.com/sstephenson/ruby-build) and get Ruby 1.9.2-p290:
+
+        $ git clone git://github.com/sstephenson/ruby-build.git
+        $ cd ruby-build
+        $ sudo ./install.sh
+        $ rbenv install 1.9.2-p290
+
+6. Install [node.js](http://nodejs.org/):
+
+        $ wget http://nodejs.org/dist/node-v0.4.12.tar.gz
+        $ tar xzvf node-v0.4.12.tar.gz && cd node-v0.4.12/
+        $ ./configure && make
+        $ sudo make install
+
+You should now be able to deploy to the server. The deployment tasks will install the required gems and take
+care of any remaining setup tasks.
 
 Setting up email
 ----------------
