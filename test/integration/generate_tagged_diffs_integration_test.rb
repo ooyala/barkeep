@@ -13,7 +13,7 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
     end
 
     should "generate diffs for the given commit" do
-      commit = test_repo.head.commit
+      commit = test_repo.commits("9f9c5d87316e5f723d0e9c6a03ddd86ce134ac5e")[0]
       GenerateTaggedDiffs.perform("test_git_repo", commit.sha)
       # NOTE(philc): This assertion isn't particularly strong. It would be nice to be more specific,
       # but this is an effective sanity check to ensure that the highlighting results made it into redis.

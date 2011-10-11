@@ -6,9 +6,9 @@ class DeliverCommentEmailsIntegrationTest < Scope::TestCase
   include IntegrationTestHelper
 
   setup_once do
-    head = test_repo.head.commit
-    Commit.filter(:sha => head.sha).destroy
-    @@commit = create_commit(head, integration_test_user, GitRepo.first(:name => TEST_REPO_NAME))
+    commit = test_repo.commits("9f9c5d87316e5f723d0e9c6a03ddd86ce134ac5e")[0]
+    Commit.filter(:sha => commit.sha).destroy
+    @@commit = create_commit(commit, integration_test_user, GitRepo.first(:name => TEST_REPO_NAME))
 
     @@comments = [create_comment(@@commit, integration_test_user, Time.now, :has_been_emailed => true)]
   end
