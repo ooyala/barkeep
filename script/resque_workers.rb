@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby-local-exec
 # A daemon wrapper around the Rake task which launches all of the Resque workers.
 #   resque_workers.rb start
 #   resque_workers.rb stop

@@ -103,11 +103,7 @@ namespace :fezzik do
   task :deploy do
     Rake::Task["fezzik:push"].invoke
     Rake::Task["fezzik:symlink"].invoke
-
-    # TODO(dmac): We're deploying as role-barkeep, so we need to figure
-    # out a new way to install gems.
-    #Rake::Task["fezzik:install_gems"].invoke
-
+    Rake::Task["fezzik:install_gems"].invoke
     Rake::Task["fezzik:run_migrations"].invoke
     Rake::Task["fezzik:restart"].invoke
     puts "#{app} deployed!"

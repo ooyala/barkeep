@@ -48,3 +48,14 @@ destination :prod do
   env :redis_host, "localhost"
   env :redis_port, 6379
 end
+
+destination :vagrant do
+  set :domain, "vagrant@vagrant"
+  env :db_location, "DBI:Mysql:barkeep:localhost"
+  env :db_user, "root"
+  env :db_password, ""
+  env :repos_root, "#{deploy_to}/repos"
+  env :barkeep_hostname, "barkeep.sv2"
+  env :redis_host, "localhost"
+  env :redis_port, 6379
+end
