@@ -42,6 +42,7 @@ window.Commit =
 
     KeyboardShortcuts.registerPageShortcut(shortcut, action) for shortcut, action of shortcuts
     reviewRequestInput = $("#reviewRequest #authorInput")
+
     KeyboardShortcuts.createShortcutContext reviewRequestInput
     KeyboardShortcuts.registerShortcut reviewRequestInput, "return", =>
       @submitReviewRequest() unless $(".ui-autocomplete").is(":visible")
@@ -192,6 +193,8 @@ window.Commit =
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
     if $(e.target).is(".delete, .edit, .commentText, .commentSubmit") then return
     if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
+    return unless window.userLoggedIn
+
     if $(e.target).hasClass("reply")
       lineNumber = $(e.currentTarget).parents(".diffLine").attr("diff-line-number")
     else
@@ -465,6 +468,7 @@ window.Commit =
       rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
 
   toggleReviewRequest: (showRequest = null) ->
+    return unless window.userLoggedIn
     reviewRequest = $("#reviewRequest")
     if (reviewRequest.attr("animatingDirection") == "in" && !showRequest?) || showRequest
       reviewRequest.show()

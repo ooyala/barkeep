@@ -35,6 +35,8 @@
       image.src = url;
     };
 
+    window.userLoggedIn = <%= !current_user.nil? %>;
+
     // Preload the icon's on-hover state. Otherwise it flickers for a second while it's loading and you might
     // not see it... which would be tragic.
     preloadImage("/images/barkeep_logo_howdy_80px.png");

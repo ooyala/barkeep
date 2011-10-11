@@ -36,7 +36,9 @@
           <% end %>
         <% end %>
         <div id="minorButtons">
-          <button id="requestReviewButton" class="standard">Request Review</button>
+          <% if current_user %>
+            <button id="requestReviewButton" class="standard">Request Review</button>
+          <% end %>
           <button id="sideBySideButton" class="standard">View Side-By-Side</button>
         </div>
       </div>
