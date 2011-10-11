@@ -44,5 +44,6 @@ class Commit < Sequel::Model
            .newlines_to_html
            .link_github_issue("ooyala", git_repo.name)
            .link_jira_issue
+           .replace_shas_with_links(git_repo.name)
   end
 end
