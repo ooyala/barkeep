@@ -18,11 +18,13 @@
     border: 1px solid #e0e0e0;
   }
   h2 {
+    font-size: 20px;
     margin: 14px 0;
     padding-bottom: 4px;
     border-bottom: 1px dashed #999;
   }
   h4 {
+    font-size: 16px;
     margin: 10px 0;
   }
   p {
@@ -32,6 +34,12 @@
 </style>
 
 <div id="admin">
+  <h2>Relevant pages</h2>
+  <ul>
+    <li><a href="/resque">resque admin page</a></li>
+    <li><a href="/statusz">statusz (deploy-time information)</a></li>
+  </ul>
+
   <h2>Data model metrics</h2>
 
   <% if most_recent_commit %>
