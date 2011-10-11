@@ -1,6 +1,6 @@
 GIT
-  remote: http://github.com/bkad/grit.git
-  revision: e79a0e189f142c2973fbf80337f8c4ff386d3da0
+  remote: http://github.com/ooyala/grit.git
+  revision: 0630786b7a27391f60efaf7f2c7e63190f0d1efa
   specs:
     grit (2.4.1)
       diff-lcs (~> 1.1)
