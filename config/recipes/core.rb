@@ -88,7 +88,11 @@ namespace :fezzik do
   remote_task :stop do
     puts "stopping app"
     # TODO(philc): We should be using unicorn here, and we should use pid files instead of kill.
-    run "(kill -9 `ps aux | grep 'thin start -p 80' | grep -v grep | awk '{print $2}'` || true)"
+    run "(kill `ps -ef | grep 'thin start -p 80' | grep -v grep | awk '{print $2}'` " +
+        "2> >(grep -v 'usage: kill') || true)"
+    sleep 3
+    run "(kill -9 `ps -ef | grep 'thin start -p 80' | grep -v grep | awk '{print $2}'` " +
+        "2> >(grep -v 'usage: kill') || true)"
     run "cd #{current_path} && source config/environment.sh && rake clockwork:stop resque:stop"
   end
 
