@@ -499,7 +499,7 @@ window.Commit =
       type: "post"
       url: "/request_review"
       data: { sha: sha, emails: emails }
-      complete: => Util.timeout 2000, => @toggleReviewRequest(false)
+      complete: => Util.setTimeout 2000, => @toggleReviewRequest(false)
 
   # This is called when the user attempts to navigate away. Let's prompt them if there are any unsaved comment
   # boxes with content on the page.

@@ -1,11 +1,11 @@
 # Some common utility functions
 window.Util =
   # A more sane ordering of arguments for setTimeout.
-  timeout: (milliseconds, callback) -> setTimeout callback, milliseconds
+  setTimeout: (milliseconds, callback) -> setTimeout callback, milliseconds
 
   # A timeout that doesn't delay if jQuery.fx.off == true
   animateTimeout: (milliseconds, callback) ->
-    if jQuery.fx.off then callback() else @timeout milliseconds, callback
+    if jQuery.fx.off then callback() else @setTimeout milliseconds, callback
 
   # Keep some amount of context on-screen to pad the selection position
   scrollWithContext: (selector, scroll="all") ->

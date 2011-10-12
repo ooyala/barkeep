@@ -58,7 +58,7 @@ window.CommitSearch =
 
   # Refresh the searches periodically so that the the user can leave the page open and see new results.
   periodicallyRefresh: ->
-    Util.timeout @REFRESH_PERIOD_MINUTES * 60 * 1000, =>
+    Util.setTimeout @REFRESH_PERIOD_MINUTES * 60 * 1000, =>
       # Refresh all searches that are on page 1 (don't want to mess up the user's navigation if they're on a
       # later page)
       @refreshAllSearches("onlyFirstPage")
@@ -149,7 +149,7 @@ window.CommitSearch =
     # If it's a keypress, highlight the button for a moment as if the user clicked on it.
     if keypress
       button.addClass("active")
-      Util.timeout 70, => button.removeClass("active")
+      Util.setTimeout 70, => button.removeClass("active")
 
     token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
     currentPageNumber = parseInt(savedSearchElement.find(".pageNumber").text())
@@ -300,7 +300,7 @@ window.CommitSearch =
     $(".tipsy").remove()
     overlayDiv = $(Snippets.maskingOverlay)
     savedSearch.append(overlayDiv)
-    overlayDiv.fadeTo 100, 0.6, => Util.timeout 100, =>
+    overlayDiv.fadeTo 100, 0.6, => Util.setTimeout 100, =>
       savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
       selected = $(".selected").parents(".savedSearch").is(savedSearch)
       @beforeSync()
