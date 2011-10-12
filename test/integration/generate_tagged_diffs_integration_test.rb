@@ -1,6 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../integration_test_helper.rb"))
 require "resque_jobs/generate_tagged_diffs"
 require "lib/syntax_highlighter"
+require "lib/git_diff_utils"
 
 class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
   include IntegrationTestHelper
@@ -19,6 +20,26 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       # but this is an effective sanity check to ensure that the highlighting results made it into redis.
       redis_key = SyntaxHighlighter.redis_cache_key("test_git_repo", commit.diffs.first.a_blob)
       assert @written_keys.include?(redis_key)
+    end
+
+    should "indicate a file is binary in a diff" do
+      commit = test_repo.commits("55d7a76d901e5e5bdf0619b4e1674d4bf427db75")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", commit)[0]
+      assert data.binary?
+    end
+
+    should "generate diffs for symlinks" do
+      new_symlink = test_repo.commits("b4923aefdf017ce1dd8cf0a0764272de196bddfb")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", new_symlink)[0]
+      assert data.new? && data.lines_added == 1
+
+      changed_symlink = test_repo.commits("4733a0e92e4fb362125c5e9fb065e415f803c3f4")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", changed_symlink)[0]
+      assert data.lines_added == 1 && data.lines_removed == 1
+
+      removed_symlink = test_repo.commits("e422237592a7ae409e0c3d72ce0b19d4f0da3180")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", changed_symlink)[0]
+      assert data.lines_removed == 1
     end
   end
 end
