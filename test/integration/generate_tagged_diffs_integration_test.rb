@@ -43,5 +43,17 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", changed_symlink)[0]
       assert_equal 1, data.lines_removed
     end
+
+    should "not ignore empty files" do
+      new_empty = test_repo.commits("b8e935159a8db79275ee30902a9bc3a73fa8163f")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", new_empty)[0]
+      assert data.new?
+      assert_equal 0, data.lines.length
+
+      removed_empty = test_repo.commits("6b0b0b5c7274dcbf1df0c18f992af03c790068be")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", removed_empty)[0]
+      assert data.deleted?
+      assert_equal 0, data.lines.length
+    end
   end
 end
