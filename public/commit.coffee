@@ -187,8 +187,6 @@ window.Commit =
     return if selectedLine.length == 0 or @linenewCodeWidthVisible(selectedLine)
     @selectNextVisibleLine()
 
-
-  #Logic to add comments
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
     if $(e.target).is(".delete, .edit, .commentText, .commentSubmit") then return
@@ -200,7 +198,7 @@ window.Commit =
     else
       lineNumber = $(e.currentTarget).attr("diff-line-number")
 
-    #select line and add form to both left and right tables (so that the length of them stay the same
+    # Select line and add form to both left and right tables (so that the length of them stay the same).
     codeLine = $(e.target).parents(".file").find(".diffLine[diff-line-number='" + lineNumber + "'] .code")
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
@@ -208,7 +206,7 @@ window.Commit =
     Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
   onCommentEdit: (e) ->
-    # Use the comment ID instead of generating form ID since left and right tables have the same comments
+    # Use the comment ID instead of generating form ID since left and right tables have the same comments.
     comment = $(".comment[commentId='#{$(e.target).parents(".comment").attr("commentId")}']")
     if comment.find(".commentEditForm").size() > 0 then return
     commentEdit = $(Snippets.commentForm(true, true))
