@@ -41,10 +41,6 @@ StringFilter.define_filter :link_github_issue do |str, github_username, github_r
   end
 end
 
-StringFilter.define_filter :newlines_to_html do |str|
-  str.gsub("\n", "<br/>")
-end
-
 StringFilter.define_filter :truncate_front do |str, max_length|
   abbreviator = "..."
   if str.length > max_length
@@ -55,6 +51,5 @@ StringFilter.define_filter :truncate_front do |str, max_length|
   end
 end
 
-StringFilter.define_filter :escape_html do |str|
-  CGI::escapeHTML(str)
-end
+StringFilter.define_filter(:newlines_to_html) { |str| str.gsub("\n", "<br/>") }
+StringFilter.define_filter(:escape_html) { |str| CGI::escapeHTML(str) }
