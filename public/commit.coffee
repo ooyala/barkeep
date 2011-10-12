@@ -379,6 +379,7 @@ window.Commit =
     container = $("#container")
     unless @isSideBySide
       @isSideBySide = true
+      $("div.file").addClass("sideBySide")
       $.cookies(@SIDE_BY_SIDE_COOKIE, "true")
       $("#sideBySideButton").text("View Unified")
 
@@ -420,6 +421,7 @@ window.Commit =
     else
       # callapse to unified diff
       @isSideBySide = false
+      $("div.file").removeClass("sideBySide")
       $.cookies(@SIDE_BY_SIDE_COOKIE, "false")
       $("#sideBySideButton").text("View Side-By-Side")
 

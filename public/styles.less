@@ -819,18 +819,28 @@ table.commitsList, table.authorList {
 
   .file {
     .embossedPanel;
-    // The styles for inline comments are slightly different than general comments -- they have no left border.
+    @commentWidth: 850px;
+    // The styles for inline comments are slightly different than general comments: they have no left border.
     .comment, .commentForm, .commentEditForm {
-      width: 849px;
+      width: @commentWidth;
       border-left: 0;
       margin: 8px 0px;
-      textarea { width: 847px; }
+      textarea { width: @commentWidth - 2px; }
       .commentBody { img { max-width: 839px; } }
     }
 
-    // The comment edit form, unlike general comment form, lives inside a comment div, so no margins needed
+    // The comment edit form, unlike general comment form, lives inside a comment div, so no margins needed.
     .commentEditForm {
       margin: 0;
+    }
+  }
+
+  // Style tweaks only for side-by-side view.
+  .file.sideBySide {
+    @commentWidth: 780px;
+    .comment, .commentForm, .commentEditForm {
+      width: @commentWidth;
+      textarea { width: @commentWidth - 2px; }
     }
   }
 
