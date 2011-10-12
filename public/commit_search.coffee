@@ -59,7 +59,9 @@ window.CommitSearch =
   # Refresh the searches periodically so that the the user can leave the page open and see new results.
   periodicallyRefresh: ->
     Util.timeout @REFRESH_PERIOD_MINUTES * 60 * 1000, =>
-      @refreshAllSearches()
+      # Refresh all searches that are on page 1 (don't want to mess up the user's navigation if they're on a
+      # later page)
+      @refreshAllSearches("onlyFirstPage")
       @periodicallyRefresh()
 
   onSearchSaved: (responseHtml) ->
@@ -312,17 +314,24 @@ window.CommitSearch =
           newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
           callback.call() if callback?
 
-  refreshAllSearches: ->
+  refreshAllSearches: (mode = "allPages") ->
     return if @refreshingAll
     @refreshingAll = true
     savedSearches = $("#savedSearches .savedSearch")
     @refreshed = 0
-    for savedSearch in savedSearches
-      @refreshSearch $(savedSearch), =>
-        @refreshed += 1
-        if @refreshed == savedSearches.size()
-          @selectFirstDiff()
-          @refreshingAll = false
+
+    afterRefresh = =>
+      @refreshed += 1
+      if @refreshed == savedSearches.size()
+        @selectFirstDiff() unless mode == "onlyFirstPage"
+        @refreshingAll = false
+
+    for savedSearchDiv in savedSearches
+      savedSearch = $(savedSearchDiv)
+      if (mode == "onlyFirstPage" && savedSearch.find(".pageNumber").text() != "1")
+        afterRefresh()
+        continue
+      @refreshSearch savedSearch, afterRefresh
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
