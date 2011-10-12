@@ -151,7 +151,8 @@ class Barkeep < Sinatra::Base
     }
   end
 
-  get "/comment_preview" do
+  # I'm using POST even though this is idempotent to avoid massive urls.
+  post "/comment_preview" do
     return 400, "No text given" unless params[:text]
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     return 400, "No such commit." unless commit

@@ -33,7 +33,7 @@ class AppTest < Scope::TestCase
     should "be previewed" do
       mock(@meta_repo).db_commit("repo1", "asdf123") { @commit }
       mock(Comment).new(:text => "foobar", :commit => @commit) { @comment }
-      get "/comment_preview", :text => "foobar", :repo_name => "repo1", :sha => "asdf123"
+      post "/comment_preview", :text => "foobar", :repo_name => "repo1", :sha => "asdf123"
       assert_equal "fancified", last_response.body
     end
   end
