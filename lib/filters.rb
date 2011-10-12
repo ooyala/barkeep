@@ -1,4 +1,5 @@
 require "lib/string_filter"
+require "lib/redcarpet_extensions"
 
 StringFilter.define_filter :markdown do |str|
   RedcarpetManager.redcarpet_pygments.render(str)
