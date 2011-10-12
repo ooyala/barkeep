@@ -151,6 +151,13 @@ class Barkeep < Sinatra::Base
     }
   end
 
+  get "/comment_preview" do
+    return 400, "No text given" unless params[:text]
+    commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
+    return 400, "No such commit." unless commit
+    Comment.new(:text => params[:text], :commit => commit).format
+  end
+
   post "/comment" do
     if params[:comment_id]
       comment = validate_comment(params[:comment_id])
