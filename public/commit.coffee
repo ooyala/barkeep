@@ -9,6 +9,7 @@ window.Commit =
     $(".reply").live "click", (e) => @onDiffLineDblClickOrReply e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
+    $(".commentPreview").click (e) => @onCommentPreview e
     $(".commentEditForm").live "submit", (e) => @onCommentEditSubmit e
     $("#approveButton").live "click", (e) => @onApproveClicked e
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
@@ -21,6 +22,10 @@ window.Commit =
     commitComment = $("#commitComments .commentText")
     KeyboardShortcuts.createShortcutContext commitComment
     KeyboardShortcuts.registerShortcut commitComment, "esc", => commitComment.blur()
+    KeyboardShortcuts.registerShortcut commitComment, "ctrl+p", (e) =>
+      $(e.target).parents(".commentForm").find(".commentPreview").click()
+      # Prevent side effects such as cursor movement.
+      false
 
     shortcuts =
       "a": => @approveOrDisapprove()
@@ -203,7 +208,7 @@ window.Commit =
     filename = codeLine.parents(".file").attr("filename")
     sha = codeLine.parents("#commit").attr("sha")
     repoName = codeLine.parents("#commit").attr("repo")
-    Commit.createCommentForm(codeLine, repoName, sha, filename, lineNumber)
+    @createCommentForm(codeLine, repoName, sha, filename, lineNumber)
 
   onCommentEdit: (e) ->
     # Use the comment ID instead of generating form ID since left and right tables have the same comments.
@@ -211,7 +216,7 @@ window.Commit =
     if comment.find(".commentEditForm").size() > 0 then return
     commentEdit = $(Snippets.commentForm(true, true))
     commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
-    commentEdit.find(".commentCancel").click(Commit.onCommentEditCancel)
+    commentEdit.find(".commentCancel").click @onCommentEditCancel
     comment.append(commentEdit).find(".commentBody").hide()
     textarea = comment.find(".commentText")
     KeyboardShortcuts.createShortcutContext textarea
@@ -253,18 +258,23 @@ window.Commit =
         sha: sha
         filename: filename
         line_number: lineNumber
-      success: (html) ->
+      success: (html) =>
         commentForm = $(html)
         commentForm.click (e) -> e.stopPropagation()
         # Add a random id so matching comments on both sides of side-by-side can be shown.
         commentForm.attr("form-id", Math.floor(Math.random() * 10000))
-        commentForm.find(".commentCancel").click(Commit.onCommentCancel)
+        commentForm.find(".commentCancel").click @onCommentCancel
+        commentForm.find(".commentPreview").click @onCommentPreview
         codeLine.append(commentForm)
-        Commit.setSideBySideCommentVisibility()
+        @setSideBySideCommentVisibility()
         textarea = codeLine.find(".commentForm .commentText").filter(-> $(@).css("visibility") == "visible")
         KeyboardShortcuts.createShortcutContext textarea
         textarea.focus()
         KeyboardShortcuts.registerShortcut textarea, "esc", => textarea.blur()
+        KeyboardShortcuts.registerShortcut textarea, "ctrl+p", (e) =>
+          $(e.target).parents(".commentForm").find(".commentPreview").click()
+          # Prevent side effects such as cursor movement.
+          false
 
   onCommentSubmit: (e) ->
     e.preventDefault()
@@ -288,7 +298,7 @@ window.Commit =
     $(form).before(html)
     if $(form).parents(".diffLine").size() > 0
       $(form).remove()
-      Commit.setSideBySideCommentVisibility()
+      @setSideBySideCommentVisibility()
     else
       # Don't remove the comment box if it's for a commit-level comment
       $(form).find("textarea").val("")
@@ -299,7 +309,30 @@ window.Commit =
     formId = $(e.currentTarget).parents(".commentForm").attr("form-id")
     form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
     form.remove()
-    Commit.setSideBySideCommentVisibility()
+    @setSideBySideCommentVisibility()
+
+  # Toggle preview/editing mode
+  onCommentPreview: (e) ->
+    e.stopPropagation()
+    comment = $(e.target).parents(".commentForm")
+    preview = comment.find(".commentPreviewText")
+    textarea = comment.find(".commentText")
+    previewButton = comment.find(".commentPreview")
+    if preview.is(":visible")
+      preview.hide()
+      textarea.show()
+      previewButton.val("Preview Comment")
+    else
+      return if $.trim(textarea.val()) == ""
+      $.ajax
+        type: "post",
+        url: "/comment_preview",
+        data: { text: textarea.val(), sha: $("#commit").attr("sha"), repo_name: $("#commit").attr("repo") }
+        success: (rendered) =>
+          preview.html(rendered)
+          textarea.hide()
+          previewButton.val("Continue Editing")
+          preview.show()
 
   onCommentDelete: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")

@@ -58,11 +58,11 @@ window.KeyboardShortcuts =
         return unless e.which == 63
         return if @suspended and not $(e.target).is(element)
         return if not $(e.target).is(element) and e.target.type == "text"
-        callback.call(e)
+        callback(e)
       return
     element.bind "keydown", shortcut, (e) =>
       return if @suspended and not $(e.target).is(element)
-      callback.call(e)
+      callback(e)
 
   registerPageShortcut: (shortcut, callback) -> @registerShortcut($(document), shortcut, callback)
 

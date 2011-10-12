@@ -866,6 +866,11 @@ table.commitsList, table.authorList {
       code, pre { font: @commitFontFamily; }
     }
 
+    .commentPreviewText {
+      border-bottom: @standardBorder;
+      display: none;
+    }
+
     .heading {
       .avatar { .gravatar(25px); }
       color: @lightTextColor;
@@ -935,14 +940,20 @@ table.commitsList, table.authorList {
       width: 100%;
       .flexbox;
       .boxPack(end);
+      .buttonSpacer {
+        .flexbox;
+        .flex(1);
+        .boxOrdinalGroup(1);
+        margin-left: 10px;
+      }
       .commentCancel {
         .flexbox;
-        .boxOrdinalGroup(1);
+        .boxOrdinalGroup(2);
         margin-right: 3px;
       }
       .commentSubmit {
         .flexbox;
-        .boxOrdinalGroup(2);
+        .boxOrdinalGroup(3);
         margin-right: 10px;
       }
     }
