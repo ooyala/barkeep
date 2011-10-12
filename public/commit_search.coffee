@@ -1,4 +1,6 @@
 window.CommitSearch =
+  REFRESH_PERIOD_MINUTES: 2
+
   init: ->
     @smartSearch = new SmartSearch $("#commitSearch input[name=filter_value]")
     $("#commitSearch .submit").click (e) => @smartSearch.search()
@@ -51,8 +53,14 @@ window.CommitSearch =
     $(".searchOptions input[name='email_commits']").live "change", (e) => @changeEmailOptions(e)
     $(".searchOptions input[name='email_comments']").live "change", (e) => @changeEmailOptions(e)
     $(".searchOptionsLink").live "click", (e) => @onSearchOptionsClicked(e)
-
+    @periodicallyRefresh()
     @selectFirstDiff()
+
+  # Refresh the searches periodically so that the the user can leave the page open and see new results.
+  periodicallyRefresh: ->
+    Util.timeout @REFRESH_PERIOD_MINUTES * 60 * 1000, =>
+      @refreshAllSearches()
+      @periodicallyRefresh()
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
