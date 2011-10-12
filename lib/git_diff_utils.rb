@@ -329,8 +329,8 @@ class TaggedDiff
     end
   end
 
-  def binary?(); @binary end
-  def deleted?(); @deleted end
-  def new?(); @new_file end
-  def renamed?(); @renamed end
+  def binary?() @binary end
+  def deleted?() @deleted end
+  def new?() @new_file end
+  def renamed?() @renamed end
 end
