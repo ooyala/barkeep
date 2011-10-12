@@ -55,5 +55,15 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       assert data.deleted?
       assert_equal 0, data.lines.length
     end
+
+    should "generate diffs for renamed files" do
+      renamed = test_repo.commits("d53a8bdaed1bfbea0befaaa904a26d71c9ad8b6a")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", renamed)[0]
+      assert data.renamed?
+      assert_equal 1, data.lines_added
+      assert_equal 1, data.lines_removed
+      assert_equal "spot-the-baneling.txt", data.file_name_before
+      assert_equal "spot-the-changeling.txt", data.file_name_after
+    end
   end
 end
