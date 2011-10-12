@@ -31,15 +31,17 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
     should "generate diffs for symlinks" do
       new_symlink = test_repo.commits("b4923aefdf017ce1dd8cf0a0764272de196bddfb")[0]
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", new_symlink)[0]
-      assert data.new? && data.lines_added == 1
+      assert data.new?
+      assert_equal 1, data.lines_added
 
       changed_symlink = test_repo.commits("4733a0e92e4fb362125c5e9fb065e415f803c3f4")[0]
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", changed_symlink)[0]
-      assert data.lines_added == 1 && data.lines_removed == 1
+      assert_equal 1, data.lines_added
+      assert_equal 1, data.lines_removed
 
       removed_symlink = test_repo.commits("e422237592a7ae409e0c3d72ce0b19d4f0da3180")[0]
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", changed_symlink)[0]
-      assert data.lines_removed == 1
+      assert_equal 1, data.lines_removed
     end
   end
 end
