@@ -26,7 +26,7 @@ class AppTest < Scope::TestCase
     should "posting a comment should create a comment" do
       @comment_params = nil
       stub(Comment).create do |params|
-        @comment_params = params; @comment
+        @comment_params = params
         stub(@comment).commit { @commit }
       end
       post "/comment", :text => "great job"
