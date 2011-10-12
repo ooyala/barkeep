@@ -64,7 +64,7 @@
       comments.each do |comment|
         output << "&lt;<b><a href='#{commit_url}#comment-#{comment.id}' target='_blank'>" +
             "#{CGI.escape_html(comment.user.name)}</a></b>&gt; " +
-            "#{CGI.escape_html(comment.text)}"
+            "<span style='background-color: #eef'>#{CGI.escape_html(comment.text)}</span>"
       end
       output << ""
 
