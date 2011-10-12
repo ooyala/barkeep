@@ -1,7 +1,8 @@
 # Some common utility functions
 window.Util =
-  # A more sane ordering of arguments for setTimeout.
-  setTimeout: (milliseconds, callback) -> setTimeout callback, milliseconds
+  # A more sane ordering of arguments for setTimeout and setInterval.
+  setTimeout: (milliseconds, callback) -> window.setTimeout callback, milliseconds
+  setInterval: (milliseconds, callback) -> window.setInterval callback, milliseconds
 
   # A timeout that doesn't delay if jQuery.fx.off == true
   animateTimeout: (milliseconds, callback) ->

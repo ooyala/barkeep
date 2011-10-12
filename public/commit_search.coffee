@@ -53,16 +53,9 @@ window.CommitSearch =
     $(".searchOptions input[name='email_commits']").live "change", (e) => @changeEmailOptions(e)
     $(".searchOptions input[name='email_comments']").live "change", (e) => @changeEmailOptions(e)
     $(".searchOptionsLink").live "click", (e) => @onSearchOptionsClicked(e)
-    @periodicallyRefresh()
+    # Refresh the searches periodically so that the the user can leave the page open and see new results.
+    Util.setInterval @REFRESH_PERIOD_MINUTES * 60 * 1000, => @refreshAllSearches("onlyFirstPage")
     @selectFirstDiff()
-
-  # Refresh the searches periodically so that the the user can leave the page open and see new results.
-  periodicallyRefresh: ->
-    Util.setTimeout @REFRESH_PERIOD_MINUTES * 60 * 1000, =>
-      # Refresh all searches that are on page 1 (don't want to mess up the user's navigation if they're on a
-      # later page)
-      @refreshAllSearches("onlyFirstPage")
-      @periodicallyRefresh()
 
   onSearchSaved: (responseHtml) ->
     $("#savedSearches").prepend responseHtml
