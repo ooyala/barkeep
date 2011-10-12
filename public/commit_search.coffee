@@ -323,8 +323,8 @@ window.CommitSearch =
       savedSearch = $(savedSearchDiv)
       if (mode == "onlyFirstPage" && savedSearch.find(".pageNumber").text() != "1")
         afterRefresh()
-        continue
-      @refreshSearch savedSearch, afterRefresh
+      else
+        @refreshSearch savedSearch, afterRefresh
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.
