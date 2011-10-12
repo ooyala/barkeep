@@ -56,7 +56,7 @@ window.Commit =
       # Return false to prevent clearing the text box.
       false
 
-    # eventually this should be a user preference stored server side, for now. Its just a cookie
+    # Eventually this should be a user preference stored server side. For now, it's just a cookie.
     @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
 
     # Put the approval overlay message div on the page.
@@ -446,7 +446,7 @@ window.Commit =
         leftCodeTable.find(".diffLine[tag='added'][replace='false']").addClass "spacingLine"
         rightCodeTable.find(".diffLine[tag='removed'][replace='false']").addClass "spacingLine"
       Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION + @SIDE_BY_SIDE_SLIDE_DURATION, =>
-        #finalize animation
+        # Finalize animation.
         jQuery.fx.off = originalJQueryFxOff
         @sideBySideAnimating = false
     else
@@ -486,7 +486,7 @@ window.Commit =
         leftCodeTable.find(".diffLine[tag='added']").removeClass "spacingLine"
         collapseCodeTablesIntoOne()
 
-  #set the correct visibility for comments in side By side
+  # Set the correct visibility for comments in side-by-side.
   setSideBySideCommentVisibility: ->
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
