@@ -120,7 +120,7 @@ on your development system from the target production environment.
 
 First, you'll need to install vagrant and get the lucid32 box:
 
-    $ $ gem install vagrant
+    $ gem install vagrant
     $ vagrant box add base http://files.vagrantup.com/lucid32.box
     $ cd path/to/barkeep/project/root
     $ vagrant up
