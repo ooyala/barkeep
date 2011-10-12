@@ -32,8 +32,8 @@ class BatchCommentEmailsIntegrationTest < Scope::TestCase
     BatchCommentEmails.perform(integration_test_user.id)
     @@comment_one_min_ago.refresh
     @@comment_three_mins_ago.refresh
-    assert_equal false, @@comment_one_min_ago.has_been_emailed
-    assert_equal false, @@comment_three_mins_ago.has_been_emailed
+    refute @@comment_one_min_ago.has_been_emailed
+    refute @@comment_three_mins_ago.has_been_emailed
   end
 
   context "with a commit older than 4 minutes" do

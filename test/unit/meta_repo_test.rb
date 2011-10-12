@@ -42,47 +42,43 @@ class MetaRepoTest < Scope::TestCase
 
   context "search_options_match_commit?" do
     should "find a commit by author" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
-          { :authors => ["Jones"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
-          { :authors => ["Phil"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
-          { :authors => ["Phil", "Jones"] })
+      refute @@repo.search_options_match_commit?(@repo_name, @first_commit, { :authors => ["Jones"] })
+      assert @@repo.search_options_match_commit?(@repo_name, @first_commit, { :authors => ["Phil"] })
+      assert @@repo.search_options_match_commit?(@repo_name, @first_commit, { :authors => ["Phil", "Jones"] })
     end
 
     should "find a commit by path" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
+      refute @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :paths => ["nonexistant_file.txt"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
-          { :paths => ["units.txt"] })
+      assert @@repo.search_options_match_commit?(@repo_name, @first_commit, { :paths => ["units.txt"] })
     end
 
     should "find a commit by both author and path" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
+      refute @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["phil"], :paths => ["nonexistant_file.txt"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, @first_commit,
+      assert @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :authors => ["phil"], :paths => ["units.txt"] })
     end
 
     should "find a commit by branch" do
       first_commit_on_cheese_branch = "4a7d3e5"
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
+      refute @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           { :branches => ["nonexistant_branch"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
+      assert @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           { :branches => ["cheese"] })
-      assert_equal true, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
+      assert @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           { :branches => ["cheese"] })
 
       # TODO(philc): This does not work. We should eliminate nonexistant branches from the CLI args before
-      # passing them on to git rev-list, as the command will fail with 
+      # passing them on to git rev-list, as the command will fail with
       #   fatal: ambiguous argument 'origin/nonexistant_branch': unknown revision or path
-      # assert_equal true, @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
+      # assert @@repo.search_options_match_commit?(@repo_name, first_commit_on_cheese_branch,
           # { :branches => ["nonexistant_branch", "cheese"] })
     end
 
     should "not find a commit which does not exist on the given branch" do
       commit_not_on_branch = "17de3113"
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, commit_not_on_branch,
+      refute @@repo.search_options_match_commit?(@repo_name, commit_not_on_branch,
           { :branches => ["cheese"] })
     end
 
@@ -90,12 +86,11 @@ class MetaRepoTest < Scope::TestCase
       # NOTE(philc): This exposes a bug where we were improperly parsing the output of git rev-list.
       # git rev-list would return us a commit sha which matched our search criteria, but it was different
       # than the commit ID we were searching for. We needed to compare the two.
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @second_commit,
-          { :paths => ["units.txt"] })
+      refute @@repo.search_options_match_commit?(@repo_name, @second_commit, { :paths => ["units.txt"] })
     end
 
     should "return false when searching on a repo which doesn't exist" do
-      assert_equal false, @@repo.search_options_match_commit?(@repo_name, @first_commit,
+      refute @@repo.search_options_match_commit?(@repo_name, @first_commit,
           { :repos => ["non-existant-repo"] })
     end
   end
