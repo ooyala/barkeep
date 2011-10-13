@@ -65,5 +65,11 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       assert_equal "spot-the-baneling.txt", data.file_name_before
       assert_equal "spot-the-changeling.txt", data.file_name_after
     end
+
+    should "recognize changes to file mode" do
+      mode = test_repo.commits("949530830bab8322f5d4dd152d4103cd15a940da")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", mode)[0]
+      refute_equal data.file_mode_before, data.file_mode_after
+    end
   end
 end

@@ -27,11 +27,14 @@ class GitDiffUtils
         a_path = diff.a_path
         b_path = diff.b_path
         data = TaggedDiff.new(:file_name_before => a_path, :file_name_after => b_path,
-            :renamed => diff.renamed_file, :new_file => diff.new_file, :deleted => diff.deleted_file)
+            :renamed => diff.renamed_file, :new_file => diff.new_file, :deleted => diff.deleted_file,
+            :file_mode_before => diff.a_mode, :file_mode_after => diff.b_mode)
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data.binary = true
           data.special_case = "This is a binary file."
+        elsif diff.diff.nil? && (data.file_mode_before != data.file_mode_after)
+          data.special_case = "File mode changed: #{data.file_mode_before} → #{data.file_mode_after}"
         elsif diff.new_file && diff.diff.empty?
           data.special_case = "This is an empty file."
         elsif diff.renamed_file && diff.diff.empty?
@@ -303,7 +306,7 @@ end
 
 class TaggedDiff
   attr_accessor :file_name_before, :file_name_after, :renamed, :binary, :lines_added, :lines_removed,
-      :special_case, :lines, :breaks, :new_file
+      :special_case, :lines, :breaks, :new_file, :file_mode_before, :file_mode_after
 
   def initialize(params)
     @file_name_before = params[:file_name_before]
@@ -317,6 +320,8 @@ class TaggedDiff
     @special_case = params[:special_case]
     @lines = params[:lines] || []
     @breaks = params[:breaks] || []
+    @file_mode_before = params[:file_mode_before] || 0
+    @file_mode_after = params[:file_mode_after] || 0
   end
 
   def display_file_name
