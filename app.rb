@@ -277,7 +277,7 @@ class Barkeep < Sinatra::Base
   # Handle login complete from openid provider.
   get "/login/complete" do
     @openid_consumer ||= OpenID::Consumer.new(session,
-                         OpenID::Store::Filesystem.new("#{File.dirname(__FILE__)}/tmp/openid"))
+        OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
     openid_response = @openid_consumer.complete(params, request.url)
     case openid_response.status
       when OpenID::Consumer::FAILURE
@@ -446,10 +446,10 @@ class Barkeep < Sinatra::Base
     #cached_asset[:contents]
   end
 
-  # construct redirect url to google openid
+  # Construct redirect url to google openid.
   def get_login_redirect
     @openid_consumer ||= OpenID::Consumer.new(session,
-        OpenID::Store::Filesystem.new("#{File.dirname(__FILE__)}/tmp/openid"))
+        OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
     begin
       service = OpenID::OpenIDServiceEndpoint.from_op_endpoint_url(OPENID_IDP_ENDPOINT)
       oidreq = @openid_consumer.begin_without_discovery(service, false)
