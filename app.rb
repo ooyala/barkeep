@@ -294,7 +294,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/stats" do
-    # TODO(dmac): Allow users to change range of stats page without loggin in.
+    # TODO(dmac): Allow users to change range of stats page without logging in.
     stats_time_range = current_user ? current_user.stats_time_range : "month"
     since = case stats_time_range
             when "hour" then Time.now - 60 * 60
