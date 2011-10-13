@@ -99,7 +99,7 @@ class Barkeep < Sinatra::Base
     next if request.url =~ /^#{root_url}\/.*\.js/
     next if request.url =~ /^#{root_url}\/.*\.woff/
     unless self.current_user
-      #save url to return to it after login completes
+      # Save url to return to it after login completes.
       response.set_cookie  "login_started_url", :value => request.url, :path => "/"
       redirect get_login_redirect
     end
@@ -274,7 +274,7 @@ class Barkeep < Sinatra::Base
     "OK"
   end
 
-  #handle login complete from openid provider
+  # Handle login complete from openid provider.
   get "/login/complete" do
     @openid_consumer ||= OpenID::Consumer.new(session,
                          OpenID::Store::Filesystem.new("#{File.dirname(__FILE__)}/tmp/openid"))
