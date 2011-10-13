@@ -280,21 +280,16 @@ class Barkeep < Sinatra::Base
         OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
     openid_response = @openid_consumer.complete(params, request.url)
     case openid_response.status
-      when OpenID::Consumer::FAILURE
-        "Sorry, we could not authenticate you with this identifier. #{openid_response.display_identifier}"
-
-      when OpenID::Consumer::SETUP_NEEDED
-        "Immediate request failed - Setup Needed"
-
-      when OpenID::Consumer::CANCEL
-        "Login cancelled."
-
-      when OpenID::Consumer::SUCCESS
-        ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
-        email = ax_resp["http://axschema.org/contact/email"][0]
-        response.set_cookie  "email", :value => email, :path => "/"
-        User.new(:email => email, :name => email).save unless User.find :email => email
-        redirect request.cookies["login_started_url"] || "/"
+    when OpenID::Consumer::FAILURE
+      "Sorry, we could not authenticate you with this identifier. #{openid_response.display_identifier}"
+    when OpenID::Consumer::SETUP_NEEDED then "Immediate request failed - Setup Needed"
+    when OpenID::Consumer::CANCEL then "Login cancelled."
+    when OpenID::Consumer::SUCCESS
+      ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
+      email = ax_resp["http://axschema.org/contact/email"][0]
+      response.set_cookie "email", :value => email, :path => "/"
+      User.new(:email => email, :name => email).save unless User.find :email => email
+      redirect request.cookies["login_started_url"] || "/"
     end
   end
 
