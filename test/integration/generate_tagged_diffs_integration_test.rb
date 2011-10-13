@@ -48,12 +48,12 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       new_empty = test_repo.commits("b8e935159a8db79275ee30902a9bc3a73fa8163f")[0]
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", new_empty)[0]
       assert data.new?
-      assert_equal 0, data.lines.length
+      assert_empty data.lines
 
       removed_empty = test_repo.commits("6b0b0b5c7274dcbf1df0c18f992af03c790068be")[0]
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", removed_empty)[0]
       assert data.deleted?
-      assert_equal 0, data.lines.length
+      assert_empty data.lines
     end
 
     should "generate diffs for renamed files" do
