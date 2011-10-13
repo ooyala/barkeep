@@ -110,12 +110,12 @@ class Barkeep < Sinatra::Base
   end
 
   get "/login" do
-    response.set_cookie  "login_started_url", :value => request.referrer, :path => "/"
+    response.set_cookie "login_started_url", :value => request.referrer, :path => "/"
     redirect get_login_redirect
   end
 
   get "/logout" do
-    response.delete_cookie  "email"
+    response.delete_cookie "email"
     redirect request.referrer
   end
 
@@ -421,7 +421,6 @@ class Barkeep < Sinatra::Base
     Emails.send_commit_email(commit) if params[:send_email] == "true"
     Emails.commit_email_body(commit)
   end
-
 
   def cleanup_backtrace(backtrace_lines)
     # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like
