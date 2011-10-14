@@ -16,7 +16,7 @@ class AppTest < Scope::TestCase
     setup do
       @comment = Comment.new(:text => "howdy ho", :created_at => Time.now)
       stub(@comment).user { @user }
-      stub(@comment).format { "fancified" }
+      stub(@comment).filter_text { "fancified" }
       @commit = stub_commit("commit_id", @user)
       @meta_repo = MetaRepo.new("/dev/null")
       stub(MetaRepo).instance { @meta_repo }

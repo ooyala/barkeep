@@ -152,7 +152,7 @@ class Barkeep < Sinatra::Base
     return 400, "No text given" unless params[:text]
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     return 400, "No such commit." unless commit
-    Comment.new(:text => params[:text], :commit => commit).format
+    Comment.new(:text => params[:text], :commit => commit).filter_text
   end
 
   post "/comment" do
