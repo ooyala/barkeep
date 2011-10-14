@@ -26,7 +26,7 @@ module KeyboardShortcuts
     "shift + p" => "Previous file in commit",
     "enter" => "New comment on selected line",
     "shift + c" => "Add a commit comment",
-    "ctrl + p" => "Toggle comment preview",
+    "ctrl + shift + p" => "Toggle comment preview",
     "n" => "Next diff chunk in commit",
     "p" => "Previous diff chunk in commit",
     "a then a" => "Toggle approval of commit",

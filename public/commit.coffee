@@ -271,7 +271,7 @@ window.Commit =
         KeyboardShortcuts.createShortcutContext textarea
         textarea.focus()
         KeyboardShortcuts.registerShortcut textarea, "esc", => textarea.blur()
-        KeyboardShortcuts.registerShortcut textarea, "ctrl+p", (e) =>
+        KeyboardShortcuts.registerShortcut textarea, "ctrl+shift+p", (e) =>
           $(e.target).parents(".commentForm").find(".commentPreview").click()
           # Prevent side effects such as cursor movement.
           false
