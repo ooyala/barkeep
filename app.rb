@@ -35,6 +35,10 @@ require "resque_jobs/deliver_review_request_emails.rb"
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_IDP_ENDPOINT = "https://www.google.com/accounts/o8/ud"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
+LOGIN_WHITELIST_ROUTES = [
+  /^login/, /^logout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^.*\.css/, /^.*\.js/,
+  /^.*\.woff/
+]
 
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
@@ -88,19 +92,10 @@ class Barkeep < Sinatra::Base
 
   before do
     self.current_user = User.find(:email => request.cookies["email"])
-    next if request.url =~ /^#{root_url}\/login/
-    next if request.url =~ /^#{root_url}\/logout/
-    next if request.url =~ /^#{root_url}\/commits/
-    next if request.url =~ /^#{root_url}\/stats/
-    next if request.url =~ /^#{root_url}\/inspire/
-    next if request.url =~ /^#{root_url}\/admin/
-    next if request.url =~ /^#{root_url}\/statusz/
-    next if request.url =~ /^#{root_url}\/.*\.css/
-    next if request.url =~ /^#{root_url}\/.*\.js/
-    next if request.url =~ /^#{root_url}\/.*\.woff/
+    next if LOGIN_WHITELIST_ROUTES.any? { |route| request.route[1..-1] =~ route }
     unless self.current_user
       # Save url to return to it after login completes.
-      response.set_cookie  "login_started_url", :value => request.url, :path => "/"
+      response.set_cookie "login_started_url", :value => request.url, :path => "/"
       redirect get_login_redirect
     end
   end
