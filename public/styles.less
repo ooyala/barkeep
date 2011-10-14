@@ -744,7 +744,7 @@ table.commitsList, table.authorList {
   }
 
   #commitSummary {
-    margin: 23px auto 40px auto;
+    margin: 25px auto;
     width: @pageWidth;
 
     #filesChanged {
@@ -753,11 +753,14 @@ table.commitsList, table.authorList {
       border-collapse: collapse;
       width: 100%;
 
-      tr:last-of-type { border-bottom: @standardBorder; }
       th {
         font: 14px @sansFont;
         font-weight: bold;
         text-align: center;
+      }
+      tr.total {
+        font-weight: bold;
+        td.path { text-align: right; }
       }
       td {
         border-top: @standardBorder;
