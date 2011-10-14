@@ -77,5 +77,21 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", burrow)[0]
       assert_equal 101, data.lines_removed
     end
+
+    should "special case submodules" do
+      new_chamber = test_repo.commits("3abfbb7bd0d769a50679e3e5c8c8b00cf8ca8f41")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", new_chamber)[1]
+      assert data.new?
+      refute data.special_case.empty?
+
+      changed_chamber = test_repo.commits("1a293fe2e2a199fb70850079710691afac26996c")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", changed_chamber)[0]
+      refute data.special_case.empty?
+
+      deleted_chamber = test_repo.commits("4590b8c2c2a25c02cd878f4c5489b80f460cbd1e")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", deleted_chamber)[1]
+      assert data.deleted?
+      refute data.special_case.empty?
+    end
   end
 end

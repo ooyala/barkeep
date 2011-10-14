@@ -28,11 +28,13 @@ class GitDiffUtils
         b_path = diff.b_path
         data = TaggedDiff.new(:file_name_before => a_path, :file_name_after => b_path,
             :renamed => diff.renamed_file, :new_file => diff.new_file, :deleted => diff.deleted_file,
-            :file_mode_before => diff.a_mode, :file_mode_after => diff.b_mode)
+            :file_mode_before => diff.a_mode, :file_mode_after => diff.b_mode, :raw_diff => diff.diff)
         filetype = AlbinoFiletype.detect_filetype(a_path == "dev/null" ? b_path : a_path)
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data.binary = true
           data.special_case = "This is a binary file."
+        elsif data.submodule?
+          data.special_case = data.submodule_special_case_message
         elsif diff.diff.nil? && (data.file_mode_before != data.file_mode_after)
           data.special_case = "File mode changed: #{data.file_mode_before} → #{data.file_mode_after}"
         elsif diff.new_file && diff.diff.empty?
@@ -306,7 +308,10 @@ end
 
 class TaggedDiff
   attr_accessor :file_name_before, :file_name_after, :renamed, :binary, :lines_added, :lines_removed,
-      :special_case, :lines, :breaks, :new_file, :file_mode_before, :file_mode_after
+      :special_case, :lines, :breaks, :new_file, :file_mode_before, :file_mode_after, :raw_diff,
+      :submodule_commit_before, :submodule_commit_after
+
+  SUBMODULE = "160000"
 
   def initialize(params)
     @file_name_before = params[:file_name_before]
@@ -322,6 +327,13 @@ class TaggedDiff
     @breaks = params[:breaks] || []
     @file_mode_before = params[:file_mode_before] || 0
     @file_mode_after = params[:file_mode_after] || 0
+    @raw_diff = params[:raw_diff] || ""
+    @submodule_commit_before = params[:submodule_commit_before]
+    @submodule_commit_after = params[:submodule_commit_after]
+
+    if submodule? && @submodule_commit_before.nil? && @submodule_commit_after.nil?
+      submodule_set
+    end
   end
 
   def display_file_name
@@ -334,8 +346,31 @@ class TaggedDiff
     end
   end
 
+  def submodule_set
+    if new? || !deleted?
+      match = /^\+Subproject commit ([\d\w]+)/.match(@raw_diff)
+      @submodule_commit_after = match[1]
+    end
+
+    if deleted? || !new?
+      match = /^\-Subproject commit ([\d\w]+)/.match(@raw_diff)
+      @submodule_commit_before = match[1]
+    end
+  end
+
+  def submodule_special_case_message
+    if new?
+      "New submodule (#{@submodule_commit_after})"
+    elsif deleted?
+      "Deleted submodule (#{@submodule_commit_before})"
+    else
+      "Updated submodule (#{@submodule_commit_before} → #{@submodule_commit_after})"
+    end
+  end
+
   def binary?() @binary end
   def deleted?() @deleted end
   def new?() @new_file end
   def renamed?() @renamed end
+  def submodule?() @file_mode_before == SUBMODULE || @file_mode_after == SUBMODULE end
 end
