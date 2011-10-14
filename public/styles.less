@@ -1041,6 +1041,16 @@ table.commitsList, table.authorList {
       font: @commitFontFamily;
     }
   }
+
+  #loginPrompt { text-align: center; }
+}
+
+// The "log in to do X" prompt boxes.
+#loginPrompt {
+  &.commitSearch { .embossedPanel; }
+  &.commit { .raisedPanel; }
+  text-align: center;
+  padding: 20px;
 }
 
 // Approval popup overlay
