@@ -71,5 +71,11 @@ class GenerateTaggedDiffsIntegrationTest < Scope::TestCase
       data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", mode)[0]
       refute_equal data.file_mode_before, data.file_mode_after
     end
+
+    should "generate diffs for a non-empty file replace by an empty file" do
+      burrow = test_repo.commits("eb88e76acf0952cb5badfa0aff24f534f2f6bd22")[0]
+      data = GitDiffUtils.get_tagged_commit_diffs("test_git_repo", burrow)[0]
+      assert_equal 101, data.lines_removed
+    end
   end
 end

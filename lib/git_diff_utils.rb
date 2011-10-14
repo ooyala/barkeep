@@ -140,13 +140,13 @@ class GitDiffUtils
         diff_line = chunk.new_line_start
         next
       end
-      # deleted files, one line new files, and one line additions to empty files
+      # deleted files, all lines removed, one line new files, and one line additions to empty files
       match = /^@@ \-(\d+),(\d+) \+(\d+) @@/.match(line)
       if match
-        if diff.deleted_file
-          chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, nil, 0)
-        elsif match[1].to_i == 0 && match[2].to_i == 0
+        if match[1].to_i == 0 && match[2].to_i == 0
           chunk = PatchChunk.new(nil, 0, match[3].to_i - 1, 1)
+        else
+          chunk = PatchChunk.new(match[1].to_i - 1, match[2].to_i, nil, 0)
         end
         chunks << chunk
         orig_line = chunk.original_line_start
@@ -325,9 +325,9 @@ class TaggedDiff
   end
 
   def display_file_name
-    if @renamed
+    if renamed?
       "#{@file_name_before} → #{@file_name_after}"
-    elsif @new
+    elsif new?
       @file_name_after
     else
       @file_name_before
