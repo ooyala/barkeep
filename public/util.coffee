@@ -88,17 +88,6 @@ window.KeyboardShortcuts =
     @registerPageShortcut "s", -> window.location.href = "/stats"
     @registerPageShortcut "i", -> window.location.href = "/inspire"
 
-window.Login =
-  init: ->
-    $(".logoutLink").click Login.logout
-
-  logout: ->
-    # need to logout from google too, but there is no way to get back, so do it in an iframe
-    $("#logoutIFrame").load -> location.href = "/logout"
-    $("#logoutIFrame").get(0).src = "https://www.google.com/accounts/Logout"
-    return false
-
 $(document).ready ->
   ShortcutOverlay.init()
   KeyboardShortcuts.init()
-  Login.init()
