@@ -10,6 +10,7 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    addressable (2.2.6)
     blankslate (2.1.2.4)
     clockwork (0.2.4)
     coderay (0.9.8)
@@ -104,6 +105,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  addressable
   clockwork
   coffee-script
   daemons

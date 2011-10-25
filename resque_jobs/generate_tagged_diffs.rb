@@ -10,6 +10,7 @@ class GenerateTaggedDiffs
 
   def self.perform(repo_name, commit_sha)
     GitDiffUtils.setup(RedisManager.redis_instance)
+    MetaRepo.instance.load_repos
     grit_commit = MetaRepo.instance.get_grit_repo(repo_name).commits(commit_sha, 1).first
     unless grit_commit
       puts "Error: this commit is not found: #{repo_name} #{commit_sha}"

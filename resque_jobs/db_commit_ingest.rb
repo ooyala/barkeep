@@ -15,6 +15,7 @@ class DbCommitIngest
     logger = Logging.logger = Logging.create_logger("db_commit_ingest.log")
     logger.info "Importing new commits from #{repo_name}:#{remote_name} into the database."
     MetaRepo.logger = logger
+    MetaRepo.instance.load_repos
 
     # Reconnect to the database if our connection has timed out.
     Comment.select(1).first rescue nil

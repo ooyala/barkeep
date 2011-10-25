@@ -10,6 +10,7 @@ class DeliverCommitEmails
   def self.perform(repo_name, commit_sha)
     logger = Logging.logger = Logging.create_logger("deliver_commit_emails.log")
     MetaRepo.logger = logger
+    MetaRepo.instance.load_repos
 
     # Reconnect to the database if our connection has timed out.
     Comment.select(1).first rescue nil

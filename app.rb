@@ -7,6 +7,7 @@ require "nokogiri"
 require "open-uri"
 require "methodchain"
 require "redis"
+require "addressable/uri"
 
 require 'openid'
 require 'openid/store/filesystem'
@@ -36,8 +37,8 @@ NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_IDP_ENDPOINT = "https://www.google.com/accounts/o8/ud"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 LOGIN_WHITELIST_ROUTES = [
-  /^login/, /^logout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^.*\.css/, /^.*\.js/,
-  /^.*\.woff/
+  /^login/, /^logout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^api\/add_repo/,
+  /^.*\.css/, /^.*\.js/, /^.*\.woff/
 ]
 
 class Barkeep < Sinatra::Base
@@ -378,6 +379,26 @@ class Barkeep < Sinatra::Base
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
     Resque.enqueue(DeliverReviewRequestEmails,
         commit.git_repo.name, commit.sha, current_user.email, emails)
+    "OK"
+  end
+
+  # NOTE(dmac): Not sure how we want to differentiate api calls.
+  # This is the first of its kind, so I'm just using /api for now.
+  # We'll probably change this when we flesh out our apis.
+  # NOTE(dmac): This can tie up the server if the checked out repo
+  # is very large. The task could be backgrounded, but the server's instance
+  # of MetaRepo will need to be reloaded *after* the background job finishes.
+  post "/api/add_repo" do
+    halt 400 unless params[:url]
+    # We have to be careful of using a system call here.
+    # Note this attack: "url=http://fake.com; rm -fr ./*"
+    # Grit provides no way to check out a repository, which is why the system call is used.
+    # One alternative might be https://github.com/schacon/ruby-git
+    halt 400, "Invalid url" unless Addressable::URI.parse(params[:url])
+    system("cd #{REPOS_ROOT} && git clone #{params[:url]}")
+    # NOTE(dmac): We may want to handle cloning empty repos
+    # by deleting the empty directory.
+    MetaRepo.instance.load_repos
     "OK"
   end
 

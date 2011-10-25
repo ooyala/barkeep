@@ -25,14 +25,17 @@ class MetaRepo
   attr_reader :repos
 
   def initialize(repos_root)
-    @repos = []
     @repos_root = repos_root
+    Thread.abort_on_exception = true
+    load_repos
+  end
+
+  def load_repos
+    @repos = []
     @repo_names_and_ids_to_repos = {}
     @repo_name_to_id = {}
 
-    Thread.abort_on_exception = true
-
-    repo_paths = Dir.glob("#{repos_root}/*/")
+    repo_paths = Dir.glob("#{@repos_root}/*/")
 
     repo_paths.each do |path|
       path = Pathname.new(path).realpath.to_s # Canonical path
