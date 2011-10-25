@@ -388,6 +388,8 @@ class Barkeep < Sinatra::Base
   # NOTE(dmac): This can tie up the server if the checked out repo
   # is very large. The task could be backgrounded, but the server's instance
   # of MetaRepo will need to be reloaded *after* the background job finishes.
+  # TODO(dmac): Once we figure out api authentication,
+  # remove this route from the LOGIN_WHITELIST_ROUTES array.
   post "/api/add_repo" do
     halt 400 unless params[:url]
     # We have to be careful of using a system call here.
