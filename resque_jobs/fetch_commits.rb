@@ -44,7 +44,11 @@ class FetchCommits
     head_of_remote = { }
     grit_repo.remotes.each { |remote| head_of_remote[remote.name] = remote.commit.sha }
 
-    grit_repo.git.fetch
+    begin
+      grit_repo.git.fetch
+    rescue Grit::Git::GitTimeout => e
+      Logging.logger.error "Timed out attempting to fetch new commits in the repo '#{grit_repo.name}'."
+    end
 
     # Note: invoking grit_repo.remotes refreshes the remotes, so "remote.commit" will be fresh.
     modified_remotes = grit_repo.remotes.select { |remote| head_of_remote[remote.name] != remote.commit.sha }
