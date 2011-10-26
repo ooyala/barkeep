@@ -54,7 +54,7 @@ window.CommitSearch =
     $(".searchOptions input[name='email_comments']").live "change", (e) => @changeEmailOptions(e)
     $(".searchOptionsLink").live "click", (e) => @onSearchOptionsClicked(e)
     # Refresh the searches periodically so that the the user can leave the page open and see new results.
-    Util.setInterval @REFRESH_PERIOD_MINUTES * 60 * 1000, => @refreshAllSearches("onlyFirstPage")
+    Util.setInterval @REFRESH_PERIOD_MINUTES * 60 * 1000, => @automaticallyRefreshSearches()
     @selectFirstDiff()
 
   onSearchSaved: (responseHtml) ->
@@ -288,43 +288,57 @@ window.CommitSearch =
 
   # Refresh a saved search with the latest from the server.
   #  - savedSearch: a JQuery savedSearch div
+  #  - animation: the type of animation to use ("fade" or "none").
   #  - callback: an optional callback called after the refresh is finished.
-  refreshSearch: (savedSearch, callback = null) ->
-    $(".tipsy").remove()
-    overlayDiv = $(Snippets.maskingOverlay)
-    savedSearch.append(overlayDiv)
-    overlayDiv.fadeTo 100, 0.6, => Util.setTimeout 100, =>
-      savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
-      selected = $(".selected").parents(".savedSearch").is(savedSearch)
+  refreshSearch: (savedSearch, animation = "fade", callback = ->) ->
+    savedSearchId = parseInt(savedSearch.attr("saved-search-id"))
+    selected = $(".selected").parents(".savedSearch").is(savedSearch)
+    fetchNewSavedSearch = (context, after) =>
       @beforeSync()
       $.ajax
         url: "/saved_searches/#{savedSearchId}"
         success: (newSavedSearchHtml) =>
           @afterSync()
-          newSavedSearch = $(newSavedSearchHtml)
-          savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
-          savedSearchElement.replaceWith newSavedSearch
-          newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
-          callback.call() if callback?
+          context.newSavedSearch = $(newSavedSearchHtml)
+          after()
+    replaceSavedSearch = (context) =>
+      savedSearchElement = $(".savedSearch[saved-search-id=#{savedSearchId}]")
+      savedSearchElement.replaceWith context.newSavedSearch
+      context.newSavedSearch.find(".commitsList tr:first").addClass "selected" if selected
+      callback()
+    switch animation
+      when "fade"
+        overlayDiv = $(Snippets.maskingOverlay)
+        savedSearch.append(overlayDiv)
+        fadeAnimation = (_, after) => overlayDiv.fadeTo 100, 0.6, => Util.setTimeout 100, => after()
+        Util.runAfterAllAreFinished([fadeAnimation, fetchNewSavedSearch], replaceSavedSearch)
+      when "none"
+        Util.runAfterAllAreFinished([fetchNewSavedSearch], replaceSavedSearch)
 
-  refreshAllSearches: (mode = "allPages") ->
+  # Refresh all saved searches using a fade-out animation
+  refreshAllSearches: ->
+    return if @refreshingAll
+    $(".tipsy").remove()
+    @refreshingAll = true
+    refreshFunctions = for savedSearch in $("#savedSearches .savedSearch")
+      # `do` is used to close over the savedSearch in the loop, so that each function retains the correct ref.
+      do (savedSearch) => (_, callback) => @refreshSearch($(savedSearch), "fade", callback)
+    Util.runAfterAllAreFinished refreshFunctions, => @refreshingAll = false
+
+  # Refresh all saved searches currently sitting on the first page without any animation.
+  automaticallyRefreshSearches: ->
     return if @refreshingAll
     @refreshingAll = true
     savedSearches = $("#savedSearches .savedSearch")
-    @refreshed = 0
-
-    afterRefresh = =>
-      @refreshed += 1
-      if @refreshed == savedSearches.size()
-        @selectFirstDiff() unless mode == "onlyFirstPage"
-        @refreshingAll = false
-
-    for savedSearchDiv in savedSearches
-      savedSearch = $(savedSearchDiv)
-      if (mode == "onlyFirstPage" && savedSearch.find(".pageNumber").text() != "1")
-        afterRefresh()
-      else
-        @refreshSearch savedSearch, afterRefresh
+    # We'll only refresh searches that are sitting on the first page and have the first diff selected (if any
+    # is selected), to avoid interfering with the user navigation.
+    canBeRefreshed = (savedSearch) ->
+      return false unless savedSearch.find(".pageNumber").text() == "1"
+      selected = savedSearch.find(".selected")
+      (selected.size() == 0) || selected.is(savedSearch.find(".commitsList tr:first"))
+    refreshFunctions = for savedSearch in savedSearches when canBeRefreshed($(savedSearch))
+      do (savedSearch) => (_, callback) => @refreshSearch($(savedSearch), "none", callback)
+    Util.runAfterAllAreFinished refreshFunctions, => @refreshingAll = false
 
   beforeSync: ->
     # The right thing to do here is to queue up this state and re-sync when the current sync callback happens.

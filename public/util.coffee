@@ -27,6 +27,26 @@ window.Util =
         (scroll == "all" or scroll == "bottom")
       window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
 
+  # Run multiple functions which eventually run callbacks. After all of these callbacks are finished, run
+  # another callback once.
+  # (This sounds confusing -- here's a simple example: you can run three animations at once (assuming that
+  # they all run a passed-in callback when finished, as is typical in jQuery animations), and then do
+  # something else after they are all finished.)
+  #
+  #  - functions: an array of 0 or more functions. They should accept the following two arguments:
+  #     - a shared state object to for all the functions and the callback to use
+  #     - a callback which *must* be eventually called by each function
+  #  - callback: a function to call after `functions` are all called. It will receive the same shared state
+  #     object as its only parameter.
+  runAfterAllAreFinished: (functions, callback) ->
+    return callback() if functions.length == 0
+    context = {}
+    finished = 0
+    after = =>
+      finished += 1
+      callback(context) if finished >= functions.length
+    f(context, after) for f in functions
+
 window.ShortcutOverlay =
   init: ->
     $(".kbShortcuts.overlay .container").focus -> $(".kbShortcuts.overlay").css("visibility", "visible")
