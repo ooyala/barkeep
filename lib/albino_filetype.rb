@@ -4,6 +4,7 @@ class AlbinoFiletype
     "Rakefile" => :ruby,
     "Capfile" => :ruby,
     "Gemfile" => :ruby,
+    "Vagrantfile" => :ruby,
     ".god" => :ruby,
     "Makefile" => :make,
     ".erb" => :rhtml,
