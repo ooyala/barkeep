@@ -8,14 +8,10 @@ class Barkeep < Sinatra::Base
   # of MetaRepo will need to be reloaded *after* the background job finishes.
   post "/api/add_repo" do
     halt 400 unless params[:url]
-    # We have to be careful of using a system call here.
-    # Note this attack: "url=http://fake.com; rm -fr ./*"
-    # Grit provides no way to check out a repository, which is why the system call is used.
-    # One alternative might be https://github.com/schacon/ruby-git
     halt 400, "Invalid url" unless Addressable::URI.parse(params[:url])
-    system("cd #{REPOS_ROOT} && git clone #{params[:url]}")
-    # NOTE(dmac): We may want to handle cloning empty repos
-    # by deleting the empty directory.
+    repo_name = File.basename(params[:url], ".*")
+    repo_path = File.join(REPOS_ROOT, repo_name)
+    Grit::Git.new(repo_path).clone({}, params[:url], repo_path)
     MetaRepo.instance.load_repos
     "OK"
   end
