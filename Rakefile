@@ -3,12 +3,18 @@ require "resque/tasks"
 
 $LOAD_PATH.push("./") unless $LOAD_PATH.include?("./")
 
-task :test => ["test:units", "test:integrations"]
+task :test => ["test:units", "test:integrations", "test:coffeescripts"]
 
 namespace :test do
   Rake::TestTask.new(:units) do |task|
     task.libs << "test"
     task.test_files = FileList["test/unit/*"]
+  end
+
+  # TODO(caleb): Use a better name for this task.
+  desc "Run the coffeescript unit tests with shoulda.js."
+  task :coffeescripts do
+    puts `node node_modules/jasmine-node/lib/jasmine-node/cli.js --coffee test/coffeescript`
   end
 
   Rake::TestTask.new(:integrations) do |task|
