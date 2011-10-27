@@ -10,10 +10,9 @@ $LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/logging"
 
 class SyntaxHighlighter
-
   WEEK = 60*60*24*7
 
-  def initialize(redis=nil)
+  def initialize(redis = nil)
     @redis = redis
   end
 
@@ -37,15 +36,16 @@ class SyntaxHighlighter
       Logging.logger.error("Redis failed with message: #{e.message}")
     end
 
-    return highlighted
+    highlighted
   end
 
   def self.pygmentize(file_type, text)
-    Pygments.highlight(text, :lexer => file_type, :options => { :encoding => "utf-8", :nowrap => true,
-        :stripnl => false, :stripall => false })
+    Pygments.highlight(text, :lexer => file_type, :options => {
+      :encoding => "utf-8", :nowrap => true, :stripnl => false, :stripall => false
+    })
   end
 
   def self.redis_cache_key(repo_name, blob)
-    return "#{repo_name}::#{blob.id}"
+    "#{repo_name}::#{blob.id}"
   end
 end
