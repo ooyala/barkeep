@@ -25,7 +25,7 @@ class SyntaxHighlighter
       return cached if cached
     end
 
-    highlighted = SyntaxHighlighter.pygmentize(file_type, blob.data)
+    highlighted = SyntaxHighlighter.global_highlighting(SyntaxHighlighter.pygmentize(file_type, blob.data))
 
     begin
       if @redis
@@ -43,6 +43,14 @@ class SyntaxHighlighter
     Pygments.highlight(text, :lexer => file_type, :options => {
       :encoding => "utf-8", :nowrap => true, :stripnl => false, :stripall => false
     })
+  end
+
+  # Apply further filtering to the pygmentized source. Right now we're just using it to highlight trailing
+  # whitespace.
+  # NOTE(caleb): It might be possible/better to do this in Python. However, that will probably involve
+  # modifying Pygments (monkey-patching isn't so simple in Python) and in general will be more work.
+  def self.global_highlighting(pygmentized_text)
+    pygmentized_text.gsub(/[ \t]+$/) { |whitespace| "<span class='trailingWhitespace'>#{whitespace}</span>" }
   end
 
   def self.redis_cache_key(repo_name, blob)
