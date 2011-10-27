@@ -73,7 +73,7 @@
         <% end %>
         <% added, removed = [:lines_added, :lines_removed].map { |m| tagged_diff.map(&m).reduce(&:+) } %>
         <tr class="total" >
-          <td class="path">Totals</td>
+          <td class="path">Total</td>
           <td class="linesAdded"><%= added %></td>
           <td class="linesRemoved"><%= removed %></td>
         </tr>
