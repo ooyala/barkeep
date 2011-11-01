@@ -28,7 +28,7 @@
 
   <% general_comments.each do |comment| %>
     &lt;<b><a href="<%= "#{commit_url}#comment-#{comment.id}" %>"><%= CGI.escape_html(comment.user.name) %></a></b>&gt;
-    <%= CGI.escape_html(comment.text) %><br/><br/>
+    <span style='background-color: #eef'><%= CGI.escape_html(comment.text) %></span><br/><br/>
   <% end  %>
 <% end %>
 
