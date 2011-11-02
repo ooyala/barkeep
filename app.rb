@@ -162,7 +162,7 @@ class Barkeep < Sinatra::Base
       comment = validate_comment(params[:comment_id])
       comment.text = params[:text]
       comment.save
-      return comment.format
+      return comment.filter_text
     end
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     return 400 unless commit
