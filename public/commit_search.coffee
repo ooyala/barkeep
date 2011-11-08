@@ -158,7 +158,7 @@ window.CommitSearch =
         @searching = false
         return
       @refreshing = true
-      @refreshSearch(savedSearchElement, => @refreshing = false)
+      @refreshSearch(savedSearchElement, "fade", => @refreshing = false)
       @searching = false
       return
 
@@ -269,7 +269,7 @@ window.CommitSearch =
       success: =>
         @afterSync()
         @refreshing = true
-        @refreshSearch(savedSearch, => @refreshing = false)
+        @refreshSearch(savedSearch, "fade", => @refreshing = false)
 
   changeEmailOptions: (event) ->
     savedSearch = $(event.target).parents(".savedSearch")
