@@ -11,7 +11,8 @@ class Emails
   end
 
   def self.subject_for_commit_email(grit_commit)
-    "Commit #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - #{grit_commit.short_message[0..60]}"
+    "#{grit_commit.repo.name} #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
+        "#{grit_commit.short_message[0..60]}"
   end
 
   # Sends an email notification for review requests.
