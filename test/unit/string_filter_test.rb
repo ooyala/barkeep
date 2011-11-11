@@ -15,6 +15,13 @@ class StringFilterTest < Scope::TestCase
       assert filtered.include?("/commits/test_repo/#{sha}")
     end
 
+    should "replace shas prepended with repo: with cross repo links" do
+      repo = "foo-bar_90"
+      sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
+      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{repo}:#{sha}", "test_repo")
+      assert filtered.include?("/commits/#{repo}/#{sha}")
+    end
+
     should "link jira issues" do
       ticket = "APP-1234"
       filtered = StringFilter.link_jira_issue("in ticket #{ticket}")

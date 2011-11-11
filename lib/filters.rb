@@ -6,8 +6,10 @@ StringFilter.define_filter :markdown do |str|
 end
 
 StringFilter.define_filter :replace_shas_with_links do |str, repo_name|
-  str.gsub(/([a-zA-Z0-9]{40})/) do |sha|
-    "<a href='/commits/#{repo_name}/#{sha}'>#{sha[0..6]}</a>"
+  str.gsub(/(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{40})/) do
+    repo = Regexp.last_match(2) || repo_name
+    sha = Regexp.last_match(3)
+    "<a href='/commits/#{repo}/#{sha}'>#{sha[0..6]}</a>"
   end
 end
 
