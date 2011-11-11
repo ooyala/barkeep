@@ -28,6 +28,13 @@ class StringFilterTest < Scope::TestCase
       assert filtered.include?("jira.corp.ooyala.com/browse/#{ticket}")
     end
 
+    should "not link jira issues that do not have a whitelisted group" do
+      ticket = "NOTJIRA-1234"
+      message = "in ticket #{ticket}"
+      filtered = StringFilter.link_jira_issue(message)
+      assert_equal message, filtered
+    end
+
     should "link embedded images" do
       image = "![image](http://example.com/image.png)"
       filtered = StringFilter.link_embedded_images(image)

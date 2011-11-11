@@ -1,5 +1,6 @@
 require "lib/string_filter"
 require "lib/redcarpet_extensions"
+require "set"
 
 StringFilter.define_filter :markdown do |str|
   RedcarpetManager.redcarpet_pygments.render(str)
@@ -13,12 +14,13 @@ StringFilter.define_filter :replace_shas_with_links do |str, repo_name|
   end
 end
 
-# NOTE(dmac): Capital letters, a dash and numbers are pretty general.
-# For example, this would also pick up someone using the GH-1 github issue syntax.
-# One way to fix this might be to require a prefix: "jira:APP-1234".
+# compiled list from https://jira.corp.ooyala.com/secure/BrowseProjects.jspa#all
+JIRA_WHITELIST = Set.new(["BL", "PROD", "PL", "APP", "OCS", "BIG", "CCC", "CST", "DS", "IOS", "JIRA", "NH",
+    "PSE", "OTA", "TOOL", "OTS", "WEB", "MIRA", "PWS", "AUTO", "HELP"])
 StringFilter.define_filter :link_jira_issue do |str|
   str.gsub(/([A-Z]+)-(\d+)/) do |match|
     group = Regexp.last_match(1)
+    next match unless JIRA_WHITELIST.include?(group)
     number = Regexp.last_match(2)
     "<a href='https://jira.corp.ooyala.com/browse/#{group}-#{number}' target='_blank'>" +
         "#{match}</a>"
