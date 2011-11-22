@@ -209,7 +209,7 @@ window.CommitSearch =
     state.reverse()
     $.ajax
       type: "POST"
-      contentTypeType: "application/json"
+      contentType: "application/json"
       url: "/saved_searches/reorder"
       data: $.toJSON(state)
       success: => @afterSync()
