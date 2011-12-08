@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    barkeep-client (0.0.2)
+      dedent (~> 0.0.2)
+      trollop (~> 1.16.2)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    dedent (0.0.2)
+    trollop (1.16.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  barkeep-client!

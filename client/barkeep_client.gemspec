@@ -1,13 +1,14 @@
 # -*- encoding: utf-8 -*-
+$:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "barkeep-client"
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.authors     = ["Caleb Spare"]
   s.email       = ["caleb@ooyala.com"]
-  s.homepage    = ""
-  s.summary     = %q{Who is the barkeep?}
-  s.description = %q{Who is the barkeep?}
+  s.homepage    = "https://github.com/ooyala/barkeep"
+  s.summary     = %q{Barkeep command-line client}
+  s.description = %q{A command-line client for Barkeep's REST API.}
 
   s.rubyforge_project = "barkeep-client"
 
@@ -16,7 +17,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  # specify any dependencies here; for example:
-  # s.add_development_dependency "rspec"
-  # s.add_runtime_dependency "rest-client"
+  s.add_dependency "trollop", "~> 1.16.2"
+  s.add_dependency "dedent", "~> 0.0.2"
 end

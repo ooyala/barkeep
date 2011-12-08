@@ -1,12 +1,52 @@
 #!/usr/bin/env ruby
 
-puts <<-'EOS'
-          _             _       _   _            _                _                  ___
-         | |           (_)     | | | |          | |              | |                |__ \
-__      _| |__   ___    _ ___  | |_| |__   ___  | |__   __ _ _ __| | _____  ___ _ __   ) |
-\ \ /\ / / '_ \ / _ \  | / __| | __| '_ \ / _ \ | '_ \ / _` | '__| |/ / _ \/ _ \ '_ \ / /
- \ V  V /| | | | (_) | | \__ \ | |_| | | |  __/ | |_) | (_| | |  |   <  __/  __/ |_) |_|
-  \_/\_/ |_| |_|\___/  |_|___/  \__|_| |_|\___| |_.__/ \__,_|_|  |_|\_\___|\___| .__/(_)
-                                                                               | |
-                                                                               |_|
-EOS
+require "rubygems"
+require "dedent"
+require "yaml"
+
+require "barkeep/commit"
+
+CONFIG_FILE = File.join(ENV["HOME"], ".barkeeprc")
+
+COMMANDS = {
+  "commit" => "Get information about a particular commit.",
+  "unapproved" => "Find unapproved commits from a list or commit range."
+}
+
+sub_command = ARGV.shift
+unless COMMANDS.include? sub_command
+  puts sub_command ? "Error: unrecognized command '#{sub_command}'" : "Error: must provide command."
+  puts <<-EOS.dedent
+
+    Usage:
+        $ barkeep <command> [args]
+    where <command> is one of:
+  EOS
+  COMMANDS.each { |command, purpose| puts "    #{command.rjust(COMMANDS.keys.map(&:size).max)} | #{purpose}" }
+  puts <<-EOS.dedent
+
+    Type 'barkeep <command> --help' for more information about a particular command."
+  EOS
+  exit 1
+end
+
+# Load in configuration from ~/.barkeeprc.
+begin
+  configuration = YAML.load_file CONFIG_FILE
+rescue
+  puts <<-EOS.dedent
+    Error: #{CONFIG_FILE} must exist to specify barkeep server information, and it must be a valid YAML file.
+  EOS
+  exit 1
+end
+
+# Check the configuration
+REQUIRED_KEYS = %w[barkeep_server]
+unless REQUIRED_KEYS.each { |key| configuration.include? key }
+  puts "Error: each of the following configuration keys are required in your #{CONFIG_FILE}:"
+  REQUIRED_KEYS.each { |key| puts "  #{key}" }
+  exit 1
+end
+
+# Delegate to the trollop parsing + client logic that lives in the appropriate subcommand file.
+BarkeepClient.send sub_command.to_sym, configuration
