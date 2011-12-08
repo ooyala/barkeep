@@ -150,6 +150,60 @@ user**+comments**@example.com. By default, Gmail won't allow your account to sen
 is easy -- log in to the Gmail account you're going to use with Barkeep and add these two addresses in
 [Settings > Accounts and Import > Send Mail As](http://mail.google.com/mail/#settings/accounts).
 
+REST API
+--------
+
+The Barkeep server has a RESTful HTTP API for retrieving data programmatically (e.g. with the Barkeep client,
+see below).
+
+<table>
+<tr><td><strong>HTTP Method</strong></td><td><strong>Route</strong></td><td><strong>Required parameters</strong></td><td><strong>Optional parameters</strong></td><td><strong>Result</strong></td></tr>
+<tr><td>POST</td><td><code>/api/add_repo</code></td><td><code>url</code></td><td><em>none</em></td><td>This route adds a git repo to Barkeep for tracking.</td></tr>
+<tr><td>GET</td><td><code>/api/commits/{repo_name}/{sha}</code></td><td><em>none</em></td><td><em>none</em></td><td>This gives the user information about a single commit. The sha provided must be a full 40 characters. The result is a JSON-formatted map:
+
+<pre>{
+"approved":[boolean],
+"approved_by":[user name and email (string)],
+"approved_at": [unix timestamp (int)],
+"comment_count":[number of comments (int)],
+"link":[link for viewing this commit (string)]
+}</pre>
+
+</td></tr>
+</table>_
+
+Barkeep client
+--------------
+
+Barkeep comes with a simple command-line client that makes use of the REST API to allow for programmatic
+access to some of its functionality. You can find the code for the client inside `client/`. It is packaged as
+a gem that is easily installed from Rubygems:
+
+    $ gem install barkeep-client
+
+Barkeep takes a subcommand and then further arguments:
+
+    $ barkeep <command> [args]
+
+The available commands are:
+
+* `commit`: Get information about a particular commit.
+* `unapproved`: Find unapproved commits from a list or commit range.
+
+Use `barkeep <command> --help` for more information about a particular command. Here are a few example usages:
+
+* Get info about a particular commit by its SHA:
+
+        $ barkeep commit 43ef532a7
+
+* Quickly see if there are any unapproved commits since `43ef532a7`:
+
+        $ barkeep unapproved --stop-on-unapproved 43ef532a7..
+
+* See if there are unapproved commits since the last release
+
+        $ barkeep unapproved old_release_branch..new_release_branch
+
 Authors
 -------
 
