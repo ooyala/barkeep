@@ -181,6 +181,11 @@ a gem that is easily installed from Rubygems:
 
     $ gem install barkeep-client
 
+You need to tell the client where your barkeep server is located by using a `~/.barkeeprc` file. Populate that
+file with the following:
+
+    barkeep_server: http://<your-barkeep-server>
+
 Barkeep takes a subcommand and then further arguments:
 
     $ barkeep <command> [args]
