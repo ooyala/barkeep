@@ -17,17 +17,19 @@ class Barkeep < Sinatra::Base
   end
 
   get "/api/commits/:repo_name/:sha" do
-    commit = MetaRepo.instance.db_commit params[:repo_name], params[:sha]
+    begin
+      commit = Commit.prefix_match params[:repo_name], params[:sha]
+    rescue RuntimeError => e
+      next [404, { :message => e.message }.to_json]
+    end
     content_type :json
-    next [404, { :message => "Bad repo name or commit not found." }.to_json] unless commit
     approver = commit.approved? ? commit.approved_by_user : nil
     {
       :approved => commit.approved?,
       :approved_by => commit.approved? ? "#{approver.name} <#{approver.email}>" : nil,
       :approved_at => commit.approved? ? commit.approved_at.to_i : nil,
       :comment_count => commit.comment_count,
-      :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{params[:sha]}"
+      :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
     }.to_json
   end
 end
-
