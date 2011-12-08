@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "barkeep-client"
-  s.version     = "0.0.4"
+  s.version     = "0.1.0"
   s.authors     = ["Caleb Spare"]
   s.email       = ["caleb@ooyala.com"]
   s.homepage    = "https://github.com/ooyala/barkeep"

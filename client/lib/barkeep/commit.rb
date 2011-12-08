@@ -42,6 +42,10 @@ module BarkeepClient
       exit 1
     end
     info = JSON.parse(result.body)
-    info.each { |key, value| puts "  #{key.rjust(info.keys.map(&:size).max)}: #{value}" }
+    info.each do |key, value|
+      next if value.nil?
+      value = Time.at(value).strftime("%m/%d/%Y %I:%M%p") if key == "approved_at"
+      puts "  #{key.rjust(info.keys.map(&:size).max)}: #{value}"
+    end
   end
 end
