@@ -26,7 +26,7 @@ unless COMMANDS.include? sub_command
   COMMANDS.each { |command, purpose| puts "    #{command.rjust(COMMANDS.keys.map(&:size).max)} | #{purpose}" }
   puts <<-EOS.dedent
 
-    Type 'barkeep <command> --help' for more information about a particular command."
+    Type 'barkeep <command> --help' for more information about a particular command.
   EOS
   exit 1
 end
