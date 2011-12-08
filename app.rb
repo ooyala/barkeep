@@ -127,13 +127,12 @@ class Barkeep < Sinatra::Base
     halt 404, "No such repository: #{repo_name}" unless GitRepo[:name => repo_name]
     commit = MetaRepo.instance.db_commit(repo_name, sha)
     unless commit
-      # Attempt to prefix-match this SHA:
-      commits = Commit.join(:git_repos, :id => :git_repo_id).
-                       filter(:git_repos__name => repo_name).
-                       filter(:sha.like("#{sha}%")).limit(2).select(:sha).all
-      halt 404, "Ambiguous commit in #{repo_name}: #{sha}" if commits.size > 1
-      halt 404, "No such commit in #{repo_name}: #{sha}" if commits.empty?
-      redirect "/commits/#{repo_name}/#{commits[0].sha}"
+      begin
+        commit = Commit.prefix_match(repo_name, sha)
+      rescue RuntimeError => e
+        halt 404, e.message
+      end
+      redirect "/commits/#{repo_name}/#{commit.sha}"
     end
     tagged_diff = GitDiffUtils::get_tagged_commit_diffs(repo_name, commit.grit_commit,
         :use_syntax_highlighting => true)
