@@ -10,7 +10,7 @@ module BarkeepClient
   def self.commit(configuration)
     options = Trollop::options do
       banner <<-EOS.dedent
-        Barkeep's 'commit' command shows information about a particular commit.
+        Barkeep's 'commit' command shows information about a particular commit given its SHA.
 
         Usage:
             $ barkeep commit [options] <commit>

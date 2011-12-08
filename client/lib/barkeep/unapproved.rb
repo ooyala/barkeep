@@ -15,38 +15,38 @@ module BarkeepClient
 
         Usage:
             $ barkeep unapproved [options] <commit-range>
-        where <commit-range> is a single git SHA or a commit range specified using git's '..' syntax.
+        where <commit-range> is a commit range specified using git's range syntax (see `man gitrevisions`).
         For example:
 
             $ barkeep unapproved abc123
+            $ barkeep unapproved ^abc123 def456
             $ barkeep unapproved abc123..def456
 
         [options] can include:
       EOS
       opt :stop_on_unapproved, "Stop and print a message on the first unapproved commit."
     end
-    Trollop::die "must provide a commit range" unless ARGV.size == 1
+    Trollop::die "must provide a commit range" if ARGV.empty?
 
     repo = File.basename(`git rev-parse --show-toplevel`).strip
     if repo.empty?
       Trollop::die "need to be in a git repo"
     end
 
-    commit_range = ARGV[0]
-    case commit_range
-    when /^#{SHA_REGEX}$/
-      commits_string = `git rev-parse #{commit_range}`
-    when /^#{SHA_REGEX}\.\.(#{SHA_REGEX})?$/, /^\.\.#{SHA_REGEX}$/
-      commits_string = `git log --format='%H' #{commit_range}`
-    else
-      Trollop::die "#{commit_range} is an invalid commit range specification"
-    end
+    commit_range = ARGV.join(" ")
+    commits_string = `git log --format='%H' #{commit_range}`
     exit(1) unless $?.to_i.zero?
     commits = commits_string.split("\n").map(&:strip)
 
     if commits.empty?
       puts "No commits in range."
       exit 0
+    elsif commits.size > 100
+      puts "Warning: #{commits.size} commits in range. Lookup could be very slow. Proceed? [yN]"
+      unless STDIN.gets.downcase.strip =~ /^y(es)?/
+        puts "Aborting."
+        exit 0
+      end
     end
 
     unapproved_commits = {}
