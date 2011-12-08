@@ -170,7 +170,7 @@ see below).
 }</pre>
 
 </td></tr>
-</table>_
+</table>
 
 Barkeep client
 --------------
