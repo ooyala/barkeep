@@ -5,6 +5,7 @@ require "dedent"
 require "yaml"
 
 require "barkeep/commit"
+require "barkeep/unapproved"
 
 CONFIG_FILE = File.join(ENV["HOME"], ".barkeeprc")
 

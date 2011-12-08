@@ -4,6 +4,8 @@ require "dedent"
 require "net/http"
 require "json"
 
+require "barkeep/constants"
+
 module BarkeepClient
   def self.commit(configuration)
     options = Trollop::options do
@@ -21,9 +23,9 @@ module BarkeepClient
 
     commit = ARGV[0]
     repo, sha = case commit
-                when %r{^[^/]+/[0-9a-fA-F]+$} # foo/abc123
+                when %r{^[^/]+/#{SHA_REGEX}$} # foo/abc123
                   commit.split "/"
-                when /^[0-9a-fA-F]+$/ # abc123
+                when /^#{SHA_REGEX}$/ # abc123
                   repo = File.basename(`git rev-parse --show-toplevel`).strip
                   if repo.empty?
                     Trollop::die "need to be in a git repo or specify a repository (e.g. myrepo/abc123)"
