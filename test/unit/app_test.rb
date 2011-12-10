@@ -54,7 +54,7 @@ class AppTest < Scope::TestCase
         unapproved_commit = stub_commit("sha1", @user)
         stub(unapproved_commit).approved_by_user_id { nil }
         stub(unapproved_commit).comment_count { 0 }
-        stub(@@repo).db_commit("my_repo", "sha1") { unapproved_commit } # No results
+        stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
         get "/api/commits/my_repo/sha1"
         assert_equal 200, last_response.status
         result = JSON.parse(last_response.body)
@@ -68,7 +68,7 @@ class AppTest < Scope::TestCase
         stub(approved_commit).approved_by_user_id { 42 }
         stub(approved_commit).approved_by_user { @user }
         stub(approved_commit).comment_count { 155 }
-        stub(@@repo).db_commit("my_repo", "sha2") { approved_commit } # No results
+        stub(Commit).prefix_match("my_repo", "sha2") { approved_commit }
         get "/api/commits/my_repo/sha2"
         assert_equal 200, last_response.status
         result = JSON.parse(last_response.body)
