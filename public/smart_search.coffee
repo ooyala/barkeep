@@ -15,7 +15,7 @@ class window.SmartSearch
     # String trim (could move this to a utility class if it is useful elsewhere).
     trim = (s) -> s.replace(/^\s+|\s+$/g, "")
 
-    emitKeyValue = (key, value) =>
+    emitKeyValue = (key, value) ->
       if key == null or key == "paths"
         query.paths.push(value)
       else
@@ -23,7 +23,7 @@ class window.SmartSearch
 
     # Handle one space-delimited chunk from the search query. We figure out from the previous context how to
     # handle it.
-    emitChunk = (chunk) =>
+    emitChunk = (chunk) ->
       chunk = trim(chunk)
       return if chunk == ""
       # If we've seen a key, we're just appending (possibly comma-separated) parts.
