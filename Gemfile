@@ -3,6 +3,7 @@ source :rubygems
 gem "rack"
 gem "sinatra"
 gem "rerun"
+gem "rake"
 
 # Resque is used for managing background jobs.
 gem "resque"

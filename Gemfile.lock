@@ -121,6 +121,7 @@ DEPENDENCIES
   pygments.rb
   rack
   rack-test
+  rake
   redcarpet (= 2.0.0b3)
   redis
   rerun
