@@ -33,7 +33,7 @@ module BarkeepClient
       Trollop::die "need to be in a git repo"
     end
 
-    commit_range = ARGV.join(" ")
+    commit_range = ARGV.map { |arg| "'#{arg}'" }.join(" ")
     commits_string = `git log --format='%H' #{commit_range}`
     exit(1) unless $?.to_i.zero?
     commits = commits_string.split("\n").map(&:strip)
