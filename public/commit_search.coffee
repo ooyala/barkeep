@@ -125,6 +125,7 @@ window.CommitSearch =
     return if @searching
 
     if event? # Triggered by click
+      event.preventDefault()
       savedSearch = $(event.target).parents(".savedSearch")
       keypress = false
     else # Triggered by hotkey
