@@ -1,4 +1,6 @@
 Barkeep Client
 ==============
 
-## Coming soon!
+This is a commandline tool to make use of the Barkeep REST API.
+
+See usage instructions in the Barkeep readme.
