@@ -16,7 +16,7 @@ class window.SmartSearch
     trim = (s) -> s.replace(/^\s+|\s+$/g, "")
 
     emitKeyValue = (key, value) ->
-      if key == null or key == "paths"
+      if key in [null, "paths"]
         query.paths.push(value)
       else
         query[key] = value
