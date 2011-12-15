@@ -209,6 +209,11 @@ Use `barkeep <command> --help` for more information about a particular command. 
 
         $ barkeep unapproved old_release_branch..new_release_branch
 
+* See if there are unapproved commits since last week in the `lib` directory (note that we're passing off
+  arbitrary arguments to `git log` here):
+
+        $ barkeep unapproved -- --since='1 week ago' -- lib/
+
 Authors
 -------
 
