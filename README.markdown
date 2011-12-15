@@ -224,6 +224,7 @@ and with contributions from:
 
 * [Noah Gibbs](mailto:noah@ooyala.com)
 * Brian Zhou ([zdyn](https://github.com/zdyn))
+* Manish Khettry ([mkhettry](https://github.com/mkhettry))
 
 License
 -------
