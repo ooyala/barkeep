@@ -196,6 +196,25 @@ class Barkeep < Sinatra::Base
     nil
   end
 
+  #
+  # RESTful web service call to determine whether a specific commit is approved or not.
+  #
+  get "/approved/:repo_name/:sha" do
+    repo_name = params[:repo_name]
+    sha = params[:sha]
+    halt 404, "No such repository: #{repo_name}" unless GitRepo[:name => repo_name]
+    commit = MetaRepo.instance.db_commit(repo_name, sha)
+    # attempt to retrieve partial commit shas if needed
+    unless commit
+      begin
+        commit = Commit.prefix_match(repo_name, sha)
+      rescue RuntimeError => e
+        halt 404, e.message
+      end
+    end
+    { :approved => commit.approved? }.to_json
+  end
+
   # Saves changes to the user-level search options.
   post "/user_search_options" do
     saved_search_time_period = params[:saved_search_time_period].to_i
