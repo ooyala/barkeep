@@ -1,9 +1,11 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
 
+require "barkeep/version"
+
 Gem::Specification.new do |s|
   s.name        = "barkeep-client"
-  s.version     = "0.1.1"
+  s.version     = BarkeepClient::VERSION
   s.authors     = ["Caleb Spare"]
   s.email       = ["caleb@ooyala.com"]
   s.homepage    = "https://github.com/ooyala/barkeep"

@@ -7,17 +7,15 @@ require "yaml"
 require "barkeep/commit"
 require "barkeep/configuration"
 require "barkeep/unapproved"
+require "barkeep/version"
 
 COMMANDS = {
   "commit" => "Get information about a particular commit.",
   "unapproved" => "Find unapproved commits from a list or commit range."
 }
 
-sub_command = ARGV.shift
-unless COMMANDS.include? sub_command
-  puts sub_command ? "Error: unrecognized command '#{sub_command}'" : "Error: must provide command."
+def usage(exit_status)
   puts <<-EOS.dedent
-
     Usage:
         $ barkeep <command> [args]
     where <command> is one of:
@@ -27,7 +25,20 @@ unless COMMANDS.include? sub_command
 
     Type 'barkeep <command> --help' for more information about a particular command.
   EOS
-  exit 1
+  exit exit_status
+end
+
+sub_command = ARGV.shift
+
+usage(0) if ["--help", "help", "-h"].include? sub_command
+if ["-v", "--version"].include? sub_command
+  puts "barkeep-client version #{BarkeepClient::VERSION}"
+  exit
+end
+unless COMMANDS.include? sub_command
+  puts sub_command ? "Error: unrecognized command '#{sub_command}'" : "Error: must provide command."
+  puts
+  usage(1)
 end
 
 begin
