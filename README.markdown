@@ -201,9 +201,9 @@ Use `barkeep <command> --help` for more information about a particular command. 
 
         $ barkeep commit 43ef532a7
 
-* Quickly see if there are any unapproved commits since `43ef532a7`:
+* See if there are any unapproved commits since `43ef532a7`:
 
-        $ barkeep unapproved --stop-on-unapproved 43ef532a7..
+        $ barkeep unapproved 43ef532a7..
 
 * See if there are unapproved commits since the last release
 

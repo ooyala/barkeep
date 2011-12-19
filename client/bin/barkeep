@@ -5,9 +5,8 @@ require "dedent"
 require "yaml"
 
 require "barkeep/commit"
+require "barkeep/configuration"
 require "barkeep/unapproved"
-
-CONFIG_FILE = File.join(ENV["HOME"], ".barkeeprc")
 
 COMMANDS = {
   "commit" => "Get information about a particular commit.",
@@ -31,23 +30,12 @@ unless COMMANDS.include? sub_command
   exit 1
 end
 
-# Load in configuration from ~/.barkeeprc.
 begin
-  configuration = YAML.load_file CONFIG_FILE
-rescue
-  puts <<-EOS.dedent
-    Error: #{CONFIG_FILE} must exist to specify barkeep server information, and it must be a valid YAML file.
-  EOS
-  exit 1
-end
-
-# Check the configuration
-REQUIRED_KEYS = %w[barkeep_server]
-unless REQUIRED_KEYS.each { |key| configuration.include? key }
-  puts "Error: each of the following configuration keys are required in your #{CONFIG_FILE}:"
-  REQUIRED_KEYS.each { |key| puts "  #{key}" }
+  configuration = BarkeepClient.get_configuration
+rescue RuntimeError => e
+  puts e.message
   exit 1
 end
 
 # Delegate to the trollop parsing + client logic that lives in the appropriate subcommand file.
-BarkeepClient.send sub_command.to_sym, configuration
+BarkeepClient::Commands.send sub_command.to_sym, configuration
