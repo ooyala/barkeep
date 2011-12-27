@@ -194,6 +194,7 @@ The available commands are:
 
 * `commit`: Get information about a particular commit.
 * `unapproved`: Find unapproved commits from a list or commit range.
+* `view`: Open a Barkeep commit page in your browser.
 
 Use `barkeep <command> --help` for more information about a particular command. Here are a few example usages:
 
