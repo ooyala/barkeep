@@ -22,19 +22,11 @@ module BarkeepClient
       end
       Trollop.die "must provide a commit sha" unless ARGV.size == 1
 
-      commit = ARGV[0]
-      repo, sha = case commit
-                  when %r{^[^/]+/#{SHA_REGEX}$} # foo/abc123
-                    commit.split "/"
-                  when /^#{SHA_REGEX}$/ # abc123
-                    repo = File.basename(`git rev-parse --show-toplevel`).strip
-                    if repo.empty?
-                      Trollop::die "need to be in a git repo or specify a repository (e.g. myrepo/abc123)"
-                    end
-                    [repo, commit]
-                  else
-                    Trollop::die "#{commit} is an invalid commit specification"
-                  end
+      begin
+        repo, sha = Commands.parse_commit(ARGV[0])
+      rescue RuntimeError => e
+        Trollop.die e.message
+      end
 
       begin
         result = BarkeepClient.commits(configuration, repo, [sha])[sha]
@@ -44,6 +36,21 @@ module BarkeepClient
       end
 
       result.each { |key, value| puts "  #{key.rjust(result.keys.map(&:size).max)}: #{value}" }
+    end
+
+    def self.parse_commit(commit_specification)
+      case commit_specification
+      when %r{^[^/]+/#{SHA_REGEX}$} # foo/abc123
+        commit_specification.split "/"
+      when /^#{SHA_REGEX}$/ # abc123
+        repo = File.basename(`git rev-parse --show-toplevel`).strip
+        if repo.empty?
+          raise "need to be in a git repo or specify a repository (e.g. myrepo/abc123)"
+        end
+        [repo, commit_specification]
+      else
+        raise "#{commit_specification} is an invalid commit specification"
+      end
     end
   end
 
