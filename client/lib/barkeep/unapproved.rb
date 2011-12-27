@@ -9,7 +9,7 @@ require "barkeep/constants"
 module BarkeepClient
   module Commands
     def self.unapproved(configuration)
-      options = Trollop::options do
+      options = Trollop.options do
         banner <<-EOS.dedent
           Barkeep's 'unapproved' command shows information about a particular commit. It MUST be run from a git
           repository of the same name as the repository on the server.
@@ -26,11 +26,11 @@ module BarkeepClient
           [options] can include:
         EOS
       end
-      Trollop::die "must provide a commit range" if ARGV.empty?
+      Trollop.die "must provide a commit range" if ARGV.empty?
 
       repo = File.basename(`git rev-parse --show-toplevel`).strip
       if repo.empty?
-        Trollop::die "need to be in a git repo"
+        Trollop.die "need to be in a git repo"
       end
 
       commit_range = ARGV.map { |arg| "'#{arg}'" }.join(" ")

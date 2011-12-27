@@ -9,7 +9,7 @@ require "barkeep/constants"
 module BarkeepClient
   module Commands
     def self.commit(configuration)
-      options = Trollop::options do
+      options = Trollop.options do
         banner <<-EOS.dedent
           Barkeep's 'commit' command shows information about a particular commit given its SHA.
 
@@ -20,7 +20,7 @@ module BarkeepClient
           to specify a particular repository, and [options] can include:
         EOS
       end
-      Trollop::die "must provide a commit sha" unless ARGV.size == 1
+      Trollop.die "must provide a commit sha" unless ARGV.size == 1
 
       commit = ARGV[0]
       repo, sha = case commit
