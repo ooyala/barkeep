@@ -53,7 +53,11 @@ module BarkeepClient
     result = {}
     shas.each do |sha|
       uri = URI.parse(File.join(configuration["barkeep_server"], "/api/commits/#{repo}/#{sha}"))
-      response = Net::HTTP.get_response uri
+      begin
+        response = Net::HTTP.get_response uri
+      rescue SocketError
+        raise "Cannot connect to the Barkeep server."
+      end
       if response.code.to_i != 200
         error = JSON.parse(response.body)["message"] rescue nil
         raise error ? "Error: #{error}" : "Unspecified server error."
