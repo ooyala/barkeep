@@ -4,15 +4,16 @@ require "rubygems"
 require "dedent"
 require "yaml"
 
-require "barkeep/commit"
 require "barkeep/configuration"
-require "barkeep/unapproved"
 require "barkeep/version"
 
 COMMANDS = {
   "commit" => "Get information about a particular commit.",
-  "unapproved" => "Find unapproved commits from a list or commit range."
+  "unapproved" => "Find unapproved commits from a list or commit range.",
+  "view" => "View a barkeep commit page in your browser."
 }
+
+COMMANDS.keys.each { |command| require "barkeep/#{command}" }
 
 def usage(exit_status)
   puts <<-EOS.dedent
