@@ -16,8 +16,17 @@ class window.SmartSearch
     trim = (s) -> s.replace(/^\s+|\s+$/g, "")
 
     emitKeyValue = (key, value) ->
-      if key in [null, "paths"]
-        query.paths.push(value)
+
+      looksLikeSha = (chunk) ->
+        # sha is 40 chars but is usually shortened to 7. Ensure that we don't pick up words by mistake
+        # by checking that there is atleast one digit in the chunk.
+        return chunk.match(/[0-9a-f]{7,40}/) and chunk.match(/\d/g).length > 0
+
+      if key in ["paths"]
+        if (looksLikeSha(value))
+          query["sha"] = value
+         else
+          query.paths.push(value)
       else
         query[key] = value
 
@@ -54,4 +63,8 @@ class window.SmartSearch
 
   search: ->
     queryParams = @parseSearch(@searchBox.val())
-    $.post("/search", queryParams, (e) => CommitSearch.onSearchSaved e)
+    if (queryParams.sha)
+      # we are expecting a single commit, just redirect to a new page.
+      window.open("/commits/search/by_sha?" + $.param(queryParams))
+    else
+      $.post("/search", queryParams, (e) => CommitSearch.onSearchSaved e)

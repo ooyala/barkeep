@@ -41,6 +41,64 @@ class AppTest < Scope::TestCase
     end
   end
 
+  context "search_by_sha" do
+    def setup_repo(name)
+      repo = mock(name)
+      stub(repo).name { name }
+      repo
+    end
+
+    setup do
+      # There are two repos in our system.
+      @repo1 = setup_repo("repo1")
+      @repo2 = setup_repo("repo2")
+      @commit = stub_commit("sha_123", @user)
+      stub(@@repo).repos { [@repo1, @repo2] }
+    end
+
+    should "search all repos and return 404 for sha that it could not find" do
+      stub(@@repo).db_commit("repo1", "sha") { }
+      stub(Commit).prefix_match("repo1", "sha") { }
+
+      stub(@@repo).db_commit("repo1", "sha") { }
+      stub(Commit).prefix_match("repo2", "sha") { }
+
+      get "/commits/search/by_sha", :sha => "sha"
+      assert_equal 404, last_response.status
+    end
+
+    should "return the _first_ matching commit for the prefix" do
+      mock(@@repo).db_commit("repo1", "sha") { @commit }
+      dont_allow(@@repo).db_commit("repo2", "sha")
+
+      get "/commits/search/by_sha", :sha => "sha"
+      assert_equal 302, last_response.status
+      assert_match last_response.location, /sha_123/
+      assert_match last_response.location, /repo1/
+    end
+
+    should "search all repos and find a matching commit" do
+      mock(@@repo).db_commit("repo1", "sha") {  }
+      mock(@@repo).db_commit("repo2", "sha") { @commit }
+
+      get "/commits/search/by_sha", :sha => "sha"
+      assert_equal 302, last_response.status
+      assert_match last_response.location, /sha_123/
+      assert_match last_response.location, /repo2/
+    end
+
+    should "try prefix match on commits" do
+      stub(@@repo).db_commit("repo1", "sha") {  }
+      mock(Commit).prefix_match("repo1", "sha", true) { @commit }
+      dont_allow(@@repo).db_commit("repo2", "sha")
+
+      get "/commits/search/by_sha", :sha => "sha"
+      assert_equal 302, last_response.status
+      assert_match last_response.location, /sha_123/
+      assert_match last_response.location, /repo1/
+    end
+  end
+
   context "api routes" do
     context "commit" do
       should "return a 404 and human-readable error message when given a bad repo or sha" do

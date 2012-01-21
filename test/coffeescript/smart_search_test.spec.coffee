@@ -12,6 +12,9 @@ describe "search query parser", ->
   it "should ignore extra colons afterwards", ->
     expect(@parse("foo:bar:baz")["foo"]).toEqual "bar:baz"
 
+  it "should parse an empty key to path", ->
+    expect(@parse(":foo")["paths"]).toEqual(["foo"])
+
   it "should allow for a comma-separated list, including spaces", ->
     expect(@parse("repos:db, barkeep,coffee")["repos"]).toEqual "db,barkeep,coffee"
 
@@ -37,3 +40,19 @@ describe "search query parser", ->
     expect(@parse("foo bar baz repos:blah paths:some/path")).toEqual
       paths: ["foo", "bar", "baz", "some/path"]
       repos: "blah"
+
+  it "should handle sha in the query", ->
+    sampleShas = ["0e7d9bd88dfe54ca05356edec1fdf293d1e61658", "0e7d9bd88d", "0e7d9bd"]
+    for sampleSha in sampleShas
+      expect(@parse(sampleSha)["sha"]).toEqual(sampleSha)
+
+  it "should handle sha plus another search term", ->
+    expect(@parse("0e7d9bd repos:barkeep")).toEqual
+      paths: []
+      sha: "0e7d9bd"
+      repos: "barkeep"
+
+  it "should not confuse words for sha", ->
+    sampleWords = ["sevens", "migrations"]
+    for word in sampleWords
+      expect(@parse(word)["paths"]).toEqual([word])

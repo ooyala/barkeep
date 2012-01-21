@@ -90,6 +90,18 @@ class Barkeep < Sinatra::Base
     def root_url
       request.url.match(/(^.*\/{2}[^\/]*)/)[1]
     end
+
+    def find_commit(repo_name, sha, zero_commits_ok)
+      commit = MetaRepo.instance.db_commit(repo_name, sha)
+      unless commit
+        begin
+          commit = Commit.prefix_match(repo_name, sha, zero_commits_ok)
+        rescue RuntimeError => e
+          halt 404, e.message
+        end
+      end
+      commit
+    end
   end
 
   before do
@@ -119,6 +131,27 @@ class Barkeep < Sinatra::Base
   get "/commits" do
     erb :commit_search,
         :locals => { :saved_searches => current_user ? current_user.saved_searches : [] }
+  end
+
+  # get the one commit that the user is looking for.
+  get "/commits/search/by_sha" do
+    halt 404, "No sha pattern" unless params[:sha]
+    partial_sha = params[:sha]
+
+    repos = MetaRepo.instance.repos.map(&:name)
+
+    repo_name, sha = repos.each do |repo|
+      commit = find_commit(repo, partial_sha, true)
+      if commit
+        break [repo, commit.sha]
+      end
+    end
+
+    if sha
+      redirect "/commits/#{repo_name}/#{sha}"
+    else
+      halt 404, "No such sha #{partial_sha}"
+    end
   end
 
   get "/commits/:repo_name/:sha" do
