@@ -4,16 +4,7 @@ require "rubygems"
 require "dedent"
 require "yaml"
 
-require "barkeep/configuration"
-require "barkeep/version"
-
-COMMANDS = {
-  "commit" => "Get information about a particular commit.",
-  "unapproved" => "Find unapproved commits from a list or commit range.",
-  "view" => "View a barkeep commit page in your browser."
-}
-
-COMMANDS.keys.each { |command| require "barkeep/#{command}" }
+require "barkeep"
 
 def usage(exit_status)
   puts <<-EOS.dedent
@@ -21,7 +12,9 @@ def usage(exit_status)
         $ barkeep <command> [args]
     where <command> is one of:
   EOS
-  COMMANDS.each { |command, purpose| puts "    #{command.rjust(COMMANDS.keys.map(&:size).max)} | #{purpose}" }
+  BarkeepClient::COMMANDS.each do |command, purpose|
+    puts "    #{command.rjust(BarkeepClient::COMMANDS.keys.map(&:size).max)} | #{purpose}"
+  end
   puts <<-EOS.dedent
 
     Type 'barkeep <command> --help' for more information about a particular command.
@@ -36,7 +29,7 @@ if ["-v", "--version"].include? sub_command
   puts "barkeep-client version #{BarkeepClient::VERSION}"
   exit
 end
-unless COMMANDS.include? sub_command
+unless BarkeepClient::COMMANDS.include? sub_command
   puts sub_command ? "Error: unrecognized command '#{sub_command}'" : "Error: must provide command."
   puts
   usage(1)
