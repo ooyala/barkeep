@@ -5,6 +5,9 @@ gem "sinatra"
 gem "rerun"
 gem "rake"
 
+# For managing our Ruby load path.
+gem "pathological"
+
 # Resque is used for managing background jobs.
 gem "resque"
 
