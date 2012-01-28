@@ -927,7 +927,10 @@ table.commitsList, table.authorList {
         background: #F0EEEA;
       }
 
-      pre { font: @commitFontFamily; }
+      pre {
+        font: @commitFontFamily;
+        overflow-y: scroll;
+      }
 
       .commentCode {
         padding: 5px;
