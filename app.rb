@@ -11,9 +11,9 @@ require "redis"
 require "addressable/uri"
 require "less"
 
-require 'openid'
-require 'openid/store/filesystem'
-require 'openid/extensions/ax'
+require "openid"
+require "openid/store/filesystem"
+require "openid/extensions/ax"
 
 require "config/environment"
 require "lib/ruby_extensions"
@@ -289,7 +289,7 @@ class Barkeep < Sinatra::Base
   delete "/saved_searches/:id" do
     id = params[:id].to_i
     SavedSearch.filter(:user_id => current_user.id, :id => id).delete
-    "OK"
+    "OK" # TODO(philc): Why are we returning OK here? Let's just return an empty response.
   end
 
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
