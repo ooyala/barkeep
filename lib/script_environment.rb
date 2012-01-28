@@ -3,13 +3,9 @@
 
 require "bundler/setup"
 require "pathological"
+require "config/environment"
 require "grit"
 require "resque"
-
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
-
-require "config/environment"
-
 require "lib/ruby_extensions"
 require "lib/logging"
 require "lib/models"
