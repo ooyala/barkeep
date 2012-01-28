@@ -34,9 +34,6 @@ gem "clockwork"
 # For running all of our background processes together from a single developer-friendly command.
 gem "foreman"
 
-# Used for running some of our scripts as daemons.
-gem "daemons"
-
 # For sending emails.
 gem "pony"
 

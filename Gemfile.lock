@@ -121,7 +121,6 @@ DEPENDENCIES
   addressable
   clockwork
   coffee-script
-  daemons
   diff-lcs
   fezzik
   foreman
