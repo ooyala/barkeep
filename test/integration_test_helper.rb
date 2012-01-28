@@ -1,4 +1,5 @@
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "test/test_helper"
 
 FIXTURES_PATH = File.join(File.dirname(__FILE__), "/fixtures")

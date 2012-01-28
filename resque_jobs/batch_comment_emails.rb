@@ -5,7 +5,8 @@
 # continuous stream of comments being made on a commit, then we will wait up to a max of 4 minutes before we
 # send all comments made thus far. This is so emails don't become noticably delayed.
 
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 require "resque_jobs/deliver_comment_emails"
 

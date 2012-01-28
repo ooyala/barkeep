@@ -1,5 +1,6 @@
 # Builds and delivers an email for one or more comments made on a single commit.
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 
 # NOTE(philc): This task can take up to 60 seconds, because it must scan through all saved searches to build

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby-local-exec
 
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 require "lib/git_helper"
 

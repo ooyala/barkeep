@@ -1,8 +1,8 @@
 #
 # Loads up our models environment for use by scripts.
 
-require "rubygems"
 require "bundler/setup"
+require "pathological"
 require "grit"
 require "resque"
 

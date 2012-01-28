@@ -1,7 +1,8 @@
 # A Resque job which pregenerates and caches the diff for a given commit. We do this after initial ingestion
 # of a commit. This makes it so that the first time the syntax colored-diff is accessed, it's ready
 # immediately.
-$LOAD_PATH.push("../") unless $LOAD_PATH.include?("../")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 require "resque"
 

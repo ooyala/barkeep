@@ -1,7 +1,7 @@
+require "bundler/setup"
+require "pathological"
 require "rake/testtask"
 require "resque/tasks"
-
-$LOAD_PATH.push("./") unless $LOAD_PATH.include?("./")
 
 task :test => ["test:units", "test:integrations", "test:coffeescripts"]
 

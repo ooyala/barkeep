@@ -3,10 +3,11 @@
 # TODO(caleb): move the code around a bit so this is all a bit more logical and easy to follow. Most of this
 # logic should live in files inside lib/commit_search/.
 
+require "bundler/setup"
+require "pathological"
 require "grit"
 require "methodchain"
 
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 require "lib/grit_extensions"
 require "lib/commit_search/paging_token"
 require "lib/git_helper"

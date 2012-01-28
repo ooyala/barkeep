@@ -1,4 +1,5 @@
 require "bundler/setup"
+require "pathological"
 require "json"
 require "sinatra/base"
 require "redcarpet"
@@ -13,8 +14,6 @@ require "less"
 require 'openid'
 require 'openid/store/filesystem'
 require 'openid/extensions/ax'
-
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
 
 require "config/environment"
 require "lib/ruby_extensions"

@@ -1,5 +1,6 @@
 # Builds and delivers an email for review requests.
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 
 class DeliverReviewRequestEmails

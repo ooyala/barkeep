@@ -1,7 +1,8 @@
 # Runs "git fetch" for all tracked repos. For each remote which has new commits, a job is queued to insert
 # those commits into the database.
 
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 require "resque"
 require "resque_jobs/db_commit_ingest"

@@ -2,7 +2,8 @@
 # commits, inserting DB records for those commits which are not yet in the DB.
 # This Resque job is designed to be queued up right after we've run "git fetch" on a repo and we've detected
 # that there is some number of new commits that we should import.
-$LOAD_PATH.push("../") unless $LOAD_PATH.include?("../")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 require "resque"
 require "set"

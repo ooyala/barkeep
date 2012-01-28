@@ -1,8 +1,7 @@
-require "rubygems"
-
 ENV["RACK_ENV"] = "test"
 
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
+require "bundler/setup"
+require "pathological"
 require "lib/script_environment"
 
 require "minitest/autorun"

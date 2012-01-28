@@ -2,11 +2,8 @@
 # Clockwork is a gem which provides cron-like functionality in Ruby.
 
 require "bundler/setup"
+require "pathological"
 require "clockwork"
-
-# TODO(philc): Switch to pathological
-project_root = File.expand_path(File.join(File.dirname(__FILE__), "../"))
-$LOAD_PATH.push(project_root) unless $LOAD_PATH.include?(project_root)
 require "resque_jobs/fetch_commits"
 require "resque_jobs/batch_comment_emails"
 

@@ -1,3 +1,8 @@
+require "bundler/setup"
+require "pathological"
+require "lib/logging"
+require "lib/ruby_extensions"
+
 silence_stream(STDERR) do
   require "pygments"
   RubyPython.start
@@ -6,8 +11,6 @@ silence_stream(STDERR) do
   RubyPython.import("pygments")
 end
 
-$LOAD_PATH.push(".") unless $LOAD_PATH.include?(".")
-require "lib/logging"
 
 class SyntaxHighlighter
   WEEK = 60*60*24*7
