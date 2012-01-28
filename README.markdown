@@ -36,8 +36,11 @@ These are somewhat optional services to run while developing. These background j
 commits, pre-generate commit diffs, and send emails when comments are posted.
 
     $ redis-server # run Redis
-    $ rake clockwork:start # start running periodic cron jobs
+    $ script/run_clockwork.rb # run periodic cron jobs
     $ rake resque:start # start processing any jobs which get added to the Resque queue.
+
+If you want to run all three services together, you can do so using foreman.
+    $ bundle exec foreman start
 
 You can view the Resque dashboard and inspect failed Resque jobs by navigating to http://localhost:4567/resque.
 
