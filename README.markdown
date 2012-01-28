@@ -29,7 +29,7 @@ Running Barkeep Locally
 -----------------------
 Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
 
-    $ bin/rerun.sh # run the server
+    $ bin/rerun_barkeep.sh # run the server
     # navigate to localhost:4567
 
 These are somewhat optional services to run while developing. These background jobs periodically fetch new
