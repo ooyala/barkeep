@@ -8,6 +8,7 @@ require "open-uri"
 require "methodchain"
 require "redis"
 require "addressable/uri"
+require "less"
 
 require 'openid'
 require 'openid/store/filesystem'
@@ -361,7 +362,9 @@ class Barkeep < Sinatra::Base
     # Set the last modified to the most recently modified less file in the directory, as a quick way to get
     # around the problem of included files not working with livecss.
     last_modified Dir.glob(File.join(File.dirname(asset_path), "*.less")).map { |f| File.mtime(f) }.max
-    compile_asset_from_cache(asset_path) { |filename| `#{NODE_MODULES_BIN_PATH}/lessc #{filename}`.chomp }
+    compile_asset_from_cache(asset_path) do |filename|
+      Less::Parser.new(:paths => ["public"]).parse(File.read(filename)).to_css
+    end
   end
 
   # Render and cache coffeescript when we request the JS of the same name

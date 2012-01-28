@@ -11,7 +11,7 @@ gem "resque"
 # For invoking the Less CSS compiler, written in javascript, from Ruby.
 # This would be slightly nicer than using the lessc binary directly, but it
 # doesn't seem to be compatible with ruby 1.9.
-# gem "less"
+gem "less"
 
 # We're pulling in our own grit fork with bugfixes.
 gem "grit", :git => "http://github.com/ooyala/grit.git"
