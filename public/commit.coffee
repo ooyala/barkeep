@@ -194,8 +194,8 @@ window.Commit =
 
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
-    if $(e.target).is(".delete, .edit, .commentText, .commentSubmit") then return
-    if $(e.target).parents(".diffLine").find(".commentForm").size() > 0 then return
+    return if $(e.target).is(".delete, .edit, .commentText, .commentSubmit")
+    return if $(e.target).parents(".diffLine").find(".commentForm").size() > 0
     return unless window.userLoggedIn
 
     if $(e.target).hasClass("reply")
