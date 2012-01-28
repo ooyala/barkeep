@@ -294,14 +294,22 @@ window.Commit =
       url: e.currentTarget.action,
       success: (html) => @onCommentSubmitSuccess(html, form)
 
-  onCommentSubmitSuccess: (html, form) ->
-    $(form).before(html)
-    if $(form).parents(".diffLine").size() > 0
-      $(form).remove()
+  onCommentSubmitSuccess: (html, formElement) ->
+    form = $(formElement)
+    form.before(html)
+    if form.parents(".diffLine").size() > 0
+      form.remove()
       @setSideBySideCommentVisibility()
     else
-      # Don't remove the comment box if it's for a commit-level comment
-      $(form).find("textarea").val("")
+      # Don't remove the comment box if it's for a commit-level comment. We need to get rid of the preview box
+      # if that is showing, however.
+      preview = form.find(".commentPreviewText")
+      textarea = form.find("textarea")
+      textarea.val("")
+      if preview.is(":visible")
+        preview.hide()
+        textarea.show()
+        form.find(".commentPreview").val("Preview Comment")
 
   onCommentCancel: (e) ->
     e.stopPropagation()
