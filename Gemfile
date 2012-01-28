@@ -31,6 +31,9 @@ gem "methodchain"
 # Clockwork is a cron implementation in Ruby. We use it for periodically fetching new commits.
 gem "clockwork"
 
+# For running all of our background processes together from a single developer-friendly command.
+gem "foreman"
+
 # Used for running some of our scripts as daemons.
 gem "daemons"
 
