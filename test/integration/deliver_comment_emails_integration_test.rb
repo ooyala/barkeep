@@ -28,7 +28,7 @@ class DeliverCommentEmailsIntegrationTest < Scope::TestCase
 
   should "deliver an email containing all comments" do
     DeliverCommentEmails.perform(@@comments.map(&:id))
-    assert_equal integration_test_user.email, @mail_options[:to]
+    assert_equal @@commit.grit_commit.author.email, @mail_options[:to]
     assert @mail_options[:subject].include?(@@commit.grit_commit.id_abbrev)
     assert @mail_options[:html_body].include?(@@comments.first.text)
   end

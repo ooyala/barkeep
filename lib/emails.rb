@@ -53,7 +53,7 @@ class Emails
     html_body = comment_email_body(commit, comments)
 
     all_previous_commenters = commit.comments.map { |comment| comment.user.email }
-    to = commit.user.email
+    to = commit.grit_commit.author.email
     cc = (users_with_saved_searches_matching(commit, :email_comments => true).map(&:email) +
           all_previous_commenters).uniq
 

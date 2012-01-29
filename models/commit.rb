@@ -7,7 +7,6 @@ require "lib/string_filter"
 class Commit < Sequel::Model
   include StringFilter
 
-  many_to_one :user
   many_to_one :git_repo
   one_to_many :commit_files
   one_to_many :comments
@@ -28,6 +27,7 @@ class Commit < Sequel::Model
   def grit_commit
     @grit_commit ||= MetaRepo.instance.grit_commit(git_repo_id, sha)
   end
+
 
   def comments
     comments_dataset.filter(:commit_id => id, :line_number => nil).order(:created_at).all

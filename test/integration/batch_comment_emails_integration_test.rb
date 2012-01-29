@@ -9,8 +9,7 @@ class BatchCommentEmailsIntegrationTest < Scope::TestCase
   setup_once do
     commit = test_repo.commits("9f9c5d87316e5f723d0e9c6a03ddd86ce134ac5e")[0]
     Commit.filter(:sha => commit.sha).destroy
-    @@commit = Commit.create(:sha => commit.sha, :message => commit.message, :date => commit.authored_date,
-        :user_id => integration_test_user.id)
+    @@commit = Commit.create(:sha => commit.sha, :message => commit.message, :date => commit.authored_date)
 
     @@comment_one_min_ago = create_comment(@@commit, integration_test_user, Time.now - 60)
     @@comment_three_mins_ago = create_comment(@@commit, integration_test_user, Time.now - 3 * 60)

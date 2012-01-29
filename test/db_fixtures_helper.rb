@@ -10,5 +10,5 @@ end
 
 def create_commit(grit_commit, user, db_repo)
   Commit.create(:sha => grit_commit.sha, :message => grit_commit.message, :date => grit_commit.authored_date,
-    :user_id => user.id, :git_repo_id => db_repo.id)
+      :git_repo_id => db_repo.id)
 end

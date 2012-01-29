@@ -48,7 +48,7 @@
       Most recent commit:<br/>
       id: <%= most_recent_commit.id %><br/>
       date: <%= most_recent_commit.date.to_pretty %><br/>
-      author: <%= most_recent_commit.user.name %>
+      author: <%= most_recent_commit.grit_commit.author.name %>
     </p>
   <% end %>
 

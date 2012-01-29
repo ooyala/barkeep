@@ -37,7 +37,7 @@ class FetchCommitsIntegrationTest < Scope::TestCase
       head = test_repo.head.commit
       Commit.filter(:sha => head.sha).destroy
       @@commit = Commit.create(:sha => head.sha, :message => head.message, :date => head.authored_date,
-        :user_id => integration_test_user.id, :git_repo_id => @@db_repo.id)
+        :git_repo_id => @@db_repo.id)
     end
 
     should "only enqueue a db import for the remotes which have changed" do
