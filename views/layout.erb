@@ -64,7 +64,7 @@
 
         <div id="signInBox">
           <% if current_user %>
-            <a class="userEmail" href="/profile/<%= current_user.id %>"><%= current_user.email %></a>
+            <span class="userEmail" ><%= current_user.email %></span>
             | <a class="logoutLink" href="/logout">log out</a>
           <% else %>
             <a class="loginLink" href="/login">log in</a>

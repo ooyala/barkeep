@@ -21,10 +21,11 @@
       <table class="authorList">
         <% top_reviewers.each do |user, count| %>
           <tr>
-            <td class="avatarCell"><a href="/profile/<%= user.id %>">
-                <img class="avatar" src="<%= user.gravatar %>"/></a></td>
+            <td class="avatarCell">
+              <img class="avatar" src="<%= user.gravatar %>"/>
+            </td>
             <td class="author">
-              <a href="/profile/<%= user.id %>" rel="tipsy" class="west" title="<%= user.email %>">
+              <a href="mailto:<%= user.email %>" rel="tipsy" class="west" title="<%= user.email %>">
                 <%= user.name[0..25] %></a>
             </td>
             <td class="count">with <%= count %> comments</td>

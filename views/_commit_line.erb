@@ -8,14 +8,12 @@
   <td class="selectArrow <%= "approved east" if db_commit.approved? %>"
       title="Approved" rel="tipsy"></td>
   <td class="avatarCell">
-    <a href="/profile/<%= commit.author.user.id %>" target="_blank">
-      <div class="avatar">
-        <img src="<%= commit.author.gravatar %>"/>
-      </div>
-    </a>
+    <div class="avatar">
+      <img src="<%= commit.author.gravatar %>"/>
+    </div>
   </td>
   <td class="author">
-    <a class="south" rel="tipsy" href="/profile/<%= commit.author.user.id %>" target="_blank"
+    <a class="south" rel="tipsy" href="mailto:<%= commit.author.email %>" target="_blank"
       title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
   </td>
   <td class="commitId">
