@@ -412,22 +412,26 @@
     padding: 5px;
     font-style: italic;
   }
-
-  .chunkBreak {
+  .contextExpander {
     font-size: 14px;
     background-color: $sunkenColor;
     color: $lightTextColor;
+    &:not(.topExpander) { border-top: $standardBorder; }
+    &:not(.bottomExpander) { border-bottom: $standardBorder; }
     td {
       position: relative;
-      .breakMessage {
+      .expandContainer {
         text-align: right;
         display: inline-block;
-        font-size: 12px;
-        width: 470px;
+        &.incrementalExpansion { width: 600px; }
+        &:not(.incrementalExpansion) { width: 485px; }
+        span.expandLink {
+          &:hover { text-decoration: underline; }
+          cursor: pointer;
+          color: $linkColor;
+        }
       }
     }
-    &:not(.initialBreak) { border-top: $standardBorder; }
-    &:not(.finalBreak) { border-bottom: $standardBorder; }
   }
 
   .diffLine {

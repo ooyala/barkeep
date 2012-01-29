@@ -18,6 +18,9 @@ window.Commit =
     $("#sideBySideButton").live "click", => @toggleSideBySide true
     $("#requestReviewButton").click (e) => @toggleReviewRequest()
     $("#requestInput button").click (e) => @submitReviewRequest()
+    $(".expandLink.all").click (e) => @expandContextAll(e)
+    $(".expandLink.below").click (e) => @expandContext(e, 10, "below")
+    $(".expandLink.above").click (e) => @expandContext(e, 10, "above")
 
     commitComment = $("#commitComments .commentText")
     KeyboardShortcuts.createShortcutContext commitComment
@@ -191,6 +194,57 @@ window.Commit =
     selectedLine = $(".diffLine.selected")
     return if selectedLine.length == 0 or @linenewCodeWidthVisible(selectedLine)
     @selectNextVisibleLine()
+
+
+  expandContextAll: (event) ->
+    expander = $(event.currentTarget).closest(".contextExpander")
+    prev = expander.prev()
+    if prev.is(":visible")
+      diffLines = expander.nextUntil(":visible")
+    else
+      diffLines = expander.prevUntil(":visible")
+    diffLines.show()
+    expander.remove()
+
+  expandContext: (event, count, direction) ->
+    expander = $(event.currentTarget).closest(".contextExpander")
+    if expander.prev().is(":visible")
+      lineRange = expander.nextUntil(":visible")
+    else
+      lineRange = $(expander.prevUntil(":visible").toArray().reverse())
+    [rangeToExpand, attachLine, attachDirection] = @getContextRangeToExpand(lineRange, count, direction)
+    expander.remove()
+    rangeToExpand.show()
+    top = attachDirection == "above" && attachLine.prev(":visible").length == 0
+    bottom = attachDirection == "below" && attachLine.next(":visible").length == 0
+    incremental = lineRange.length - rangeToExpand.length > 10
+    @createContextExpander(attachLine, attachDirection, top, bottom, incremental)
+
+  getContextRangeToExpand: (range, count, direction) ->
+    if direction == "above"
+      rangeToExpand = range.slice(0, count)
+      attachLine = rangeToExpand.last()
+      [rangeToExpand, attachLine, "below"]
+    else
+      rangeToExpand = range.slice(-count)
+      attachLine = rangeToExpand.first()
+      [rangeToExpand, attachLine, "above"]
+
+  createContextExpander: (codeLine, attachDirection, top, bottom, incremental) ->
+    $.ajax
+      type: "get"
+      url: "/context_expander"
+      data:
+        top: top
+        bottom: bottom
+        incremental: incremental
+      success: (html) =>
+        contextExpander = $(html)
+        contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
+        contextExpander.find(".expandLink.above").click (e) => @expandContext(e, 10, "above")
+        contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
+        codeLine.before(contextExpander) if attachDirection == "above"
+        codeLine.after(contextExpander) if attachDirection == "below"
 
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]

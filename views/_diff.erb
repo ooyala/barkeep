@@ -16,21 +16,22 @@
   </div>
   <div class="dataWrapper">
     <% [:codeLeft, :codeRight].each do |table_class| # make 2 identical tables for side-by-side diff %>
-      <% comment_index = 0 %>
+    <% comment_index = 0
+       unchunked_lines = 0
+       first_expander = true %>
       <div class="<%= table_class %>"><table class="data">
         <% if file.special_case %>
           <tr><td class="fileSpecial"><%= file.special_case %></td></tr>
         <% else %>
-          <% initial_break, final_break = file.breaks.first, file.breaks.last %>
           <% file.lines.each_with_index do |line, i| %>
-            <% if file.breaks.include? i %>
-              <% extra_class = "initialBreak" if (i == initial_break) && !file.lines[0].chunk %>
-              <% extra_class = "finalBreak" if (i == final_break) && !file.lines[i + 1].then { chunk } %>
-              <% extra_class ||= "" %>
-              <tr class="chunkBreak <%= extra_class %>"><td colspan="3">
-                  <span class="breakMessage">&#149;&nbsp;&#149;&nbsp;&#149;</span>
-              </td></tr>
+            <% if line.chunk && unchunked_lines > 0 %>
+              <%= erb :_context_expander, :locals => { :bottom => false,
+                  :top => first_expander, :incremental => unchunked_lines > 10 } %>
+              <% first_expander = false
+                 unchunked_lines = 0 %>
             <% end %>
+            <% unchunked_lines += 1 unless line.chunk
+               first_expander = false if line.chunk %>
             <% replace = line.replace && ( table_class == :codeLeft && line.tag == :added ||
                                            table_class == :codeRight && line.tag == :removed ) %>
             <tr class="diffLine <%= line.chunk ? "chunk" : "" %> <%= line.chunk_start ? "chunk-start" : "" %>"
@@ -50,6 +51,10 @@
                 <% end %>
               </td>
             </tr>
+            <% if !line.chunk && file.lines[i+1].nil? && unchunked_lines > 0 %>
+              <%= erb :_context_expander, :locals => { :bottom => true, :top => false,
+                  :incremental => unchunked_lines > 10 } %>
+            <% end %>
           <% end %>
         <% end %>
       </table></div>

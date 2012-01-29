@@ -189,6 +189,14 @@ class Barkeep < Sinatra::Base
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
+  get "/context_expander" do
+    erb :_context_expander, :layout => false, :locals => {
+      :top => params[:top] == "true",
+      :bottom => params[:bottom] == "true",
+      :incremental => params[:incremental] == "true"
+    }
+  end
+
   get "/comment_form" do
     erb :_comment_form, :layout => false, :locals => {
       :repo_name => params[:repo_name],
