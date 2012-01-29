@@ -21,8 +21,6 @@ class DbCommitIngestIntegrationTest < Scope::TestCase
     commits = Commit.filter(:sha => test_repo.head.commit.sha).all
     assert_equal 1, commits.size
     commit = commits.first
-    # Ensure that a user was linked with this commit.
-    assert_equal head.author.email, commit.user.email
     assert_equal head.message, commit.message
     # We enqueue a job to pregenerate this commit's highlighted diffs.
     expected_tasks = [

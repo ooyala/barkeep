@@ -42,10 +42,6 @@ class DbCommitIngest
       rows_to_insert = commits.map do |commit|
         next if existing_shas.include?(commit.sha)
 
-        user = User.find_or_create(:email => commit.author.email) do |new_user|
-          new_user.name = commit.author.name
-        end
-
         {
           :git_repo_id => db_repo.id,
           :sha => commit.sha,
@@ -53,7 +49,6 @@ class DbCommitIngest
           # NOTE(caleb): For some reason, the commit object you get from a remote returns nil for #date (but
           # it does have #authored_date and #committed_date. Bug?
           :date => commit.authored_date,
-          :user_id => user.id
         }
       end
       rows_to_insert.reject!(&:nil?)
