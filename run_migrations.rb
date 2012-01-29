@@ -17,13 +17,7 @@ end
 command = "bundle exec sequel -m migrations/"
 command += " -M #{migrate_to_version}" if migrate_to_version
 
-host_string = case DB_TYPE
-when "Mysql"
-  "mysql://#{DB_USER}@#{DB_HOST}/#{DB_NAME}"
-when "SQLite"
-  "sqlite://#{DB_NAME}"
-end
-
 puts "Migrating to version #{migrate_to_version}" if migrate_to_version
 
+host_string = "mysql://#{DB_USER}@#{DB_HOST}/#{DB_NAME}"
 puts `#{command} "#{host_string}"`

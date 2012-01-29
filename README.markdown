@@ -64,7 +64,7 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
 
 1.  Install required packages:
 
-        $ sudo apt-get install curl mysql-server mysql-client libmysqlclient-dev sqlite3 libsqlite3-dev \
+        $ sudo apt-get install curl mysql-server mysql-client libmysqlclient-dev \
         openssl libopenssl-ruby libssl-dev python-setuptools redis-server python-software-properties \
         build-essential
 
