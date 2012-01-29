@@ -136,4 +136,30 @@ class AppTest < Scope::TestCase
       end
     end
   end
+
+  context "/admin" do
+
+    should "only allow users with admin permission" do
+      get "/admin"
+      assert_equal 400, last_response.status
+
+      post "/admin/users/"
+    end
+
+    context "with admin logged in" do
+      setup do
+        @admin = User.new(:email => "admin@barkeep.com", :name => "The Admin", :permission => "admin")
+        any_instance_of(Barkeep, :current_user => @admin)
+      end
+
+      should "allow access to /admin/users" do
+        get "/admin/users"
+        assert_equal 200, last_response.status
+      end
+
+      teardown do
+        any_instance_of(Barkeep, :current_user => @user)
+      end
+    end
+  end
 end

@@ -1,0 +1,48 @@
+<%#
+  # A dashboard to add users and manage user permissions.
+  #
+  # TODO(dmac): This dashboard should have better user feedback. For example, it should warn you
+  # if you try to change your own permission from admin to normal and prevent you from demoting
+  # the last admin user.
+%>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("input[type=radio]").change(function(event) {
+      var target = $(event.target);
+      $.ajax({
+        type: "POST",
+        url: "/admin/users/update_permissions",
+        data: {
+          user_id: target.attr("data-user-id"),
+          permission: target.val()
+        }
+      });
+    });
+  });
+</script>
+<div id="manageUsers">
+  <a href="/admin">Back to admin</a>
+  <table>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Permission</th>
+    </tr>
+    <% users.each do |user| %>
+      <tr>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td>
+          <div class="userPermissionControl">
+            <input id="user_<%= user.id %>_admin" data-user-id="<%= user.id %>" type="radio" value="admin"
+            name="user_<%= user.id %>" <%= user.permission == "admin" ? "checked='checked'" : "" %> />
+            <label for="user_<%= user.id %>_admin">admin</label>
+            <input id="user_<%= user.id %>_normal" data-user-id="<%= user.id %>" type="radio" value="normal"
+                name="user_<%= user.id %>" <%= user.permission == "normal" ? "checked='checked'" : "" %> />
+            <label for="user_<%= user.id %>_normal">normal</label>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+</div>
