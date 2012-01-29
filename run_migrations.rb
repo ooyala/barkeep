@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby-local-exec
 
-require "./config/environment.rb"
+require "pathological"
+require "config/environment.rb"
 
 PROTOCOL, DB_TYPE, DB_NAME, DB_HOST = DB_LOCATION.split(":")
 

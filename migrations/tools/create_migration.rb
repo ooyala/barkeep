@@ -13,7 +13,8 @@ filename = File.join(File.dirname(__FILE__), "../") + "#{timestamp}_#{name}.rb"
 
 File.open(filename, "w") do |file|
   file.puts <<END_CODE
-require "./" + File.join(File.dirname(__FILE__), "migration_helper")
+require "pathological"
+require "migrations/migration_helper.rb"
 
 Sequel.migration do
   up do
