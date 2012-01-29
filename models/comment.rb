@@ -17,6 +17,8 @@ class Comment < Sequel::Model
   many_to_one :commit
 
   add_filter(:text) { |str| StringFilter.link_embedded_images(str) }
+  # replace_shas_with_links comes before markdown for simpler regex and to use markdown syntax to
+  # generate links.
   add_filter(:text) do |str, comment|
     StringFilter.replace_shas_with_links(str, comment.commit.git_repo.name)
   end

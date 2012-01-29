@@ -21,6 +21,7 @@ class RedcarpetManager
     :no_images => false,
     :no_links => false,
     :no_styles => false,
+    # Leave this false, safe links is off so that replace_shas_with_links works with relative paths.
     :safe_links_only => false,
     :with_toc_data => false,
     :hard_wrap => true,
