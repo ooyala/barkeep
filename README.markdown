@@ -67,7 +67,7 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
         $ sudo apt-get update
         $ sudo apt-get install curl mysql-server mysql-client libmysqlclient-dev \
         openssl libopenssl-ruby libssl-dev python-setuptools redis-server python-software-properties \
-        build-essential
+        build-essential libxslt-dev libxml2-dev
 
 2.  You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you
     can install a very recent version from the git-core ppa:
