@@ -12,8 +12,7 @@ gem "pathological"
 gem "resque"
 
 # For invoking the Less CSS compiler, written in javascript, from Ruby.
-# This would be slightly nicer than using the lessc binary directly, but it
-# doesn't seem to be compatible with ruby 1.9.
+# NOTE(philc): This segfaults sometimes. Replace with sass.
 gem "less"
 
 # We're pulling in our own grit fork with bugfixes.
