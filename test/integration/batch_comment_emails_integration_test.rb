@@ -1,4 +1,6 @@
-require File.expand_path(File.join(File.dirname(__FILE__), "../integration_test_helper.rb"))
+require "bundler/setup"
+require "pathological"
+require "test/integration_test_helper"
 require "resque_jobs/batch_comment_emails"
 require "resque_jobs/deliver_comment_emails"
 require "test/db_fixtures_helper"
