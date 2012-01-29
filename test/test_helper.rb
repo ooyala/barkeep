@@ -3,7 +3,6 @@ ENV["RACK_ENV"] = "test"
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
-
 require "minitest/autorun"
 require "scope"
 require "rack/test"

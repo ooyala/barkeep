@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "pathological"
+require "test/test_helper"
 require "test/integration_test_helper"
 require "resque_jobs/deliver_comment_emails"
 require "test/db_fixtures_helper"

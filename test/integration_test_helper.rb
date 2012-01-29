@@ -1,6 +1,8 @@
 require "bundler/setup"
 require "pathological"
-require "test/test_helper"
+require "lib/script_environment"
+require "minitest/autorun"
+require "scope"
 
 FIXTURES_PATH = File.join(File.dirname(__FILE__), "/fixtures")
 TEST_REPO_NAME = "test_git_repo"

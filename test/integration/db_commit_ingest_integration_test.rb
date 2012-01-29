@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "pathological"
+require "test/test_helper"
 require "test/integration_test_helper"
 require "resque_jobs/db_commit_ingest"
 require "resque_jobs/generate_tagged_diffs"
