@@ -373,13 +373,13 @@ class Barkeep < Sinatra::Base
   # recompile it the source CSS file has changed.
   get "/css/:filename.css" do
     next if params[:filename].include?(".")
-    asset_path = "public/#{params[:filename]}.scss"
+    asset_path = "public/css/#{params[:filename]}.scss"
     content_type "text/css", :charset => "utf-8"
     # Set the last modified to the most recently modified less file in the directory, as a quick way to get
     # around the problem of included files not working with livecss.
     last_modified Dir.glob(File.join(File.dirname(asset_path), "*.scss")).map { |f| File.mtime(f) }.max
     compile_asset_from_cache(asset_path) do |filename|
-      Sass::Engine.new(File.read(filename), :syntax => :scss, :load_paths => ["public"]).render()
+      Sass::Engine.new(File.read(filename), :syntax => :scss, :load_paths => ["public/css"]).render()
     end
   end
 
