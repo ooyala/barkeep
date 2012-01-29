@@ -87,10 +87,6 @@ class Barkeep < Sinatra::Base
       request.url.include?(text) ? "currentPage" : ""
     end
 
-    def root_url
-      request.url.match(/(^.*\/{2}[^\/]*)/)[1]
-    end
-
     def find_commit(repo_name, sha, zero_commits_ok)
       commit = MetaRepo.instance.db_commit(repo_name, sha)
       unless commit
@@ -499,10 +495,13 @@ class Barkeep < Sinatra::Base
     rescue OpenID::DiscoveryFailure => why
       "Could not contact #{OPENID_DISCOVERY_ENDPOINT}. #{why}"
     else
-      axreq = OpenID::AX::FetchRequest.new
-      axreq.add(OpenID::AX::AttrInfo.new(OPENID_AX_EMAIL_SCHEMA, nil, true))
-      oidreq.add_extension(axreq)
-      oidreq.redirect_url(root_url,root_url + "/login/complete")
+      ax_request = OpenID::AX::FetchRequest.new
+      # Information we require from the OpenID provider.
+      required_fields = ["http://axschema.org/contact/email"]
+      required_fields.each { |field| ax_request.add(OpenID::AX::AttrInfo.new(field, nil, true)) }
+      oidreq.add_extension(ax_request)
+      host = "#{request.scheme}://#{request.host_with_port}"
+      oidreq.redirect_url(host, "#{host}/login/complete")
     end
   end
 
