@@ -123,6 +123,10 @@ class Barkeep < Sinatra::Base
     redirect get_login_redirect
   end
 
+  get "/login/select_openid_provider" do
+    erb :select_openid_provider, :locals => { :openid_providers => [OPENID_IDP_ENDPOINT] }
+  end
+
   get "/logout" do
     response.delete_cookie "email"
     redirect request.referrer

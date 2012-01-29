@@ -1,0 +1,12 @@
+<%#
+  View params:
+   - openid_providers: a list of OpenID provider URLs
+ %>
+<div id="selectOpenIdProvider">
+  <h2>Select one of these services to login with:</h2>
+  <ol>
+    <% openid_providers.each do |provider_url| %>
+      <li><a href="<%= provider_url %>"><%= URI.parse(provider_url).host %></a></li>
+    <% end %>
+  </ol>
+</div>
