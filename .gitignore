@@ -4,6 +4,3 @@
 /dump.rdb
 /.vagrant
 .sass-cache
-
-# For jekyll (on the gh-pages branch).
-/_site/
