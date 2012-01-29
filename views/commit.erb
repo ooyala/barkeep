@@ -14,7 +14,7 @@
           <p class="message"><%= commit.filter_message %></p>
         </div>
         <div id="authorMetadata">
-          <div class="avatar"><img src="<%= commit.user.gravatar %>" /></div>
+          <div class="avatar"><img src="<%= commit.grit_commit.author.gravatar %>" /></div>
           <div class="authorInfo">
             <p class="author"><%= commit.grit_commit.author.name %></p>
             <p class="email"><%= commit.grit_commit.author.email %></p>

@@ -29,5 +29,10 @@ module Grit
       # If the author's display name is empty, which it sometimes is, strip() will eliminate the whitespace.
       "#{self.to_s} <#{self.email}>".strip
     end
+
+    def gravatar
+      hash = Digest::MD5.hexdigest(self.email.downcase)
+      image_src = "http://www.gravatar.com/avatar/#{hash}"
+    end
   end
 end
