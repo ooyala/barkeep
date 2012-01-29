@@ -37,7 +37,7 @@ require "resque_jobs/deliver_review_request_emails.rb"
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 LOGIN_WHITELIST_ROUTES = [
-  /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^api\/.*/,
+  /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^statusz/, /^api\/.*/,
   /^.*\.css/, /^.*\.js/, /^.*\.woff/
 ]
 
