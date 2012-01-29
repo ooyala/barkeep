@@ -16,3 +16,8 @@ BARKEEP_HOSTNAME = "localhost:4567"
 
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
+
+# A list of OpenID provider URLs for signing in your users. If you provide more than one, users will receive
+# a UI allowing to pick which service to use to authenticate.
+# Besides Google, another popular OpenID endpoint is https://me.yahoo.com
+OPENID_PROVIDERS = ["https://www.google.com/accounts/o8/ud"]

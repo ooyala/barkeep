@@ -35,7 +35,6 @@ require "lib/redcarpet_extensions"
 require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
-OPENID_IDP_ENDPOINT = "https://www.google.com/accounts/o8/ud"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 LOGIN_WHITELIST_ROUTES = [
   /^login/, /^logout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^api\/.*/,
@@ -54,6 +53,7 @@ class Barkeep < Sinatra::Base
   set :public, "public"
 
   configure :development do
+    raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
@@ -108,9 +108,13 @@ class Barkeep < Sinatra::Base
     self.current_user = User.find(:email => request.cookies["email"])
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.route[1..-1] =~ route }
     unless self.current_user
+      # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
+
       # Save url to return to it after login completes.
       response.set_cookie "login_started_url", :value => request.url, :path => "/"
-      redirect get_login_redirect
+      redirect(OPENID_PROVIDERS.size == 1 ?
+         get_openid_login_redirect(OPENID_PROVIDERS.first) :
+        "/login/select_openid_provider")
     end
   end
 
@@ -120,11 +124,21 @@ class Barkeep < Sinatra::Base
 
   get "/login" do
     response.set_cookie "login_started_url", :value => request.referrer, :path => "/"
-    redirect get_login_redirect
+    redirect(OPENID_PROVIDERS.size == 1 ?
+       get_openid_login_redirect(OPENID_PROVIDERS.first) :
+      "/login/select_openid_provider")
   end
 
   get "/login/select_openid_provider" do
-    erb :select_openid_provider, :locals => { :openid_providers => [OPENID_IDP_ENDPOINT] }
+    erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERS }
+  end
+
+  # Users navigate to here from select_openid_provider.
+  # - provider_id: an integer indicating which provider from OPENID_PROVIDERS to use for authentication.
+  get "/login/login_using_openid_provider" do
+    provider = OPENID_PROVIDERS[params[:provider_id].to_i]
+    halt 400, "OpenID provider not found." unless provider
+    redirect get_openid_login_redirect(provider)
   end
 
   get "/logout" do
@@ -476,11 +490,11 @@ class Barkeep < Sinatra::Base
   end
 
   # Construct redirect url to google openid.
-  def get_login_redirect
+  def get_openid_login_redirect(openid_provider_url)
     @openid_consumer ||= OpenID::Consumer.new(session,
         OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
     begin
-      service = OpenID::OpenIDServiceEndpoint.from_op_endpoint_url(OPENID_IDP_ENDPOINT)
+      service = OpenID::OpenIDServiceEndpoint.from_op_endpoint_url(openid_provider_url)
       oidreq = @openid_consumer.begin_without_discovery(service, false)
     rescue OpenID::DiscoveryFailure => why
       "Could not contact #{OPENID_DISCOVERY_ENDPOINT}. #{why}"
