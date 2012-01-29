@@ -11,9 +11,8 @@ gem "pathological"
 # Resque is used for managing background jobs.
 gem "resque"
 
-# For invoking the Less CSS compiler, written in javascript, from Ruby.
-# NOTE(philc): This segfaults sometimes. Replace with sass.
-gem "less"
+# For writing CSS more conveniently.
+gem "sass"
 
 # We're pulling in our own grit fork with bugfixes.
 gem "grit", :git => "http://github.com/ooyala/grit.git"

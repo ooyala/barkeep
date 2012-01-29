@@ -19,8 +19,6 @@ GEM
       execjs
     coffee-script-source (1.1.2)
     colorize (0.5.8)
-    commonjs (0.2.0)
-      therubyracer (~> 0.9.9)
     daemons (1.1.4)
     diff-lcs (1.1.2)
     eventmachine (0.12.10)
@@ -36,10 +34,6 @@ GEM
       thor (>= 0.13.6)
     i18n (0.6.0)
     json (1.5.3)
-    less (2.0.9)
-      commonjs (~> 0.2.0)
-      therubyracer (~> 0.9.9)
-    libv8 (3.3.10.4)
     mail (2.3.0)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -89,6 +83,7 @@ GEM
     rubypython (0.5.1)
       blankslate (>= 2.1.2.3)
       ffi (~> 1.0.7)
+    sass (3.1.12)
     scope (0.2.3)
       minitest
     sequel (3.26.0)
@@ -98,8 +93,6 @@ GEM
       tilt (>= 1.2.2, < 2.0)
     slop (1.9.1)
     term-ansicolor (1.0.7)
-    therubyracer (0.9.9)
-      libv8 (~> 3.3.10)
     thin (1.2.11)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -124,7 +117,6 @@ DEPENDENCIES
   foreman
   grit!
   json
-  less
   methodchain
   mysql
   nokogiri
@@ -141,6 +133,7 @@ DEPENDENCIES
   resque
   rr (>= 1.0.3)
   ruby-openid
+  sass
   scope (>= 0.2.3)
   sequel
   sinatra
