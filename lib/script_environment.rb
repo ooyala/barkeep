@@ -14,6 +14,9 @@ require "lib/git_helper"
 require "lib/meta_repo"
 require "redis"
 require "lib/redis_manager"
+require "lib/backtrace_cleaner"
+
+BacktraceCleaner.monkey_patch_all_exceptions! unless ENV["RACK_ENV"] == "production"
 
 unless ENV["RACK_ENV"] == "test"
   logger = Logger.new(STDOUT)

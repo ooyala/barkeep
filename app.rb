@@ -52,12 +52,14 @@ class Barkeep < Sinatra::Base
 
   set :public, "public"
 
+  raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
+
   configure :development do
-    raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
 
+    BacktraceCleaner.monkey_patch_all_exceptions!
     GitDiffUtils.setup(RedisManager.redis_instance)
 
     error do
@@ -73,6 +75,7 @@ class Barkeep < Sinatra::Base
   configure :test do
     set :show_exceptions, false
     set :dump_errors, false
+    BacktraceCleaner.monkey_patch_all_exceptions!
     GitDiffUtils.setup(nil)
   end
 
