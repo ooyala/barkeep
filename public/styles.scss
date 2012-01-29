@@ -1,11 +1,41 @@
-@import "/mixins";
-@import "/code_styles/default";
-@import "/tipsy_styles";
+@import "mixins";
+@import "code_styles/default";
+@import "tipsy_styles";
+
+/* NOTE(caleb): There is a known issue where our web font flickers in FF. The solution is a JS
+ * workaround:
+ * http://joshuamcginnis.com/2010/08/17/how-to-fix-the-font-face-flicker-issue-in-firefox/
+ * We can drop this in later if we want. It's kind of silly how firefox manages web fonts IMO.
+ */
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-Bold-webfont.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-Italic-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Bitstream Vera Sans Mono";
+  src: url("/fonts/VeraMono-Bold-Italic-webfont.woff") format("woff");
+  font-weight: bold;
+  font-style: italic;
+}
 
 body {
   background-color: white;
-  font-family: @sansFont;
-  color: @textColor;
+  font-family: $sansFont;
+  color: $textColor;
   background-image: url(/images/background.png);
 }
 
@@ -14,12 +44,50 @@ body {
   padding: 0;
 }
 
+// There are cases where we want focus for tooltips but we don't want to show an outline
+.noFocusOutline {
+  // FF
+  -moz-outline-style: none;
+  outline-style: none;
+  outline-width: 0px;
+  outline-color: -moz-use-text-color;
+  // Chrome
+  outline: none
+}
+
+// Full-screen overlays
+.overlay {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: table;
+  visibility: hidden;
+
+  .cellWrapper {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+
+    .container {
+      margin-left: auto;
+      margin-right: auto;
+      background: $textColor;
+      color: $almostWhite;
+      opacity: 0.95;
+      @include roundedCorners(3px);
+    }
+  }
+}
+
 /*
  * Standard elements and form control styles.
  */
 
 a {
-  color: @linkColor;
+  color: $linkColor;
   text-decoration: none;
   outline: 0; /* This removes the dotted line around links that Firefox adds when they're focused. */
 }
@@ -28,7 +96,7 @@ a:hover {
   text-decoration: underline;
 }
 a:active {
-  background-color: @linkColor;
+  background-color: $linkColor;
   color: white;
 }
 
@@ -36,59 +104,59 @@ img:active { background-color: white }
 
 /* Our fancy buttons have a pretty high-profile red gradient. */
 button.fancy {
-  border: 1px solid @deepRed;
+  border: 1px solid $deepRed;
   /* This darker border helps distinguish the drop shadow. */
-  border-bottom: 1px solid darken(@deepRed, 5%);
-  .roundedCorners(3px);
+  border-bottom: 1px solid darken($deepRed, 5%);
+  @include roundedCorners(3px);
   box-shadow: 0 2px 4px #999;
-  text-shadow: 0px -1px 1px @deepRed;
+  text-shadow: 0px -1px 1px $deepRed;
   padding: 5px 18px;
   color: white;
   cursor: pointer;
 
-  background-color: darken(@coreRed, 18%);
+  background-color: darken($coreRed, 18%);
 
   background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, lighten(@coreRed, 3%)), color-stop(0.95, darken(@coreRed, 10%)));
-  background-image: -moz-linear-gradient(top, lighten(@coreRed, 3%) 0%, darken(@coreRed, 15%) 95%);
+    color-stop(0, lighten($coreRed, 3%)), color-stop(0.95, darken($coreRed, 10%)));
+  background-image: -moz-linear-gradient(top, lighten($coreRed, 3%) 0%, darken($coreRed, 15%) 95%);
 
   &:hover {
     border: 1px solid darken(#890128, 25%);
 
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten(@coreRed, 8%)), color-stop(0.95, darken(@coreRed, 10%)));
-    background-image: -moz-linear-gradient(top, lighten(@coreRed, 10%) 0%, darken(@coreRed, 15%) 95%);
+      color-stop(0, lighten($coreRed, 8%)), color-stop(0.95, darken($coreRed, 10%)));
+    background-image: -moz-linear-gradient(top, lighten($coreRed, 10%) 0%, darken($coreRed, 15%) 95%);
   }
   &:active { background-image: none; }
 }
 
 /* Our standard buttons are flat grey buttons. */
 button.standard, input[type=button], input[type=submit] {
-  .roundedCorners(3px);
+  @include roundedCorners(3px);
   padding: 7px 12px;
   text-shadow: 0px -1px 1px #EEEEEE;
   border: 1px solid #AAAAAA;
   font-weight: bold;
   cursor: pointer;
   color: #333333;
-  @standardButtonGrey: #F2F1EF;
+  $standardButtonGrey: #F2F1EF;
 
   background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, @standardButtonGrey), color-stop(0.90, darken(@standardButtonGrey, 8%)));
-  background-image: -moz-linear-gradient(top, @standardButtonGrey 0%, darken(@standardButtonGrey, 8%) 95%);
+    color-stop(0, $standardButtonGrey), color-stop(0.90, darken($standardButtonGrey, 8%)));
+  background-image: -moz-linear-gradient(top, $standardButtonGrey 0%, darken($standardButtonGrey, 8%) 95%);
   box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
 
   &:hover {
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten(@standardButtonGrey, 2%)), color-stop(0.95, darken(@standardButtonGrey, 5%)));
-    background-image: -moz-linear-gradient(top, lighten(@standardButtonGrey, 2%) 0%,
-      darken(@standardButtonGrey, 5%) 95%);
+      color-stop(0, lighten($standardButtonGrey, 2%)), color-stop(0.95, darken($standardButtonGrey, 5%)));
+    background-image: -moz-linear-gradient(top, lighten($standardButtonGrey, 2%) 0%,
+      darken($standardButtonGrey, 5%) 95%);
   }
 
   &:active {
     background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, darken(@standardButtonGrey, 8%)), color-stop(0.95, @standardButtonGrey));
-    background-image: -moz-linear-gradient(top, darken(@standardButtonGrey, 8%), @standardButtonGrey 95%);
+      color-stop(0, darken($standardButtonGrey, 8%)), color-stop(0.95, $standardButtonGrey));
+    background-image: -moz-linear-gradient(top, darken($standardButtonGrey, 8%), $standardButtonGrey 95%);
   }
 }
 
@@ -99,7 +167,7 @@ button.standard, input[type=button], input[type=submit] {
  */
 #container {
   clear: both;
-  width: @pageWidth;
+  width: $pageWidth;
   margin: 0 auto;
   margin-bottom: 40px;
   position: relative;
@@ -107,7 +175,7 @@ button.standard, input[type=button], input[type=submit] {
 
 header {
   position: relative;
-  width: @pageWidth;
+  width: $pageWidth;
   margin: 0 auto;
   margin-top: 28px;
   margin-bottom: 28px;
@@ -162,15 +230,15 @@ header {
         box-shadow: 0px 2px 1px white;
       }
       a {
-        .roundedCorners(4px);
-        border: @standardBorder;
+        @include roundedCorners(4px);
+        border: $standardBorder;
         border-top: 0;
 
         display: block;
         width: 120px;
         height: 27px;
 
-        background-color: @sunkenColor;
+        background-color: $sunkenColor;
         text-align: center;
         padding-top: 8px;
         color: #333;
@@ -179,16 +247,16 @@ header {
 
         /* Cancel any border effects that the standard a:hover implements. */
         &:hover {
-          color: @linkColor;
-          border: @standardBorder;
+          color: $linkColor;
+          border: $standardBorder;
           border-top: 0;
           text-decoration: none;
         }
-        &:active { background-color: @sunkenColor; }
+        &:active { background-color: $sunkenColor; }
       }
 
       &.currentPage {
-        border-bottom: 4px solid @linkColor;
+        border-bottom: 4px solid $linkColor;
       }
     }
   }
@@ -214,7 +282,7 @@ header {
  * Saved searches styles.
  */
 
-.searchPanel { .embossedPanel; }
+.searchPanel { @include embossedPanel; }
 
 .savedSearchPlaceholder {
   border: 3px dashed #ccc;
@@ -239,7 +307,7 @@ header {
   .header {
     margin-bottom: 5px;
     padding-bottom: 3px;
-    border-bottom: @standardBorder;
+    border-bottom: $standardBorder;
 
     .name {
       font-size: 16px;
@@ -261,7 +329,7 @@ header {
       position: absolute;
       right: 0;
 
-      width: @dragHandleWidth;
+      width: $dragHandleWidth;
       height: 20px;
       background-repeat: no-repeat;
       opacity: 0.8;
@@ -276,14 +344,14 @@ header {
     a.delete {
       padding-right: 5px;
       float: right;
-      .closeLinks;
+      @include closeLinks;
     }
 
     .searchOptions {
       font-size: 12px;
       position: absolute;
       right: 0;
-      margin-right: @dragHandleWidth + 28;
+      margin-right: $dragHandleWidth + 28;
       padding-right: 5px;
       padding-top: 6px;
 
@@ -307,10 +375,10 @@ header {
         z-index: 10;
 
         .searchOptionsMenu {
-          .raisedPanel;
+          @include raisedPanel;
           position: absolute;
           pointer-events: auto;
-          background-color: @almostWhite;
+          background-color: $almostWhite;
           padding: 5px 8px;
           /* This menu bounces in when it first appears, and a bounce animation requires extra height. */
           padding-top: 20px;
@@ -368,7 +436,7 @@ header {
       text-align: center;
     }
     a {
-      border: @standardBorder;
+      border: $standardBorder;
       padding-bottom: 2px;
       &:hover, &.active { background-color: #e0e0e0; }
       &.disabled {
@@ -387,20 +455,20 @@ header {
  * Styles for list of commits
  */
 table.commitsList, table.authorList {
-  width: @pageWidth + 30px; // Extra 30px for the comment number bubbles
+  width: $pageWidth + 30px; // Extra 30px for the comment number bubbles
   border-collapse: collapse;
 
   .avatar {
     margin-right: 4px;
     padding-right: 0px;
-    .gravatar(25px);
+    @include gravatar(25px);
   }
 
   font-size: 14px;
   a {
     position: relative;
     text-decoration: none;
-    color: @textColor;
+    color: $textColor;
     border: 0;
   }
   td {
@@ -412,8 +480,8 @@ table.commitsList, table.authorList {
     &.avatarCell { padding: 1px 2px; }
     &.author { white-space: nowrap; }
     &.commitId {
-      font: 13px @monoFont;
-      a { color: @lightTextColor; }
+      font: 13px $monoFont;
+      a { color: $lightTextColor; }
       text-align: right;
       padding-right: 7px;
     }
@@ -433,7 +501,7 @@ table.commitsList, table.authorList {
     &.commitDate, &.commitRepo {
       white-space: nowrap;
       font-size: 90%;
-      color: @lightTextColor;
+      color: $lightTextColor;
     }
     &.commitRepo {
       font-variant: small-caps;
@@ -444,10 +512,10 @@ table.commitsList, table.authorList {
       padding-bottom: 2px;
       white-space: nowrap;
       text-align: right;
-      a { .noLink; }
+      a { @include noLink; }
       span {
         font-size: 80%;
-        color: @lightTextColor;
+        color: $lightTextColor;
       }
     }
     &.approved {
@@ -466,15 +534,15 @@ table.commitsList, table.authorList {
         margin-top: 30px;
         display: inline-block;
         .authorList {
-          width: @pageWidth * 0.5;
+          width: $pageWidth * 0.5;
           td.email {
-            color: @lightTextColor;
+            color: $lightTextColor;
             font-size: 90%;
             text-align: right;
           }
           td.count {
             width: 100%;
-            color: @lightTextColor;
+            color: $lightTextColor;
           }
         }
       }
@@ -491,7 +559,7 @@ table.commitsList, table.authorList {
         }
       }
 
-      .commitsList { width: @pageWidth; }
+      .commitsList { width: $pageWidth; }
     }
   }
 }
@@ -523,10 +591,10 @@ table.commitsList, table.authorList {
     padding: 2px;
     height: 22px;
     width: 400px;
-    box-shadow: inset 0px 5px 5px @sunkenColor;
+    box-shadow: inset 0px 5px 5px $sunkenColor;
     font-size: 16px;
-    background-color: @almostWhite;
-    border: @standardBorder;
+    background-color: $almostWhite;
+    border: $standardBorder;
   }
   select { font-size: 14px; }
   button.submit {
@@ -536,7 +604,7 @@ table.commitsList, table.authorList {
     padding: 0 16px 3px 16px;
   }
   .example {
-    color: @lightTextColor;
+    color: $lightTextColor;
     font-size: 12px;
     font-weight: 300;
     .keyword { font-weight: normal; }
@@ -568,23 +636,23 @@ table.commitsList, table.authorList {
  */
 
 #commit {
-  // The ~ is the less css escape character -- this enables us to use the X/Y line-height shorthand syntax.
-  @commitFontFamily: 12px ~"/" 16px @monoFont;
+  /* The ~ is the less css escape character -- this enables us to use the X/Y line-height shorthand syntax. */
+  $commitFontFamily: 12px / 16px $monoFont;
 
   text-align: center;
   #center > * { text-align: left; }
 
   #marginSizing {
     width: 1px;
-    font: @commitFontFamily;
+    font: $commitFontFamily;
   }
 
   #commitMetadata {
-    .flexbox;
-    .embossedPanel;
+    @include flexbox;
+    @include embossedPanel;
     box-shadow: none;
 
-    width: @pageWidth - 2 * 10 - 2;
+    width: $pageWidth - 2 * 10 - 2;
     margin: 23px auto 0px auto;
     padding: 10px;
     font-size: 0.8em;
@@ -595,36 +663,36 @@ table.commitsList, table.authorList {
     z-index: 2;
 
     #messageAndAuthor {
-      .flexbox(vertical);
+      @include flexbox(vertical);
       width: 730px;
 
       #messageMetadata {
-        .flexbox(vertical);
-        .flex;
+        @include flexbox(vertical);
+        @include flex;
 
         .name {
           margin-bottom: 10px;
-            color: @lightTextColor;
+            color: $lightTextColor;
           .repoName {
-            font: 18px @sansFont;
+            font: 18px $sansFont;
             font-variant: small-caps;
           }
-          .sha { font: 14px @monoFont; }
+          .sha { font: 14px $monoFont; }
         }
 
         .message {
           margin-bottom: 10px;
-          font: @commitFontFamily;
+          font: $commitFontFamily;
         }
 
       }
 
       #authorMetadata {
-        .flexbox(horizontal);
+        @include flexbox(horizontal);
         display: block;
 
         .avatar {
-          .gravatar(50px);
+          @include gravatar(50px);
           margin-right: 5px;
         }
 
@@ -633,15 +701,15 @@ table.commitsList, table.authorList {
           vertical-align: middle;
           line-height: 1.25em;
 
-          .email, .date { color: @lightTextColor; }
+          .email, .date { color: $lightTextColor; }
         }
       }
     }
 
     #metadataButtons {
-      .flexbox(vertical);
-      .boxAlign(end);
-      .flex;
+      @include flexbox(vertical);
+      @include boxAlign(end);
+      @include flex;
 
       button {
         display: block;
@@ -655,44 +723,44 @@ table.commitsList, table.authorList {
         margin-bottom: 40px;
 
         /* These styles were taken from our "fancy button" style definition. Only the color is different. */
-        @greenApproveButton: #42C050;
+        $greenApproveButton: #42C050;
 
-        border: 1px solid darken(@greenApproveButton, 20%);
+        border: 1px solid darken($greenApproveButton, 20%);
         /* This darker border helps distinguish the drop shadow. */
-        border-bottom: 1px solid darken(@greenApproveButton, 25%);
-        text-shadow: 0px -1px 1px darken(@greenApproveButton, 30%);
+        border-bottom: 1px solid darken($greenApproveButton, 25%);
+        text-shadow: 0px -1px 1px darken($greenApproveButton, 30%);
 
-        background-color: darken(@greenApproveButton, 18%);
+        background-color: darken($greenApproveButton, 18%);
 
         background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, lighten(@greenApproveButton, 3%)), color-stop(0.95, darken(@greenApproveButton, 10%)));
-        background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 3%) 0%,
-          darken(@greenApproveButton, 15%) 95%);
+          color-stop(0, lighten($greenApproveButton, 3%)), color-stop(0.95, darken($greenApproveButton, 10%)));
+        background-image: -moz-linear-gradient(top, lighten($greenApproveButton, 3%) 0%,
+          darken($greenApproveButton, 15%) 95%);
 
         &:hover {
           border: 1px solid darken(#890128, 25%);
 
           background-image: -webkit-gradient(linear, left top, left bottom,
-            color-stop(0, lighten(@greenApproveButton, 8%)),
-            color-stop(0.95, darken(@greenApproveButton, 10%)));
-          background-image: -moz-linear-gradient(top, lighten(@greenApproveButton, 10%) 0%,
-            darken(@greenApproveButton, 15%) 95%);
+            color-stop(0, lighten($greenApproveButton, 8%)),
+            color-stop(0.95, darken($greenApproveButton, 10%)));
+          background-image: -moz-linear-gradient(top, lighten($greenApproveButton, 10%) 0%,
+            darken($greenApproveButton, 15%) 95%);
         }
 
         &:active { background-image: none; }
       }
 
       .approvedBy, .approvedAt {
-        color: @lightTextColor;
+        color: $lightTextColor;
         text-align: center;
         font-size: 12px;
         margin-bottom: 4px;
       }
 
       #minorButtons {
-        .flexbox(vertical);
-        .boxPack(end);
-        .flex;
+        @include flexbox(vertical);
+        @include boxPack(end);
+        @include flex;
 
         button {
           font-size: 11px;
@@ -704,15 +772,15 @@ table.commitsList, table.authorList {
   }
 
   #reviewRequestContainer {
-    width: @pageWidth;
+    width: $pageWidth;
     margin: 0 auto;
     position: relative;
     z-index: 1;
 
     #reviewRequest {
-      .raisedPanel;
+      @include raisedPanel;
       position: absolute;
-      left: (@pageWidth - 600px) / 2;
+      left: ($pageWidth - 600px) / 2;
       top: -100px;
       width: 600px;
       min-height: 100px;
@@ -745,16 +813,16 @@ table.commitsList, table.authorList {
 
   #commitSummary {
     margin: 25px auto;
-    width: @pageWidth;
+    width: $pageWidth;
 
     #filesChanged {
-      font: 13px @monoFont;
+      font: 13px $monoFont;
 
       border-collapse: collapse;
       width: 100%;
 
       th {
-        font: 14px @sansFont;
+        font: 14px $sansFont;
         font-weight: bold;
         text-align: center;
       }
@@ -763,7 +831,7 @@ table.commitsList, table.authorList {
         td.path { text-align: right; }
       }
       td {
-        border-top: @standardBorder;
+        border-top: $standardBorder;
         padding: 3px 5px 1px 5px;
         list-style: none;
         &.path { width: 100%; }
@@ -774,7 +842,7 @@ table.commitsList, table.authorList {
         &.linesAdded { color: #58BC0F; }
         &.linesRemoved { color: #E11D1E; }
         a {
-          color: @lightTextColor;
+          color: $lightTextColor;
           &:active { background: none; }
         }
       }
@@ -785,7 +853,7 @@ table.commitsList, table.authorList {
     //relative position here to anchor the codeRight element that has absolute position
     position: relative;
     width: 100%;
-    background-color: @almostWhite;
+    background-color: $almostWhite;
     .data {
       width: 100%;
       border-collapse: collapse;
@@ -802,31 +870,31 @@ table.commitsList, table.authorList {
       top: 0px;
 
       .rightNumber {
-        border-left: @standardBorder;
+        border-left: $standardBorder;
       }
     }
   }
 
   .filename {
     padding: 5px;
-    background-color: @sunkenColor;
-    border-bottom: @standardBorder;
-    font: 13px @monoFont;
+    background-color: $sunkenColor;
+    border-bottom: $standardBorder;
+    font: 13px $monoFont;
     a {
-      color: @lightTextColor;
+      color: $lightTextColor;
       &:active { background: none; }
     }
   }
 
   .file {
-    .embossedPanel;
-    @commentWidth: 850px;
+    @include embossedPanel;
+    $commentWidth: 850px;
     // The styles for inline comments are slightly different than general comments: they have no left border.
     .comment, .commentForm, .commentEditForm {
-      width: @commentWidth;
+      width: $commentWidth;
       border-left: 0;
       margin: 8px 0px;
-      textarea { width: @commentWidth - 2px; }
+      textarea { width: $commentWidth - 2px; }
       .commentBody { img { max-width: 839px; } }
     }
 
@@ -838,57 +906,57 @@ table.commitsList, table.authorList {
 
   // Style tweaks only for side-by-side view.
   .file.sideBySide {
-    @commentWidth: 780px;
+    $commentWidth: 780px;
     .comment, .commentForm, .commentEditForm {
-      width: @commentWidth;
-      textarea { width: @commentWidth - 2px; }
+      width: $commentWidth;
+      textarea { width: $commentWidth - 2px; }
     }
   }
 
   .comment, .commentForm, .commentEditForm {
-    .raisedPanel;
-    background-color: @almostWhite;
+    @include raisedPanel;
+    background-color: $almostWhite;
     margin: 8px auto;
     font-size: 0.8em;
-    width: @pageWidth;
+    width: $pageWidth;
 
     textarea {
       resize: vertical;
       min-height: 100px;
-      width: @pageWidth - 2px;
-      font: 14px @sansFont;
+      width: $pageWidth - 2px;
+      font: 14px $sansFont;
       border: 0;
-      border-bottom: @standardBorder;
+      border-bottom: $standardBorder;
       box-shadow: 0 1px 0 white;
       padding-top: 3px;
       padding-left: 2px;
       /* Turn off Safari's heavy themed blue outline of focused textfields. */
       outline: 0;
-      code, pre { font: @commitFontFamily; }
+      code, pre { font: $commitFontFamily; }
     }
 
     .commentPreviewText {
-      border-bottom: @standardBorder;
+      border-bottom: $standardBorder;
       display: none;
     }
 
     .heading {
-      .avatar { .gravatar(25px); }
-      color: @lightTextColor;
+      .avatar { @include gravatar(25px); }
+      color: $lightTextColor;
       padding: 5px;
       position: relative;
 
       background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, @sunkenColor), color-stop(0.95, darken(@sunkenColor, 10%)));
-      background-image: -moz-linear-gradient(top, @sunkenColor 0%, darken(@sunkenColor, 10%) 95%);
+        color-stop(0, $sunkenColor), color-stop(0.95, darken($sunkenColor, 10%)));
+      background-image: -moz-linear-gradient(top, $sunkenColor 0%, darken($sunkenColor, 10%) 95%);
 
-      background-color: @sunkenColor;
+      background-color: $sunkenColor;
       .addAComment, .name {
         font-weight: bold;
         color: #333333;
       }
 
-      .permalink a { color: @lightTextColor; }
+      .permalink a { color: $lightTextColor; }
 
       .date { color: #666; }
 
@@ -911,53 +979,53 @@ table.commitsList, table.authorList {
 
       img {
         display: block;
-        max-width: @pageWidth - 10px;
+        max-width: $pageWidth - 10px;
       }
       ul, ol { margin-left: 20px; }
       blockquote {
-        border-left: 5px solid lighten(@lightTextColor, 30%);
+        border-left: 5px solid lighten($lightTextColor, 30%);
         padding-left: 4px;
-        color: @lightTextColor;
+        color: $lightTextColor;
       }
 
       code {
         display: inline;
         padding: 0 2px;
-        font: @commitFontFamily;
+        font: $commitFontFamily;
         background: #F0EEEA;
       }
 
       pre {
-        font: @commitFontFamily;
+        font: $commitFontFamily;
         overflow-y: scroll;
       }
 
       .commentCode {
         padding: 5px;
         background: #F0EEEA;
-        border: @standardBorder;
+        border: $standardBorder;
       }
     }
 
     .commentControls {
       margin: 10px 0;
       width: 100%;
-      .flexbox;
-      .boxPack(end);
+      @include flexbox;
+      @include boxPack(end);
       .buttonSpacer {
-        .flexbox;
-        .flex(1);
-        .boxOrdinalGroup(1);
+        @include flexbox;
+        @include flex(1);
+        @include boxOrdinalGroup(1);
         margin-left: 10px;
       }
       .commentCancel {
-        .flexbox;
-        .boxOrdinalGroup(2);
+        @include flexbox;
+        @include boxOrdinalGroup(2);
         margin-right: 3px;
       }
       .commentSubmit {
-        .flexbox;
-        .boxOrdinalGroup(3);
+        @include flexbox;
+        @include boxOrdinalGroup(3);
         margin-right: 10px;
       }
     }
@@ -972,7 +1040,7 @@ table.commitsList, table.authorList {
   }
 
   .fileSpecial {
-    font: 14px @sansFont;
+    font: 14px $sansFont;
     text-align: center;
     padding: 5px;
     font-style: italic;
@@ -980,8 +1048,8 @@ table.commitsList, table.authorList {
 
   .chunkBreak {
     font-size: 14px;
-    background-color: @sunkenColor;
-    color: @lightTextColor;
+    background-color: $sunkenColor;
+    color: $lightTextColor;
     td {
       position: relative;
       .breakMessage {
@@ -991,8 +1059,8 @@ table.commitsList, table.authorList {
         width: 470px;
       }
     }
-    &:not(.initialBreak) { border-top: @standardBorder; }
-    &:not(.finalBreak) { border-bottom: @standardBorder; }
+    &:not(.initialBreak) { border-top: $standardBorder; }
+    &:not(.finalBreak) { border-bottom: $standardBorder; }
   }
 
   .diffLine {
@@ -1005,14 +1073,14 @@ table.commitsList, table.authorList {
       }
     }
 
-    &.spacingLine { background-color: @sunkenColor; }
+    &.spacingLine { background-color: $sunkenColor; }
 
     .lineNumber {
-      .noUserSelect;
-      font: 12px @monoFont;
-      background-color: @sunkenColor;
-      color: @lightTextColor;
-      border-right: @standardBorder;
+      @include noUserSelect;
+      font: 12px $monoFont;
+      background-color: $sunkenColor;
+      color: $lightTextColor;
+      border-right: $standardBorder;
       padding: 0 5px;
       vertical-align: text-top;
       width: 3ex;
@@ -1044,7 +1112,7 @@ table.commitsList, table.authorList {
 
     pre {
       padding-top: 2px;
-      font: @commitFontFamily;
+      font: $commitFontFamily;
     }
   }
 
@@ -1053,8 +1121,8 @@ table.commitsList, table.authorList {
 
 // The "log in to do X" prompt boxes.
 #loginPrompt {
-  &.commitSearch { .embossedPanel; }
-  &.commit { .raisedPanel; }
+  &.commitSearch { @include embossedPanel; }
+  &.commit { @include raisedPanel; }
   text-align: center;
   padding: 20px;
 }
@@ -1074,8 +1142,8 @@ table.commitsList, table.authorList {
         top: 50%;
         margin-top: -12px;
         code {
-          font-family: @monoFont;
-          text-shadow: -1px -1px 1px @textShadowColor;
+          font-family: $monoFont;
+          text-shadow: -1px -1px 1px $textShadowColor;
         }
       }
     }
@@ -1088,7 +1156,7 @@ table.commitsList, table.authorList {
 .kbShortcuts.overlay {
   .cellWrapper {
     .container {
-      width: @pageWidth;
+      width: $pageWidth;
       position: relative;
 
       .shortcuts {
@@ -1098,7 +1166,7 @@ table.commitsList, table.authorList {
 
         .title {
           font-size: 30px;
-          text-shadow: 0px -1px 2px @textShadowColor;
+          text-shadow: 0px -1px 2px $textShadowColor;
         }
 
         .close {
@@ -1106,7 +1174,7 @@ table.commitsList, table.authorList {
           top: 0px;
           right: 0px;
           margin: 15px;
-          a { .closeLinks; }
+          a { @include closeLinks; }
         }
 
         .tableWrapper {
@@ -1131,14 +1199,14 @@ table.commitsList, table.authorList {
 
                   &.keys {
                     width: 35%;
-                    font: 14px @monoFont;
+                    font: 14px $monoFont;
                     text-align: right;
-                    text-shadow: -1px -1px 1px @textShadowColor;
+                    text-shadow: -1px -1px 1px $textShadowColor;
                   }
                   &.description {
                     width: 65%;
                     text-align: left;
-                    border-left: 2px solid @coreRed;
+                    border-left: 2px solid $coreRed;
                   }
                 }
               }
@@ -1198,8 +1266,8 @@ table.commitsList, table.authorList {
   // This needs some width set, but it will fit itself to the
   // size of the autocompleting input box.
   width: 0px;
-  border: @standardBorder;
-  background: @almostWhite;
+  border: $standardBorder;
+  background: $almostWhite;
 
   li {
     list-style: none;
@@ -1209,8 +1277,8 @@ table.commitsList, table.authorList {
       width: 99%;
       padding: 2px;
       font-size: 14px;
-      color: @textColor;
-      font-family: @monoFont;
+      color: $textColor;
+      font-family: $monoFont;
       font-size: 12px;
       &:hover { text-decoration: none; }
     }

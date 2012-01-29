@@ -1,4 +1,4 @@
-@import "/mixins";
+@import "mixins";
 
 /*
  * Tipsy tooltip styles (custom, based on packaged css)
@@ -11,16 +11,16 @@
   z-index: 1000;
 }
 .tipsy-inner {
-  .roundedCorners(2px);
-  background-color: @textColor;
-  color: @almostWhite;
+  @include roundedCorners(2px);
+  background-color: $textColor;
+  color: $almostWhite;
   max-width: 200px;
   padding: 5px 8px 4px 8px;
   text-align: center;
-  font-family: @sansFont;
+  font-family: $sansFont;
   code {
-    font-family: @monoFont;
-    text-shadow: -1px -1px 1px @textShadowColor;
+    font-family: $monoFont;
+    text-shadow: -1px -1px 1px $textShadowColor;
   }
 }
 
@@ -29,18 +29,18 @@
   width: 0;
   height: 0;
   line-height: 0;
-  border: 5px dashed @textColor;
+  border: 5px dashed $textColor;
 }
 
 /* Rules to colour arrows */
 .tipsy-arrow-n {
-  border-bottom-color: @textColor; }
+  border-bottom-color: $textColor; }
 .tipsy-arrow-s {
-  border-top-color: @textColor; }
+  border-top-color: $textColor; }
 .tipsy-arrow-e {
-  border-left-color: @textColor; }
+  border-left-color: $textColor; }
 .tipsy-arrow-w {
-  border-right-color: @textColor; }
+  border-right-color: $textColor; }
 
 .tipsy-n .tipsy-arrow {
   top: 0px;
