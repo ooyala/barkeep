@@ -11,7 +11,7 @@ and `>` marks contined lines):
     > ' $file; done
     $ for file in *.css; do sed -i "" '$a\
     > }' $file; done
-    $ for f in *.css; do mv ${f/%.css/.less}; done
+    $ for f in *.css; do mv ${f/%.css/.scss}; done
 
 I tried this with a bunch of files initially, and threw out the really terrible themes. In my opinion, the
 best ones are:
