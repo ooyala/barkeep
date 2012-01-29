@@ -55,3 +55,7 @@ describe "search query parser", ->
   it "should not confuse words for sha", ->
     sampleWords = ["sevens", "migrations"]
     expect(@parse(word)["paths"]).toEqual([word]) for word in sampleWords
+
+  it "should allow for some synonyms instead of the intended keywords", ->
+    for keyword, synonym of { branches: "branch", authors: "author", repos: "repo" }
+      expect(@parse("#{synonym}: foobar")[keyword]).toEqual "foobar"

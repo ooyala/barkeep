@@ -59,6 +59,17 @@ class window.SmartSearch
     if currentKey?
       emitKeyValue(currentKey, currentValue.join(","))
 
+    # Allow for some synonym keywords
+    SYNONYMS =
+      author: "authors"
+      branch: "branches"
+      repo: "repos"
+
+    for synonym, keyword of SYNONYMS
+      if query[synonym]?
+        query[keyword] ?= query[synonym]
+        delete query[synonym]
+
     query
 
   search: ->
