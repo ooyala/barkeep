@@ -54,5 +54,4 @@ describe "search query parser", ->
 
   it "should not confuse words for sha", ->
     sampleWords = ["sevens", "migrations"]
-    for word in sampleWords
-      expect(@parse(word)["paths"]).toEqual([word])
+    expect(@parse(word)["paths"]).toEqual([word]) for word in sampleWords
