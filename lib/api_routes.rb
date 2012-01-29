@@ -13,7 +13,6 @@ class Barkeep < Sinatra::Base
     repo_path = File.join(REPOS_ROOT, repo_name)
     Grit::Git.new(repo_path).clone({}, params[:url], repo_path)
     MetaRepo.instance.load_repos
-    "OK"
   end
 
   get "/api/commits/:repo_name/:sha" do
