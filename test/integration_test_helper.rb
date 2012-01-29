@@ -3,6 +3,7 @@ require "pathological"
 require "lib/script_environment"
 require "minitest/autorun"
 require "scope"
+require "test/http_test_helper"
 
 FIXTURES_PATH = File.join(File.dirname(__FILE__), "/fixtures")
 TEST_REPO_NAME = "test_git_repo"

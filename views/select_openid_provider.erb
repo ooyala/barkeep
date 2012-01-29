@@ -4,7 +4,7 @@
  %>
 <div id="selectOpenIdProvider">
   <h2>Select one of these services to login with:</h2>
-  <ol>
+  <ol id="openIdProviders">
     <% openid_providers.each_with_index do |provider_url, index| %>
       <li>
         <a href="/login/login_using_openid_provider?provider_id=<%= index %>">
