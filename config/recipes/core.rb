@@ -85,7 +85,6 @@ namespace :fezzik do
   remote_task :start do
     puts "starting from #{capture_output { run "readlink #{current_path}" }}"
     run "cd #{current_path} && source config/environment.sh && ./bin/run_app.sh"
-    run "cd #{current_path} && source config/environment.sh && bundle exec rake resque:start clockwork:start"
   end
 
   desc "kills the application by searching for the specified process name"
@@ -97,7 +96,10 @@ namespace :fezzik do
     sleep 3
     run "(kill -9 `ps -ef | grep 'thin start -p 80' | grep -v grep | awk '{print $2}'` " +
         "2> >(grep -v 'usage: kill') || true)"
-    run "cd #{current_path} && source config/environment.sh && rake clockwork:stop resque:stop"
+    run "kill `ps -ef | grep 'resque' | grep -v grep | awk '{print $2}'`" +
+        " 2> >(grep -v 'usage: kill') || true"
+    run "kill `ps -ef | grep 'run_clockwork' | grep -v grep | awk '{print $2}'`" +
+        " 2> >(grep -v 'usage: kill') || true"
   end
 
   desc "restarts the application"
