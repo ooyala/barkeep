@@ -368,7 +368,8 @@ window.Commit =
         commit_sha: $("#commit").attr("sha")
       }
       success: (bannerHtml) ->
-        $("#approveButton").replaceWith(bannerHtml)
+        $("#approveButton").replaceWith(Snippets.disapproveButton)
+        $("#disapproveButton").after(bannerHtml)
     })
 
   onDisapproveClicked: (e) ->
@@ -380,7 +381,8 @@ window.Commit =
         commit_sha: $("#commit").attr("sha")
       }
       success: ->
-        $("#approvedBanner").replaceWith(Snippets.approveButton)
+        $("#disapproveButton").replaceWith(Snippets.approveButton)
+        $("#approvedBanner").remove()
     })
 
   toggleFullDiff: ->
