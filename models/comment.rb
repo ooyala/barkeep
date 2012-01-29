@@ -17,11 +17,11 @@ class Comment < Sequel::Model
   many_to_one :commit
 
   add_filter(:text) { |str| StringFilter.link_embedded_images(str) }
-  add_filter(:text) { |str| StringFilter.markdown(str) }
-  add_filter(:text) { |str| StringFilter.link_jira_issue(str) }
   add_filter(:text) do |str, comment|
     StringFilter.replace_shas_with_links(str, comment.commit.git_repo.name)
   end
+  add_filter(:text) { |str| StringFilter.markdown(str) }
+  add_filter(:text) { |str| StringFilter.link_jira_issue(str) }
 
   # Some comments can be about the entire commit, and not about a specific line in a file.
   def general_comment?() commit_file_id.nil? end

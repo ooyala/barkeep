@@ -21,7 +21,7 @@ class RedcarpetManager
     :no_images => false,
     :no_links => false,
     :no_styles => false,
-    :safe_links_only => true,
+    :safe_links_only => false,
     :with_toc_data => false,
     :hard_wrap => true,
     :xhtml => false

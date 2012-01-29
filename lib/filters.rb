@@ -6,11 +6,14 @@ StringFilter.define_filter :markdown do |str|
   RedcarpetManager.redcarpet_pygments.render(str)
 end
 
+# Converts repo:sha to a link to the commit
+# If repo: is omitted then uses the provided repo
+# Only matches when starting a new line or preceded by a space character
 StringFilter.define_filter :replace_shas_with_links do |str, repo_name|
-  str.gsub(/(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{40})/) do
+  str.gsub(/(?<=^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{40})/m) do
     repo = Regexp.last_match(2) || repo_name
     sha = Regexp.last_match(3)
-    "<a href='/commits/#{repo}/#{sha}'>#{sha[0..6]}</a>"
+    "[#{sha[0..6]}](/commits/#{repo}/#{sha})"
   end
 end
 
