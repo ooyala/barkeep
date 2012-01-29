@@ -36,7 +36,7 @@ window.Commit =
       "k": => @selectNextLine false
       "shift+n": => @scrollFile true
       "shift+p": => @scrollFile false
-      "e": => @toggleFullDiff()
+      "e": => @showFullDiff()
       "n": => @scrollChunk true
       "p": => @scrollChunk false
       "b": => @toggleSideBySide true
@@ -439,28 +439,9 @@ window.Commit =
         $("#approvedBanner").remove()
     })
 
-  toggleFullDiff: ->
-    # Performance optimization: instead of using toggle(), which checks each element if it's visible,
-    # only check the first diffLine on the page to see if we need to show() or hide().
-    firstNonChunk = $(document).find(".diffLine").not(".chunk").filter(":first")
-    firstChunk = $(document).find(".diffLine.chunk:first")
-    if firstNonChunk.css("display") == "none"
-      $(".chunkBreak").hide()
-      $(".diffLine").not(".chunk").show()
-
-      # Hiding and showing the .chunk-start lines is a hack to make them re-render properly in Webkit.
-      # Worse, the only way I could get it to work is by introducing a very slight delay (the 1ms argument to
-      # show().
-      #
-      # TODO(caleb): Figure out a less hacky solution
-      $(".diffLine.chunk-start").hide()
-      $(".diffLine.chunk-start").show(1)
-
-      window.scrollTo(0, firstChunk.offset().top)
-    else
-      $(".diffLine").not(".chunk").hide()
-      $(".chunkBreak").show()
-      $(".diffLine.selected").filter(":hidden").removeClass("selected")
+  showFullDiff: ->
+    $(".diffLine").show()
+    $(".contextExpander").remove()
 
   toggleSideBySide: (animate = true) ->
     return if @sideBySideAnimating

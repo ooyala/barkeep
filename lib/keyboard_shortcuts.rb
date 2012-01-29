@@ -30,7 +30,7 @@ module KeyboardShortcuts
     "n" => "Next diff chunk in commit",
     "p" => "Previous diff chunk in commit",
     "a then a" => "Toggle approval of commit",
-    "e" => "Toggle full diff view",
+    "e" => "Show full diff view",
     "b" => "Toggle side-by-side diff view",
     "r" => "Request code review"
   }
