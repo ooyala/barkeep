@@ -331,7 +331,11 @@ class Barkeep < Sinatra::Base
       ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
       email = ax_resp["http://axschema.org/contact/email"][0]
       response.set_cookie "email", :value => email, :path => "/"
-      User.new(:email => email, :name => email).save unless User.find :email => email
+      unless User.find(:email => email)
+        # If there are no admin users yet, create one.
+        permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
+        User.new(:email => email, :name => email, :permission => permission).save
+      end
       redirect request.cookies["login_started_url"] || "/"
     end
   end
