@@ -28,8 +28,8 @@ namespace :fezzik do
     `rm -Rf /tmp/#{app}`
     # --delete removes files in the dest directory which no longer exist in the source directory.
     # --safe-links copies symlinks as symlinks, but ignores any which point outside of the tree.
-    command = "rsync -r --archive --safe-links --delete --exclude=.git --exclude=log --exclude=tmp " +
-        "#{local_path}/* '/tmp/#{app}/'"
+    command = "rsync -r --archive --safe-links --delete --exclude=.git* --exclude=log --exclude=tmp " +
+        "#{local_path}/ '/tmp/#{app}/'"
     puts `#{command}`
     # Write out a bit of useful deploy-time info
     `./config/recipes/write_git_info.sh > /tmp/#{app}/git_deploy_info.txt`
@@ -66,8 +66,9 @@ namespace :fezzik do
   remote_task :install_gems do
     puts "installing gems"
 
-    run "(gem list bundler | grep bundler > /dev/null || gem install bundler --no-ri --no-rdoc)" +
-        " && rbenv rehash && cd #{current_path} && bundle install"
+    run "cd #{current_path} && rbenv rehash" +
+        " && (gem list bundler | grep bundler > /dev/null || gem install bundler --no-ri --no-rdoc)" +
+        " && bundle install"
   end
 
   desc "runs migrations from root of project directory"
