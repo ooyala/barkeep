@@ -37,7 +37,7 @@ require "resque_jobs/deliver_review_request_emails.rb"
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 LOGIN_WHITELIST_ROUTES = [
-  /^login/, /^logout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^api\/.*/,
+  /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^admin/, /^statusz/, /^api\/.*/,
   /^.*\.css/, /^.*\.js/, /^.*\.woff/
 ]
 
@@ -113,7 +113,7 @@ class Barkeep < Sinatra::Base
       response.set_cookie "login_started_url", :value => request.url, :path => "/"
       redirect(OPENID_PROVIDERS.size == 1 ?
          get_openid_login_redirect(OPENID_PROVIDERS.first) :
-        "/login/select_openid_provider")
+        "/signin/select_openid_provider")
     end
   end
 
@@ -121,26 +121,26 @@ class Barkeep < Sinatra::Base
     redirect "/commits"
   end
 
-  get "/login" do
+  get "/signin" do
     response.set_cookie "login_started_url", :value => request.referrer, :path => "/"
     redirect(OPENID_PROVIDERS.size == 1 ?
        get_openid_login_redirect(OPENID_PROVIDERS.first) :
-      "/login/select_openid_provider")
+      "/signin/select_openid_provider")
   end
 
-  get "/login/select_openid_provider" do
+  get "/signin/select_openid_provider" do
     erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERS }
   end
 
   # Users navigate to here from select_openid_provider.
   # - provider_id: an integer indicating which provider from OPENID_PROVIDERS to use for authentication.
-  get "/login/login_using_openid_provider" do
+  get "/signin/login_using_openid_provider" do
     provider = OPENID_PROVIDERS[params[:provider_id].to_i]
     halt 400, "OpenID provider not found." unless provider
     redirect get_openid_login_redirect(provider)
   end
 
-  get "/logout" do
+  get "/signout" do
     response.delete_cookie "email"
     redirect request.referrer
   end
@@ -318,7 +318,7 @@ class Barkeep < Sinatra::Base
   end
 
   # Handle login complete from openid provider.
-  get "/login/complete" do
+  get "/signin/complete" do
     @openid_consumer ||= OpenID::Consumer.new(session,
         OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
     openid_response = @openid_consumer.complete(params, request.url)
@@ -504,7 +504,7 @@ class Barkeep < Sinatra::Base
       required_fields.each { |field| ax_request.add(OpenID::AX::AttrInfo.new(field, nil, true)) }
       oidreq.add_extension(ax_request)
       host = "#{request.scheme}://#{request.host_with_port}"
-      oidreq.redirect_url(host, "#{host}/login/complete")
+      oidreq.redirect_url(host, "#{host}/signin/complete")
     end
   end
 

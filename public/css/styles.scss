@@ -429,8 +429,8 @@ table.commitsList, table.authorList {
   }
 }
 
-// The "log in to do X" prompt boxes.
-#loginPrompt {
+// The "Sign in to do X" prompt boxes.
+#signinPrompt {
   &.commitSearch { @include embossedPanel; }
   &.commit { @include raisedPanel; }
   text-align: center;
@@ -562,7 +562,7 @@ table.commitsList, table.authorList {
 
 
 /*
- * Login styles.
+ * Signin styles.
  */
 #selectOpenIdProvider {
   width: 500px;
