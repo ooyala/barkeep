@@ -1,0 +1,227 @@
+/*
+ * Styles for the saved search page.
+ */
+@import "mixins";
+.searchPanel { @include embossedPanel; }
+
+.savedSearchPlaceholder {
+  border: 3px dashed #ccc;
+  margin-bottom: 19px;
+  height: 80px;
+}
+
+.handle { cursor: move; }
+
+.savedSearch, .statistic {
+  position: relative;
+  /* We want the background of a saved search to be opaque while we're dragging it around. */
+  background-image: url(/images/background.png);
+  padding-bottom: 20px;
+  margin-bottom: 8px;
+  padding-right: 30px;
+  /* This min-height needs to be tall enough to accommodate showing the "search options" drop-down menu
+   * without clipping.*/
+  min-height: 76px;
+  /* overflow is hidden because we slide pages of commits in saved searches off the edges of the page. */
+  overflow: hidden;
+  .header {
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: $standardBorder;
+
+    .name {
+      font-size: 16px;
+      font-weight: normal;
+    }
+  }
+}
+
+.savedSearch, .statistic.chattyCommits {
+  width: 100%;
+
+  .header {
+    .name {
+      width: 750px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .dragHandle {
+      position: absolute;
+      right: 0;
+
+      width: $dragHandleWidth;
+      height: 20px;
+      background-repeat: no-repeat;
+      opacity: 0.8;
+      background: transparent url(/images/drag_handle.png) no-repeat center bottom;
+      cursor: move;
+      &:hover {
+        background-color: #f1f1f1;
+        opacity: 1.0;
+      }
+    }
+
+    a.delete {
+      padding-right: 5px;
+      float: right;
+      @include closeLinks;
+    }
+
+    .searchOptions {
+      font-size: 12px;
+      position: absolute;
+      right: 0;
+      margin-right: $dragHandleWidth + 28;
+      padding-right: 5px;
+      padding-top: 6px;
+
+      a.searchOptionsLink {
+        /* Horizontal padding so that when you click on the link, the background fill looks nicer. */
+        padding: 0 2px;
+        padding-top: 1px;
+      }
+
+      /* This container encompasses the saved options menu. It has "overflow: hidden" so that the search
+       * options menu can appear to slide in from the top of this container. */
+      .searchOptionsMenuContainer {
+        top: 22px;
+        left: -39px;
+        position: absolute;
+        overflow: hidden;
+        /* We don't want this invisible, transparent container to capture mouse clicks. */
+        pointer-events: none;
+        height: 100px;
+        width: 200px;
+        z-index: 10;
+
+        .searchOptionsMenu {
+          @include raisedPanel;
+          position: absolute;
+          pointer-events: auto;
+          background-color: $almostWhite;
+          padding: 5px 8px;
+          /* This menu bounces in when it first appears, and a bounce animation requires extra height. */
+          padding-top: 20px;
+          white-space: nowrap;
+          ul {
+            list-style-type: none;
+            padding: 0;
+            li { margin: 5px 0; }
+          }
+          input[type=checkbox] { margin-right: 3px; }
+        }
+      }
+    }
+  }
+
+  /* This is the transparent overlay that grays out a savedSearch. */
+  .maskingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-top: 22px;
+    margin-right: 5px;
+    background-color: white;
+    background-image: url(/images/background.png);
+    opacity: 0;
+  }
+
+  /* NOTE(philc): This class is added to an element that's being dragged. It would be nice if we coud rename
+   * it. */
+  &.ui-sortable-helper { opacity: 0.8; }
+
+  .noResults {
+    font-size: 13px;
+    font-style: italic;
+    padding-left: 5px;
+    margin-left: 13px;
+  }
+
+  /* The controls used for navigating through pages of commits. */
+  .pageControls {
+    font-size: 12px;
+    position: absolute;
+    margin-top: -2px;
+    right: 9px;
+    bottom: 4px;
+
+    span, a {
+      display: block;
+      float: left;
+      width: 12px;
+      color: #666;
+      cursor: default;
+      text-align: center;
+    }
+    a {
+      border: $standardBorder;
+      padding-bottom: 2px;
+      &:hover, &.active { background-color: #e0e0e0; }
+      &.disabled {
+        color: #bbb;
+        &:hover, &.active { background-color: transparent; }
+      }
+    }
+    .pageNumber {
+      border: 1px solid transparent;
+      margin: 0 1px;
+    }
+  }
+}
+
+/* The actual commit search box. */
+#commitSearch {
+  padding: 10px 8px;
+  width: 80%;
+  position: relative;
+
+  table { border-collapse: collapse; }
+  td { padding: 0 3px; }
+  td:first-of-type { padding-left: 0; }
+  margin-bottom: 20px;
+
+  input[name=filter_value] {
+    padding: 2px;
+    height: 22px;
+    width: 400px;
+    box-shadow: inset 0px 5px 5px $sunkenColor;
+    font-size: 16px;
+    background-color: $almostWhite;
+    border: $standardBorder;
+  }
+  select { font-size: 14px; }
+  button.submit {
+    font-size: 16px;
+    /* Have the submit button be roughly the same height as the text field. */
+    height: 28px;
+    padding: 0 16px 3px 16px;
+  }
+  .example {
+    color: $lightTextColor;
+    font-size: 12px;
+    font-weight: 300;
+    .keyword { font-weight: normal; }
+  }
+
+  #timeRangeOptions {
+    text-align: right;
+    width: 180px;
+    position: absolute;
+    right: -170px;
+    top: 0;
+
+    span {
+      font-size: 13px;
+      margin-right: 3px;
+    }
+    select { font-size: 12px; }
+  }
+}
+
+// Can't get the search button to render in the same way in FF/chrome without individual browser tweaking.
+.webkit #commitSearch button.submit { padding-bottom: 0; }
+
+/* For some reason webkit renders this select box smaller than Firefox does. */
+.webkit #commitSearch select { font-size: 16px; }

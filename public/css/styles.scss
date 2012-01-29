@@ -1,10 +1,16 @@
 @import "mixins";
+@import "saved_search";
+@import "diff_view";
 @import "code_styles/default";
 @import "tipsy_styles";
 
+
+/*
+ * Common styles shared by all pages.
+ */
+
 /* NOTE(caleb): There is a known issue where our web font flickers in FF. The solution is a JS
- * workaround:
- * http://joshuamcginnis.com/2010/08/17/how-to-fix-the-font-face-flicker-issue-in-firefox/
+ * workaround: http://joshuamcginnis.com/2010/08/17/how-to-fix-the-font-face-flicker-issue-in-firefox/
  * We can drop this in later if we want. It's kind of silly how firefox manages web fonts IMO.
  */
 @font-face {
@@ -162,6 +168,33 @@ button.standard, input[type=button], input[type=submit] {
 
 .webkit button.standard { font-weight: bold; }
 
+/* jQuery autocomplete styles. */
+.ui-widget {
+  /* This needs some width set, but it will fit itself to the  size of the autocompleting input box. */
+  width: 0px;
+  border: $standardBorder;
+  background: $almostWhite;
+
+  li {
+    list-style: none;
+    a {
+      display: inline-block;
+      width: 99%;
+      padding: 2px;
+      font-size: 14px;
+      color: $textColor;
+      font-family: $monoFont;
+      font-size: 12px;
+      &:hover { text-decoration: none; }
+    }
+
+    #ui-active-menuitem { background: #B8D2FA; }
+  }
+}
+
+.clear { clear: both; }
+
+
 /*
  * Page chrome styles.
  */
@@ -278,181 +311,9 @@ header {
   }
 }
 
-/*
- * Saved searches styles.
- */
-
-.searchPanel { @include embossedPanel; }
-
-.savedSearchPlaceholder {
-  border: 3px dashed #ccc;
-  margin-bottom: 19px;
-  height: 80px;
-}
-
-.handle { cursor: move; }
-
-.savedSearch, .statistic {
-  position: relative;
-  /* We want the background of a saved search to be opaque while we're dragging it around. */
-  background-image: url(/images/background.png);
-  padding-bottom: 20px;
-  margin-bottom: 8px;
-  padding-right: 30px;
-  /* This min-height needs to be tall enough to accommodate showing the "search options" drop-down menu
-   * without clipping.*/
-  min-height: 76px;
-  /* overflow is hidden because we slide pages of commits in saved searches off the edges of the page. */
-  overflow: hidden;
-  .header {
-    margin-bottom: 5px;
-    padding-bottom: 3px;
-    border-bottom: $standardBorder;
-
-    .name {
-      font-size: 16px;
-      font-weight: normal;
-    }
-  }
-}
-
-.savedSearch, .statistic.chattyCommits {
-  width: 100%;
-
-  .header {
-    .name {
-      width: 750px;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .dragHandle {
-      position: absolute;
-      right: 0;
-
-      width: $dragHandleWidth;
-      height: 20px;
-      background-repeat: no-repeat;
-      opacity: 0.8;
-      background: transparent url(/images/drag_handle.png) no-repeat center bottom;
-      cursor: move;
-      &:hover {
-        background-color: #f1f1f1;
-        opacity: 1.0;
-      }
-    }
-
-    a.delete {
-      padding-right: 5px;
-      float: right;
-      @include closeLinks;
-    }
-
-    .searchOptions {
-      font-size: 12px;
-      position: absolute;
-      right: 0;
-      margin-right: $dragHandleWidth + 28;
-      padding-right: 5px;
-      padding-top: 6px;
-
-      a.searchOptionsLink {
-        /* Horizontal padding so that when you click on the link, the background fill looks nicer. */
-        padding: 0 2px;
-        padding-top: 1px;
-      }
-
-      /* This container encompasses the saved options menu. It has "overflow: hidden" so that the search
-       * options menu can appear to slide in from the top of this container. */
-      .searchOptionsMenuContainer {
-        top: 22px;
-        left: -39px;
-        position: absolute;
-        overflow: hidden;
-        /* We don't want this invisible, transparent container to capture mouse clicks. */
-        pointer-events: none;
-        height: 100px;
-        width: 200px;
-        z-index: 10;
-
-        .searchOptionsMenu {
-          @include raisedPanel;
-          position: absolute;
-          pointer-events: auto;
-          background-color: $almostWhite;
-          padding: 5px 8px;
-          /* This menu bounces in when it first appears, and a bounce animation requires extra height. */
-          padding-top: 20px;
-          white-space: nowrap;
-          ul {
-            list-style-type: none;
-            padding: 0;
-            li { margin: 5px 0; }
-          }
-          input[type=checkbox] { margin-right: 3px; }
-        }
-      }
-    }
-  }
-
-  /* This is the transparent overlay that grays out a savedSearch. */
-  .maskingOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin-top: 22px;
-    margin-right: 5px;
-    background-color: white;
-    background-image: url(/images/background.png);
-    opacity: 0;
-  }
-
-  /* NOTE(philc): This class is added to an element that's being dragged. It would be nice if we coud rename
-   * it. */
-  &.ui-sortable-helper { opacity: 0.8; }
-
-  .noResults {
-    font-size: 13px;
-    font-style: italic;
-    padding-left: 5px;
-    margin-left: 13px;
-  }
-
-  /* The controls used for navigating through pages of commits. */
-  .pageControls {
-    font-size: 12px;
-    position: absolute;
-    margin-top: -2px;
-    right: 9px;
-    bottom: 4px;
-
-    span, a {
-      display: block;
-      float: left;
-      width: 12px;
-      color: #666;
-      cursor: default;
-      text-align: center;
-    }
-    a {
-      border: $standardBorder;
-      padding-bottom: 2px;
-      &:hover, &.active { background-color: #e0e0e0; }
-      &.disabled {
-        color: #bbb;
-        &:hover, &.active { background-color: transparent; }
-      }
-    }
-    .pageNumber {
-      border: 1px solid transparent;
-      margin: 0 1px;
-    }
-  }
-}
 
 /*
- * Styles for list of commits
+ * Styles for list of commits. These lists appear in saved searches as well as the stats page.
  */
 table.commitsList, table.authorList {
   width: $pageWidth + 30px; // Extra 30px for the comment number bubbles
@@ -526,6 +387,10 @@ table.commitsList, table.authorList {
   .selected .selectArrow { background: url(/images/right_arrow.png) no-repeat 0px 2px; }
 }
 
+
+/*
+ * Styles for the stats page.
+ */
 #stats {
   #statistics {
     .statistic {
@@ -562,561 +427,6 @@ table.commitsList, table.authorList {
       .commitsList { width: $pageWidth; }
     }
   }
-}
-
-/*
- * Layout for the commits dashboard page.
- */
-#filterControls {
-  position: absolute;
-  right: 0;
-
-  #showUnreviewedOnly {
-    font-size: 12px;
-    white-space: nowrap;
-  }
-}
-
-#commitSearch {
-  padding: 10px 8px;
-  width: 80%;
-  position: relative;
-
-  table { border-collapse: collapse; }
-  td { padding: 0 3px; }
-  td:first-of-type { padding-left: 0; }
-  margin-bottom: 20px;
-
-  input[name=filter_value] {
-    padding: 2px;
-    height: 22px;
-    width: 400px;
-    box-shadow: inset 0px 5px 5px $sunkenColor;
-    font-size: 16px;
-    background-color: $almostWhite;
-    border: $standardBorder;
-  }
-  select { font-size: 14px; }
-  button.submit {
-    font-size: 16px;
-    /* Have the submit button be roughly the same height as the text field. */
-    height: 28px;
-    padding: 0 16px 3px 16px;
-  }
-  .example {
-    color: $lightTextColor;
-    font-size: 12px;
-    font-weight: 300;
-    .keyword { font-weight: normal; }
-  }
-
-  #timeRangeOptions {
-    text-align: right;
-    width: 180px;
-    position: absolute;
-    right: -170px;
-    top: 0;
-
-    span {
-      font-size: 13px;
-      margin-right: 3px;
-    }
-    select { font-size: 12px; }
-  }
-}
-
-// Can't get the search button to render in the same way in FF/chrome without individual browser tweaking.
-.webkit #commitSearch button.submit { padding-bottom: 0; }
-
-/* For some reason webkit renders this select box smaller than Firefox does. */
-.webkit #commitSearch select { font-size: 16px; }
-
-/*
- * Diff view styles.
- */
-
-#commit {
-  /* The ~ is the less css escape character -- this enables us to use the X/Y line-height shorthand syntax. */
-  $commitFontFamily: 12px / 16px $monoFont;
-
-  text-align: center;
-  #center > * { text-align: left; }
-
-  #marginSizing {
-    width: 1px;
-    font: $commitFontFamily;
-  }
-
-  #commitMetadata {
-    @include flexbox;
-    @include embossedPanel;
-    box-shadow: none;
-
-    width: $pageWidth - 2 * 10 - 2;
-    margin: 23px auto 0px auto;
-    padding: 10px;
-    font-size: 0.8em;
-
-    // commitMetadata should appear above the reviewRequest box
-    // so the "roll up" action hides the reviewRequest behind commitMetadata.
-    position: relative;
-    z-index: 2;
-
-    #messageAndAuthor {
-      @include flexbox(vertical);
-      width: 730px;
-
-      #messageMetadata {
-        @include flexbox(vertical);
-        @include flex;
-
-        .name {
-          margin-bottom: 10px;
-            color: $lightTextColor;
-          .repoName {
-            font: 18px $sansFont;
-            font-variant: small-caps;
-          }
-          .sha { font: 14px $monoFont; }
-        }
-
-        .message {
-          margin-bottom: 10px;
-          font: $commitFontFamily;
-        }
-
-      }
-
-      #authorMetadata {
-        @include flexbox(horizontal);
-        display: block;
-
-        .avatar {
-          @include gravatar(50px);
-          margin-right: 5px;
-        }
-
-        .authorInfo {
-          display: inline-block;
-          vertical-align: middle;
-          line-height: 1.25em;
-
-          .email, .date { color: $lightTextColor; }
-        }
-      }
-    }
-
-    #metadataButtons {
-      @include flexbox(vertical);
-      @include boxAlign(end);
-      @include flex;
-
-      button {
-        display: block;
-        font-size: 14px;
-        white-space: nowrap;
-      }
-
-      #disapproveButton { margin-bottom: 8px; }
-
-      #approveButton {
-        margin-bottom: 40px;
-
-        /* These styles were taken from our "fancy button" style definition. Only the color is different. */
-        $greenApproveButton: #42C050;
-
-        border: 1px solid darken($greenApproveButton, 20%);
-        /* This darker border helps distinguish the drop shadow. */
-        border-bottom: 1px solid darken($greenApproveButton, 25%);
-        text-shadow: 0px -1px 1px darken($greenApproveButton, 30%);
-
-        background-color: darken($greenApproveButton, 18%);
-
-        background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, lighten($greenApproveButton, 3%)), color-stop(0.95, darken($greenApproveButton, 10%)));
-        background-image: -moz-linear-gradient(top, lighten($greenApproveButton, 3%) 0%,
-          darken($greenApproveButton, 15%) 95%);
-
-        &:hover {
-          border: 1px solid darken(#890128, 25%);
-
-          background-image: -webkit-gradient(linear, left top, left bottom,
-            color-stop(0, lighten($greenApproveButton, 8%)),
-            color-stop(0.95, darken($greenApproveButton, 10%)));
-          background-image: -moz-linear-gradient(top, lighten($greenApproveButton, 10%) 0%,
-            darken($greenApproveButton, 15%) 95%);
-        }
-
-        &:active { background-image: none; }
-      }
-
-      .approvedBy, .approvedAt {
-        color: $lightTextColor;
-        text-align: center;
-        font-size: 12px;
-        margin-bottom: 4px;
-      }
-
-      #minorButtons {
-        @include flexbox(vertical);
-        @include boxPack(end);
-        @include flex;
-
-        button {
-          font-size: 11px;
-          width: 132px;
-          margin-top: 8px;
-        }
-      }
-    }
-  }
-
-  #reviewRequestContainer {
-    width: $pageWidth;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-
-    #reviewRequest {
-      @include raisedPanel;
-      position: absolute;
-      left: ($pageWidth - 600px) / 2;
-      top: -100px;
-      width: 600px;
-      min-height: 100px;
-      text-align: center;
-      font-size: 14px;
-      display: none;
-
-      div { margin: 50px 30px 30px 30px; }
-
-      #requestInput {
-        #authorInput {
-          width: 300px;
-          height: 19px;
-          margin-left: 5px;
-        }
-
-        button {
-          display: inline-block;
-          margin-left: 5px;
-          padding: 4px;
-        }
-      }
-
-      #requestSubmitted {
-        display: none;
-        color: green;
-      }
-    }
-  }
-
-  #commitSummary {
-    margin: 25px auto;
-    width: $pageWidth;
-
-    #filesChanged {
-      font: 13px $monoFont;
-
-      border-collapse: collapse;
-      width: 100%;
-
-      th {
-        font: 14px $sansFont;
-        font-weight: bold;
-        text-align: center;
-      }
-      tr.total {
-        font-weight: bold;
-        td.path { text-align: right; }
-      }
-      td {
-        border-top: $standardBorder;
-        padding: 3px 5px 1px 5px;
-        list-style: none;
-        &.path { width: 100%; }
-        &.linesAdded, &.linesRemoved {
-          padding: 0 10px;
-          text-align: right;
-        }
-        &.linesAdded { color: #58BC0F; }
-        &.linesRemoved { color: #E11D1E; }
-        a {
-          color: $lightTextColor;
-          &:active { background: none; }
-        }
-      }
-    }
-  }
-
-  .dataWrapper {
-    //relative position here to anchor the codeRight element that has absolute position
-    position: relative;
-    width: 100%;
-    background-color: $almostWhite;
-    .data {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .codeLeft, .codeRight {
-      left: 0px;
-      overflow-x: auto;
-    }
-
-    //right side table for code is not diplayed initially, javascript will show it for side-by-side view
-    .codeRight {
-      position: absolute;
-      display: none;
-      top: 0px;
-
-      .rightNumber {
-        border-left: $standardBorder;
-      }
-    }
-  }
-
-  .filename {
-    padding: 5px;
-    background-color: $sunkenColor;
-    border-bottom: $standardBorder;
-    font: 13px $monoFont;
-    a {
-      color: $lightTextColor;
-      &:active { background: none; }
-    }
-  }
-
-  .file {
-    @include embossedPanel;
-    $commentWidth: 850px;
-    // The styles for inline comments are slightly different than general comments: they have no left border.
-    .comment, .commentForm, .commentEditForm {
-      width: $commentWidth;
-      border-left: 0;
-      margin: 8px 0px;
-      textarea { width: $commentWidth - 2px; }
-      .commentBody { img { max-width: 839px; } }
-    }
-
-    // The comment edit form, unlike general comment form, lives inside a comment div, so no margins needed.
-    .commentEditForm {
-      margin: 0;
-    }
-  }
-
-  // Style tweaks only for side-by-side view.
-  .file.sideBySide {
-    $commentWidth: 780px;
-    .comment, .commentForm, .commentEditForm {
-      width: $commentWidth;
-      textarea { width: $commentWidth - 2px; }
-    }
-  }
-
-  .comment, .commentForm, .commentEditForm {
-    @include raisedPanel;
-    background-color: $almostWhite;
-    margin: 8px auto;
-    font-size: 0.8em;
-    width: $pageWidth;
-
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-      width: $pageWidth - 2px;
-      font: 14px $sansFont;
-      border: 0;
-      border-bottom: $standardBorder;
-      box-shadow: 0 1px 0 white;
-      padding-top: 3px;
-      padding-left: 2px;
-      /* Turn off Safari's heavy themed blue outline of focused textfields. */
-      outline: 0;
-      code, pre { font: $commitFontFamily; }
-    }
-
-    .commentPreviewText {
-      border-bottom: $standardBorder;
-      display: none;
-    }
-
-    .heading {
-      .avatar { @include gravatar(25px); }
-      color: $lightTextColor;
-      padding: 5px;
-      position: relative;
-
-      background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, $sunkenColor), color-stop(0.95, darken($sunkenColor, 10%)));
-      background-image: -moz-linear-gradient(top, $sunkenColor 0%, darken($sunkenColor, 10%) 95%);
-
-      background-color: $sunkenColor;
-      .addAComment, .name {
-        font-weight: bold;
-        color: #333333;
-      }
-
-      .permalink a { color: $lightTextColor; }
-
-      .date { color: #666; }
-
-      .buttonContainer {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        button { height: 30px; }
-      }
-    }
-
-    .commentBody {
-      padding: 8px 5px 0 5px;
-      line-height: 1.5em;
-
-      p, div, ol, ul { margin-bottom: 8px; }
-
-      // Prevents red backgrounds on images that are links
-      a { display: inline-block; }
-
-      img {
-        display: block;
-        max-width: $pageWidth - 10px;
-      }
-      ul, ol { margin-left: 20px; }
-      blockquote {
-        border-left: 5px solid lighten($lightTextColor, 30%);
-        padding-left: 4px;
-        color: $lightTextColor;
-      }
-
-      code {
-        display: inline;
-        padding: 0 2px;
-        font: $commitFontFamily;
-        background: #F0EEEA;
-      }
-
-      pre {
-        font: $commitFontFamily;
-        overflow-y: scroll;
-      }
-
-      .commentCode {
-        padding: 5px;
-        background: #F0EEEA;
-        border: $standardBorder;
-      }
-    }
-
-    .commentControls {
-      margin: 10px 0;
-      width: 100%;
-      @include flexbox;
-      @include boxPack(end);
-      .buttonSpacer {
-        @include flexbox;
-        @include flex(1);
-        @include boxOrdinalGroup(1);
-        margin-left: 10px;
-      }
-      .commentCancel {
-        @include flexbox;
-        @include boxOrdinalGroup(2);
-        margin-right: 3px;
-      }
-      .commentSubmit {
-        @include flexbox;
-        @include boxOrdinalGroup(3);
-        margin-right: 10px;
-      }
-    }
-  }
-
-  // Comment edit form is not a panel, so doesn't need panel CSS
-  .commentEditForm {
-    margin: 0;
-    border-left: 0;
-    border-bottom: 0;
-    box-shadow: none;
-  }
-
-  .fileSpecial {
-    font: 14px $sansFont;
-    text-align: center;
-    padding: 5px;
-    font-style: italic;
-  }
-
-  .chunkBreak {
-    font-size: 14px;
-    background-color: $sunkenColor;
-    color: $lightTextColor;
-    td {
-      position: relative;
-      .breakMessage {
-        text-align: right;
-        display: inline-block;
-        font-size: 12px;
-        width: 470px;
-      }
-    }
-    &:not(.initialBreak) { border-top: $standardBorder; }
-    &:not(.finalBreak) { border-bottom: $standardBorder; }
-  }
-
-  .diffLine {
-    &:not(.chunk) { display: none; }
-    &.selected {
-      .code {
-        .removed, .same, .added {
-          background-color: #FFC;
-        }
-      }
-    }
-
-    &.spacingLine { background-color: $sunkenColor; }
-
-    .lineNumber {
-      @include noUserSelect;
-      font: 12px $monoFont;
-      background-color: $sunkenColor;
-      color: $lightTextColor;
-      border-right: $standardBorder;
-      padding: 0 5px;
-      vertical-align: text-top;
-      width: 3ex;
-      min-width: 3ex;
-
-      div {
-        text-align: right;
-        margin-right: 0px;
-      }
-    }
-
-    .code {
-      position: relative;
-      display: block;
-      .marginLine {
-        height: 18px;
-        position: absolute;
-        /* This value is just a guess; it will be adjusted in JS. */
-        top: 0px;
-        left: 820px;
-        right: 0px;
-        border-left: 1px solid black;
-        background-color: #333;
-        opacity: 0.1;
-      }
-      .removed { background-color: #fce2e2; }
-      .added { background-color: #e2fce2; }
-    }
-
-    pre {
-      padding-top: 2px;
-      font: $commitFontFamily;
-    }
-  }
-
-  #loginPrompt { text-align: center; }
 }
 
 // The "log in to do X" prompt boxes.
@@ -1223,6 +533,10 @@ table.commitsList, table.authorList {
   }
 }
 
+
+/*
+ * Styles for Inspire.
+ */
 #inspire {
   #quote {
     margin: 100px auto 30px auto;
@@ -1246,6 +560,10 @@ table.commitsList, table.authorList {
   }
 }
 
+
+/*
+ * Login styles.
+ */
 #selectOpenIdProvider {
   width: 500px;
   margin: 0 auto;
@@ -1260,31 +578,3 @@ table.commitsList, table.authorList {
     }
   }
 }
-
-// jQuery autocomplete styles
-.ui-widget {
-  // This needs some width set, but it will fit itself to the
-  // size of the autocompleting input box.
-  width: 0px;
-  border: $standardBorder;
-  background: $almostWhite;
-
-  li {
-    list-style: none;
-
-    a {
-      display: inline-block;
-      width: 99%;
-      padding: 2px;
-      font-size: 14px;
-      color: $textColor;
-      font-family: $monoFont;
-      font-size: 12px;
-      &:hover { text-decoration: none; }
-    }
-
-    #ui-active-menuitem { background: #B8D2FA; }
-  }
-}
-
-.clear { clear: both; }
