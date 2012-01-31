@@ -15,7 +15,7 @@ gem "resque"
 gem "sass"
 
 # We're pulling in our own grit fork with bugfixes.
-gem "grit", :git => "http://github.com/ooyala/grit.git"
+gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "06786809fbc76102c2e8570a441671b32c7e6638"
 gem "json"
 gem "sequel"
 gem "mysql"
