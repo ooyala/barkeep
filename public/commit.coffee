@@ -22,6 +22,21 @@ window.Commit =
     $(".expandLink.below").click (e) => @expandContext(e, 10, "below")
     $(".expandLink.above").click (e) => @expandContext(e, 10, "above")
 
+    # Put the approval overlay message div on the page.
+    $("body").append $(Snippets.approvalOverlay)
+    approvalPopup = $(".approvalPopup.overlay .container")
+    approvalPopup.on "blur", ->
+      approvalPopup.empty()
+      $(".approvalPopup.overlay").css("visibility", "hidden")
+    KeyboardShortcuts.registerShortcut approvalPopup, "esc", ->
+      approvalPopup.blur()
+      false
+    KeyboardShortcuts.registerShortcut approvalPopup, "a", ->
+      approvalPopup.blur()
+      $("#approveButton, #disapproveButton").click()
+      false
+    KeyboardShortcuts.createShortcutContext approvalPopup
+
     commitComment = $("#commitComments .commentText")
     KeyboardShortcuts.createShortcutContext commitComment
     KeyboardShortcuts.registerShortcut commitComment, "esc", => commitComment.blur()
@@ -61,9 +76,6 @@ window.Commit =
 
     # Eventually this should be a user preference stored server side. For now, it's just a cookie.
     @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
-
-    # Put the approval overlay message div on the page.
-    $("body").append $(Snippets.approvalOverlay)
 
     # Review request author autocompletion
     $("#reviewRequest #authorInput").autocomplete
@@ -113,21 +125,9 @@ window.Commit =
       choice = "disapprove"
     else
       return
-    approvalOverlay = $(".approvalPopup.overlay")
-    approvalOverlay.css("visibility", "visible")
+    $(".approvalPopup.overlay").css("visibility", "visible")
     approvalPopup = $(".approvalPopup.overlay .container")
     approvalPopup.append $(Snippets.approvalPopup(choice))
-    KeyboardShortcuts.createShortcutContext approvalPopup
-    approvalPopup.blur ->
-      approvalPopup.empty()
-      approvalOverlay.css("visibility", "hidden")
-    KeyboardShortcuts.registerShortcut approvalPopup, "esc", ->
-      approvalPopup.blur()
-      false
-    KeyboardShortcuts.registerShortcut approvalPopup, "a", ->
-      approvalPopup.blur()
-      $("#approveButton, #disapproveButton").click()
-      false
     approvalPopup.focus()
 
   # Returns true if the diff line is within the user's scroll context
