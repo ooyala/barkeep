@@ -37,9 +37,9 @@ class FetchCommitsIntegrationTest < Scope::TestCase
   # It's not a first time import if we've previously ingested commits for this repo into the DB.
   context "non-first-time import" do
     setup_once do
-      head = test_repo.head.commit
-      Commit.filter(:sha => head.sha).destroy
-      @@commit = Commit.create(:sha => head.sha, :message => head.message, :date => head.authored_date,
+      head = test_repo.commit("master")
+      Commit.filter(:sha => head.id).destroy
+      @@commit = Commit.create(:sha => head.id, :message => head.message, :date => head.authored_date,
         :git_repo_id => @@db_repo.id)
     end
 
