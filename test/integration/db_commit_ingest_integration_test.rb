@@ -29,7 +29,8 @@ class DbCommitIngestIntegrationTest < Scope::TestCase
     expected_tasks = [
       [DeliverCommitEmails, test_repo.name, commit.sha],
       [GenerateTaggedDiffs, test_repo.name, commit.sha]]
-    assert_equal expected_tasks, @enqueued_jobs[0, 2]
+    # Jobs are enqueued in the git ordering, so the latest should be at the end.
+    assert_equal expected_tasks, @enqueued_jobs[-2..-1]
 
     Commit.filter(:sha => head.sha).delete
   end

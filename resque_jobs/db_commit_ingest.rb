@@ -27,9 +27,11 @@ class DbCommitIngest
     page_size = 200
     page = 0
 
+    rows_to_insert = []
+    repo = MetaRepo.instance.grit_repo_for_name(repo_name)
+    db_repo = GitRepo.first(:name => repo_name)
+
     begin
-      repo = MetaRepo.instance.grit_repo_for_name(repo_name)
-      db_repo = GitRepo.first(:name => repo_name)
       # repo.commits is ultimately shelling out to git rev-list.
       commits = repo.commits(remote_name, page_size, page * page_size)
 
@@ -39,7 +41,7 @@ class DbCommitIngest
 
       existing_shas = Set.new existing_commits.map(&:sha)
 
-      rows_to_insert = commits.map do |commit|
+      page_of_rows_to_insert = commits.map do |commit|
         next if existing_shas.include?(commit.sha)
 
         {
@@ -51,16 +53,12 @@ class DbCommitIngest
           :date => commit.authored_date,
         }
       end
-      rows_to_insert.reject!(&:nil?)
+      page_of_rows_to_insert.compact!
 
       # A single multi-insert statement is ~2x faster than doing insert statements one at a time.
-      Commit.multi_insert(rows_to_insert)
+      Commit.multi_insert(page_of_rows_to_insert)
 
-      rows_to_insert.each do |row|
-        Resque.enqueue(DeliverCommitEmails, repo_name, row[:sha])
-        Resque.enqueue(GenerateTaggedDiffs, repo_name, row[:sha])
-      end
-
+      rows_to_insert += page_of_rows_to_insert
       page += 1
 
       # Give some progress output for really big imports.
@@ -72,5 +70,11 @@ class DbCommitIngest
       logger.info "#{error.backtrace}"
       raise error
     end until commits.empty?
+
+    # Enqueue commits in the logical ordering (particularly for sending emails).
+    rows_to_insert.reverse.each do |row|
+      Resque.enqueue(DeliverCommitEmails, repo_name, row[:sha])
+      Resque.enqueue(GenerateTaggedDiffs, repo_name, row[:sha])
+    end
   end
 end
