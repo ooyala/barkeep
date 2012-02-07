@@ -46,7 +46,8 @@ class FetchCommitsIntegrationTest < Scope::TestCase
     should "only enqueue a db import for the remotes which have changed" do
       newer_commit, older_commit = test_repo.commits("origin/cheese", 2)
       # Modifying this ref file simulates the remote being out of date, so that git fetch can update it.
-      ref_file = File.join(FIXTURES_PATH, TEST_REPO_NAME, ".git/refs/remotes/origin/cheese")
+      git_dir_location = `cd #{File.join(FIXTURES_PATH, TEST_REPO_NAME)} && git rev-parse --git-dir`.strip
+      ref_file = File.join(git_dir_location, "refs/remotes/origin/cheese")
       begin
         File.open(ref_file, "w") { |file| file.write(older_commit.sha) }
         FetchCommits.perform
