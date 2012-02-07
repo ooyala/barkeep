@@ -15,14 +15,14 @@ class Commit < Sequel::Model
   add_association_dependencies :comments => :destroy, :commit_files => :delete
 
   add_filter(:message) { |message| StringFilter.escape_html(message) }
+  add_filter(:message) do |message, commit|
+    StringFilter.replace_shas_with_links(message, commit.git_repo.name)
+  end
   add_filter(:message) { |message| StringFilter.newlines_to_html(message) }
   add_filter(:message) do |message, commit|
     StringFilter.link_github_issue(message, "ooyala", commit.git_repo.name)
   end
   add_filter(:message) { |message| StringFilter.link_jira_issue(message) }
-  add_filter(:message) do |message, commit|
-    StringFilter.replace_shas_with_links(message, commit.git_repo.name)
-  end
 
   def grit_commit
     @grit_commit ||= MetaRepo.instance.grit_commit(git_repo_id, sha)
