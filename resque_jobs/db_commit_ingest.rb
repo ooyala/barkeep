@@ -37,7 +37,7 @@ class DbCommitIngest
           Commit.filter(:sha => commits.map(&:sha), :git_repo_id => db_repo.id).select(:sha).all
       break if existing_commits.size >= page_size
 
-      existing_shas = Set.new(existing_commits.map { |commit| commit.sha })
+      existing_shas = Set.new existing_commits.map(&:sha)
 
       rows_to_insert = commits.map do |commit|
         next if existing_shas.include?(commit.sha)
