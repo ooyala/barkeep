@@ -58,4 +58,5 @@ end
 group :development do
   gem "fezzik"
   gem "pry"
+  gem "awesome_print"
 end

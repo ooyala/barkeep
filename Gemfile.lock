@@ -12,6 +12,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.6)
+    awesome_print (1.0.2)
     blankslate (2.1.2.4)
     clockwork (0.2.4)
     coderay (0.9.8)
@@ -111,6 +112,7 @@ PLATFORMS
 
 DEPENDENCIES
   addressable
+  awesome_print
   clockwork
   coffee-script
   diff-lcs
