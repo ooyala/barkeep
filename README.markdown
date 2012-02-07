@@ -40,9 +40,10 @@ commits, pre-generate commit diffs, and send emails when comments are posted.
     $ rake resque:start # start processing any jobs which get added to the Resque queue.
 
 If you want to run all three services together, you can do so using foreman.
+
     $ bundle exec foreman start
 
-You can view the Resque dashboard and inspect failed Resque jobs by navigating to http://localhost:4567/resque.
+You can view the Resque dashboard and inspect failed Resque jobs by navigating to [http://localhost:4567/resque](http://localhost:4567/resque).
 
 Viewing Repositories
 --------------------
