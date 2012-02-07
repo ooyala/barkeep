@@ -74,7 +74,7 @@
 
     <div id="body">
       <%= yield %>
-      <%= erb :_keyboard_shortcuts, :layout => false, :locals => { :view => request.route[1..-1] } %>
+      <%= erb :_keyboard_shortcuts, :layout => false, :locals => { :view => request.path[1..-1] } %>
     </div>
   </div>
 </body>

@@ -50,7 +50,8 @@ class Barkeep < Sinatra::Base
   # Quick logging hack -- Sinatra 1.3 will expose logger inside routes.
   Logging.logger = Logger.new(STDOUT)
 
-  set :public, "public"
+  set :public_folder, "public"
+  set :views, "views"
 
   raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
 
@@ -105,7 +106,7 @@ class Barkeep < Sinatra::Base
 
   before do
     self.current_user = User.find(:email => request.cookies["email"])
-    next if LOGIN_WHITELIST_ROUTES.any? { |route| request.route[1..-1] =~ route }
+    next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
     unless self.current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
