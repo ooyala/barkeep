@@ -1,6 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../test_helper.rb"))
 require "lib/string_filter"
 require "lib/filters"
+require "dedent"
 
 class StringFilterTest < Scope::TestCase
   context "filters" do
@@ -66,11 +67,11 @@ class StringFilterTest < Scope::TestCase
   context "class filters" do
     context "comments" do
       setup do
-        text = <<-EOF
-Comment comment **comment**.
-Here's an embedded image: ![the_image](http://example.com/image.png)
-Referencing APP-1234
-With a sha 46b37313bab07c3528e75a2acaf2ca36e44b18f1.
+        text = <<-EOF.dedent
+          Comment comment **comment**.
+          Here's an embedded image: ![the_image](http://example.com/image.png)
+          Referencing APP-1234
+          With a sha 46b37313bab07c3528e75a2acaf2ca36e44b18f1.
         EOF
         comment = Comment.new(:text => text)
         commit = Commit.new
@@ -100,11 +101,11 @@ With a sha 46b37313bab07c3528e75a2acaf2ca36e44b18f1.
 
     context "commit messages" do
       setup do
-        message = <<-EOF
-<script>
-Fixes #42
-APP-1234
-46b37313bab07c3528e75a2acaf2ca36e44b18f1
+        message = <<-EOF.dedent
+          <script>
+          Fixes #42
+          APP-1234
+          46b37313bab07c3528e75a2acaf2ca36e44b18f1
         EOF
         commit = Commit.new(:message => message)
         stub(commit).git_repo { stub(GitRepo.new).name { "test_repo" }}

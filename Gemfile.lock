@@ -23,6 +23,7 @@ GEM
     colorize (0.5.8)
     daemons (1.1.4)
     diff-lcs (1.1.2)
+    dedent (0.0.2)
     eventmachine (0.12.10)
     execjs (1.2.4)
       multi_json (~> 1.0)
@@ -115,6 +116,7 @@ DEPENDENCIES
   awesome_print
   clockwork
   coffee-script
+  dedent
   diff-lcs
   fezzik
   foreman

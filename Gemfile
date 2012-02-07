@@ -46,6 +46,9 @@ gem "diff-lcs"
 # For validating repo uris
 gem "addressable"
 
+# For nicely indented heredocs
+gem "dedent"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"
