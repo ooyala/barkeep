@@ -27,9 +27,8 @@ class MetaRepoTest < Scope::TestCase
     MetaRepo.configure(Logger.new("/dev/null"), git_repo_fixtures)
     @@repo = MetaRepo.instance
 
-    # TODO(philc): It would be nice to simply use the GritRepo MetaRepo has already created, but for now
-    # that's a private instance variable.
-    @@grit_repo = Grit::Repo.new(git_repo_fixtures + "/test_git_repo")
+    # Access the private git repo inside MetaRepo.
+    @@grit_repo = @@repo.send(:repos)[0]
   end
 
   context "grit_commit" do
