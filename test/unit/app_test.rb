@@ -78,6 +78,7 @@ class AppTest < Scope::TestCase
     end
 
     should "search all repos and find a matching commit" do
+      stub(GitRepo).[](anything) { true }
       mock(@@repo).db_commit("repo1", "sha") {  }
       mock(@@repo).db_commit("repo2", "sha") { @commit }
 
