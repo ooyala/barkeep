@@ -12,12 +12,18 @@ namespace :fezzik do
     system("mkdir -p /tmp/#{app}/config")
     File.open("/tmp/#{app}/config/environment.rb", "w") do |file|
       @environment.each do |key, value|
-        file.puts "#{key.to_s.upcase}=\"#{value}\""
+        if value.is_a?(Array)
+          puts "\033[01;34m>>>> key: #{key.inspect}\e[m"
+          file.puts %Q/#{key.to_s.upcase} = [#{value.map { |item| %Q["#{item}"] }.join(",")}]/
+        else
+          file.puts "#{key.to_s.upcase} = \"#{value}\""
+        end
       end
     end
     File.open("/tmp/#{app}/config/environment.sh", "w") do |file|
       @environment.each do |key, value|
-        file.puts "export #{key.to_s.upcase}=\"#{value}\""
+        # TODO(caleb) Write array values in environment.sh in the future.
+        file.puts "export #{key.to_s.upcase}=\"#{value}\"" unless value.is_a?(Array)
       end
     end
   end

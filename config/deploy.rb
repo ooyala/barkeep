@@ -47,6 +47,7 @@ destination :prod do
   env :barkeep_hostname, "barkeep"
   env :redis_host, "localhost"
   env :redis_port, 6379
+  env :openid_providers, ["https://www.google.com/accounts/o8/ud"]
 end
 
 destination :vagrant do
@@ -58,4 +59,5 @@ destination :vagrant do
   env :barkeep_hostname, "barkeep"
   env :redis_host, "localhost"
   env :redis_port, 6379
+  env :openid_providers, ["https://www.google.com/accounts/o8/ud"]
 end
