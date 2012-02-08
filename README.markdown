@@ -66,23 +66,23 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
 1.  Install required packages:
 
         $ sudo apt-get update
-        $ sudo apt-get install curl mysql-server mysql-client libmysqlclient-dev \
+        $ sudo apt-get install -y curl mysql-server mysql-client libmysqlclient-dev \
         openssl libopenssl-ruby libssl-dev python-setuptools redis-server python-software-properties \
         build-essential libxslt-dev libxml2-dev
 
-2.  You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you
+1.  You'll need a recent (1.7.6+) version of git. On Ubuntu, the git-core package may be out-of-date -- you
     can install a very recent version from the git-core ppa:
 
         $ sudo add-apt-repository ppa:git-core/ppa
         $ sudo apt-get update
-        $ sudo apt-get install git-core
+        $ sudo apt-get install -y git
 
-3.  Install the required Python packages:
+1.  Install the required Python packages:
 
         $ sudo easy_install pip
         $ sudo pip install pygments
 
-4.  Install [rbenv](https://github.com/sstephenson/rbenv):
+1.  Install [rbenv](https://github.com/sstephenson/rbenv):
 
         $ git clone git://github.com/sstephenson/rbenv.git .rbenv
         # Put the following lines at the top of ~/.bashrc:
@@ -92,21 +92,25 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
           source "$HOME/.bashrc"
         $ exec $SHELL
 
-5.  Install [ruby-build](https://github.com/sstephenson/ruby-build) and get Ruby 1.9.2-p290:
+1.  Install bundler:
+
+        $ gem install bundler
+
+1.  Install [ruby-build](https://github.com/sstephenson/ruby-build) and get Ruby 1.9.2-p290:
 
         $ git clone git://github.com/sstephenson/ruby-build.git
         $ cd ruby-build
         $ sudo ./install.sh
         $ rbenv install 1.9.2-p290
 
-6. Install [node.js](http://nodejs.org/):
+1. Install [node.js](http://nodejs.org/):
 
         $ wget http://nodejs.org/dist/node-v0.4.12.tar.gz
         $ tar xzvf node-v0.4.12.tar.gz && cd node-v0.4.12/
         $ ./configure && make
         $ sudo make install
 
-7. Create the target installation directories (if your user doesn't have the permissions):
+1. Create the target installation directories (if your user doesn't have the permissions):
 
         $ sudo mkdir /deploy/path # This is specified in config/deploy.rb
         $ sudo chown username:username /deploy/path
@@ -123,18 +127,17 @@ You can test deployment (or do all development) on a [Vagrant](http://vagrantup.
 recommended if you are trying to test deployment changes or are altering packages which may behave differently
 on your development system from the target production environment.
 
-First, you'll need to install vagrant and get the lucid32 box:
+First, you'll need to install vagrant and install the box:
 
-    $ gem install vagrant
-    $ vagrant box add base http://files.vagrantup.com/lucid32.box
+    $ gem install vagrant # Need 0.9.X
     $ cd path/to/barkeep/project/root
     $ vagrant up
 
 Next ssh into the running vagrant box (`vagrant ssh`) and do the setup tasks described under 'Deployment'.
 Now, you need to set up passwordless ssh so that you can deploy to the vagrant box.
 
-    $ vagrant ssh_config >> ~/.ssh/config
-    # Edit ~/.ssh/config and change "Host default" to "Host barkeep_vagrant"
+    $ vagrant ssh-config >> ~/.ssh/config
+    # Edit ~/.ssh/config and change "Host default" to "Host barkeep_vagrant".
     $ ssh barkeep_vagrant 'echo hello' # Test that it's working -- you should see 'hello' printed
 
 Finally, deploy to the vagrant box:
