@@ -1,11 +1,23 @@
-Overview
---------
+## Overview
+
 Barkeep is a fast, fun way to review code. Engineering organizations can use it to keep the bar high.
 
 More details coming soon!
 
-Setting up Barkeep for development
-----------------------------------
+## Table of contents
+
+1.  [Setting up Barkeep for development](#section_1)
+1.  [Running Barkeep Locally](#section_2)
+1.  [Viewing Repositories](#section_3)
+1.  [Deployment](#section_4)
+1.  [Vagrant](#section_5)
+1.  [Setting up email](#section_6)
+1.  [REST API](#section_7)
+1.  [Barkeep client](#section_8)
+1.  [Authors](#section_9)
+1.  [ License](#section_10)
+
+## <a name="section_1"></a>1 Setting up Barkeep for development
 
 This is how it works on our Mac OS dev laptops; YMMV. First, ensure you've installed
 [rbenv](https://github.com/sstephenson/rbenv) and Ruby 1.9.2-p290. (You can get this by installing
@@ -25,8 +37,8 @@ library. Otherwise you will get segfaults when sending emails over SSL:
 
     $ rvm install 1.9.2 --with-openssl-dir=/opt/local
 
-Running Barkeep Locally
------------------------
+## <a name="section_2"></a>2 Running Barkeep Locally
+
 Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
 
     $ bin/rerun_barkeep.sh # run the server
@@ -45,8 +57,7 @@ If you want to run all three services together, you can do so using foreman.
 
 You can view the Resque dashboard and inspect failed Resque jobs by navigating to [http://localhost:4567/resque](http://localhost:4567/resque).
 
-Viewing Repositories
---------------------
+## <a name="section_3"></a>3 Viewing Repositories
 
 Once Barkeep is set up for development, look in `config/environment.rb`. By default, Barkeep will look in
 `~/barkeep_repos/`, though you can change the `REPOS_ROOT` variable to adjust it.
@@ -58,8 +69,7 @@ commits and your dev database will be huge. Additionally, although Barkeep shoul
 (branch changes or new commits), it *will* fetch a lot in your repositories which may be confusing (you'll be
 behind on tracking branches a lot). Instead, clone a few small repositories into the barkeep repos directory.
 
-Deployment
-----------
+## <a name="section_4"></a>4 Deployment
 
 We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before we can deploy Barkeep.
 
@@ -120,8 +130,7 @@ care of any remaining setup tasks.
 
     $ bundle exec fez prod deploy
 
-Vagrant
--------
+## <a name="section_5"></a>5 Vagrant
 
 You can test deployment (or do all development) on a [Vagrant](http://vagrantup.com/) box. This is also highly
 recommended if you are trying to test deployment changes or are altering packages which may behave differently
@@ -147,8 +156,7 @@ Finally, deploy to the vagrant box:
 If everything's working, you should be able to check Barkeep at
 [http://localhost:5678](http://localhost:5678).
 
-Setting up email
-----------------
+## <a name="section_6"></a>6 Setting up email
 Set the email address and password of the Gmail account you want to use with Barkeep in
 `config/environment.rb`.
 
@@ -158,8 +166,7 @@ user**+comments**@example.com. By default, Gmail won't allow your account to sen
 is easy -- log in to the Gmail account you're going to use with Barkeep and add these two addresses in
 [Settings > Accounts and Import > Send Mail As](http://mail.google.com/mail/#settings/accounts).
 
-REST API
---------
+## <a name="section_7"></a>7 REST API
 
 The Barkeep server has a RESTful HTTP API for retrieving data programmatically (e.g. with the Barkeep client,
 see below).
@@ -180,8 +187,7 @@ see below).
 </td></tr>
 </table>
 
-Barkeep client
---------------
+## <a name="section_8"></a>8 Barkeep client
 
 Barkeep comes with a simple command-line client that makes use of the REST API to allow for programmatic
 access to some of its functionality. You can find the code for the client inside `client/`. It is packaged as
@@ -223,8 +229,7 @@ Use `barkeep <command> --help` for more information about a particular command. 
 
         $ barkeep unapproved -- --since='1 week ago' -- lib/
 
-Authors
--------
+## <a name="section_9"></a>9 Authors
 
 Barkeep was written by the following Ooyala engineers:
 
@@ -240,7 +245,6 @@ and with contributions from:
 * Brian Zhou ([zdyn](https://github.com/zdyn))
 * Manish Khettry ([mkhettry](https://github.com/mkhettry))
 
-License
--------
+## <a name="section_10"></a>10 License
 
 Barkeep is released under [the MIT license](http://www.opensource.org/licenses/mit-license.php).
