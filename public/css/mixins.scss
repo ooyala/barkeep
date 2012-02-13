@@ -15,7 +15,7 @@ $textShadowColor: darken($textColor, 30%);
 
 // Fonts
 $sansFont: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
-$monoFont: "Bitstream Vera Sans Mono", monospace;
+$monoFont: "Ubuntu Mono", Courier, monospace;
 
 // Close links (Xs)
 @mixin closeLinks {

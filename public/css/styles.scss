@@ -4,39 +4,9 @@
 @import "code_styles/default";
 @import "tipsy_styles";
 
-
 /*
  * Common styles shared by all pages.
  */
-
-/* NOTE(caleb): There is a known issue where our web font flickers in FF. The solution is a JS
- * workaround: http://joshuamcginnis.com/2010/08/17/how-to-fix-the-font-face-flicker-issue-in-firefox/
- * We can drop this in later if we want. It's kind of silly how firefox manages web fonts IMO.
- */
-@font-face {
-  font-family: "Bitstream Vera Sans Mono";
-  src: url("/fonts/VeraMono-webfont.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Bitstream Vera Sans Mono";
-  src: url("/fonts/VeraMono-Bold-webfont.woff") format("woff");
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Bitstream Vera Sans Mono";
-  src: url("/fonts/VeraMono-Italic-webfont.woff") format("woff");
-  font-weight: normal;
-  font-style: italic;
-}
-@font-face {
-  font-family: "Bitstream Vera Sans Mono";
-  src: url("/fonts/VeraMono-Bold-Italic-webfont.woff") format("woff");
-  font-weight: bold;
-  font-style: italic;
-}
 
 body {
   background-color: white;
@@ -184,7 +154,7 @@ button.standard, input[type=button], input[type=submit] {
       font-size: 14px;
       color: $textColor;
       font-family: $monoFont;
-      font-size: 12px;
+      font-size: 14px;
       &:hover { text-decoration: none; }
     }
 
@@ -341,7 +311,7 @@ table.commitsList, table.authorList {
     &.avatarCell { padding: 1px 2px; }
     &.author { white-space: nowrap; }
     &.commitId {
-      font: 13px $monoFont;
+      font: 16px $monoFont;
       a { color: $lightTextColor; }
       text-align: right;
       padding-right: 7px;
@@ -509,7 +479,7 @@ table.commitsList, table.authorList {
 
                   &.keys {
                     width: 35%;
-                    font: 14px $monoFont;
+                    font: 16px $monoFont;
                     text-align: right;
                     text-shadow: -1px -1px 1px $textShadowColor;
                   }
