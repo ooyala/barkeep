@@ -538,14 +538,14 @@ window.Commit =
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     if @isSideBySide
-      leftCodeTable.find(".comment, .commentForm").css("visibility": "hidden")
-      leftCodeTable.find(".removed").find(".comment, .commentForm").css("visibility", "visible")
+      leftCodeTable.find(".commentSpace, .commentForm").css("visibility": "hidden")
+      leftCodeTable.find(".removed").find(".commentSpace, .commentForm").css("visibility", "visible")
 
-      rightCodeTable.find(".comment, .commentForm").css("visibility", "visible")
-      rightCodeTable.find(".removed").find(".comment, .commentForm").css("visibility", "hidden")
+      rightCodeTable.find(".commentSpace, .commentForm").css("visibility", "visible")
+      rightCodeTable.find(".removed").find(".commentSpace, .commentForm").css("visibility", "hidden")
     else
-      leftCodeTable.find(".comment, .commentForm").css("visibility", "visible")
-      rightCodeTable.find(".comment, .commentForm").css("visibility", "hidden")
+      leftCodeTable.find(".commentSpace, .commentForm").css("visibility", "visible")
+      rightCodeTable.find(".commentSpace, .commentForm").css("visibility", "hidden")
 
   toggleReviewRequest: (showRequest = null) ->
     return unless window.userLoggedIn

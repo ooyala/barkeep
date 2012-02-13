@@ -404,7 +404,8 @@ table.commitsList, table.authorList {
   &.commitSearch { @include embossedPanel; }
   &.commit { @include raisedPanel; }
   text-align: center;
-  padding: 20px;
+  padding: 20px 0px;
+  margin: 8px auto;
 }
 
 // Approval popup overlay

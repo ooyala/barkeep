@@ -257,6 +257,7 @@
     $commentWidth: 850px;
 
     .commentSpace {
+      width: 100%;
       background-color: $almostWhite;
       z-index: 10;
       position: relative;
@@ -493,10 +494,14 @@
     }
   }
 
-  #signinPrompt { text-align: center; }
+  #signinPrompt {
+    text-align: center;
+    width: $pageWidth;
+  }
 }
 
 .commentSpace {
-  width: 100%;
+  width: $pageWidth;
+  margin: 0 auto;
   padding: 8px 0px;
 }
