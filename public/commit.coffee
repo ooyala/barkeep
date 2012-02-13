@@ -313,13 +313,14 @@ window.Commit =
         filename: filename
         line_number: lineNumber
       success: (html) =>
-        commentForm = $(html)
+        comment = $(html)
+        commentForm = comment.find(".commentForm")
         commentForm.click (e) -> e.stopPropagation()
         # Add a random id so matching comments on both sides of side-by-side can be shown.
         commentForm.attr("form-id", Math.floor(Math.random() * 10000))
         commentForm.find(".commentCancel").click @onCommentCancel
         commentForm.find(".commentPreview").click @onCommentPreview
-        codeLine.append(commentForm)
+        codeLine.append(comment)
         @setSideBySideCommentVisibility()
         textarea = codeLine.find(".commentForm .commentText").filter(-> $(@).css("visibility") == "visible")
         KeyboardShortcuts.createShortcutContext textarea
@@ -350,9 +351,10 @@ window.Commit =
 
   onCommentSubmitSuccess: (html, formElement) ->
     form = $(formElement)
-    form.before(html)
+    comment = form.parents(".commentSpace")
+    comment.before(html)
     if form.parents(".diffLine").size() > 0
-      form.remove()
+      comment.remove()
       @setSideBySideCommentVisibility()
     else
       # Don't remove the comment box if it's for a commit-level comment. We need to get rid of the preview box
@@ -370,7 +372,7 @@ window.Commit =
     # Make sure changes to form happen to both tables to maintain height.
     formId = $(e.currentTarget).parents(".commentForm").attr("form-id")
     form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
-    form.remove()
+    form.parents(".commentSpace.").remove()
     @setSideBySideCommentVisibility()
 
   # Toggle preview/editing mode
@@ -410,7 +412,7 @@ window.Commit =
           form = file.find(".comment[commentid='" + commentId + "']")
         else
           form = target.parents(".comment")
-        form.remove()
+        form.parents(".commentSpace").remove()
         @setSideBySideCommentVisibility()
 
   onApproveClicked: (e) ->

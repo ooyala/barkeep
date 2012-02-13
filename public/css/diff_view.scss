@@ -255,11 +255,17 @@
   .file {
     @include embossedPanel;
     $commentWidth: 850px;
+
+    .commentSpace {
+      background-color: $almostWhite;
+      z-index: 10;
+      position: relative;
+    }
     // The styles for inline comments are slightly different than general comments: they have no left border.
     .comment, .commentForm, .commentEditForm {
       width: $commentWidth;
       border-left: 0;
-      margin: 8px 0px;
+      margin-right: auto;
       textarea { width: $commentWidth - 2px; }
       .commentBody { img { max-width: 839px; } }
     }
@@ -282,14 +288,13 @@
   .comment, .commentForm, .commentEditForm {
     @include raisedPanel;
     background-color: $almostWhite;
-    margin: 8px auto;
     font-size: 0.8em;
-    width: $pageWidth;
+    width: $pageWidth - 2px;
 
     textarea {
       resize: vertical;
       min-height: 100px;
-      width: $pageWidth - 2px;
+      width: $pageWidth - 4px;
       font: 14px $sansFont;
       border: 0;
       border-bottom: $standardBorder;
@@ -466,7 +471,7 @@
       position: relative;
       display: block;
       .marginLine {
-        height: 18px;
+        height: 100%;
         position: absolute;
         /* This value is just a guess; it will be adjusted in JS. */
         top: 0px;
@@ -481,10 +486,15 @@
     }
 
     pre {
-      padding-top: 2px;
+      padding-bottom: 2px;
       font: $commitFontFamily;
     }
   }
 
   #signinPrompt { text-align: center; }
+}
+
+.commentSpace {
+  width: 100%;
+  padding: 8px 0px;
 }

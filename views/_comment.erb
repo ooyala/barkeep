@@ -1,21 +1,24 @@
 <% if comment %>
   <a name="comment-<%= comment.id %>"></a>
-  <div class="comment" commentId="<%= comment.id %>" data-comment-raw="<%= CGI::escape_html(comment.text)%>">
-    <div class="heading">
-      <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
-      <span class="name"><%= CGI::escape_html(comment.user.name) %></span>
-      <span class="permalink"><a href="#comment-<%= comment.id %>">commented</a></span>
-      <span class="date"><%= comment.created_at.to_pretty %> </span>
-      <div class="buttonContainer">
-        <% if current_user && comment.line_number %>
-          <button class="reply standard">Reply</button>
-        <% end %>
-        <% if current_user && current_user.id == comment.user_id %>
-          <button class="edit standard">Edit</button>
-          <button class="delete standard">Delete</button>
-        <% end %>
+  <div class="commentSpace">
+    <div class="comment" commentId="<%= comment.id %>"
+         data-comment-raw="<%= CGI::escape_html(comment.text)%>">
+      <div class="heading">
+        <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
+        <span class="name"><%= CGI::escape_html(comment.user.name) %></span>
+        <span class="permalink"><a href="#comment-<%= comment.id %>">commented</a></span>
+        <span class="date"><%= comment.created_at.to_pretty %> </span>
+        <div class="buttonContainer">
+          <% if current_user && comment.line_number %>
+            <button class="reply standard">Reply</button>
+          <% end %>
+          <% if current_user && current_user.id == comment.user_id %>
+            <button class="edit standard">Edit</button>
+            <button class="delete standard">Delete</button>
+          <% end %>
+        </div>
       </div>
+      <div class="commentBody"> <%= comment.filter_text %> </div>
     </div>
-    <div class="commentBody"> <%= comment.filter_text %> </div>
   </div>
 <% end %>

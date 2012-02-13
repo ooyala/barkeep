@@ -1,17 +1,19 @@
-<form class="commentForm" action="/comment" type="POST">
-  <div class="heading"><span class="addAComment">Add a comment</span></div>
-  <input type="hidden" name="repo_name" value="<%= repo_name %>"/>
-  <input type="hidden" name="sha" value="<%= sha %>"/>
-  <input type="hidden" name="filename" value="<%= filename %>" />
-  <input type="hidden" name="line_number" value="<%= line_number %>" />
-  <textarea class="commentText" name="text"></textarea>
-  <div class="commentBody commentPreviewText"></div>
-  <div class="commentControls">
-    <input class="commentSubmit" type="submit" value="Post Comment" />
-    <%# 'Cancel' button comes after 'Post Comment' for tab ordering, but is positioned to the left %>
-    <% if line_number %>
-      <input class="commentCancel" type="button" value="Cancel" />
-    <% end %>
-    <div class="buttonSpacer"><input class="commentPreview" type="button" value="Preview Comment" /></div>
-  </div>
-</form>
+<div class="commentSpace">
+  <form class="commentForm" action="/comment" type="POST">
+    <div class="heading"><span class="addAComment">Add a comment</span></div>
+    <input type="hidden" name="repo_name" value="<%= repo_name %>"/>
+    <input type="hidden" name="sha" value="<%= sha %>"/>
+    <input type="hidden" name="filename" value="<%= filename %>" />
+    <input type="hidden" name="line_number" value="<%= line_number %>" />
+    <textarea class="commentText" name="text"></textarea>
+    <div class="commentBody commentPreviewText"></div>
+    <div class="commentControls">
+      <input class="commentSubmit" type="submit" value="Post Comment" />
+      <%# 'Cancel' button comes after 'Post Comment' for tab ordering, but is positioned to the left %>
+      <% if line_number %>
+        <input class="commentCancel" type="button" value="Cancel" />
+      <% end %>
+      <div class="buttonSpacer"><input class="commentPreview" type="button" value="Preview Comment" /></div>
+    </div>
+  </form>
+</div>
