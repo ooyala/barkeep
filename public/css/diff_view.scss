@@ -368,7 +368,9 @@
 
       pre {
         font: $commitFontFamily;
-        overflow-y: scroll;
+        overflow-x: auto;
+        // Prevent any vertical scrollbar from being show.
+        overflow-y: hidden;
       }
 
       .commentCode {
