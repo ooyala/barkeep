@@ -196,6 +196,7 @@ window.Commit =
     @selectNextVisibleLine()
 
 
+  # Expand all the context hidden when a user clicks "Show all"
   expandContextAll: (event) ->
     expander = $(event.currentTarget).closest(".contextExpander")
     prev = expander.prev()
@@ -206,6 +207,7 @@ window.Commit =
     diffLines.show()
     expander.remove()
 
+  # Expand some number of lines either above or below the fold of the context expander
   expandContext: (event, count, direction) ->
     expander = $(event.currentTarget).closest(".contextExpander")
     if expander.prev().is(":visible")
@@ -220,6 +222,17 @@ window.Commit =
     incremental = lineRange.length - rangeToExpand.length > 10
     @createContextExpander(attachLine, attachDirection, top, bottom, incremental)
 
+  # Context expander helper function
+  #
+  # Arguments:
+  #  - range: All lines hidden by the context expander
+  #  - count: Number of lines to reveal
+  #  - direction: Direction in which to reveal lines ("above" or "below")
+  #
+  # Returns:
+  #  - Set of lines to reveal
+  #  - Line to attach the new context expander to
+  #  - Direction in which to attach the new context expander
   getContextRangeToExpand: (range, count, direction) ->
     if direction == "above"
       rangeToExpand = range.slice(0, count)
@@ -230,6 +243,22 @@ window.Commit =
       attachLine = rangeToExpand.first()
       [rangeToExpand, attachLine, "above"]
 
+  # Make a call to the server to render a new context expander, attach it to the DOM, and register event
+  # handlers
+  # TODO(kle): no reason this can't be done both client and server side
+  #
+  # Arguments:
+  #  - codeLine: diffline DOM element to attach to
+  #  - attachDirection: Indicates whether to append or prepend the context expander to the code line. Valid
+  #       options: "above", "below"
+  #  - top: Indicates whether or not this context expander will be the top-most visible element for this file
+  #       in the diff view, which determines whether or not a border is needed. Valid options: (true, false)
+  #  - bottom: Indicates whether or not this context expander will be the bottom-most visible element for
+  #       this file in the diff view, which determines whether or not a border is needed.
+  #       Valid options: (true, false)
+  #  - incremental: Indicates whether or not to render the "Show 10 Above" and "Show 10 Below" options. If
+  #       incremental is false, then only the "Show All" option will appear for this context expander.
+  #       Valid options: (true, false)
   createContextExpander: (codeLine, attachDirection, top, bottom, incremental) ->
     $.ajax
       type: "get"

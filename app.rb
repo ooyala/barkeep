@@ -190,6 +190,7 @@ class Barkeep < Sinatra::Base
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
 
+  # render a simple html div that holds the controls for incrementally expanding context in the diff view
   get "/context_expander" do
     erb :_context_expander, :layout => false, :locals => {
       :top => params[:top] == "true",
