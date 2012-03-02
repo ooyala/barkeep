@@ -78,8 +78,8 @@ class AppTest < Scope::TestCase
     end
 
     should "search all repos and find a matching commit" do
-      stub(GitRepo).[](anything) { true }
-      mock(@@repo).db_commit("repo1", "sha") {  }
+      mock(Commit).prefix_match("repo1", "sha", true) { nil }
+      mock(@@repo).db_commit("repo1", "sha") { nil }
       mock(@@repo).db_commit("repo2", "sha") { @commit }
 
       get "/commits/search/by_sha", :sha => "sha"
