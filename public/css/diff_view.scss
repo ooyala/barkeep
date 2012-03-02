@@ -256,7 +256,7 @@
     @include embossedPanel;
     $commentWidth: 850px;
 
-    .commentSpace {
+    .commentContainer {
       width: 100%;
       background-color: $almostWhite;
       z-index: 10;
@@ -500,7 +500,7 @@
   }
 }
 
-.commentSpace {
+.commentContainer {
   width: $pageWidth;
   margin: 0 auto;
   padding: 8px 0px;

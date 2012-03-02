@@ -1,6 +1,6 @@
 <% if comment %>
   <a name="comment-<%= comment.id %>"></a>
-  <div class="commentSpace">
+  <div class="commentContainer">
     <div class="comment" commentId="<%= comment.id %>"
          data-comment-raw="<%= CGI::escape_html(comment.text)%>">
       <div class="heading">

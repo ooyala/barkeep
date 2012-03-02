@@ -380,7 +380,7 @@ window.Commit =
 
   onCommentSubmitSuccess: (html, formElement) ->
     form = $(formElement)
-    comment = form.parents(".commentSpace")
+    comment = form.parents(".commentContainer")
     comment.before(html)
     if form.parents(".diffLine").size() > 0
       comment.remove()
@@ -401,7 +401,7 @@ window.Commit =
     # Make sure changes to form happen to both tables to maintain height.
     formId = $(e.currentTarget).parents(".commentForm").attr("form-id")
     form = $(e.currentTarget).parents(".file").find(".commentForm[form-id='" + formId + "']")
-    form.parents(".commentSpace.").remove()
+    form.parents(".commentContainer.").remove()
     @setSideBySideCommentVisibility()
 
   # Toggle preview/editing mode
@@ -441,7 +441,7 @@ window.Commit =
           form = file.find(".comment[commentid='" + commentId + "']")
         else
           form = target.parents(".comment")
-        form.parents(".commentSpace").remove()
+        form.parents(".commentContainer").remove()
         @setSideBySideCommentVisibility()
 
   onApproveClicked: (e) ->
@@ -567,14 +567,14 @@ window.Commit =
     rightCodeTable = $(".codeRight")
     leftCodeTable = $(".codeLeft")
     if @isSideBySide
-      leftCodeTable.find(".commentSpace, .commentForm").css("visibility": "hidden")
-      leftCodeTable.find(".removed").find(".commentSpace, .commentForm").css("visibility", "visible")
+      leftCodeTable.find(".commentContainer, .commentForm").css("visibility": "hidden")
+      leftCodeTable.find(".removed").find(".commentContainer, .commentForm").css("visibility", "visible")
 
-      rightCodeTable.find(".commentSpace, .commentForm").css("visibility", "visible")
-      rightCodeTable.find(".removed").find(".commentSpace, .commentForm").css("visibility", "hidden")
+      rightCodeTable.find(".commentContainer, .commentForm").css("visibility", "visible")
+      rightCodeTable.find(".removed").find(".commentContainer, .commentForm").css("visibility", "hidden")
     else
-      leftCodeTable.find(".commentSpace, .commentForm").css("visibility", "visible")
-      rightCodeTable.find(".commentSpace, .commentForm").css("visibility", "hidden")
+      leftCodeTable.find(".commentContainer, .commentForm").css("visibility", "visible")
+      rightCodeTable.find(".commentContainer, .commentForm").css("visibility", "hidden")
 
   toggleReviewRequest: (showRequest = null) ->
     return unless window.userLoggedIn
