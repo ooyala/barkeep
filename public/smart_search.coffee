@@ -50,8 +50,8 @@ class window.SmartSearch
           when -1 then emitKeyValue("paths", chunk) # Assume it's a path if it's not a key (i.e. no colon).
           when 0 then emitChunk(chunk.slice(1))
           else
-            [currentKey, value] = [chunk.slice(0, splitPoint), chunk.slice(splitPoint + 1)]
-            emitChunk(value)
+            currentKey = chunk.slice(0, splitPoint)
+            emitChunk(chunk.slice(splitPoint + 1))
 
     emitChunk(chunk) for chunk in searchString.split(/\s+/)
 
