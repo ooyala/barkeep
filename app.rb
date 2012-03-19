@@ -107,7 +107,7 @@ class Barkeep < Sinatra::Base
   before do
     self.current_user = User.find(:email => request.cookies["email"])
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
-    unless self.current_user
+    unless current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
       # Save url to return to it after login completes.
