@@ -8,9 +8,7 @@ gem "rake"
 # For managing our Ruby load path.
 gem "pathological"
 
-# Resque is used for managing background jobs. Using a recent GH version until a new release is made with
-# Sinatra 1.3.X-compatibility (see https://github.com/defunkt/resque/pull/420).
-gem "resque", :git => "http://github.com/defunkt/resque.git", :ref => "91c230a10018841d258ecb236a8e3fc7d0503d90"
+gem "resque"
 
 # For writing CSS more conveniently.
 gem "sass"
