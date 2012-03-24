@@ -226,7 +226,7 @@ window.Commit =
     rangeToExpand.show()
     top = attachDirection == "above" && attachLines.first().prevAll(":visible").length == 0
     bottom = attachDirection == "below" && attachLines.first().nextAll(":visible").length == 0
-    incremental = lineRange.length * 2 - rangeToExpand.length > 10
+    incremental = lineRange.length * 2 - rangeToExpand.length > 10 * 2
     @createContextExpander(attachLines, attachDirection, top, bottom, incremental)
 
   # Context expander helper function
