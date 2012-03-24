@@ -4,6 +4,8 @@
 #    instead of `vagrant ssh` (which is required to deploy to Vagrant).
 # 2. Add vagrant's public ssh key to root's .ssh/authorized_keys file, so you can login as root.
 
+require "bundler/setup"
+
 def hostname() "barkeep_vagrant" end
 
 def setup
