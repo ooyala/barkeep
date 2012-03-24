@@ -38,7 +38,7 @@ def setup_ssh_config
   end
 
   # The vagrant user has the default "vagrant public key" in authorized_keys. Make it so for root as well.
-  remote_commands = "sudo mkdir -p /root/.ssh; sudo cp .ssh/authorized_keys /root/.ssh/authorized_keys"
+  remote_commands = "sudo mkdir /root/.ssh; sudo cp .ssh/authorized_keys /root/.ssh/authorized_keys"
   run_command "ssh vagrant@#{hostname} '#{remote_commands}'"
 end
 
