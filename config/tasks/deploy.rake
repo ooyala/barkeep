@@ -1,14 +1,17 @@
 require "fileutils"
+require "terraform"
 
 namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
     puts "staging project in /tmp/#{app}"
+    staging_dir = "/tmp/#{app}/staged"
     FileUtils.rm_rf "/tmp/#{app}"
-    FileUtils.mkdir_p "/tmp/#{app}/staged"
+    FileUtils.mkdir_p staging_dir
 
     # Use rsync to preserve executability and follow symlinks.
-    system("rsync -aqE #{local_path}/. /tmp/#{app}/staged --exclude tmp/")
+    system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/")
+    Terraform.write_dsl_file("#{staging_dir}/script/")
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"

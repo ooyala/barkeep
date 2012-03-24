@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 # This sets up the system software on Ubuntu needed for a deploy.
 
-require File.expand_path(File.join(File.dirname(__FILE__), "system_setup_dsl.rb"))
+# terraform_dsl.rb gets written to disk at deploy time. It comes from the Terraform gem.
+require File.expand_path(File.join(File.dirname(__FILE__), "terraform_dsl"))
 
-include SystemSetupDsl
+include TerraformDsl
 unless `uname`.downcase.include?("linux")
   fail_and_exit "This setup script is intended for Linux on our servers. Don't run it on your Mac."
 end
