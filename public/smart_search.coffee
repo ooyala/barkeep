@@ -3,6 +3,50 @@
 class window.SmartSearch
   constructor: (@searchBox) ->
 
+  # Allow for some synonym keywords
+  SYNONYMS =
+    author: "authors"
+    branch: "branches"
+    repo: "repos"
+
+
+  # Parse a partial search string so we can help complete the search query for the user.
+  # Returns a object with the key: set to the last key the user had typed and partialValue: to the last value
+  # being typed. It is possible for both to be empty or for partialValue: to be empty.
+  parsePartialQuery: (searchString) ->
+    currentKey = ""
+    currentValue = ""
+    state = "Key" # two possible states: "Key" or "Value"
+
+    stateMachine = (char) ->
+      if (state == "Key")
+        if (char == ":" and currentKey != "")
+          state = "Value"
+        else if (char != ' ')
+          currentKey += char
+        else if (char == ' ')
+          currentKey = ""
+      else if state ==  "Value"
+        if (char == ",")
+          currentValue = ""
+        else if (char == " ")
+          state = "Key"
+          currentKey = ""
+          currentValue = ""
+        else
+          currentValue += char
+
+    # remove spaces around separators '':'' and '',''
+    searchString = searchString.replace(/\s+:/g, ":").replace(/:\s+/g, ":").
+        replace(/\s+,/g, ",").replace(/,\s+/g, ",")
+
+    stateMachine(char) for char in searchString.split ''
+
+    key = if SYNONYMS[currentKey]? then SYNONYMS[currentKey] else currentKey
+
+    { key: key, partialValue: currentValue }
+
+
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume
     # the value is a path.
@@ -58,12 +102,6 @@ class window.SmartSearch
     # Take care of un-emmitted key/value pair (this happens when you have a trailing comma).
     if currentKey?
       emitKeyValue(currentKey, currentValue.join(","))
-
-    # Allow for some synonym keywords
-    SYNONYMS =
-      author: "authors"
-      branch: "branches"
-      repo: "repos"
 
     for synonym, keyword of SYNONYMS
       if query[synonym]?
