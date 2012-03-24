@@ -8,7 +8,7 @@ namespace :fezzik do
     FileUtils.mkdir_p "/tmp/#{app}/staged"
 
     # Use rsync to preserve executability and follow symlinks.
-    system("rsync -aqE #{local_path}/. /tmp/#{app}/staged")
+    system("rsync -aqE #{local_path}/. /tmp/#{app}/staged --exclude tmp/")
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"
