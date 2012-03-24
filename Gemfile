@@ -61,4 +61,5 @@ group :development do
   gem "fezzik"
   gem "pry"
   gem "awesome_print"
+  gem "vagrant" # For testing deployments.
 end
