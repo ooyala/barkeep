@@ -21,3 +21,7 @@ REDIS_PORT = 6379
 # a UI allowing to pick which service to use to authenticate.
 # Besides Google, another popular OpenID endpoint is https://me.yahoo.com
 OPENID_PROVIDERS = ["https://www.google.com/accounts/o8/ud"]
+
+# This is the read-only demo mode which is used in the Barkeep demo linked from getbarkeep.com.
+# Most production deployments will not want to enable the demo mode, but we want it while developing.
+ENABLE_READONLY_DEMO = true

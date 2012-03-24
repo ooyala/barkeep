@@ -25,6 +25,7 @@ end
 require "bundler/setup"
 require "pathological"
 require "terraform/terraform_dsl"
+require "config/environment.rb"
 
 include TerraformDsl
 
@@ -53,4 +54,5 @@ end
 
 satisfy_dependencies()
 
-`script/create_demo_user.rb`
+# This demo user is only used in Barkeep's readonly demo mode.
+puts `script/create_demo_user.rb` if defined?(ENABLE_READONLY_DEMO) && ENABLE_READONLY_DEMO
