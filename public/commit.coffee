@@ -248,7 +248,7 @@ window.Commit =
       [rangeToExpand, attachLines, "below"]
     else
       rangeToExpand = @findTwinFromBothSides(range.slice(-count))
-      attachLines = rangeToExpand.slice(-2)
+      attachLines = rangeToExpand.slice(0,2)
       [rangeToExpand, attachLines, "above"]
 
   # Given a jquery array of row elements from code table, return a jquery array of row elements from both
