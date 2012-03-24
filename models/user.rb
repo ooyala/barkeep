@@ -13,4 +13,6 @@ class User < Sequel::Model
     hash = Digest::MD5.hexdigest(email.downcase)
     image_src = "http://www.gravatar.com/avatar/#{hash}"
   end
+
+  def demo?() permission == "demo" end
 end
