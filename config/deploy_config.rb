@@ -19,7 +19,7 @@ set :user, "role-barkeep"
 #   end
 #
 if ENV.has_key?("BARKEEP_CREDENTIALS") && File.exist?(ENV["BARKEEP_CREDENTIALS"])
-  require ENV["BARKEEP_CREDENTIALS"]
+  load ENV["BARKEEP_CREDENTIALS"]
 else
   puts "Unable to locate the file $BARKEEP_CREDENTIALS. You need this to deploy. See deploy_config.rb."
   exit 1
