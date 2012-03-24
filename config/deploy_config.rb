@@ -13,51 +13,37 @@ set :user, "role-barkeep"
 # When deploying, we must deploy the private credentials for the email user account we send emails from.
 # We do not want to check these into the repository, and so they should be stored in a file in
 # $BARKEEP_CREDENTIALS. It should be of the form:
-#   destination :prod do
-#     env :gmail_address, "..."
-#     env :gmail_password, "..."
+#   Fezzik.destination :prod do
+#     Fezzik.env :gmail_address, "..."
+#     Fezzik.env :gmail_password, "..."
 #   end
 #
 if ENV.has_key?("BARKEEP_CREDENTIALS") && File.exist?(ENV["BARKEEP_CREDENTIALS"])
   require ENV["BARKEEP_CREDENTIALS"]
 else
-  puts "Unable to locate the file $BARKEEP_CREDENTIALS. You need this to deploy. See deploy.rb for details."
+  puts "Unable to locate the file $BARKEEP_CREDENTIALS. You need this to deploy. See deploy_config.rb."
   exit 1
 end
 
-# Each destination is a set of machines and configurations to deploy to.
-# You can deploy to a destination from the command line with:
-#     fez to_dev deploy
-#
-# :domain can be an array if you are deploying to multiple hosts.
-#
-# You can set environment variables that will be loaded at runtime on the server
-# like this:
-#     env :rack_env, "production"
-# This will also generate a file on the server named config/environment.rb, which you can include
-# in your code to load these variables as Ruby constants. You can create your own config/environment.rb
-# file to use for development, and it will be overwritten at runtime.
+common_options = {
+  db_location: "DBI:Mysql:barkeep:localhost",
+  db_user: "root",
+  db_password: "",
+  redis_host: "localhost",
+  redis_port: 6379,
+  openid_providers: ["https://www.google.com/accounts/o8/ud"],
+  barkeep_hostname: "barkeep",
+  repos_root: "#{deploy_to}/repos"
+}
 
-destination :prod do
-  set :domain, "#{user}@barkeep.sv2"
-  env :db_location, "DBI:Mysql:barkeep:localhost"
-  env :db_user, "root"
-  env :db_password, ""
-  env :repos_root, "#{deploy_to}/repos"
-  env :barkeep_hostname, "barkeep"
-  env :redis_host, "localhost"
-  env :redis_port, 6379
-  env :openid_providers, ["https://www.google.com/accounts/o8/ud"]
+def include_options(options) options.each { |key, value| Fezzik.env key, value } end
+
+Fezzik.destination :vagrant do
+  set :domain, "barkeep_vagrant"
+  include_options(common_options)
 end
 
-destination :vagrant do
-  set :domain, "barkeep_vagrant"
-  env :db_location, "DBI:Mysql:barkeep:localhost"
-  env :db_user, "root"
-  env :db_password, ""
-  env :repos_root, "#{deploy_to}/repos"
-  env :barkeep_hostname, "barkeep"
-  env :redis_host, "localhost"
-  env :redis_port, 6379
-  env :openid_providers, ["https://www.google.com/accounts/o8/ud"]
+Fezzik.destination :prod do
+  set :domain, "#{user}@barkeep.sv2"
+  include_options(common_options)
 end

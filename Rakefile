@@ -3,6 +3,11 @@ require "pathological"
 require "rake/testtask"
 require "resque/tasks"
 
+# We use Fezzik for deployments.
+require "fezzik"
+Fezzik.init(:tasks => "config/tasks")
+require "config/deploy_config"
+
 task :test => ["test:units", "test:integrations", "test:coffeescripts"]
 
 namespace :test do
