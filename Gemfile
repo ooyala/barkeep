@@ -62,4 +62,5 @@ group :development do
   gem "pry"
   gem "awesome_print"
   gem "vagrant" # For testing deployments.
+  gem "terraform" # For scripting system setup.
 end
