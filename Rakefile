@@ -3,10 +3,12 @@ require "pathological"
 require "rake/testtask"
 require "resque/tasks"
 
-# We use Fezzik for deployments.
-require "fezzik"
-Fezzik.init(:tasks => "config/tasks")
-require "config/deploy_config"
+# We use Fezzik for deployments. Fezzik requires this Rakefile, which should in turn require all deploy tasks.
+if ENV["fezzik_destination"]
+  require "fezzik"
+  Fezzik.init(:tasks => "config/tasks")
+  require "config/deploy_config"
+end
 
 task :test => ["test:units", "test:integrations", "test:coffeescripts"]
 
