@@ -4,7 +4,7 @@
    inner_class  = incremental ? "incrementalExpansion" : "" %>
 
 
-<tr class="contextExpander <%= context_extra_class %>">
+<tr class="contextExpander <%= context_extra_class %>" diff-line-number="<%=line_number%>-expander">
   <td colspan="3">
     <div class="expandContainer <%= inner_class %>">
       <% if incremental %>

@@ -25,7 +25,7 @@
         <% else %>
           <% file.lines.each_with_index do |line, i| %>
             <% if line.chunk && unchunked_lines > 0 %>
-              <%= erb :_context_expander, :locals => { :bottom => false,
+              <%= erb :_context_expander, :locals => { :bottom => false, :line_number => i,
                   :top => first_expander, :incremental => unchunked_lines > 10 } %>
               <% first_expander = false
                  unchunked_lines = 0 %>
@@ -52,7 +52,7 @@
               </td>
             </tr>
             <% if !line.chunk && file.lines[i+1].nil? && unchunked_lines > 0 %>
-              <%= erb :_context_expander, :locals => { :bottom => true, :top => false,
+              <%= erb :_context_expander, :locals => { :bottom => true, :top => false, :line_number => i+1,
                   :incremental => unchunked_lines > 10 } %>
             <% end %>
           <% end %>

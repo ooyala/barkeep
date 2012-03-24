@@ -1,3 +1,10 @@
+# Main javascript for the diff page UI
+#
+# Note: when modifying or removing rows from table of code lines, use findTwinFromBothSides to make sure
+#   the same modification is done to both sides of the side-by-side view.
+#   When adding a new row, similarly, make sure to add it to both tables equally and set the diff-line-number
+#   attribute to be the same for both sides so that its twin can be found.
+
 window.Commit =
   SIDE_BY_SIDE_SLIDE_DURATION: 300
   SIDE_BY_SIDE_SPLIT_DURATION: 700
@@ -204,8 +211,8 @@ window.Commit =
       diffLines = expander.nextUntil(":visible")
     else
       diffLines = expander.prevUntil(":visible")
-    diffLines.show()
-    expander.remove()
+    @findTwinFromBothSides(diffLines).show()
+    @findTwinFromBothSides(expander).remove()
 
   # Expand some number of lines either above or below the fold of the context expander
   expandContext: (event, count, direction) ->
@@ -214,13 +221,13 @@ window.Commit =
       lineRange = expander.nextUntil(":visible")
     else
       lineRange = $(expander.prevUntil(":visible").toArray().reverse())
-    [rangeToExpand, attachLine, attachDirection] = @getContextRangeToExpand(lineRange, count, direction)
-    expander.remove()
+    [rangeToExpand, attachLines, attachDirection] = @getContextRangeToExpand(lineRange, count, direction)
+    @findTwinFromBothSides(expander).remove()
     rangeToExpand.show()
-    top = attachDirection == "above" && attachLine.prevAll(":visible").length == 0
-    bottom = attachDirection == "below" && attachLine.nextAll(":visible").length == 0
-    incremental = lineRange.length - rangeToExpand.length > 10
-    @createContextExpander(attachLine, attachDirection, top, bottom, incremental)
+    top = attachDirection == "above" && attachLines.first().prevAll(":visible").length == 0
+    bottom = attachDirection == "below" && attachLines.first().nextAll(":visible").length == 0
+    incremental = lineRange.length * 2 - rangeToExpand.length > 10
+    @createContextExpander(attachLines, attachDirection, top, bottom, incremental)
 
   # Context expander helper function
   #
@@ -231,24 +238,40 @@ window.Commit =
   #
   # Returns:
   #  - Set of lines to reveal
-  #  - Line to attach the new context expander to
+  #  - Lines to attach the new context expander to
   #  - Direction in which to attach the new context expander
   getContextRangeToExpand: (range, count, direction) ->
     if direction == "above"
-      rangeToExpand = range.slice(0, count)
-      attachLine = rangeToExpand.last()
-      [rangeToExpand, attachLine, "below"]
+      rangeToExpand = @findTwinFromBothSides(range.slice(0, count))
+      # rangeToExpand.slice(-2) is equivalent to findTwinFromBothSides(rangeToExpand.last)
+      attachLines = rangeToExpand.slice(-2)
+      [rangeToExpand, attachLines, "below"]
     else
-      rangeToExpand = range.slice(-count)
-      attachLine = rangeToExpand.first()
-      [rangeToExpand, attachLine, "above"]
+      rangeToExpand = @findTwinFromBothSides(range.slice(-count))
+      attachLines = rangeToExpand.slice(-2)
+      [rangeToExpand, attachLines, "above"]
+
+  # Given a jquery array of row elements from code table, return a jquery array of row elements from both
+  # tables of the side by side view
+  #
+  # Arguments:
+  #  - rowElements: jquery array of elements from a single side of side-by-side
+  #
+  # Returns:
+  #  - jquery array of elements including the same rows from both sides of side-by-side
+  findTwinFromBothSides: (rowElements) ->
+    fileElement = rowElements.first().parents(".file")
+    elementsFromBothSides = $.map rowElements, (x) ->
+      lineNumber = $(x).attr("diff-line-number")
+      fileElement.find("[diff-line-number='" + lineNumber + "']").toArray()
+    $(elementsFromBothSides)
 
   # Make a call to the server to render a new context expander, attach it to the DOM, and register event
   # handlers
   # TODO(kle): no reason this can't be done both client and server side
   #
   # Arguments:
-  #  - codeLine: diffline DOM element to attach to
+  #  - codeLines: diffline DOM elements to attach to
   #  - attachDirection: Indicates whether to append or prepend the context expander to the code line. Valid
   #       options: "above", "below"
   #  - top: Indicates whether or not this context expander will be the top-most visible element for this file
@@ -259,7 +282,7 @@ window.Commit =
   #  - incremental: Indicates whether or not to render the "Show 10 Above" and "Show 10 Below" options. If
   #       incremental is false, then only the "Show All" option will appear for this context expander.
   #       Valid options: (true, false)
-  createContextExpander: (codeLine, attachDirection, top, bottom, incremental) ->
+  createContextExpander: (codeLines, attachDirection, top, bottom, incremental) ->
     $.ajax
       type: "get"
       url: "/context_expander"
@@ -267,13 +290,14 @@ window.Commit =
         top: top
         bottom: bottom
         incremental: incremental
+        line_number: codeLines.attr "diff-line-number"
       success: (html) =>
         contextExpander = $(html)
         contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
         contextExpander.find(".expandLink.above").click (e) => @expandContext(e, 10, "above")
         contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
-        codeLine.before(contextExpander) if attachDirection == "above"
-        codeLine.after(contextExpander) if attachDirection == "below"
+        codeLines.before(contextExpander) if attachDirection == "above"
+        codeLines.after(contextExpander) if attachDirection == "below"
 
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
@@ -281,17 +305,17 @@ window.Commit =
     return if $(e.target).parents(".diffLine").find(".commentForm").size() > 0
     return unless window.userLoggedIn
 
-    if $(e.target).hasClass("reply")
-      lineNumber = $(e.currentTarget).parents(".diffLine").attr("diff-line-number")
+    if $(e.currentTarget).hasClass("diffLine")
+      codeLine = $(e.currentTarget)
     else
-      lineNumber = $(e.currentTarget).attr("diff-line-number")
-
+      codeLine = $(e.currentTarget).parents(".diffLine")
+    codeLines = @findTwinFromBothSides(codeLine)
+    lineNumber = codeLine.attr "diff-line-number"
     # Select line and add form to both left and right tables (so that the length of them stay the same).
-    codeLine = $(e.target).parents(".file").find(".diffLine[diff-line-number='" + lineNumber + "'] .code")
-    filename = codeLine.parents(".file").attr("filename")
-    sha = codeLine.parents("#commit").attr("sha")
-    repoName = codeLine.parents("#commit").attr("repo")
-    @createCommentForm(codeLine, repoName, sha, filename, lineNumber)
+    filename = codeLines.parents(".file").attr("filename")
+    sha = codeLines.parents("#commit").attr("sha")
+    repoName = codeLines.parents("#commit").attr("repo")
+    @createCommentForm(codeLines, repoName, sha, filename, lineNumber)
 
   onCommentEdit: (e) ->
     # Use the comment ID instead of generating form ID since left and right tables have the same comments.

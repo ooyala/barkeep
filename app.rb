@@ -195,7 +195,8 @@ class Barkeep < Sinatra::Base
     erb :_context_expander, :layout => false, :locals => {
       :top => params[:top] == "true",
       :bottom => params[:bottom] == "true",
-      :incremental => params[:incremental] == "true"
+      :incremental => params[:incremental] == "true",
+      :line_number => params[:line_number],
     }
   end
 
