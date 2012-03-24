@@ -32,11 +32,6 @@ This is how it works on our Mac OS dev laptops; YMMV. First, ensure you've insta
     $ mysqladmin5 -u root create barkeep  # create the 'barkeep' database
     $ ruby run_migrations.rb # db migrations
 
-If you're running a Mac using Macports with rvm, ensure your ruby is compiled against the macports openssl
-library. Otherwise you will get segfaults when sending emails over SSL:
-
-    $ rvm install 1.9.2 --with-openssl-dir=/opt/local
-
 ## <a name="section_2"></a>2 Running Barkeep Locally
 
 Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
