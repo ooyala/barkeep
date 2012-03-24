@@ -83,7 +83,7 @@ namespace :fezzik do
     run "mysqladmin -uroot create barkeep 2> >(grep -v 'database exists') || true"
     puts "done"
     print "running migrations... "
-    run "cd #{current_path} && bundle exec ruby run_migrations.rb"
+    run "cd #{current_path} && bundle exec ruby script/run_migrations.rb"
     puts "done"
   end
 

@@ -30,7 +30,7 @@ This is how it works on our Mac OS dev laptops; YMMV. First, ensure you've insta
     $ port install nodejs # or brew install node
       # Note: you may need to "port deactivate c-ares" before installing nodejs if you're using macports
     $ mysqladmin5 -u root create barkeep  # create the 'barkeep' database
-    $ ruby run_migrations.rb # db migrations
+    $ ruby script/run_migrations.rb # db migrations
 
 ## <a name="section_2"></a>2 Running Barkeep Locally
 
