@@ -1,22 +1,46 @@
 <%#
   # A dashboard to add users and manage user permissions.
   #
-  # TODO(dmac): This dashboard should have better user feedback. For example, it should warn you
-  # if you try to change your own permission from admin to normal and prevent you from demoting
-  # the last admin user.
+  # TODO(dmac): Prevent demotion of the last admin user.
 %>
 <script type="text/javascript">
-  $(document).ready(function() {
-    $("input[type=radio]").change(function(event) {
-      var target = $(event.target);
+  window.Barkeep || (window.Barkeep = {})
+  Barkeep.UserAdmin = {
+    currentUserId: <%= current_user.id %>,
+
+    updatePermission: function(userId, permission) {
       $.ajax({
         type: "POST",
         url: "/admin/users/update_permissions",
         data: {
-          user_id: target.attr("data-user-id"),
-          permission: target.val()
+          user_id: userId,
+          permission: permission
         }
       });
+    },
+
+    confirmOwnDemotion: function() {
+      return confirm("You are about to demote yourself! If you continue you will be redirected and unable " +
+          "to view this page. Would you like to continue?");
+    }
+  }
+
+  $(document).ready(function() {
+    $("input[type=radio]").click(function(event) {
+      var targetUserId = $(event.target).attr("data-user-id");
+      var permission = $(event.target).val();
+
+      if (Barkeep.UserAdmin.currentUserId != targetUserId || Barkeep.UserAdmin.confirmOwnDemotion()) {
+        Barkeep.UserAdmin.updatePermission(targetUserId, permission)
+
+        // Redirect a user if they demote themself.
+        if (Barkeep.UserAdmin.currentUserId == targetUserId) {
+          window.location = "/"
+        }
+      } else {
+        // This will cancel the permission change. Used when a user decides not to demote themself after all.
+        return false;
+      }
     });
   });
 </script>
