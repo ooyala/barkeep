@@ -52,6 +52,7 @@ class Barkeep < Sinatra::Base
 
   set :public_folder, "public"
   set :views, "views"
+  enable :sessions
 
   raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
 
@@ -59,6 +60,7 @@ class Barkeep < Sinatra::Base
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
+    set :session_secret, "AssimilationSuccessful"
 
     BacktraceCleaner.monkey_patch_all_exceptions!
     GitDiffUtils.setup(RedisManager.redis_instance)
@@ -105,13 +107,13 @@ class Barkeep < Sinatra::Base
   end
 
   before do
-    self.current_user = User.find(:email => request.cookies["email"])
+    self.current_user = User.find(:email => session[:email])
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
     unless current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
       # Save url to return to it after login completes.
-      response.set_cookie "login_started_url", :value => request.url, :path => "/"
+      session[:login_started_url] = request.url
       redirect(OPENID_PROVIDERS.size == 1 ?
          get_openid_login_redirect(OPENID_PROVIDERS.first) :
         "/signin/select_openid_provider")
@@ -123,7 +125,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/signin" do
-    response.set_cookie "login_started_url", :value => request.referrer, :path => "/"
+    session[:login_started_url] = request.referrer
     redirect(OPENID_PROVIDERS.size == 1 ?
        get_openid_login_redirect(OPENID_PROVIDERS.first) :
       "/signin/select_openid_provider")
@@ -142,7 +144,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/signout" do
-    response.delete_cookie "email"
+    session.clear
     redirect request.referrer
   end
 
@@ -341,13 +343,13 @@ class Barkeep < Sinatra::Base
     when OpenID::Consumer::SUCCESS
       ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
       email = ax_resp["http://axschema.org/contact/email"][0]
-      response.set_cookie "email", :value => email, :path => "/"
+      session[:email] = email
       unless User.find(:email => email)
         # If there are no admin users yet, create one.
         permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
         User.new(:email => email, :name => email, :permission => permission).save
       end
-      redirect request.cookies["login_started_url"] || "/"
+      redirect session[:login_started_url] || "/"
     end
   end
 
