@@ -1,8 +1,5 @@
-<%#
-  # A dashboard to add users and manage user permissions.
-  #
-  # TODO(dmac): Prevent demotion of the last admin user.
-%>
+<% # A dashboard to add users and manage user permissions. %>
+
 <script type="text/javascript">
   window.Barkeep || (window.Barkeep = {})
   Barkeep.UserAdmin = {
@@ -22,6 +19,10 @@
     confirmOwnDemotion: function() {
       return confirm("You are about to demote yourself! If you continue you will be redirected and unable " +
           "to view this page. Would you like to continue?");
+    },
+
+    numberOfAdminUsers: function() {
+      return $("input[type=radio][value=admin]:checked").size();
     }
   }
 
@@ -30,16 +31,22 @@
       var targetUserId = $(event.target).attr("data-user-id");
       var permission = $(event.target).val();
 
-      if (Barkeep.UserAdmin.currentUserId != targetUserId || Barkeep.UserAdmin.confirmOwnDemotion()) {
-        Barkeep.UserAdmin.updatePermission(targetUserId, permission)
-
-        // Redirect a user if they demote themself.
-        if (Barkeep.UserAdmin.currentUserId == targetUserId) {
-          window.location = "/"
-        }
-      } else {
-        // This will cancel the permission change. Used when a user decides not to demote themself after all.
+      // Prevent demoting the last admin.
+      if ( Barkeep.UserAdmin.numberOfAdminUsers() === 0) {
+        alert("Unable to demote the last admin user.");
         return false;
+      }
+
+      // Confirm user demoting themself.
+      if (Barkeep.UserAdmin.currentUserId === targetUserId && !Barkeep.UserAdmin.confirmOwnDemotion()) {
+        return false;
+      }
+
+      Barkeep.UserAdmin.updatePermission(targetUserId, permission)
+
+      // Redirect a user if they demote themself.
+      if (Barkeep.UserAdmin.currentUserId === targetUserId) {
+        window.location = "/"
       }
     });
   });
