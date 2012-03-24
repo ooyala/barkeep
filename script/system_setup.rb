@@ -5,8 +5,10 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "terraform_dsl"))
 
 include TerraformDsl
-unless `uname`.downcase.include?("linux")
-  fail_and_exit "This setup script is intended for Linux on our servers. Don't run it on your Mac."
+# TODO(caleb): At some point we probably want a strict supported list of Ubuntu versions. (We can check with
+# lsb_release --release)
+unless (`lsb_release --id`["Ubuntu"] rescue nil)
+  fail_and_exit "This setup script is intended for Ubuntu."
 end
 
 ensure_packages(
