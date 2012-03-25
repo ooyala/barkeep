@@ -242,7 +242,7 @@ class Barkeep < Sinatra::Base
       :line_number => line_number,
       :user => current_user,
       :text => params[:text],
-      :has_been_emailed => user.demo?) # Don't email comments made by demo users.
+      :has_been_emailed => current_user.demo?) # Don't email comments made by demo users.
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
