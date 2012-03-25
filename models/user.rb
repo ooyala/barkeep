@@ -8,6 +8,7 @@ require "digest/md5"
 
 class User < Sequel::Model
   one_to_many :saved_searches, :order => [:user_order.desc]
+  one_to_many :comments
 
   def gravatar
     hash = Digest::MD5.hexdigest(email.downcase)
