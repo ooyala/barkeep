@@ -298,7 +298,7 @@ window.Commit =
         contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
         codeLines.before(contextExpander) if attachDirection == "above"
         codeLines.after(contextExpander) if attachDirection == "below"
-        # NOTE(kle): rerender hack to get around issue #198
+        # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
         expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
         refreshLine = $(expander.nextAll(":visible")[0])
         refreshLine.hide()
