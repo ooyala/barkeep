@@ -236,8 +236,13 @@ class Barkeep < Sinatra::Base
                 CommitFile.new(:filename => params[:filename], :commit => commit).save
     end
     line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
-    comment = Comment.create(:commit => commit, :commit_file => file, :line_number => line_number,
-                             :user => current_user, :text => params[:text])
+    comment = Comment.create(
+      :commit => commit,
+      :commit_file => file,
+      :line_number => line_number,
+      :user => current_user,
+      :text => params[:text],
+      :has_been_emailed => user.demo?) # Don't email comments made by demo users.
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
