@@ -6,6 +6,8 @@ require "pathological"
 require "clockwork"
 require "resque_jobs/fetch_commits"
 require "resque_jobs/batch_comment_emails"
+require "resque_jobs/delete_old_comments_by_demo_users"
+require "config/environment"
 
 def clear_resque_queue(queue_name) Resque.redis.del("queue:#{queue_name}") end
 
@@ -23,11 +25,18 @@ Clockwork.handler do |job_name|
   when "batch_comment_emails"
     clear_resque_queue("batch_comment_emails")
     Resque.enqueue(BatchCommentEmails)
+  when "delete_old_comments_by_demo_users"
+    clear_resque_queue("delete_old_comments_by_demo_users")
+    Resque.enqueue(DeleteOldCommentsByDemoUsers)
   end
 end
 
 Clockwork.every(45.seconds, "fetch_commits")
 
 Clockwork.every(10.seconds, "batch_comment_emails")
+
+if defined?(ENABLE_READONLY_DEMO_MODE) && ENABLE_READONLY_DEMO_MODE
+  Clockwork.every(30.seconds, "delete_old_comments_by_demo_users")
+end
 
 Clockwork.run # This is a blocking call.
