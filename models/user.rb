@@ -17,4 +17,9 @@ class User < Sequel::Model
 
   def demo?() permission == "demo" end
   def admin?() permission == "admin" end
+
+  def session_saved_searches(saved_searches_options)
+    return [] if saved_searches_options.nil?
+    saved_searches_options.map { |options| SavedSearch.new(options) }
+  end
 end

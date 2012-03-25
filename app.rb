@@ -151,8 +151,12 @@ class Barkeep < Sinatra::Base
   end
 
   get "/commits" do
-    erb :commit_search,
-        :locals => { :saved_searches => current_user ? current_user.saved_searches : [] }
+    saved_searches = []
+    if current_user
+      saved_searches = current_user.demo? ? current_user.session_saved_searches(session[:saved_searches]) :
+          current_user.saved_searches
+    end
+    erb :commit_search, :locals => { :saved_searches => saved_searches }
   end
 
   # get the one commit that the user is looking for.
@@ -286,9 +290,13 @@ class Barkeep < Sinatra::Base
     # Default to only searching master unless branches are explicitly specified.
     options[:branches] = params[:branches].else { "master" }.then { self == "all" ? nil : self }
     incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
-    saved_search = SavedSearch.create(
-      { :user_id => current_user.id, :user_order => incremented_user_order }.merge options
-    )
+    options.merge!({ :user_id => current_user.id, :user_order => incremented_user_order })
+    saved_search = SavedSearch.new(options)
+    if current_user.demo?
+      (session[:saved_searches] ||= []) << options
+    else
+      saved_search.save
+    end
     erb :_saved_search, :layout => false,
       :locals => { :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 }
   end
