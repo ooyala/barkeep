@@ -54,4 +54,4 @@ end
 satisfy_dependencies()
 
 # This demo user is only used in Barkeep's readonly demo mode.
-puts `script/create_demo_user.rb` if defined?(ENABLE_READONLY_DEMO) && ENABLE_READONLY_DEMO
+puts `script/create_demo_user.rb` if defined?(ENABLE_READONLY_DEMO_MODE) && ENABLE_READONLY_DEMO_MODE
