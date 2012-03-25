@@ -42,7 +42,7 @@ class window.SmartSearch
 
     stateMachine(char) for char in searchString.split ''
 
-    key = if SYNONYMS[currentKey]? then SYNONYMS[currentKey] else currentKey
+    key = SYNONYMS[currentKey] || currentKey
 
     { key: key, partialValue: currentValue }
 
