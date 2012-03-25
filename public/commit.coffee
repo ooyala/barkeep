@@ -383,11 +383,24 @@ window.Commit =
         textarea = codeLine.find(".commentForm .commentText").filter(-> $(@).css("visibility") == "visible")
         KeyboardShortcuts.createShortcutContext textarea
         textarea.focus()
+        textarea.mouseup (e) => @onCommentTextAreaResize(e)
         KeyboardShortcuts.registerShortcut textarea, "esc", => textarea.blur()
         KeyboardShortcuts.registerShortcut textarea, "ctrl+shift+p", (e) =>
           $(e.target).parents(".commentForm").find(".commentPreview").click()
           # Prevent side effects such as cursor movement.
           false
+
+  #
+  #  Ensure that when comment text areas resize, the resize affects both sides of side by side
+  #
+  onCommentTextAreaResize: (e) ->
+    width = $(e.target).width()
+    height = $(e.target).height()
+    formId = $(e.target).parents(".commentForm").attr("form-id")
+    formFromBothSides = $(e.target).parents(".file").find("[form-id='" + formId + "']")
+    commentTextFromBothSides = formFromBothSides.find(".commentText")
+    commentTextFromBothSides.width(width)
+    commentTextFromBothSides.height(height)
 
   onCommentSubmit: (e) ->
     e.preventDefault()
