@@ -62,7 +62,7 @@ class Barkeep < Sinatra::Base
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
-    set :session_secret, "AssimilationSuccessful"
+    set :session_secret, SESSION_SECRET if defined?(SESSION_SECRET)
 
     BacktraceCleaner.monkey_patch_all_exceptions!
     GitDiffUtils.setup(RedisManager.redis_instance)
