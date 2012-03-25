@@ -298,6 +298,11 @@ window.Commit =
         contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
         codeLines.before(contextExpander) if attachDirection == "above"
         codeLines.after(contextExpander) if attachDirection == "below"
+        # NOTE(kle): rerender hack to get around issue #198
+        expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
+        refreshLine = $(expander.nextAll(":visible")[0])
+        refreshLine.hide()
+        refreshLine.show(1)
 
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
