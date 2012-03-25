@@ -109,7 +109,11 @@ class Barkeep < Sinatra::Base
   end
 
   before do
-    self.current_user = User.find(:email => session[:email])
+    # When running in read-only demo mode, if the user is not logged in, treat them as a demo user.
+    self.current_user ||= User.find(:email => session[:email])
+    if self.current_user && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
+      self.current_user = User.first(:permission => "demo")
+    end
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
     unless current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
