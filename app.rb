@@ -111,7 +111,7 @@ class Barkeep < Sinatra::Base
   before do
     # When running in read-only demo mode, if the user is not logged in, treat them as a demo user.
     self.current_user ||= User.find(:email => session[:email])
-    if self.current_user && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
+    if !self.current_user && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
       self.current_user = User.first(:permission => "demo")
     end
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
@@ -131,6 +131,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/signin" do
+    session.clear
     session[:login_started_url] = request.referrer
     redirect(OPENID_PROVIDERS.size == 1 ?
        get_openid_login_redirect(OPENID_PROVIDERS.first) :
