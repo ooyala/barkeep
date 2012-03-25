@@ -15,4 +15,5 @@ class User < Sequel::Model
   end
 
   def demo?() permission == "demo" end
+  def admin?() permission == "admin" end
 end

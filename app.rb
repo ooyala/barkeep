@@ -345,7 +345,7 @@ class Barkeep < Sinatra::Base
       email = ax_resp["http://axschema.org/contact/email"][0]
       session[:email] = email
       unless User.find(:email => email)
-        # If there are no admin users yet, create one.
+        # If there are no admin users yet, make the first user to log in the first admin.
         permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
         User.new(:email => email, :name => email, :permission => permission).save
       end
@@ -416,10 +416,13 @@ class Barkeep < Sinatra::Base
     erb :inspire, :locals => { :quote => Inspire.new.quote }
   end
 
+  before "/admin*" do
+    halt 400, "You do not have permission to view this admin page." unless current_user.admin?
+  end
+
   # A page to help keep track of Barkeep's data models and background processes. Also see the Resque dashboard
   # (/resque).
   get "/admin/?" do
-    halt 400 unless current_user.permission == "admin"
     erb :admin, :locals => {
       :most_recent_commit => Commit.order(:id.desc).first,
       :most_recent_comment => Comment.order(:id.desc).first,
@@ -433,12 +436,10 @@ class Barkeep < Sinatra::Base
   end
 
   get "/admin/users/?" do
-    halt 400 unless current_user.permission == "admin"
     erb :manage_users, :locals => { :users => User.order_by(:name).all }
   end
 
   post "/admin/users/update_permissions" do
-    halt 400 unless current_user.permission == "admin"
     halt 400 unless ["normal", "admin"].include? params[:permission]
     user = User.filter(:id => params[:user_id]).update(:permission => params[:permission])
     nil
