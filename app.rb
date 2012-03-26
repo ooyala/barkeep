@@ -348,7 +348,12 @@ class Barkeep < Sinatra::Base
 
   delete "/saved_searches/:id" do
     id = params[:id].to_i
-    SavedSearch.filter(:user_id => current_user.id, :id => id).delete
+    if current_user.demo?
+      session[:saved_searches].delete_if { |saved_search| saved_search[:id] == params[:id].to_i }
+    else
+      SavedSearch.filter(:user_id => current_user.id, :id => id).delete
+    end
+    nil
   end
 
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
