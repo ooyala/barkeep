@@ -323,7 +323,12 @@ class Barkeep < Sinatra::Base
   #   purposes only, because new commits which have been recently ingested will make the page number
   #   inaccurate.
   get "/saved_searches/:id" do
-    saved_search = SavedSearch[params[:id]]
+    if current_user.demo?
+      options = session[:saved_searches].find { |saved_search| saved_search[:id] == params[:id].to_i }
+      saved_search = SavedSearch.with_unrestricted_primary_key { SavedSearch.new(options) }
+    else
+      saved_search = SavedSearch[params[:id]]
+    end
     halt 400, "Bad saved search id." unless saved_search
     token = params[:token] && !params[:token].empty? ? params[:token] : nil
     direction = params[:direction] || "before"
@@ -358,12 +363,22 @@ class Barkeep < Sinatra::Base
 
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
   post "/saved_searches/:id/search_options" do
-    saved_search = SavedSearch[:id => params[:id].to_i]
+    if current_user.demo?
+      search_options = session[:saved_searches].find { |saved_search| saved_search[:id] == params[:id].to_i }
+      saved_search = SavedSearch.with_unrestricted_primary_key { SavedSearch.new(search_options) }
+    else
+      saved_search = SavedSearch[params[:id]]
+    end
     body_params = JSON.parse(request.body.read)
     [:unapproved_only, :email_commits, :email_comments].each do |setting|
       saved_search.send("#{setting}=", body_params[setting.to_s]) unless body_params[setting.to_s].nil?
     end
-    saved_search.save
+    if current_user.demo?
+      search_index = session[:saved_searches].index(search_options)
+      session[:saved_searches][search_index] = saved_search.values
+    else
+      saved_search.save
+    end
     nil
   end
 
