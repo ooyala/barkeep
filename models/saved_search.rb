@@ -8,6 +8,20 @@ class SavedSearch < Sequel::Model
 
   PAGE_SIZE = 10
 
+  # Used for demo user searches. When calling `.save` on the saved search of a demo user, rather than writing to
+  # the database, we modify the saved_searches array in a demo user's session. Returning false cancels the
+  # default save behavior.
+  def before_save
+    if user.demo?
+      return false if @@session.nil?
+      index = @@session[:saved_searches].index { |saved_search| saved_search[:id] == self.id }
+      index ? @@session[:saved_searches][index] = self.values : @@session[:saved_searches] << self.values
+      false
+    else
+      super
+    end
+  end
+
   # The list of commits this saved search represents.
   def commits(token = nil, direction = "before", min_commit_date)
     result = MetaRepo.instance.find_commits(
@@ -101,20 +115,6 @@ class SavedSearch < Sequel::Model
   def self.find_demo_search(id)
     options = @@session[:saved_searches].find { |saved_search| saved_search[:id] == id.to_i }
     SavedSearch.with_unrestricted_primary_key { SavedSearch.new(options) }
-  end
-
-  # Used for demo user searches. When calling `.save` on the saved search of a demo user, rather than writing to
-  # the database, we modify the saved_searches array in a demo user's session. Returning false cancels the
-  # default save behavior.
-  def before_save
-    if user.demo?
-      return false if @@session.nil?
-      index = @@session[:saved_searches].index { |saved_search| saved_search[:id] == self.id }
-      index ? @@session[:saved_searches][index] = self.values : @@session[:saved_searches] << self.values
-      false
-    else
-      super
-    end
   end
 
   # Used for demo user searches. Returns all saved search objects of the logged in demo user.
