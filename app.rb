@@ -2,6 +2,7 @@ require "bundler/setup"
 require "pathological"
 require "json"
 require "sinatra/base"
+require "sinatra/reloader"
 require "redcarpet"
 require "coffee-script"
 require "nokogiri"
@@ -75,6 +76,12 @@ class Barkeep < Sinatra::Base
       puts message
       message
     end
+
+    register Sinatra::Reloader
+    also_reload "lib/*.rb"
+    also_reload "models/*.rb"
+    also_reload "config/*.rb"
+    also_reload "resque_jobs/*.rb"
   end
 
   configure :test do
