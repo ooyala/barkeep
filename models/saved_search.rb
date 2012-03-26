@@ -75,6 +75,16 @@ class SavedSearch < Sequel::Model
     parts = search_string.split(" ")
   end
 
+  # When passed a block, allows manual setting of the SavedSearch `id` field. Sequel normally disallows this
+  # because `id` is a primary key. This is needed when assigning "fake" ids to saved searches stored in
+  # the demo user session.
+  def self.with_unrestricted_primary_key(&block)
+    SavedSearch.unrestrict_primary_key
+    return_value = block.call
+    SavedSearch.restrict_primary_key
+    return_value
+  end
+
   private
 
   # We asking for commits from Git, we can get back commits that are present on the filesystem (have been

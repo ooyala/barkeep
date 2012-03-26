@@ -20,6 +20,8 @@ class User < Sequel::Model
 
   def session_saved_searches(saved_searches_options)
     return [] if saved_searches_options.nil?
-    saved_searches_options.map { |options| SavedSearch.new(options) }
+    SavedSearch.with_unrestricted_primary_key do
+      saved_searches_options.map { |options| SavedSearch.new(options) }
+    end
   end
 end

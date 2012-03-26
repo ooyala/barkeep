@@ -120,6 +120,7 @@ class Barkeep < Sinatra::Base
     self.current_user ||= User.find(:email => session[:email])
     if !self.current_user && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
       self.current_user = User.first(:permission => "demo")
+      session[:last_demo_saved_search_id] = 0 if session[:last_demo_saved_search_id].nil?
     end
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
     unless current_user
@@ -305,6 +306,8 @@ class Barkeep < Sinatra::Base
     options.merge!({ :user_id => current_user.id, :user_order => incremented_user_order })
     saved_search = SavedSearch.new(options)
     if current_user.demo?
+      options[:id] = (session[:last_demo_saved_search_id] += 1)
+      SavedSearch.with_unrestricted_primary_key { saved_search.id = options[:id] }
       (session[:saved_searches] ||= []) << options
     else
       saved_search.save
