@@ -120,7 +120,12 @@ class Barkeep < Sinatra::Base
     self.current_user ||= User.find(:email => session[:email])
     if !self.current_user && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
       self.current_user = User.first(:permission => "demo")
-      session[:last_demo_saved_search_id] = 0 if session[:last_demo_saved_search_id].nil?
+      SavedSearch.sync_session(session)
+      # Setting this to false silences the exception that Sequel generates when we cancel the default save
+      # behavior for demo searches.
+      SavedSearch.raise_on_save_failure = false
+    else
+      SavedSearch.raise_on_save_failure = true
     end
     next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
     unless current_user
@@ -166,8 +171,7 @@ class Barkeep < Sinatra::Base
   get "/commits" do
     saved_searches = []
     if current_user
-      saved_searches = current_user.demo? ? current_user.session_saved_searches(session[:saved_searches]) :
-          current_user.saved_searches
+      saved_searches = current_user.demo? ? SavedSearch.demo_saved_searches : current_user.saved_searches
     end
     erb :commit_search, :locals => { :saved_searches => saved_searches }
   end
@@ -304,14 +308,12 @@ class Barkeep < Sinatra::Base
     options[:branches] = params[:branches].else { "master" }.then { self == "all" ? nil : self }
     incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
     options.merge!({ :user_id => current_user.id, :user_order => incremented_user_order })
-    saved_search = SavedSearch.new(options)
     if current_user.demo?
-      options[:id] = (session[:last_demo_saved_search_id] += 1)
-      SavedSearch.with_unrestricted_primary_key { saved_search.id = options[:id] }
-      (session[:saved_searches] ||= []) << options
+      saved_search = SavedSearch.new_demo_search(options)
     else
-      saved_search.save
+      saved_search = SavedSearch.new(options)
     end
+    saved_search.save
     erb :_saved_search, :layout => false,
       :locals => { :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 }
   end
@@ -324,8 +326,7 @@ class Barkeep < Sinatra::Base
   #   inaccurate.
   get "/saved_searches/:id" do
     if current_user.demo?
-      options = session[:saved_searches].find { |saved_search| saved_search[:id] == params[:id].to_i }
-      saved_search = SavedSearch.with_unrestricted_primary_key { SavedSearch.new(options) }
+      saved_search = SavedSearch.find_demo_search(params[:id])
     else
       saved_search = SavedSearch[params[:id]]
     end
@@ -354,7 +355,7 @@ class Barkeep < Sinatra::Base
   delete "/saved_searches/:id" do
     id = params[:id].to_i
     if current_user.demo?
-      session[:saved_searches].delete_if { |saved_search| saved_search[:id] == params[:id].to_i }
+      SavedSearch.delete_demo_search(params[:id])
     else
       SavedSearch.filter(:user_id => current_user.id, :id => id).delete
     end
@@ -364,8 +365,7 @@ class Barkeep < Sinatra::Base
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
   post "/saved_searches/:id/search_options" do
     if current_user.demo?
-      search_options = session[:saved_searches].find { |saved_search| saved_search[:id] == params[:id].to_i }
-      saved_search = SavedSearch.with_unrestricted_primary_key { SavedSearch.new(search_options) }
+      saved_search = SavedSearch.find_demo_search(params[:id])
     else
       saved_search = SavedSearch[params[:id]]
     end
@@ -373,12 +373,7 @@ class Barkeep < Sinatra::Base
     [:unapproved_only, :email_commits, :email_comments].each do |setting|
       saved_search.send("#{setting}=", body_params[setting.to_s]) unless body_params[setting.to_s].nil?
     end
-    if current_user.demo?
-      search_index = session[:saved_searches].index(search_options)
-      session[:saved_searches][search_index] = saved_search.values
-    else
-      saved_search.save
-    end
+    saved_search.save
     nil
   end
 

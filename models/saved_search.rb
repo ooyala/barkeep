@@ -75,17 +75,68 @@ class SavedSearch < Sequel::Model
     parts = search_string.split(" ")
   end
 
-  # When passed a block, allows manual setting of the SavedSearch `id` field. Sequel normally disallows this
-  # because `id` is a primary key. This is needed when assigning "fake" ids to saved searches stored in
-  # the demo user session.
+  # Used for demo user searches. To transparently support saving saved_searches for a demo user,
+  # SavedSearch gets access to the Sinatra session hash. It also sets up the saved_searches array and
+  # last_demo_saved_search_id which is used to generate ids for demo searches.
+  def self.sync_session(session)
+    @@session = session
+    @@session[:saved_searches] ||= []
+    @@session[:last_demo_saved_search_id] = 0 if @@session[:last_demo_saved_search_id].nil?
+  end
+
+  # Used for demo user searches. Creates a new SavedSearch object and automatically assigns a unique id to it.
+  # Equivalent of `SavedSearch.new` for a demo user. Note that this does not actually save the object to the
+  # session, the caller must call `.save` on the newly created object.
+  def self.new_demo_search(options)
+    options[:id] = (@@session[:last_demo_saved_search_id] += 1)
+    SavedSearch.with_unrestricted_primary_key { SavedSearch.new(options) }
+  end
+
+  # Used for demo user searches. Deletes a saved search object from the session.
+  def self.delete_demo_search(id)
+    @@session[:saved_searches].delete_if { |saved_search| saved_search[:id] == id.to_i }
+  end
+
+  # Used for demo user searches. Equivalent to `SavedSearch[id]` for a demo user.
+  def self.find_demo_search(id)
+    options = @@session[:saved_searches].find { |saved_search| saved_search[:id] == id.to_i }
+    SavedSearch.with_unrestricted_primary_key { SavedSearch.new(options) }
+  end
+
+  # Used for demo user searches. When calling `.save` on the saved search of a demo user, rather than writing to
+  # the database, we modify the saved_searches array in a demo user's session. Returning false cancels the
+  # default save behavior.
+  def before_save
+    if user.demo?
+      return false if @@session.nil?
+      index = @@session[:saved_searches].index { |saved_search| saved_search[:id] == self.id }
+      index ? @@session[:saved_searches][index] = self.values : @@session[:saved_searches] << self.values
+      false
+    else
+      super
+    end
+  end
+
+  # Used for demo user searches. Returns all saved search objects of the logged in demo user.
+  # Equivalent to `SavedSearch.filter(:user_id => current_user.id).to_a` for a demo user.
+  def self.demo_saved_searches
+    return [] if @@session.nil?
+    SavedSearch.with_unrestricted_primary_key do
+      @@session[:saved_searches].map { |options| SavedSearch.new(options) }
+    end
+  end
+
+  private
+
+  # Used for demo user searches. When passed a block, allows manual setting of the SavedSearch `id` field.
+  # Sequel normally disallows this because `id` is a primary key. This is needed when assigning ids
+  # to saved searches stored in a demo user session.
   def self.with_unrestricted_primary_key(&block)
     SavedSearch.unrestrict_primary_key
     return_value = block.call
     SavedSearch.restrict_primary_key
     return_value
   end
-
-  private
 
   # We asking for commits from Git, we can get back commits that are present on the filesystem (have been
   # pulled) but which have not had records created in the DB for them. Omit those commits from the saved
