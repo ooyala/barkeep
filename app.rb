@@ -340,6 +340,7 @@ class Barkeep < Sinatra::Base
       search.user_order = searches.index(search.id)
       search.save
     end
+    nil
   end
 
   delete "/saved_searches/:id" do
@@ -355,6 +356,7 @@ class Barkeep < Sinatra::Base
       saved_search.send("#{setting}=", body_params[setting.to_s]) unless body_params[setting.to_s].nil?
     end
     saved_search.save
+    nil
   end
 
   # Handle login complete from openid provider.
@@ -485,6 +487,7 @@ class Barkeep < Sinatra::Base
     commit = Commit.first(:sha => params[:sha])
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
     Resque.enqueue(DeliverReviewRequestEmails, commit.git_repo.name, commit.sha, current_user.email, emails)
+    nil
   end
 
   #
