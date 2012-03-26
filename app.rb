@@ -306,8 +306,8 @@ class Barkeep < Sinatra::Base
     options[:paths] = params[:paths].to_json if params[:paths] && !params[:paths].empty?
     # Default to only searching master unless branches are explicitly specified.
     options[:branches] = params[:branches].else { "master" }.then { self == "all" ? nil : self }
-    incremented_user_order = (SavedSearch.filter(:user_id => current_user.id).max(:user_order) || -1) + 1
-    options.merge!({ :user_id => current_user.id, :user_order => incremented_user_order })
+    options[:user_id] = current_user.id
+    options[:user_order] = SavedSearch.incremented_user_order(current_user)
     if current_user.demo?
       saved_search = SavedSearch.new_demo_search(options)
     else
@@ -343,7 +343,11 @@ class Barkeep < Sinatra::Base
   # I'm sure there's a more RESTFUl way to do this call.
   post "/saved_searches/reorder" do
     searches = JSON.parse(request.body.read)
-    previous_searches = SavedSearch.filter(:user_id => current_user.id).to_a
+    if current_user.demo?
+      previous_searches = SavedSearch.demo_saved_searches
+    else
+      previous_searches = SavedSearch.filter(:user_id => current_user.id).to_a
+    end
     halt 401, "Mismatch in the number of saved searches" unless searches.size == previous_searches.size
     previous_searches.each do |search|
       search.user_order = searches.index(search.id)

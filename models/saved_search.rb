@@ -121,8 +121,17 @@ class SavedSearch < Sequel::Model
   # Equivalent to `SavedSearch.filter(:user_id => current_user.id).to_a` for a demo user.
   def self.demo_saved_searches
     return [] if @@session.nil?
-    SavedSearch.with_unrestricted_primary_key do
+    searches = SavedSearch.with_unrestricted_primary_key do
       @@session[:saved_searches].map { |options| SavedSearch.new(options) }
+    end
+    searches.sort_by!(&:user_order).reverse!
+  end
+
+  def self.incremented_user_order(user)
+    if user.demo?
+      (@@session[:saved_searches].map { |saved_search| saved_search[:user_order] }.max || -1) + 1
+    else
+      (SavedSearch.filter(:user_id => user.id).max(:user_order) || -1) + 1
     end
   end
 
