@@ -89,6 +89,8 @@ class SavedSearch < Sequel::Model
     parts = search_string.split(" ")
   end
 
+  # TODO(dmac 3/26/12): Write tests for these demo saved search methods.
+
   # Used for demo user searches. To transparently support saving saved_searches for a demo user,
   # SavedSearch gets access to the Sinatra session hash. It also sets up the saved_searches array and
   # last_demo_saved_search_id which is used to generate ids for demo searches.
