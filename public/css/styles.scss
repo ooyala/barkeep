@@ -177,18 +177,18 @@ button.standard, input[type=button], input[type=submit] {
 }
 
 header {
+  @include flexbox();
   position: relative;
   width: $pageWidth;
   margin: 0 auto;
-  margin-top: 28px;
-  margin-bottom: 28px;
+  margin-top: 17px;
+  margin-bottom: 40px;
   height: 50px;
 
   #icon {
     opacity: 0.9;
     background-image: url(/images/barkeep_logo_80px.png);
     position: absolute;
-    top: -10px;
     left: -100px;
     /* NOTE(philc): This logo might look better on the right. */
     /* right: 0;*/
@@ -200,15 +200,14 @@ header {
   }
 
   h1 {
+    margin-top: 5px;
     a, a:hover, a:active {
       border: 0;
-      float: left;
       margin: 0;
       font-size: 46px;
       background-color: transparent;
 
       line-height: 100%;
-      margin-top: -6px;
 
       font-weight: normal;
       color: #777;
@@ -220,8 +219,9 @@ header {
   }
 
   nav {
+    @include flex(1);
+    margin-top: 10px;
     margin-left: 40px;
-    float: left;
     ul li {
       list-style-type: none;
       display: inline-block;
@@ -265,14 +265,21 @@ header {
   }
 
   #signInBox {
-    text-align: right;
     font-size: 13px;
+    margin-top: 17px;
+
+    .signInGravatar {
+      @include roundedCorners(3px);
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+      float: left;
+    }
 
     .userEmail {
       display: inline-block;
       border-bottom: 0px;
       font-weight: bold;
-      margin-bottom: 5px;
     }
 
     input[type=text] {
