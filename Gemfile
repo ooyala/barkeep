@@ -2,7 +2,6 @@ source :rubygems
 
 gem "rack"
 gem "sinatra", "~> 1.3.2"
-gem "rerun"
 gem "rake"
 
 # For managing our Ruby load path.
@@ -26,6 +25,7 @@ gem "ruby-openid"
 gem "redcarpet", "= 2.0.0b3"
 gem "coffee-script"
 gem "methodchain"
+gem "sinatra-contrib" # For Sinatra::Reloader
 
 # Clockwork is a cron implementation in Ruby. We use it for periodically fetching new commits.
 gem "clockwork"
