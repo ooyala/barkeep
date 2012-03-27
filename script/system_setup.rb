@@ -4,7 +4,7 @@
 # terraform_dsl.rb gets written to disk at deploy time. It comes from the Terraform gem.
 require File.expand_path(File.join(File.dirname(__FILE__), "terraform_dsl"))
 
-include TerraformDsl
+include Terraform::Dsl
 
 # TODO(caleb): At some point we probably want a strict supported list of Ubuntu versions. (We can check with
 # lsb_release --release)

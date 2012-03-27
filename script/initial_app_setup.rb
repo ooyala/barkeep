@@ -24,10 +24,9 @@ end
 
 require "bundler/setup"
 require "pathological"
-require "terraform/terraform_dsl"
+require "terraform/dsl"
+include Terraform::Dsl
 require "config/environment.rb"
-
-include TerraformDsl
 
 def mysql_command() @mysql_command ||= (`which mysql || which mysql5`).chomp end
 def mysqladmin_command() @mysql_admin ||= (`which mysqladmin || which mysqladmin5`).chomp end
