@@ -10,10 +10,10 @@ GIT
 
 GIT
   remote: http://github.com/philc/terraform.git
-  revision: cb20fc9d57b1e66b0d737ff8481e8e2ddd4bef4f
-  ref: cb20fc9d57b1e66b0d737ff8481e8e2ddd4bef4f
+  revision: 896407894513ce6c852b7b9e61cf59900d5b29c7
+  ref: 8964078
   specs:
-    terraform (0.0.1)
+    terraform (0.0.2)
 
 GEM
   remote: http://rubygems.org/
