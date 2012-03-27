@@ -40,16 +40,7 @@ dep "create mysql barkeep database" do
   meet { shell "#{mysqladmin_command} -u root create barkeep" }
 end
 
-dep "database migrations" do
-  has_run_once = false
-  met? { has_run_once }
-
-  meet do
-    shell "script/run_migrations.rb"
-    has_run_once = true
-  end
-end
-
+ensure_run_once("database migrations") { shell "script/run_migrations.rb" }
 
 satisfy_dependencies()
 
