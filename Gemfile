@@ -62,5 +62,7 @@ group :development do
   gem "pry"
   gem "awesome_print"
   gem "vagrant" # For testing deployments.
-  gem "terraform" # For scripting system setup.
+  # For scripting system setup. Use the git version for the time being to pull in the latest changes.
+  # TODO(caleb): Tie this to a real rubygems release once the Terraform feature set has stabilized a bit.
+  gem "terraform", :git => "http://github.com/philc/terraform.git", :ref => "6973ee5212c87678376c967a6884a6f9432932ca"
 end
