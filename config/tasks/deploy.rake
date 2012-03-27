@@ -42,6 +42,11 @@ namespace :fezzik do
     # run "cd #{release_path} && script/initial_app_setup.rb production"
   end
 
+  remote_task :install_gems do
+    puts "Installing gems."
+    run "cd #{release_path} && bundle install"
+  end
+
   remote_task :generate_foreman_upstart_scripts do
     puts "Exporting foreman daemon scripts to /etc/init"
     foreman_command = "foreman export upstart /etc/init -a #{app} -l /var/log/#{app} -u #{user} " <<
@@ -55,7 +60,8 @@ namespace :fezzik do
   end
 
   desc "after the app code has been rsynced, sets up the app's dependencies, like gems"
-  remote_task :setup_app => [:push, :initial_system_setup, :generate_foreman_upstart_scripts] do
+  remote_task :setup_app =>
+      [:push, :initial_system_setup, :install_gems, :generate_foreman_upstart_scripts] do
     puts "Setting up server dependencies."
   end
 

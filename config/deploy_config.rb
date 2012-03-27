@@ -7,7 +7,8 @@ set :app, "barkeep"
 set :deploy_to, "/opt/ooyala/#{app}"
 set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :local_path, Dir.pwd
-set :user, "role-barkeep"
+# TODO(caleb): Set up roles, run as role-barkeep (i.e. not root)
+set :user, "root"
 # Concurrency setting given to foreman
 set :concurrency, "web=1,resque=4,cron=1"
 
