@@ -1,5 +1,6 @@
 require "lib/string_filter"
 require "lib/redcarpet_extensions"
+require "lib/emoji"
 require "set"
 
 StringFilter.define_filter :markdown do |str|
@@ -30,6 +31,10 @@ StringFilter.define_filter :link_jira_issue do |str|
     "<a href='https://jira.corp.ooyala.com/browse/#{group}-#{number}' target='_blank'>" +
         "#{match}</a>"
   end
+end
+
+StringFilter.define_filter :emoji do |str|
+  Emoji.emojify(str)
 end
 
 # Converts an embedded image (![alt][link]) to also include

@@ -23,6 +23,7 @@ class Commit < Sequel::Model
     StringFilter.link_github_issue(message, "ooyala", commit.git_repo.name)
   end
   add_filter(:message) { |message| StringFilter.link_jira_issue(message) }
+  add_filter(:message) { |message| StringFilter.emoji(message) }
 
   def grit_commit
     @grit_commit ||= MetaRepo.instance.grit_commit(git_repo_id, sha)

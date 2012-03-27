@@ -268,7 +268,13 @@
       border-left: 0;
       margin-right: auto;
       textarea { width: $commentWidth - 2px; }
-      .commentBody { img { max-width: 839px; } }
+      .commentBody {
+        img { max-width: 839px; }
+        img.emoji {
+          max-width: 100%;
+          display: inline;
+        }
+      }
     }
 
     // The comment edit form, unlike general comment form, lives inside a comment div, so no margins needed.

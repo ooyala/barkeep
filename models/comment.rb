@@ -24,6 +24,7 @@ class Comment < Sequel::Model
   end
   add_filter(:text) { |str| StringFilter.markdown(str) }
   add_filter(:text) { |str| StringFilter.link_jira_issue(str) }
+  add_filter(:text) { |str| StringFilter.emoji(str) }
 
   # Some comments can be about the entire commit, and not about a specific line in a file.
   def general_comment?() commit_file_id.nil? end
