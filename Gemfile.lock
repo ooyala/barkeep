@@ -10,8 +10,8 @@ GIT
 
 GIT
   remote: http://github.com/philc/terraform.git
-  revision: 6973ee5212c87678376c967a6884a6f9432932ca
-  ref: 6973ee5212c87678376c967a6884a6f9432932ca
+  revision: cb20fc9d57b1e66b0d737ff8481e8e2ddd4bef4f
+  ref: cb20fc9d57b1e66b0d737ff8481e8e2ddd4bef4f
   specs:
     terraform (0.0.1)
 
