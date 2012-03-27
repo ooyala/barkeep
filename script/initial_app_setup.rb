@@ -12,11 +12,11 @@
 environment = ARGV[0] || "development"
 
 `bundle check > /dev/null`
-unless $? == 0
+unless $?.to_i == 0
   puts "running `bundle install` (this may take a minute)"
   args = (environment == "production") ? "--without dev" : ""
   output = `bundle install #{args}`
-  unless $? == 0
+  unless $?.to_i == 0
     puts "`bundle install` failed:"
     puts output
   end
