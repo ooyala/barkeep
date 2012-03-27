@@ -36,7 +36,7 @@ This is how it works on our Mac OS dev laptops; YMMV. First, ensure you've insta
 
 Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
 
-    $ bin/run_app.sh # run the server
+    $ bin/run_app.bash # run the server
     # navigate to localhost:4567
 
 These are somewhat optional services to run while developing. These background jobs periodically fetch new
