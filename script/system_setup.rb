@@ -49,17 +49,7 @@ class VersionString
     # leading non-digits as a simple heuristic.
     @parts = s.sub(/^\D*/, "").split(".").map(&:to_i)
   end
-  def <=>(other)
-    @parts.zip(other.parts) do |this, that|
-      return -1 if this < that
-      return 1 if this > that
-    end
-    case
-    when @parts.size > other.parts.size then 1
-    when @parts.size < other.parts.size then -1
-    else 0
-    end
-  end
+  def <=>(other) @parts <=> other.parts end
   def at_least(min_version_string) self >= VersionString.new(min_version_string) end
 end
 
