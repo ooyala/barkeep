@@ -33,7 +33,7 @@ StringFilter.define_filter :link_jira_issue do |str|
   end
 end
 
-StringFilter.define_filter :emoji { |str| Emoji.emojify(str) }
+StringFilter.define_filter(:emoji) { |str| Emoji.emojify(str) }
 
 # Converts an embedded image (![alt][link]) to also include
 # a link to the same image.
