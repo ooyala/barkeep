@@ -63,7 +63,7 @@ class VersionString
   def at_least(min_version_string) self >= VersionString.new(min_version_string) end
 end
 
-# Need a recent (1.7.6+) version of git.
+# Need a recent version of git.
 ensure_ppa("ppa:git-core/ppa")
 dep "git 1.7.6+" do
   met? { in_path?("git") && VersionString.new(`git --version`).at_least("1.7.6") }
