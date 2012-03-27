@@ -10,7 +10,7 @@ namespace :fezzik do
     FileUtils.mkdir_p staging_dir
 
     # Use rsync to preserve executability and follow symlinks.
-    system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/")
+    system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/ --exclude=.git/ --exclude=test/")
     Terraform.write_dsl_file("#{staging_dir}/script/")
   end
 
