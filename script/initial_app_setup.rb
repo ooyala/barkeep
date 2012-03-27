@@ -3,7 +3,7 @@
 # This will:
 # - setup bundler
 # - create mysql tables & run migrations
-# 
+#
 # Usage:
 #   initial_app_setup.rb [envrionment=development]
 #
