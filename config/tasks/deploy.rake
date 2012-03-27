@@ -31,7 +31,8 @@ namespace :fezzik do
 
   remote_task :generate_foreman_upstart_scripts do
     puts "Exporting foreman daemon scripts to /etc/init"
-    foreman_command = "foreman export upstart /etc/init -a #{app} -l /var/log/#{app} -u #{user} > /dev/null"
+    foreman_command = "foreman export upstart /etc/init -a #{app} -l /var/log/#{app} -u #{user} " <<
+                      "-c #{concurrency} -f Procfile.production > /dev/null"
     run "cd #{release_path} && bundle exec #{foreman_command}"
 
     # Munge the Foreman-generated upstart conf files so that our app starts on system startup (right after

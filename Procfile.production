@@ -1,0 +1,4 @@
+# This is used by the Foreman gem to generate upstart scripts in production.
+web: bin/run_app_prod.sh
+cron: bundle exec script/run_clockwork.rb
+resque: bundle exec rake resque:work QUEUE=*
