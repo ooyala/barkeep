@@ -48,6 +48,9 @@ gem "addressable"
 # For nicely indented heredocs
 gem "dedent"
 
+ # For making exception backtraces more friendly during development.
+gem "backtrace_shortener"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"

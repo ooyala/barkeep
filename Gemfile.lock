@@ -22,6 +22,7 @@ GEM
     archive-tar-minitar (0.5.2)
     awesome_print (1.0.2)
     backports (2.3.0)
+    backtrace_shortener (0.1.0)
     blankslate (2.1.2.4)
     childprocess (0.3.1)
       ffi (~> 1.0.6)
@@ -146,6 +147,7 @@ PLATFORMS
 DEPENDENCIES
   addressable
   awesome_print
+  backtrace_shortener
   clockwork
   coffee-script
   dedent
