@@ -1,7 +1,7 @@
 Vagrant::Config.run do |config|
   config.vm.box = "lucid64"
   config.vm.host_name = "barkeep-vagrant"
-  config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
+  config.vm.box_url = "http://files.vagrantup.com/lucid64.box"
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
