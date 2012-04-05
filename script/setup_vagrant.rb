@@ -9,10 +9,6 @@ require "bundler/setup"
 def hostname() "barkeep_vagrant" end
 
 def setup
-  unless `vagrant box list`.include?("lucid64")
-    puts "Downloading an Ubuntu image. This will take 5m."
-    puts run_command("vagrant box add lucid64 http://files.vagrantup.com/lucid64.box")
-  end
   run_command("vagrant up")
   setup_ssh_config
   # Ensure no old packages are lingering around. This will avoid possible 404's when installing packages.
