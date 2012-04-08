@@ -70,7 +70,7 @@ class Barkeep < Sinatra::Base
       # Show a more developer-friendly error page and stack traces.
       content_type "text/plain"
       error = request.env["sinatra.error"]
-      message = error.message + "\n" + shorten_backtrace(error.backtrace).join("\n")
+      message = error.message + "\n" + error.backtrace.join("\n")
       puts message
       message
     end
@@ -465,7 +465,11 @@ class Barkeep < Sinatra::Base
   end
 
   before "/admin*" do
-    halt 400, "You do not have permission to view this admin page." unless current_user.admin?
+    unless current_user.admin?
+      message = "You do not have permission to view this admin page."
+      message += " <a href='/signin'>Sign in</a>." unless logged_in?
+      halt 400, message
+    end
   end
 
   # A page to help keep track of Barkeep's data models and background processes. Also see the Resque dashboard
@@ -527,6 +531,7 @@ class Barkeep < Sinatra::Base
   # - send_email: set to true to actually send the email for this comment.
   get "/dev/latest_comment_email_preview" do
     comment = Comment.order(:id.desc).first
+    next "No comments have been created yet." unless comment
     Emails.send_comment_email(comment.commit, [comment]) if params[:send_email] == "true"
     Emails.comment_email_body(comment.commit, [comment])
   end
@@ -536,18 +541,14 @@ class Barkeep < Sinatra::Base
   # - commit: the sha of the commit you want to preview.
   get "/dev/latest_commit_email_preview" do
     commit = params[:commit] ? Commit.first(:sha => params[:commit]) : Commit.order(:id.desc).first
+    next "No commits have been created yet." unless commit
     Emails.send_commit_email(commit) if params[:send_email] == "true"
     Emails.commit_email_body(commit)
   end
 
-  def shorten_backtrace(backtrace_lines)
-    # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like
-    # /opt/local/lib/ruby/gems/1.8/gems/sinatra-1.2.0/lib/sinatra/base.rb:1125:in `call'
-    stop_at = backtrace_lines.index { |line| line.include?("sinatra") } || -1
-    backtrace_lines[0...stop_at]
-  end
-
   private
+
+  def logged_in?() self.current_user && !self.current_user.demo? end
 
   # Fetch a file from the cache unless its MD5 has changed. Use a block to specify a transformation to be
   # performed on the asset before caching (e.g. compiling LESS css).
