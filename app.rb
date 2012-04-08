@@ -530,6 +530,11 @@ class Barkeep < Sinatra::Base
     { :values => users.map { |user| "#{user.name} <#{user.email}>" } }.to_json
   end
 
+  get "/autocomplete/repos" do
+    repo_names =  MetaRepo.instance.repos.map {|repo| repo.name}
+    { :values => repo_names.select{|name| name.include?(params[:substring])} }.to_json
+  end
+
   #
   # Routes used for development purposes.
   #

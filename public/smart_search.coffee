@@ -62,19 +62,18 @@ class window.SmartSearch
       currentValue = incompleteValues
 
     if key in ["authors:", "repos:"]
+      # regex to get value out of full label
+      valueRegex = /^.*$/
+      valueRegex = /<.*>/ if key == "authors:"
+
       $.ajax
         type: "get"
         url: "/autocomplete/#{key[0..key.length-2]}"
         data: { substring: currentValue }
         dataType: "json"
         success: (completion) ->
-          authorResultsRegex = /(<.*>)/
           fullValues = $.map completion.values, (x) ->
-            authorsMatches = authorResultsRegex.exec(x)
-            result = {
-              label : x,
-              value : unrelatedPrefix + authorsMatches[1]
-            }
+            {"label" : x, "value" : unrelatedPrefix + (valueRegex.exec(x)[0] || "")}
           callback(fullValues)
         error: -> callback ""
 
