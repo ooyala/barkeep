@@ -91,7 +91,7 @@ window.Commit =
         substring = substringMatch[2] || substringMatch[3]
         $.ajax
           type: "get"
-          url: "/autocomplete/users"
+          url: "/autocomplete/authors"
           data: { substring: substring }
           dataType: "json"
           success: (completion) -> callback(completion.values)

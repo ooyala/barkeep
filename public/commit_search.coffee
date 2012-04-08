@@ -5,6 +5,8 @@ window.CommitSearch =
     @smartSearch = new SmartSearch $("#commitSearch input[name=filter_value]")
     $("#commitSearch .submit").click (e) => @smartSearch.search()
     $("#commitSearch select[name='time_range']").change (e) => @timeRangeChanged(e)
+    $("#commitSearch input[name=filter_value]").autocomplete
+      source: (request, callback) => @smartSearch.autocomplete(request.term, callback)
 
     # Register shortcuts
     shortcuts =

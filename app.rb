@@ -524,7 +524,7 @@ class Barkeep < Sinatra::Base
   # Routes for autocompletion.
   #
 
-  get "/autocomplete/users" do
+  get "/autocomplete/authors" do
     users = User.filter("`email` LIKE ?", "%#{params[:substring]}%").
         or("`name` LIKE ?", "%#{params[:substring]}%").distinct(:email).limit(10)
     { :values => users.map { |user| "#{user.name} <#{user.email}>" } }.to_json

@@ -9,16 +9,51 @@ class window.SmartSearch
     branch: "branches"
     repo: "repos"
 
+  # fetches autocomplete suggestions and returns it through the callback with an array of labels and values
+  #   eg. [ { label: "Choice1", value: "value1" }, ... ]
+  # see jqueryUI autocomplete for more infomation
+  autocomplete: (searchString, callback) ->
+    knownKeys = ["repos:", "authors:", "paths:", "branches:"]
+
+    partialQuery = @parsePartialQuery(searchString)
+    if (partialQuery.partialValue == "")
+      if (partialQuery.key != "")
+        possibleKeys = (key for key in knownKeys when key.indexOf(partialQuery.key) > -1)
+        callback(possibleKeys) unless possibleKeys.length == 0
+    else if (partialQuery.key in ["authors", "repos"])
+      $.ajax
+        type: "get"
+        url: "/autocomplete/#{partialQuery.key}"
+        data: { substring: partialQuery.partialValue }
+        dataType: "json"
+        success: (completion) ->
+          authorResultsRegex = /(<.*>)/
+          fullValues = $.map completion.values, (x) ->
+            authorsMatches = authorResultsRegex.exec(x)
+            result = {
+              label : x,
+              value : partialQuery.unrelatedPrefix + partialQuery.key + ":" + authorsMatches[1]
+            }
+          callback(fullValues)
+        error: -> callback ""
+
+
 
   # Parse a partial search string so we can help complete the search query for the user.
-  # Returns a object with the key: set to the last key the user had typed and partialValue: to the last value
-  # being typed. It is possible for both to be empty or for partialValue: to be empty.
+  #
+  # Returns: an object with the properties
+  #  - key: set to the last key the user had typed
+  #  - partialValue: to the last value being typed
+  #  - unrelatedPrefix: to unrelated complete clauses that were
+  #
+  # It is possible for both key and partialValue to be empty or for partialValue: to be empty.
   parsePartialQuery: (searchString) ->
     currentKey = ""
     currentValue = ""
+    previousClauseLength = 0
     state = "Key" # two possible states: "Key" or "Value"
 
-    stateMachine = (char) ->
+    stateMachine = (i, char) ->
       if (state == "Key")
         if (char == ":" and currentKey != "")
           state = "Value"
@@ -29,6 +64,7 @@ class window.SmartSearch
       else if state ==  "Value"
         if (char == ",")
           currentValue = ""
+          previousClauseLength = i+1
         else if (char == " ")
           state = "Key"
           currentKey = ""
@@ -36,16 +72,12 @@ class window.SmartSearch
         else
           currentValue += char
 
-    # remove spaces around separators '':'' and '',''
-    searchString = searchString.replace(/\s+:/g, ":").replace(/:\s+/g, ":").
-        replace(/\s+,/g, ",").replace(/,\s+/g, ",")
+    # remove spaces around separators ':' and ','
+    searchString = searchString.replace(/\s+:|:\s+/g, ":").replace(/\s+,|,\s+/g, ",")
 
-    stateMachine(char) for char in searchString.split ''
-
-    key = SYNONYMS[currentKey] || currentKey
-
-    { key: key, partialValue: currentValue }
-
+    $.each searchString.split(""), stateMachine
+    key = if SYNONYMS[currentKey]? then SYNONYMS[currentKey] else currentKey
+    { key: key, partialValue: currentValue, unrelatedPrefix: searchString.split(0,previousClauseLength) }
 
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume
