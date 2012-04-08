@@ -488,12 +488,19 @@ class Barkeep < Sinatra::Base
   end
 
   get "/admin/users/?" do
-    erb :manage_users, :locals => { :users => User.order_by(:name).all }
+    # Don't show the demo user. It's confusing.
+    users = User.filter("permission != 'demo'").order_by(:name).all
+    erb :manage_users, :locals => { :users => users }
   end
 
   post "/admin/users/update_permissions" do
+    # Don't allow a user to remove their own admin privileges, because then you can no longer use the
+    # admin pages. It's a confusing experience.
+    user = User.first(:id => params[:user_id])
+    next if current_user == user
     halt 400 unless ["normal", "admin"].include? params[:permission]
-    user = User.filter(:id => params[:user_id]).update(:permission => params[:permission])
+    user.permission = params[:permission]
+    user.save
     nil
   end
 
