@@ -1,6 +1,5 @@
-# This is the configuration file for fezzik.
-# Define variables here as you would for Vlad the Deployer.
-# A full list of variables can be found here:
+# This is the configuration file for Fezzik (https://github.com/dmacdougall/fezzik)
+# Define variables here for your deployment. A full list of variables can be found here:
 #     http://hitsquad.rubyforge.org/vlad/doco/variables_txt.html
 
 set :app, "barkeep"

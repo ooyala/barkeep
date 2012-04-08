@@ -58,8 +58,7 @@ class Barkeep < Sinatra::Base
   raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
 
   configure :development do
-    # Set STDOUT.sync to true so puts statements work
-    STDOUT.sync = true
+    STDOUT.sync = true # Flush any output right away when running via Foreman.
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
