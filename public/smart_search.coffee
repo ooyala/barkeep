@@ -9,22 +9,61 @@ class window.SmartSearch
     branch: "branches"
     repo: "repos"
 
+  KEYS = ["repos:", "authors:", "paths:", "branches:"]
+
   # fetches autocomplete suggestions and returns it through the callback with an array of labels and values
   #   eg. [ { label: "Choice1", value: "value1" }, ... ]
   # see jqueryUI autocomplete for more infomation
   autocomplete: (searchString, callback) ->
-    knownKeys = ["repos:", "authors:", "paths:", "branches:"]
+    # trim multiple spaces and remove spaces around separators ':' and ','
+    searchString = searchString.replace(/\s+/g," ").replace(/\s+:|:\s+/g, ":").replace(/\s+,|,\s+/g, ",")
 
-    partialQuery = @parsePartialQuery(searchString)
-    if (partialQuery.partialValue == "")
-      if (partialQuery.key != "")
-        possibleKeys = (key for key in knownKeys when key.indexOf(partialQuery.key) > -1)
-        callback(possibleKeys) unless possibleKeys.length == 0
-    else if (partialQuery.key in ["authors", "repos"])
+    # slice to focus on the last term
+    unrelatedPrefix = ""
+    currentTerm = ""
+    lastTermSeparator = searchString.lastIndexOf(" ")
+    if lastTermSeparator >= 0
+      unrelatedPrefix = searchString.slice(0, lastTermSeparator+1)
+      currentTerm = searchString.slice(lastTermSeparator+1)
+    else
+      currentTerm = searchString
+
+    # separate into key and value
+    lastKeyValueSeparator = currentTerm.lastIndexOf(":")
+    if lastKeyValueSeparator >= 0
+      # key is done, autocomplete value
+      key = currentTerm.slice(0, lastKeyValueSeparator+1)
+      unrelatedPrefix += key
+      @autocompleteValue(currentTerm.slice(lastKeyValueSeparator+1), key, unrelatedPrefix, callback)
+    else
+      @autocompleteKey(searchString, unrelatedPrefix, callback)
+
+  # suggests keys see autocomplete
+  autocompleteKey: (incompleteKey, unrelatedPrefix, callback) ->
+    if incompleteKey == ""
+      callback(KEYS)
+    else
+      possibleKeys = (key for key in KEYS when key.indexOf(incompleteKey) > -1)
+      callback(possibleKeys)
+
+  # suggests values see autocomplete
+  autocompleteValue: (incompleteValues, key, unrelatedPrefix, callback) ->
+    previousValues = ""
+    currentValue = ""
+    lastValueSeparator = incompleteValues.lastIndexOf(",")
+
+    # focus only on latest value
+    if lastValueSeparator >= 0
+      unrelatedPrefix += incompleteValues.slice(0,lastValueSeparator+1)
+      currentValue = incompleteValues.slice(lastValueSeparator+1)
+    else
+      currentValue = incompleteValues
+
+    if key in ["authors:", "repos:"]
       $.ajax
         type: "get"
-        url: "/autocomplete/#{partialQuery.key}"
-        data: { substring: partialQuery.partialValue }
+        url: "/autocomplete/#{key[0..key.length-2]}"
+        data: { substring: currentValue }
         dataType: "json"
         success: (completion) ->
           authorResultsRegex = /(<.*>)/
@@ -32,52 +71,10 @@ class window.SmartSearch
             authorsMatches = authorResultsRegex.exec(x)
             result = {
               label : x,
-              value : partialQuery.unrelatedPrefix + partialQuery.key + ":" + authorsMatches[1]
+              value : unrelatedPrefix + authorsMatches[1]
             }
           callback(fullValues)
         error: -> callback ""
-
-
-
-  # Parse a partial search string so we can help complete the search query for the user.
-  #
-  # Returns: an object with the properties
-  #  - key: set to the last key the user had typed
-  #  - partialValue: to the last value being typed
-  #  - unrelatedPrefix: to unrelated complete clauses that were
-  #
-  # It is possible for both key and partialValue to be empty or for partialValue: to be empty.
-  parsePartialQuery: (searchString) ->
-    currentKey = ""
-    currentValue = ""
-    previousClauseLength = 0
-    state = "Key" # two possible states: "Key" or "Value"
-
-    stateMachine = (i, char) ->
-      if (state == "Key")
-        if (char == ":" and currentKey != "")
-          state = "Value"
-        else if (char != ' ')
-          currentKey += char
-        else if (char == ' ')
-          currentKey = ""
-      else if state ==  "Value"
-        if (char == ",")
-          currentValue = ""
-          previousClauseLength = i+1
-        else if (char == " ")
-          state = "Key"
-          currentKey = ""
-          currentValue = ""
-        else
-          currentValue += char
-
-    # remove spaces around separators ':' and ','
-    searchString = searchString.replace(/\s+:|:\s+/g, ":").replace(/\s+,|,\s+/g, ",")
-
-    $.each searchString.split(""), stateMachine
-    key = if SYNONYMS[currentKey]? then SYNONYMS[currentKey] else currentKey
-    { key: key, partialValue: currentValue, unrelatedPrefix: searchString.split(0,previousClauseLength) }
 
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume
