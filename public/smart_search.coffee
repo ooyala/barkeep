@@ -36,15 +36,17 @@ class window.SmartSearch
       unrelatedPrefix += key
       @autocompleteValue(currentTerm.slice(lastKeyValueSeparator+1), key, unrelatedPrefix, callback)
     else
-      @autocompleteKey(searchString, unrelatedPrefix, callback)
+      @autocompleteKey(currentTerm, unrelatedPrefix, callback)
 
   # suggests keys see autocomplete
   autocompleteKey: (incompleteKey, unrelatedPrefix, callback) ->
     if incompleteKey == ""
       callback(KEYS)
     else
-      possibleKeys = (key for key in KEYS when key.indexOf(incompleteKey) > -1)
-      callback(possibleKeys)
+      results = []
+      for key in KEYS
+        results.push {"label": key, "value": unrelatedPrefix + key} if key.indexOf(incompleteKey) > -1
+      callback(results)
 
   # suggests values see autocomplete
   autocompleteValue: (incompleteValues, key, unrelatedPrefix, callback) ->
