@@ -29,6 +29,7 @@ else
 end
 
 common_options = {
+  barkeep_port: 8081,
   db_location: "DBI:Mysql:barkeep:localhost",
   db_user: "root",
   db_password: "",
