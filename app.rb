@@ -65,14 +65,13 @@ class Barkeep < Sinatra::Base
     set :dump_errors, false
     set :session_secret, SESSION_SECRET if defined?(SESSION_SECRET)
 
-    BacktraceCleaner.monkey_patch_all_exceptions!
     GitDiffUtils.setup(RedisManager.redis_instance)
 
     error do
       # Show a more developer-friendly error page and stack traces.
       content_type "text/plain"
       error = request.env["sinatra.error"]
-      message = error.message + "\n" + cleanup_backtrace(error.backtrace).join("\n")
+      message = error.message + "\n" + shorten_backtrace(error.backtrace).join("\n")
       puts message
       message
     end
@@ -87,7 +86,6 @@ class Barkeep < Sinatra::Base
   configure :test do
     set :show_exceptions, false
     set :dump_errors, false
-    BacktraceCleaner.monkey_patch_all_exceptions!
     GitDiffUtils.setup(nil)
   end
 
@@ -543,7 +541,7 @@ class Barkeep < Sinatra::Base
     Emails.commit_email_body(commit)
   end
 
-  def cleanup_backtrace(backtrace_lines)
+  def shorten_backtrace(backtrace_lines)
     # Don't include the portion of the stacktrace which covers the sinatra intenals. Exclude lines like
     # /opt/local/lib/ruby/gems/1.8/gems/sinatra-1.2.0/lib/sinatra/base.rb:1125:in `call'
     stop_at = backtrace_lines.index { |line| line.include?("sinatra") } || -1
