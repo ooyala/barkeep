@@ -9,7 +9,8 @@ require "resque_jobs/batch_comment_emails"
 require "resque_jobs/delete_old_comments_by_demo_users"
 require "config/environment"
 
-def clear_resque_queue(queue_name) Resque.redis.del("queue:#{queue_name}") end
+# The output of clockwork is not very useful in development. Toggle when debugging Clockwork.
+ENABLE_CLOCKWORK_OUTPUT = (ENV["RACK_ENV"] == "production")
 
 # We're enqueing Resque jobs to be performed instead of trying to actually perform the work here from within
 # the Clockwork process. This is recommended by the Clockwork maintainer. Since Clockwork is a
@@ -32,11 +33,14 @@ Clockwork.handler do |job_name|
 end
 
 Clockwork.every(45.seconds, "fetch_commits")
-
 Clockwork.every(10.seconds, "batch_comment_emails")
-
 if defined?(ENABLE_READONLY_DEMO_MODE) && ENABLE_READONLY_DEMO_MODE
   Clockwork.every(30.seconds, "delete_old_comments_by_demo_users")
 end
+
+
+def clear_resque_queue(queue_name) Resque.redis.del("queue:#{queue_name}") end
+
+STDOUT.reopen("/dev/null") unless ENABLE_CLOCKWORK_OUTPUT
 
 Clockwork.run # This is a blocking call.
