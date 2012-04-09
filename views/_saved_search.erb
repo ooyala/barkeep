@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-    <div class="name"><%= saved_search.title %></div>
+    <div class="name"><%= CGI.escapeHTML(saved_search.title) %></div>
   </div>
   <% if commits.empty? %>
     <div class="noResults">No search results.</div>
