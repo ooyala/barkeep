@@ -1,0 +1,38 @@
+#admin {
+  td {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+  }
+
+  #failedEmails { width: 100%; }
+
+  .column {
+    box-sizing: border-box;
+    padding-right: 20px;
+    width: 50%;
+    float: left;
+    vertical-align: top;
+  }
+}
+
+#manageUsers {
+  table {
+    margin-top: 20px;
+    border-collapse: collapse;
+
+    th { padding-bottom: 5px; }
+
+    td {
+      font-size: 12px;
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+    }
+  }
+  input[type="radio"] {
+    display: inline-block;
+    margin: 0px 0px 0px 10px;
+    cursor: pointer;
+  }
+
+  label { cursor: pointer; }
+}
