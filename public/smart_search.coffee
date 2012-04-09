@@ -15,28 +15,55 @@ class window.SmartSearch
   #   eg. [ { label: "Choice1", value: "value1" }, ... ]
   # see jqueryUI autocomplete for more infomation
   autocomplete: (searchString, callback) ->
+    parseResult = @parsePartialQuery(searchString)
+    if parseResult.searchType == "key"
+      @autocompleteKey(parseResult.key, parseResult.unrelatedPrefix, callback)
+    else
+      @autocompleteValue(parseResult.value, parseResult.key, parseResult.unrelatedPrefix, callback)
+
+  # Parse a partial search string so we can help complete the search query for the user.
+  #
+  # Returns: an object with the properties
+  #  - key: set to the last key the user had typed
+  #  - partialValue: to the last value being typed
+  #  - unrelatedPrefix: to unrelated terms that need to be prefixed on to the suggested value or key
+  #  - searchType: "key" or "value"
+  #
+  parsePartialQuery: (searchString) ->
     # trim multiple spaces and remove spaces around separators ':' and ','
     searchString = searchString.replace(/\s+/g," ").replace(/\s+:|:\s+/g, ":").replace(/\s+,|,\s+/g, ",")
+    result = { key: "", value: "",  unrelatedPrefix: "", searchType: "" }
 
     # slice to focus on the last term
-    unrelatedPrefix = ""
     currentTerm = ""
     lastTermSeparator = searchString.lastIndexOf(" ")
     if lastTermSeparator >= 0
-      unrelatedPrefix = searchString.slice(0, lastTermSeparator+1)
+      result.unrelatedPrefix = searchString.slice(0, lastTermSeparator+1)
       currentTerm = searchString.slice(lastTermSeparator+1)
     else
       currentTerm = searchString
 
     # separate into key and value
     lastKeyValueSeparator = currentTerm.lastIndexOf(":")
-    if lastKeyValueSeparator >= 0
-      # key is done, autocomplete value
-      key = currentTerm.slice(0, lastKeyValueSeparator+1)
-      unrelatedPrefix += key
-      @autocompleteValue(currentTerm.slice(lastKeyValueSeparator+1), key, unrelatedPrefix, callback)
+    if lastKeyValueSeparator < 0
+      result.key = currentTerm
+      result.searchType = "key"
+      return result
+
+    # if key is done, autocomplete value
+    result.searchType = "value"
+    result.key = currentTerm.slice(0, lastKeyValueSeparator+1)
+    result.unrelatedPrefix += result.key
+    values = currentTerm.slice(lastKeyValueSeparator+1)
+
+    # separate multiple values
+    lastValueSeparator = values.lastIndexOf(",")
+    if lastValueSeparator >= 0
+      result.unrelatedPrefix += values.slice(0,lastValueSeparator+1)
+      result.value = values.slice(lastValueSeparator+1)
     else
-      @autocompleteKey(currentTerm, unrelatedPrefix, callback)
+      result.value = values
+    result
 
   # suggests keys see autocomplete
   autocompleteKey: (incompleteKey, unrelatedPrefix, callback) ->
@@ -49,18 +76,7 @@ class window.SmartSearch
       callback(results)
 
   # suggests values see autocomplete
-  autocompleteValue: (incompleteValues, key, unrelatedPrefix, callback) ->
-    previousValues = ""
-    currentValue = ""
-    lastValueSeparator = incompleteValues.lastIndexOf(",")
-
-    # focus only on latest value
-    if lastValueSeparator >= 0
-      unrelatedPrefix += incompleteValues.slice(0,lastValueSeparator+1)
-      currentValue = incompleteValues.slice(lastValueSeparator+1)
-    else
-      currentValue = incompleteValues
-
+  autocompleteValue: (incompleteValue, key, unrelatedPrefix, callback) ->
     if key in ["authors:", "repos:"]
       # regex to get value out of full label
       valueRegex = /^.*$/
@@ -69,13 +85,14 @@ class window.SmartSearch
       $.ajax
         type: "get"
         url: "/autocomplete/#{key[0..key.length-2]}"
-        data: { substring: currentValue }
+        data: { substring: incompleteValue }
         dataType: "json"
         success: (completion) ->
           fullValues = $.map completion.values, (x) ->
             {"label" : x, "value" : unrelatedPrefix + (valueRegex.exec(x)[0] || "")}
           callback(fullValues)
         error: -> callback ""
+    else callback ""
 
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume
