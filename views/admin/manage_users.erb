@@ -49,14 +49,18 @@
     });
   });
 </script>
+
 <div id="manageUsers">
-  <a href="/admin">Back to admin</a>
+
+  <%= admin_page_breadcrumb "Diagnostics" %>
+
   <table>
     <tr>
       <th>Username</th>
       <th>Email</th>
       <th>Permission</th>
     </tr>
+
     <% users.each do |user| %>
       <tr>
         <td><%= user.name %></td>

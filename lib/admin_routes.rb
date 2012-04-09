@@ -33,7 +33,7 @@ class Barkeep < Sinatra::Base
   get "/admin/users/?" do
     # Don't show the demo user. It's confusing.
     users = User.filter("permission != 'demo'").order_by(:name).all
-    erb :manage_users, :locals => { :users => users }
+    admin_erb :manage_users, :locals => { :users => users }
   end
 
   post "/admin/users/update_permissions" do
@@ -49,9 +49,7 @@ class Barkeep < Sinatra::Base
 
   helpers do
     def admin_page_breadcrumb(display_name)
-      %Q(<div id="adminBreadcrumb">
-          <a href="/admin">Admin</a> &raquo; #{display_name}
-        </div>)
+      %Q(<div id="adminBreadcrumb"><a href="/admin">Admin</a> &raquo; #{display_name}</div>)
     end
   end
 
