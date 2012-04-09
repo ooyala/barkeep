@@ -18,7 +18,6 @@ require "openid/extensions/ax"
 
 require "config/environment"
 require "lib/ruby_extensions"
-require "lib/api_routes"
 require "lib/git_helper"
 require "lib/git_diff_utils"
 require "lib/keyboard_shortcuts"
@@ -95,12 +94,6 @@ class Barkeep < Sinatra::Base
   end
 
   helpers do
-    def admin_page_breadcrumb(display_name)
-      %Q(<div id="adminBreadcrumb">
-          <a href="/admin">Admin</a> &raquo; #{display_name}
-        </div>)
-    end
-
     def current_page_if_url(text) request.url.include?(text) ? "currentPage" : "" end
 
     def find_commit(repo_name, sha, zero_commits_ok)
@@ -468,51 +461,6 @@ class Barkeep < Sinatra::Base
     erb :inspire, :locals => { :quote => Inspire.new.quote }
   end
 
-  before "/admin*" do
-    unless current_user.admin?
-      message = "You do not have permission to view this admin page."
-      message += " <a href='/signin'>Sign in</a>." unless logged_in?
-      halt 400, message
-    end
-  end
-
-  # A page to help keep track of Barkeep's data models and background processes. Also see the Resque dashboard
-  # (/resque).
-  get "/admin/?" do
-    admin_erb :index
-  end
-
-  get "/admin/diagnostics?" do
-    admin_erb :diagnostics, :locals => {
-      :most_recent_commit => Commit.order(:id.desc).first,
-      :most_recent_comment => Comment.order(:id.desc).first,
-      :repos => MetaRepo.instance.repos.map(&:name),
-      :failed_email_count => CompletedEmail.filter(:result => "failure").count,
-      :recently_failed_emails =>
-          CompletedEmail.filter(:result => "failure").order(:created_at.desc).limit(10).all,
-      :pending_comments => Comment.filter(:has_been_emailed => false).order(:id.asc).limit(10).all,
-      :pending_comments_count => Comment.filter(:has_been_emailed => false).count,
-    }
-
-  end
-
-  get "/admin/users/?" do
-    # Don't show the demo user. It's confusing.
-    users = User.filter("permission != 'demo'").order_by(:name).all
-    erb :manage_users, :locals => { :users => users }
-  end
-
-  post "/admin/users/update_permissions" do
-    # Don't allow a user to remove their own admin privileges, because then you can no longer use the
-    # admin pages. It's a confusing experience.
-    user = User.first(:id => params[:user_id])
-    next if current_user == user
-    halt 400 unless ["normal", "admin"].include? params[:permission]
-    user.permission = params[:permission]
-    user.save
-    nil
-  end
-
   get %r{/statusz$} do
     erb :statusz
   end
@@ -569,12 +517,6 @@ class Barkeep < Sinatra::Base
 
   private
 
-  def admin_erb(view, view_params = {})
-    # NOTE(philc): This use of nested Sinatra layouts is a little klunky. It's the best approach I could find.
-    html_with_admin_layout = erb("admin/#{view}".to_sym, { :layout => :"admin/layout" }.merge(view_params))
-    erb html_with_admin_layout
-  end
-
   def logged_in?() self.current_user && !self.current_user.demo? end
 
   # Fetch a file from the cache unless its MD5 has changed. Use a block to specify a transformation to be
@@ -619,3 +561,8 @@ class Barkeep < Sinatra::Base
     comment
   end
 end
+
+# These are extra routes. Require them after the main routes and before filters have been defined, so
+# Sinatra's before filters run in the order you would expect.
+require "lib/api_routes"
+require "lib/admin_routes"
