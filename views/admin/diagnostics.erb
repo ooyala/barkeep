@@ -11,14 +11,9 @@
   # - pending_comments_count
 %>
 
-<div id="admin">
-  <h2>Relevant pages</h2>
-  <ul>
-    <li><a href="/resque">resque admin page</a></li>
-    <li><a href="/statusz">statusz (deploy-time information)</a></li>
-    <li><a href="/admin/users">Manage users</a></li>
-  </ul>
+<%= admin_page_breadcrumb "Diagnostics" %>
 
+<div id="admin">
   <h2>Data model metrics</h2>
 
   <% if most_recent_commit %>

@@ -95,9 +95,13 @@ class Barkeep < Sinatra::Base
   end
 
   helpers do
-    def current_page_if_url(text)
-      request.url.include?(text) ? "currentPage" : ""
+    def admin_page_breadcrumb(display_name)
+      %Q(<div id="adminBreadcrumb">
+          <a href="/admin">Admin</a> &raquo; #{display_name}
+        </div>)
     end
+
+    def current_page_if_url(text) request.url.include?(text) ? "currentPage" : "" end
 
     def find_commit(repo_name, sha, zero_commits_ok)
       commit = MetaRepo.instance.db_commit(repo_name, sha)
@@ -475,7 +479,11 @@ class Barkeep < Sinatra::Base
   # A page to help keep track of Barkeep's data models and background processes. Also see the Resque dashboard
   # (/resque).
   get "/admin/?" do
-    erb :admin, :locals => {
+    admin_erb :index
+  end
+
+  get "/admin/diagnostics?" do
+    admin_erb :diagnostics, :locals => {
       :most_recent_commit => Commit.order(:id.desc).first,
       :most_recent_comment => Comment.order(:id.desc).first,
       :repos => MetaRepo.instance.repos.map(&:name),
@@ -485,6 +493,7 @@ class Barkeep < Sinatra::Base
       :pending_comments => Comment.filter(:has_been_emailed => false).order(:id.asc).limit(10).all,
       :pending_comments_count => Comment.filter(:has_been_emailed => false).count,
     }
+
   end
 
   get "/admin/users/?" do
@@ -559,6 +568,12 @@ class Barkeep < Sinatra::Base
   end
 
   private
+
+  def admin_erb(view, view_params = {})
+    # NOTE(philc): This use of nested Sinatra layouts is a little klunky. It's the best approach I could find.
+    html_with_admin_layout = erb("admin/#{view}".to_sym, { :layout => :"admin/layout" }.merge(view_params))
+    erb html_with_admin_layout
+  end
 
   def logged_in?() self.current_user && !self.current_user.demo? end
 
