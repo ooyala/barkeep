@@ -76,6 +76,31 @@ a:active {
   color: white;
 }
 
+/*
+ * "Copy" styles, which we use for pages displaying normal headings, paragraphs and text (like the admin page)
+ */
+.copy{
+  h2 {
+    font-size: 20px;
+    margin: 14px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #D0CABD;
+  }
+
+  h4 {
+    font-size: 16px;
+    margin: 10px 0;
+  }
+
+  p { margin: 10px 0; }
+
+  ul, ol { margin-left: 20px; }
+  li {
+    margin: 6px 0;
+  }
+}
+
+
 img:active { background-color: white }
 
 /* Our fancy buttons have a pretty high-profile red gradient. */
