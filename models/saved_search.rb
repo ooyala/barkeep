@@ -62,7 +62,7 @@ class SavedSearch < Sequel::Model
 
     message = ["Commits"]
     author_list = self.authors_list
-    message << "by #{comma_separated_list(authors_list)}" unless authors_list.empty?
+    message << "by #{comma_separated_list(map_authors_names(authors_list))}" unless authors_list.empty?
     message << "in #{comma_separated_list(paths_list)}" unless paths_list.empty?
     message << "on #{comma_separated_list(branches_list)}" unless branches_list.empty?
     unless repos_list.empty?
@@ -186,6 +186,17 @@ class SavedSearch < Sequel::Model
     when 1 then list[0]
     when 2 then "#{list[0]} and #{list[1]}"
     else "#{list[0..-2].join(", ")}, and #{list[-1]}"
+    end
+  end
+
+  # use the name of the author if email is entered
+  def map_authors_names(authors_list)
+    authors_list.map do |author|
+      if author =~ /^<.*>$/
+        users = User.filter("`email`=?", author.gsub(/^<|>$/,"")).limit(10).all
+        next users[0].name if users.length > 0
+      end
+      author
     end
   end
 end
