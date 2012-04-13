@@ -41,6 +41,7 @@ end
 
 def clear_resque_queue(queue_name) Resque.redis.del("queue:#{queue_name}") end
 
+STDOUT.sync = true if ENABLE_CLOCKWORK_OUTPUT
 STDOUT.reopen("/dev/null") unless ENABLE_CLOCKWORK_OUTPUT
 
 Clockwork.run # This is a blocking call.
