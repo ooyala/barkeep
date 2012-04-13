@@ -11,7 +11,7 @@ class Emails
   end
 
   def self.subject_for_commit_email(grit_commit)
-    "#{grit_commit.repo.name} #{grit_commit.id_abbrev} #{grit_commit.author.user.name} - " +
+    "#{grit_commit.repo.name} #{grit_commit.id_abbrev} #{grit_commit.author} - " +
         "#{grit_commit.short_message[0..60]}"
   end
 
