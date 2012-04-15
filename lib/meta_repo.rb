@@ -42,7 +42,7 @@ class MetaRepo
       path = Pathname.new(path).realpath.to_s # Canonical path
       name = File.basename(path)
       id = GitRepo.find_or_create(:name => name, :path => path).id
-      grit_repo = grit_repo_for_name(name)
+      grit_repo = create_grit_repo_for_name(name)
       @repos << grit_repo
       @repo_name_to_id[name] = id
       @repo_names_and_ids_to_repos[name] = grit_repo
@@ -51,13 +51,6 @@ class MetaRepo
   end
 
   def get_grit_repo(name_or_id) @repo_names_and_ids_to_repos[name_or_id] end
-
-  def grit_repo_for_name(repo_name)
-    path = Pathname.new(File.join(@repos_root, repo_name)).realpath.to_s
-    grit_repo = Grit::Repo.new(path)
-    grit_repo.name = repo_name
-    grit_repo
-  end
 
   def db_commit(repo_name, sha)
     Commit[:git_repo_id => @repo_name_to_id[repo_name], :sha => sha]
@@ -363,6 +356,21 @@ class MetaRepo
     git_arguments += search_options[:paths] unless search_options[:paths].blank?
 
     git_options.merge(:cli_args => git_arguments)
+  end
+
+  private
+
+  def repos_out_of_date?
+    repo_names = Dir.glob("#{@repos_root}/*/").map { |path| File.basename(path) }
+    Set.new(repo_names) != Set.new(@repos.map(&:name))
+  end
+
+  # Creates a new Grit::Repo object for the given path.
+  def create_grit_repo_for_name(repo_name)
+    path = Pathname.new(File.join(@repos_root, repo_name)).realpath.to_s
+    grit_repo = Grit::Repo.new(path)
+    grit_repo.name = repo_name
+    grit_repo
   end
 end
 

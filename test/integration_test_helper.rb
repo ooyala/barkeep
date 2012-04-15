@@ -18,7 +18,7 @@ module IntegrationTestHelper
   def test_repo
     unless @test_repo
       MetaRepo.configure(Logger.new("/dev/null"), FIXTURES_PATH)
-      @test_repo = MetaRepo.instance.grit_repo_for_name(TEST_REPO_NAME)
+      @test_repo = MetaRepo.instance.get_grit_repo(TEST_REPO_NAME)
     end
     @test_repo
   end

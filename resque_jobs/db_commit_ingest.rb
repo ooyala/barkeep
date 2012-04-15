@@ -28,7 +28,7 @@ class DbCommitIngest
     page = 0
 
     rows_to_insert = []
-    repo = MetaRepo.instance.grit_repo_for_name(repo_name)
+    repo = MetaRepo.instance.get_grit_repo(repo_name)
     db_repo = GitRepo.first(:name => repo_name)
 
     begin

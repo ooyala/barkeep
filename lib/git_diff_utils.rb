@@ -21,7 +21,7 @@ class GitDiffUtils
   # returns: [ { :binary, :lines, :breaks}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
-    repo = MetaRepo.instance.grit_repo_for_name(repo_name)
+    repo = MetaRepo.instance.get_grit_repo(repo_name)
     begin
       GitDiffUtils.show(repo, commit).map do |diff|
         a_path = diff.a_path
