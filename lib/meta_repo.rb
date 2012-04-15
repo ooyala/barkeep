@@ -31,6 +31,9 @@ class MetaRepo
     load_repos
   end
 
+  # Loads in any new repos from the repos_root.
+  def scan_for_new_repos() load_repos if repos_out_of_date? end
+
   def load_repos
     @repos = []
     @repo_names_and_ids_to_repos = {}

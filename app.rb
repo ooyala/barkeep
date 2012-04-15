@@ -192,6 +192,7 @@ class Barkeep < Sinatra::Base
   end
 
   get "/commits/:repo_name/:sha" do
+    MetaRepo.instance.scan_for_new_repos
     repo_name = params[:repo_name]
     sha = params[:sha]
     halt 404, "No such repository: #{repo_name}" unless GitRepo[:name => repo_name]
@@ -292,6 +293,7 @@ class Barkeep < Sinatra::Base
 
   # POST because this creates a saved search on the server.
   post "/search" do
+    MetaRepo.instance.scan_for_new_repos
     options = {}
     [:repos, :authors, :messages].each do |option|
       options[option] = params[option].then { strip.empty? ? nil : strip }
@@ -319,6 +321,7 @@ class Barkeep < Sinatra::Base
   #   purposes only, because new commits which have been recently ingested will make the page number
   #   inaccurate.
   get "/saved_searches/:id" do
+    MetaRepo.instance.scan_for_new_repos
     if current_user.demo?
       saved_search = SavedSearch.find_demo_search(params[:id])
     else
