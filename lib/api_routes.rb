@@ -6,9 +6,11 @@ class Barkeep < Sinatra::Base
   # TODO(caleb/dmac): API authentication before filter. Need to assign users an API key and sign requests.
 
   post "/api/add_repo" do
-    halt 400 unless params[:url]
-    halt 400, "Invalid url" unless Addressable::URI.parse(params[:url])
+    halt 400, "'url' is required." if (params[:url] || "").strip.empty?
+    halt 400, "This is not a valid URL." unless Addressable::URI.parse(params[:url])
     repo_name = File.basename(params[:url], ".*")
+    repo_path = File.join(REPOS_ROOT, repo_name)
+    halt 400, "There is already a folder named \"#{repo_name}\" in #{REPOS_ROOT}." if File.exists?(repo_path)
     Resque.enqueue(CloneNewRepo, repo_name, params[:url])
     [204, "Repo #{repo_name} is scheduled to be cloned."]
   end
