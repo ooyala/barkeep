@@ -158,11 +158,17 @@ class AppTest < Scope::TestCase
         assert_status 200
       end
 
+      should "show a list of repos" do
+        meta_repo = MetaRepo.new(FIXTURES_PATH)
+        stub(MetaRepo).instance { meta_repo }
+        get "/admin/repos"
+        assert_status 200
+        dom_response.css("repoList").text.include?(meta_repo.repos.first.name)
+      end
+
       teardown do
         any_instance_of(Barkeep, :current_user => @user)
       end
     end
   end
-
-  def assert_status(status_code) assert_equal status_code, last_response.status end
 end
