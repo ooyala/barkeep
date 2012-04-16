@@ -60,14 +60,22 @@
     input {
       width: 450px;
       font-size: 18px;
+      margin: 8px 0;
     }
     button {
       padding: 4px 6px;
       font-size: 14px;
     }
     .note {
-      color: #444;
+      color: gray;
       font-style: italic;
+      font-size: 14px;
     }
+  }
+
+  .logFile {
+    max-height: 500px;
+    overflow: auto;
+    font-family: monospace;
   }
 }

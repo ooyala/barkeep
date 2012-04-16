@@ -66,4 +66,27 @@
     <% end %>
 
   </table>
+
+  <h2>Repo pulling and cloning logs</h2>
+
+  <p>
+    This is activity logged from the Resque background jobs responsible for cloning new repos and running
+    "git fetch" for all existing repos. Use these logs to debug if one of your repos isn't able to be cloned
+    or isn't getting updated.
+  </p>
+
+  <p>
+    <strong>clone_new_repo.log</strong>
+    <div class="logFile">
+      <%= clone_new_repo_log.gsub("\n", "<br/>") %>
+    </div>
+  </p>
+
+  <p>
+    <strong>fetch_commits.log</strong>
+    <div class="logFile">
+      <%= fetch_commits_log.gsub("\n", "<br/>") %>
+    </div>
+  </p>
+
 </div>

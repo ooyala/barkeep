@@ -64,7 +64,16 @@ class Barkeep < Sinatra::Base
     # As of April 2012, we can have GitRepo records in the database which have no corresponding repo on disk,
     # because that repo was moved or deleted. Do not include these old repos in the admin page.
     repos_hashes.reject! { |repo_hash| repo_hash[:grit_repo].nil? }
-    admin_erb :repos, :locals => { :repos_hashes => repos_hashes, :locals => repos_being_cloned }
+
+    log_directory = File.expand_path(File.join(File.dirname(__FILE__), "../log"))
+    # NOTE(philc): Native ruby would be better, but I was too lazy to find a better solution.
+    tail_log = Proc.new { |log_file| `tail -n 15 '#{File.join(log_directory, log_file)}'` }
+    admin_erb :repos, :locals => {
+      :repos_hashes => repos_hashes,
+      :repos_being_cloned => repos_being_cloned,
+      :clone_new_repo_log => tail_log.call("clone_new_repo.log"),
+      :fetch_commits_log => tail_log.call("fetch_commits.log")
+    }
   end
 
   # Schedules a Git repo to be cloned.
