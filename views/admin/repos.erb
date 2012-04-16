@@ -1,7 +1,7 @@
 <%#
   An admin view showing the list of monitored repos, with controls for adding and deleting.
   Params:
-    repos_hashes: an array of repo hashes, with git_repo and newest_commit as keys.
+    - repos_hashes: an array of repo hashes, with git_repo and newest_commit as keys.
 %>
 
 <script>
@@ -17,7 +17,7 @@
         url: "/admin/repos/create_new_repo",
         data: { url: repoUrl },
         dataType: "json",
-        success: function() { showConfirmationMessage(repoUrl + " is being cloned.") },
+        success: function() { showConfirmationMessage(repoUrl + " has been scheduled to be cloned.") },
         error: function(response) { showConfirmationMessage(response.responseText); }
       });
     });
@@ -34,13 +34,13 @@
   <div id="cloneForm">
     <label for="newRepoUrl">Repo url</label><br/>
     <input type="text" id="newRepoUrl" />
-    <button id="clone" class="standard">Add repo</button>
-
-    <p class="note">This will be cloned into <code><%= REPOS_ROOT %></code></p>
+    <button id="clone" class="standard">Add repo</button><br/>
+    <span class="note">e.g. http://github.com/ooyala/barkeep.git</span><br/>
+    <p class="note">This repo will be cloned into <code><%= REPOS_ROOT %></code></p>
   </div>
 
   <% unless repos_being_cloned.empty? %>
-    <h2>Repos being cloned</h2>
+    <h2>Repos scheduled to be cloned</h2>
     <%= repos_being_cloned.join("<br/>") %>
   <% end %>
 
@@ -56,7 +56,7 @@
         <td><%= repo_hash[:grit_repo].name %></a></td>
         <td><%= repo_hash[:grit_repo].origin_url %></td>
         <td>
-          <% grit_commit = repo_hash[:newest_commit].grit_commit %>
+          <% grit_commit = repo_hash[:newest_commit] ? repo_hash[:newest_commit].grit_commit : nil %>
           <% if grit_commit %>
             <a href="<%= grit_commit.link %>"><%= grit_commit.id_abbrev %></a><br/>
             <%= grit_commit.author %>
