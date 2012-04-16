@@ -6,8 +6,11 @@ class RedisManager
     return @@redis if @@redis
     begin
       @@redis = Redis.new(:host => REDIS_HOST, :port => REDIS_PORT)
-      @@redis.ping
-    rescue
+      timeout(4) { @@redis.ping }
+    rescue Timeout::Error
+      warn "Timed out while connecting to Redis."
+      @@redis = nil
+    rescue StandardError
       warn "Cannot connect to Redis"
       @@redis = nil
     end
