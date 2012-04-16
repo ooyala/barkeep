@@ -64,7 +64,7 @@ class AppTest < Scope::TestCase
       stub(Commit).prefix_match("repo2", "sha") { }
 
       get "/commits/search/by_sha", :sha => "sha"
-      assert_equal 404, last_response.status
+      assert_status 404
     end
 
     should "return the _first_ matching commit for the prefix" do
@@ -72,7 +72,7 @@ class AppTest < Scope::TestCase
       dont_allow(@@repo).db_commit("repo2", "sha")
 
       get "/commits/search/by_sha", :sha => "sha"
-      assert_equal 302, last_response.status
+      assert_status 302
       assert_match last_response.location, /sha_123/
       assert_match last_response.location, /repo1/
     end
@@ -83,7 +83,7 @@ class AppTest < Scope::TestCase
       mock(@@repo).db_commit("repo2", "sha") { @commit }
 
       get "/commits/search/by_sha", :sha => "sha"
-      assert_equal 302, last_response.status
+      assert_status 302
       assert_match last_response.location, /sha_123/
       assert_match last_response.location, /repo2/
     end
@@ -94,7 +94,7 @@ class AppTest < Scope::TestCase
       dont_allow(@@repo).db_commit("repo2", "sha")
 
       get "/commits/search/by_sha", :sha => "sha"
-      assert_equal 302, last_response.status
+      assert_status 302
       assert_match last_response.location, /sha_123/
       assert_match last_response.location, /repo1/
     end
@@ -105,7 +105,7 @@ class AppTest < Scope::TestCase
       should "return a 404 and human-readable error message when given a bad repo or sha" do
         stub(@@repo).db_commit("my_repo", "sha1") { nil } # No results
         get "/api/commits/my_repo/sha1"
-        assert_equal 404, last_response.status
+        assert_status 404
         assert JSON.parse(last_response.body).include? "message"
       end
 
@@ -115,7 +115,7 @@ class AppTest < Scope::TestCase
         stub(unapproved_commit).comment_count { 0 }
         stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
         get "/api/commits/my_repo/sha1"
-        assert_equal 200, last_response.status
+        assert_status 200
         result = JSON.parse(last_response.body)
         refute result["approved"]
         assert_equal 0, result["comment_count"]
@@ -129,7 +129,7 @@ class AppTest < Scope::TestCase
         stub(approved_commit).comment_count { 155 }
         stub(Commit).prefix_match("my_repo", "sha2") { approved_commit }
         get "/api/commits/my_repo/sha2"
-        assert_equal 200, last_response.status
+        assert_status 200
         result = JSON.parse(last_response.body)
         assert result["approved"]
         assert_equal 155, result["comment_count"]
@@ -142,7 +142,7 @@ class AppTest < Scope::TestCase
 
     should "only allow users with admin permission" do
       get "/admin"
-      assert_equal 400, last_response.status
+      assert_status 400
 
       post "/admin/users/"
     end
@@ -155,7 +155,7 @@ class AppTest < Scope::TestCase
 
       should "allow access to /admin/users" do
         get "/admin/users"
-        assert_equal 200, last_response.status
+        assert_status 200
       end
 
       teardown do
@@ -163,4 +163,6 @@ class AppTest < Scope::TestCase
       end
     end
   end
+
+  def assert_status(status_code) assert_equal status_code, last_response.status end
 end
