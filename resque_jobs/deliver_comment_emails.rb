@@ -11,6 +11,7 @@ class DeliverCommentEmails
   def self.perform(comment_ids)
     logger = Logging.logger = Logging.create_logger("deliver_comment_emails.log")
     MetaRepo.logger = logger
+    MetaRepo.instance.scan_for_new_repos
 
     # Reconnect to the database if our connection has timed out.
     Comment.select(1).first rescue nil
