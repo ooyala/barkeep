@@ -45,7 +45,8 @@ class MetaRepo
       path = Pathname.new(path).realpath.to_s # Canonical path
       name = File.basename(path)
       id = GitRepo.find_or_create(:name => name, :path => path).id
-      grit_repo = create_grit_repo_for_name(name)
+      grit_repo = create_grit_repo_for_name(name) rescue nil
+      next unless grit_repo && grit_repo.is_valid?
       @repos << grit_repo
       @repo_name_to_id[name] = id
       @repo_names_and_ids_to_repos[name] = grit_repo

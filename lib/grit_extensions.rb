@@ -18,6 +18,13 @@ module Grit
   class Repo
     attr_accessor :name
     def origin_url() self.config.fetch("remote.origin.url") end
+
+    # False if the repo is in such a state where it has no commits yet. This can happen if there was an error
+    # cloning, or if it's a freshly initialized empty repo.
+    def is_valid?
+      return false unless (self.head rescue false)
+      self.commits(self.head.name, 0, 1).empty?
+    end
   end
 
   class Actor
