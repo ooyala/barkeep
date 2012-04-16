@@ -36,3 +36,15 @@
 
   label { cursor: pointer; }
 }
+
+
+#repos {
+  table {
+    width: 100%;
+    th {
+      text-align: left;
+      padding-left: 10px;
+    }
+    td:first-of-type { font-weight: bold; }
+  }
+}

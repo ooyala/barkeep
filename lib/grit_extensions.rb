@@ -17,6 +17,7 @@ module Grit
 
   class Repo
     attr_accessor :name
+    def origin_url() self.config.fetch("remote.origin.url") end
   end
 
   class Actor

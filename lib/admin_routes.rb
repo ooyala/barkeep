@@ -1,6 +1,8 @@
 #
 # Sinatra routes which implement the Admin pages.
 #
+require "resque_jobs/clone_new_repo"
+
 class Barkeep < Sinatra::Base
   before "/admin*" do
     unless current_user.admin?
@@ -27,7 +29,6 @@ class Barkeep < Sinatra::Base
       :pending_comments => Comment.filter(:has_been_emailed => false).order(:id.asc).limit(10).all,
       :pending_comments_count => Comment.filter(:has_been_emailed => false).count,
     }
-
   end
 
   get "/admin/users/?" do
@@ -45,6 +46,24 @@ class Barkeep < Sinatra::Base
     user.permission = params[:permission]
     user.save
     nil
+  end
+
+  get "/admin/repos/?" do
+    MetaRepo.instance.scan_for_new_repos
+    # TODO(philc): Currently importing.
+    git_repos = GitRepo.all.sort_by(&:name)
+    repos_hashes = git_repos.map do |git_repo|
+      {
+        :git_repo => git_repo,
+        :grit_repo => MetaRepo.instance.get_grit_repo(git_repo.name),
+        :newest_commit => git_repo.commits_dataset.order(:id.desc).first
+      }
+    end
+
+    # As of April 2012, we can have GitRepo records in the database which have no corresponding repo on disk,
+    # because that repo was moved or deleted. Do not include these old repos in the admin page.
+    repos_hashes.reject! { |repo_hash| repo_hash[:grit_repo].nil? }
+    admin_erb :repos, :locals => { :repos_hashes => repos_hashes }
   end
 
   helpers do

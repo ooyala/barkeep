@@ -1,0 +1,33 @@
+<%#
+  An admin view showing the list of monitored repos, with controls for adding and deleting.
+  Params:
+    repos_hashes: an array of repo hashes, with git_repo and newest_commit as keys.
+%>
+
+<div id="repos">
+
+  <%= admin_page_breadcrumb "Manage repositories" %>
+
+  <h2>Repos currently monitored</h2>
+
+  <table>
+    <th>Name</th>
+    <th>URL</th>
+    <th>Newest fetched commit</th>
+
+    <% repos_hashes.each do |repo_hash| %>
+      <tr>
+        <td><%= repo_hash[:grit_repo].name %></a></td>
+        <td><%= repo_hash[:grit_repo].origin_url %></td>
+        <td>
+          <% grit_commit = repo_hash[:newest_commit].grit_commit %>
+          <% if grit_commit %>
+            <a href="<%= grit_commit.link %>"><%= grit_commit.id_abbrev %></a><br/>
+            <%= grit_commit.author %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+
+  </table>
+</div>

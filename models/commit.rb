@@ -29,7 +29,6 @@ class Commit < Sequel::Model
     @grit_commit ||= MetaRepo.instance.grit_commit(git_repo_id, sha)
   end
 
-
   def comments
     comments_dataset.filter(:commit_id => id, :line_number => nil).order(:created_at).all
   end
