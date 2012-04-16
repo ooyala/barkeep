@@ -4,9 +4,45 @@
     repos_hashes: an array of repo hashes, with git_repo and newest_commit as keys.
 %>
 
+<script>
+  $(document).ready(function() {
+    $("button#clone").click(function() {
+      var showConfirmationMessage = function(message) {
+        $("#confirmationMessage").show();
+        $("#confirmationMessage").html(message);
+      };
+      var repoUrl = $("#newRepoUrl").val();
+      $.ajax({
+        type: "post",
+        url: "/admin/repos/create_new_repo",
+        data: { url: repoUrl },
+        dataType: "json",
+        success: function() { showConfirmationMessage(repoUrl + " is being cloned.") },
+        error: function(response) { showConfirmationMessage(response.responseText); }
+      });
+    });
+  });
+</script>
+
 <div id="repos">
 
   <%= admin_page_breadcrumb "Manage repositories" %>
+
+  <div id="confirmationMessage"></div>
+
+  <h2>Add new repo</h2>
+  <div id="cloneForm">
+    <label for="newRepoUrl">Repo url</label><br/>
+    <input type="text" id="newRepoUrl" />
+    <button id="clone" class="standard">Add repo</button>
+
+    <p class="note">This will be cloned into <code><%= REPOS_ROOT %></code></p>
+  </div>
+
+  <% unless repos_being_cloned.empty? %>
+    <h2>Repos being cloned</h2>
+    <%= repos_being_cloned.join("<br/>") %>
+  <% end %>
 
   <h2>Repos currently monitored</h2>
 

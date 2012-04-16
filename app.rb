@@ -9,7 +9,6 @@ require "nokogiri"
 require "open-uri"
 require "methodchain"
 require "redis"
-require "addressable/uri"
 require "sass"
 
 require "openid"

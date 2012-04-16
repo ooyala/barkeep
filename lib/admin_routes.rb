@@ -2,6 +2,7 @@
 # Sinatra routes which implement the Admin pages.
 #
 require "resque_jobs/clone_new_repo"
+require "addressable/uri"
 
 class Barkeep < Sinatra::Base
   before "/admin*" do
@@ -63,7 +64,19 @@ class Barkeep < Sinatra::Base
     # As of April 2012, we can have GitRepo records in the database which have no corresponding repo on disk,
     # because that repo was moved or deleted. Do not include these old repos in the admin page.
     repos_hashes.reject! { |repo_hash| repo_hash[:grit_repo].nil? }
-    admin_erb :repos, :locals => { :repos_hashes => repos_hashes }
+    admin_erb :repos, :locals => { :repos_hashes => repos_hashes, :locals => repos_being_cloned }
+  end
+
+  # Schedules a Git repo to be cloned.
+  #  - url
+  post "/admin/repos/create_new_repo" do
+    halt 400, "'url' is required." if (params[:url] || "").strip.empty?
+    halt 400, "This is not a valid URL." unless Addressable::URI.parse(params[:url])
+    repo_name = File.basename(params[:url], ".*")
+    repo_path = File.join(REPOS_ROOT, repo_name)
+    halt 400, "There is already a folder named \"#{repo_name}\" in #{REPOS_ROOT}." if File.exists?(repo_path)
+    nil
+    # Grit::Git.new(repo_path).clone({}, params[:url], repo_path)
   end
 
   helpers do
@@ -73,6 +86,12 @@ class Barkeep < Sinatra::Base
   end
 
   private
+
+  def repos_being_cloned
+    # Resque jobs look like: { "class"=>"CloneNewRepo", "args"=>["repo_name", "repo_url"] }
+    jobs = Resque.peek("clone_new_repo", 0, 25)
+    jobs.map { |job| job["args"][1] }
+  end
 
   def admin_erb(view, view_params = {})
     # NOTE(philc): This use of nested Sinatra layouts is a little klunky. It's the best approach I could find.

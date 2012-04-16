@@ -1,4 +1,5 @@
 # API to allow for a RESTful interface to Barkeep.
+require "addressable/uri"
 
 class Barkeep < Sinatra::Base
   # TODO(caleb/dmac): API authentication before filter. Need to assign users an API key and sign requests.
