@@ -75,8 +75,8 @@ class Barkeep < Sinatra::Base
     repo_name = File.basename(params[:url], ".*")
     repo_path = File.join(REPOS_ROOT, repo_name)
     halt 400, "There is already a folder named \"#{repo_name}\" in #{REPOS_ROOT}." if File.exists?(repo_path)
+    Resque.enqueue(CloneNewRepo, repo_name, params[:url])
     nil
-    # Grit::Git.new(repo_path).clone({}, params[:url], repo_path)
   end
 
   helpers do

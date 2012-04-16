@@ -1,5 +1,6 @@
 # API to allow for a RESTful interface to Barkeep.
 require "addressable/uri"
+require "resque_jobs/clone_new_repo"
 
 class Barkeep < Sinatra::Base
   # TODO(caleb/dmac): API authentication before filter. Need to assign users an API key and sign requests.
@@ -11,9 +12,8 @@ class Barkeep < Sinatra::Base
     halt 400 unless params[:url]
     halt 400, "Invalid url" unless Addressable::URI.parse(params[:url])
     repo_name = File.basename(params[:url], ".*")
-    repo_path = File.join(REPOS_ROOT, repo_name)
-    Grit::Git.new(repo_path).clone({}, params[:url], repo_path)
-    MetaRepo.instance.load_repos
+    Resque.enqueue(CloneNewRepo, repo_name, params[:url])
+    [204, "Repo #{repo_name} is scheduled to be cloned."]
   end
 
   get "/api/commits/:repo_name/:sha" do
