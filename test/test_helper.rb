@@ -11,7 +11,7 @@ require "nokogiri"
 
 require "test/stub_helper"
 
-# Fixtuers contains test git repos. Use when you cannot stub fake a Git repo.
+# The fixtures directory contains test git repos. Use when you cannot stub a fake Git repo.
 FIXTURES_PATH = File.join(File.dirname(__FILE__), "/fixtures")
 TEST_REPO_NAME = "test_git_repo"
 

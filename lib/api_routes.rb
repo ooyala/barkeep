@@ -5,9 +5,6 @@ require "resque_jobs/clone_new_repo"
 class Barkeep < Sinatra::Base
   # TODO(caleb/dmac): API authentication before filter. Need to assign users an API key and sign requests.
 
-  # NOTE(dmac): This can tie up the server if the checked out repo
-  # is very large. The task could be backgrounded, but the server's instance
-  # of MetaRepo will need to be reloaded *after* the background job finishes.
   post "/api/add_repo" do
     halt 400 unless params[:url]
     halt 400, "Invalid url" unless Addressable::URI.parse(params[:url])
