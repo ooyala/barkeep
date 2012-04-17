@@ -49,6 +49,7 @@ GEM
       thor (>= 0.13.6)
     i18n (0.6.0)
     json (1.5.3)
+    kgio (2.7.4)
     log4r (1.1.10)
     mail (2.3.0)
       i18n (>= 0.4.0)
@@ -83,6 +84,7 @@ GEM
       rack
     rack-test (0.6.1)
       rack (>= 1.0)
+    raindrops (0.8.0)
     rake (0.8.7)
     rake-remote_task (2.0.6)
       open4 (~> 1.0)
@@ -129,6 +131,10 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
+    unicorn (4.2.1)
+      kgio (~> 2.6)
+      rack
+      raindrops (~> 0.7)
     vagrant (1.0.1)
       archive-tar-minitar (= 0.5.2)
       childprocess (~> 0.3.1)
@@ -179,4 +185,5 @@ DEPENDENCIES
   terraform!
   thin
   tilt
+  unicorn
   vagrant
