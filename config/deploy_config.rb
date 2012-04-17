@@ -42,11 +42,13 @@ common_options = {
 def include_options(options) options.each { |key, value| Fezzik.env key, value } end
 
 Fezzik.destination :vagrant do
-  set :domain, "barkeep_vagrant"
+  set :hostname, "barkeep_vagrant"
+  set :domain, "#{user}@#{hostname}"
   include_options(common_options)
 end
 
 Fezzik.destination :prod do
-  set :domain, "#{user}@barkeep.sv2"
+  set :hostname, "barkeep.sv2"
+  set :domain, "#{user}@#{hostname}"
   include_options(common_options)
 end

@@ -1,5 +1,6 @@
 require "fileutils"
 require "terraform"
+require "tilt"
 
 namespace :fezzik do
   desc "stages the project for deployment in /tmp"
@@ -12,6 +13,19 @@ namespace :fezzik do
     # Use rsync to preserve executability and follow symlinks.
     system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/ --exclude=.git/ --exclude=test/")
     Terraform.write_dsl_file("#{staging_dir}/script/")
+    Rake::Task["fezzik:evaluate_conf_file_templates"].invoke
+  end
+
+  # We setting up a system for deploy, we fill in some conf file templates (like nginx.conf) using env vars
+  # from this deploy, and then copy those conf files to the remote system.
+  desc "Evaluates the templates in script/system_setup_files using Fezzik's current env vars."
+  task :evaluate_conf_file_templates do
+    env_settings = Fezzik.environments[hostname]
+    nginx_conf = Tilt::ERBTemplate.new("deploy/system_setup_files/nginx_site.conf.erb").render(Object.new,
+        :port => env_settings[:barkeep_port],
+        :hostname => hostname,
+        :path => current_path)
+    File.open("/tmp/#{app}/staged/deploy/system_setup_files/nginx_site.conf", "w") { |f| f.write(nginx_conf) }
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"
