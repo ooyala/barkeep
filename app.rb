@@ -40,6 +40,9 @@ LOGIN_WHITELIST_ROUTES = [
   /^.*\.css/, /^.*\.js/, /^.*\.woff/, /^context_expander/
 ]
 
+# OPENID_PROVIDERS is a string env variable. It's a comma-separated list of OpenID providers.
+OPENID_PROVIDERs_ARRAY = OPENID_PROVIDERS.split(",")
+
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
 
@@ -126,8 +129,8 @@ class Barkeep < Sinatra::Base
 
       # Save url to return to it after login completes.
       session[:login_started_url] = request.url
-      redirect(OPENID_PROVIDERS.size == 1 ?
-         get_openid_login_redirect(OPENID_PROVIDERS.first) :
+      redirect(OPENID_PROVIDERs_ARRAY.size == 1 ?
+         get_openid_login_redirect(OPENID_PROVIDERs_ARRAY.first) :
         "/signin/select_openid_provider")
     end
   end
@@ -139,19 +142,19 @@ class Barkeep < Sinatra::Base
   get "/signin" do
     session.clear
     session[:login_started_url] = request.referrer
-    redirect(OPENID_PROVIDERS.size == 1 ?
-       get_openid_login_redirect(OPENID_PROVIDERS.first) :
+    redirect(OPENID_PROVIDERs_ARRAY.size == 1 ?
+       get_openid_login_redirect(OPENID_PROVIDERs_ARRAY.first) :
       "/signin/select_openid_provider")
   end
 
   get "/signin/select_openid_provider" do
-    erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERS }
+    erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERs_ARRAY }
   end
 
   # Users navigate to here from select_openid_provider.
-  # - provider_id: an integer indicating which provider from OPENID_PROVIDERS to use for authentication.
+  # - provider_id: an integer indicating which provider from OPENID_PROVIDERs_ARRAY to use for authentication.
   get "/signin/login_using_openid_provider" do
-    provider = OPENID_PROVIDERS[params[:provider_id].to_i]
+    provider = OPENID_PROVIDERs_ARRAY[params[:provider_id].to_i]
     halt 400, "OpenID provider not found." unless provider
     redirect get_openid_login_redirect(provider)
   end

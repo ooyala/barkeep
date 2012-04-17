@@ -34,7 +34,8 @@ common_options = {
   db_password: "",
   redis_host: "localhost",
   redis_port: 6379,
-  openid_providers: ["https://www.google.com/accounts/o8/ud"],
+  # This is a comma-separated list of OPENID providers.
+  openid_providers: "https://www.google.com/accounts/o8/ud",
   barkeep_hostname: "barkeep",
   repos_root: "#{deploy_to}/repos",
   unicorn_pid_file: "#{deploy_to}/unicorn.pid"

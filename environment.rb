@@ -17,10 +17,10 @@ BARKEEP_HOSTNAME = "localhost:4567"
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 
-# A list of OpenID provider URLs for signing in your users. If you provide more than one, users will receive
-# a UI allowing to pick which service to use to authenticate.
+# A comma-separate list of OpenID provider URLs for signing in your users.
+# If you provide more than one, users will receive a UI allowing to pick which service to use to authenticate.
 # Besides Google, another popular OpenID endpoint is https://me.yahoo.com
-OPENID_PROVIDERS = ["https://www.google.com/accounts/o8/ud"]
+OPENID_PROVIDERS = "https://www.google.com/accounts/o8/ud"
 
 # This is the read-only demo mode which is used in the Barkeep demo linked from getbarkeep.com.
 # Most production deployments will not want to enable the demo mode, but we want it while developing.
