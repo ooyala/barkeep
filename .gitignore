@@ -4,3 +4,4 @@
 /dump.rdb
 /.vagrant
 .sass-cache
+unicorn.pid
