@@ -2,7 +2,7 @@ Barkeep supports a read-only demo mode. The intention is to let people play with
 log in. We use it in the demo Barkeep installation linked from getbarkeep.com. This README describes how it
 works and how it's implemented.
 
-You can set `ENABLE_READONLY_DEMO_MODE = true` in `config/environment.rb`. `config/environment.rb` is
+You can set `ENABLE_READONLY_DEMO_MODE = true` in `environment.rb`. `environment.rb` is
 supposed to be generated during deploy (if you're using Fezzik or Capistrano). `ENABLE_READONLY_DEMO_MODE` is
 set to true for our development environments, but should be false for most production environments.
 

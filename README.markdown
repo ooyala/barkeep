@@ -54,7 +54,7 @@ You can view the Resque dashboard and inspect failed Resque jobs by navigating t
 
 ## <a name="section_3"></a>3 Viewing Repositories
 
-Once Barkeep is set up for development, look in `config/environment.rb`. By default, Barkeep will look in
+Once Barkeep is set up for development, look in `environment.rb`. By default, Barkeep will look in
 `~/barkeep_repos/`, though you can change the `REPOS_ROOT` variable to adjust it.
 
 Create the directory and use normal `git clone` to add repositories. Now Barkeep can see them!
@@ -153,7 +153,7 @@ If everything's working, you should be able to check Barkeep at
 
 ## <a name="section_6"></a>6 Setting up email
 Set the email address and password of the Gmail account you want to use with Barkeep in
-`config/environment.rb`.
+`environment.rb`.
 
 Note that emails for new commits are sent from user**+commits**@example.com and comments are sent from
 user**+comments**@example.com. By default, Gmail won't allow your account to send from these addresses

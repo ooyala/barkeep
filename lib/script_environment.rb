@@ -3,7 +3,7 @@
 
 require "bundler/setup"
 require "pathological"
-require "config/environment"
+require "environment"
 require "grit"
 require "resque"
 require "lib/ruby_extensions"

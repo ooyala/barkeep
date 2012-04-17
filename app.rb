@@ -15,7 +15,7 @@ require "openid"
 require "openid/store/filesystem"
 require "openid/extensions/ax"
 
-require "config/environment"
+require "environment"
 require "lib/ruby_extensions"
 require "lib/git_helper"
 require "lib/git_diff_utils"
@@ -76,7 +76,7 @@ class Barkeep < Sinatra::Base
     register Sinatra::Reloader
     also_reload "lib/*.rb"
     also_reload "models/*.rb"
-    also_reload "config/environment.rb"
+    also_reload "environment.rb"
     also_reload "resque_jobs/*.rb"
   end
 

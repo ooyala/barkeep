@@ -7,7 +7,7 @@ require "clockwork"
 require "resque_jobs/fetch_commits"
 require "resque_jobs/batch_comment_emails"
 require "resque_jobs/delete_old_comments_by_demo_users"
-require "config/environment"
+require "environment"
 
 # The output of clockwork is not very useful in development. Toggle when debugging Clockwork.
 ENABLE_CLOCKWORK_OUTPUT = (ENV["RACK_ENV"] == "production")

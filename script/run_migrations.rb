@@ -2,7 +2,7 @@
 
 require "bundler/setup"
 require "pathological"
-require "config/environment.rb"
+require "environment.rb"
 
 PROTOCOL, DB_TYPE, DB_NAME, DB_HOST = DB_LOCATION.split(":")
 
