@@ -2,7 +2,7 @@ require "bundler/setup"
 require "pathological"
 require "test/integration_test_helper"
 
-SERVER = "http://localhost:4567"
+SERVER = "http://localhost:8040"
 
 class AppIntegrationTest < Scope::TestCase
   include HttpTestHelper

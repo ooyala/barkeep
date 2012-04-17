@@ -28,7 +28,7 @@ else
 end
 
 common_options = {
-  barkeep_port: 8081,
+  barkeep_port: 8040,
   db_location: "DBI:Mysql:barkeep:localhost",
   db_user: "root",
   db_password: "",
@@ -36,7 +36,8 @@ common_options = {
   redis_port: 6379,
   openid_providers: ["https://www.google.com/accounts/o8/ud"],
   barkeep_hostname: "barkeep",
-  repos_root: "#{deploy_to}/repos"
+  repos_root: "#{deploy_to}/repos",
+  unicorn_pid_file: "#{deploy_to}/unicorn.pid"
 }
 
 def include_options(options) options.each { |key, value| Fezzik.env key, value } end
@@ -44,11 +45,11 @@ def include_options(options) options.each { |key, value| Fezzik.env key, value }
 Fezzik.destination :vagrant do
   set :hostname, "barkeep_vagrant"
   set :domain, "#{user}@#{hostname}"
-  include_options(common_options)
+  include_options(common_options.merge({ unicorn_workers: 2 }))
 end
 
 Fezzik.destination :prod do
   set :hostname, "barkeep.sv2"
   set :domain, "#{user}@#{hostname}"
-  include_options(common_options)
+  include_options(common_options.merge({ unicorn_workers: 4 }))
 end
