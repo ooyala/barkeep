@@ -3,10 +3,7 @@ window.CommitSearch =
 
   init: ->
     @smartSearch = new SmartSearch $("#commitSearch input[name=filter_value]")
-    $("#commitSearch .submit").click (e) => @smartSearch.search()
-    $("#commitSearch select[name='time_range']").change (e) => @timeRangeChanged(e)
-    $("#commitSearch input[name=filter_value]").autocomplete
-      source: (request, callback) => @smartSearch.autocomplete(request.term, callback)
+    @autocompleteOpen = false
 
     # Register shortcuts
     shortcuts =
@@ -29,11 +26,21 @@ window.CommitSearch =
       # events fired once we have focus will be handled appropriately by jquery.hotkeys.
       false
     KeyboardShortcuts.registerShortcut searchBox, "return", (e) =>
+      return false if @autocompleteOpen
       @smartSearch.search()
       $("#commitSearch input[name=filter_value]").blur()
+    KeyboardShortcuts.registerShortcut searchBox, "tab", (e) =>
+      false if @autocompleteOpen
     KeyboardShortcuts.registerShortcut searchBox, "esc", (e) =>
       $("#commitSearch input[name=filter_value]").blur()
       Util.scrollWithContext(".selected")
+
+    $("#commitSearch .submit").click (e) => @smartSearch.search()
+    $("#commitSearch select[name='time_range']").change (e) => @timeRangeChanged(e)
+    $("#commitSearch input[name=filter_value]").autocomplete
+      source: (request, callback) => @smartSearch.autocomplete(request.term, callback),
+      open: (event, ui) => @autocompleteOpen = true
+      close: (event, ui) => @autocompleteOpen = false
 
     $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
