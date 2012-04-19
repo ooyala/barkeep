@@ -67,13 +67,11 @@ class window.SmartSearch
 
   # suggests keys see autocomplete
   autocompleteKey: (incompleteKey, unrelatedPrefix, callback) ->
-    if incompleteKey == ""
-      callback(KEYS)
-    else
-      results = []
-      for key in KEYS
-        results.push {"label": key, "value": unrelatedPrefix + key} if key.indexOf(incompleteKey) > -1
-      callback(results)
+    nokey = (incompleteKey == "")
+    results = []
+    for key in KEYS
+      results.push {"label": key, "value": unrelatedPrefix + key} if nokey || key.indexOf(incompleteKey) > -1
+    callback(results)
 
   # suggests values see autocomplete
   autocompleteValue: (incompleteValue, key, unrelatedPrefix, callback) ->
