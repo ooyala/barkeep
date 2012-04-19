@@ -494,7 +494,7 @@ class Barkeep < Sinatra::Base
 
   get "/autocomplete/repos" do
     repo_names =  MetaRepo.instance.repos.map {|repo| repo.name}
-    { :values => repo_names.select{|name| name.include?(params[:substring])} }.to_json
+    { :values => repo_names.select{ |name| name.include?(params[:substring]) } }.to_json
   end
 
   #

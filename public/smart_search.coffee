@@ -11,23 +11,31 @@ class window.SmartSearch
 
   KEYS = ["repos:", "authors:", "paths:", "branches:"]
 
-  # fetches autocomplete suggestions and returns it through the callback with an array of labels and values
+  # fetches autocomplete suggestions and returns it through the onSuggestionReceived callback with an array of
+  # labels and values
   #   eg. [ { label: "Choice1", value: "value1" }, ... ]
   # see jqueryUI autocomplete for more infomation
-  autocomplete: (searchString, callback) ->
+  autocomplete: (searchString, onSuggestionReceived) ->
     parseResult = @parsePartialQuery(searchString)
     if parseResult.searchType == "key"
-      @autocompleteKey(parseResult.key, parseResult.unrelatedPrefix, callback)
+      @autocompleteKey(parseResult.key, parseResult.unrelatedPrefix, onSuggestionReceived)
     else
-      @autocompleteValue(parseResult.value, parseResult.key, parseResult.unrelatedPrefix, callback)
+      @autocompleteValue(parseResult.value, parseResult.key, parseResult.unrelatedPrefix, onSuggestionReceived)
 
   # Parse a partial search string so we can help complete the search query for the user.
   #
   # Returns: an object with the properties
-  #  - key: set to the last key the user had typed
-  #  - partialValue: to the last value being typed
-  #  - unrelatedPrefix: to unrelated terms that need to be prefixed on to the suggested value or key
-  #  - searchType: "key" or "value"
+  #  - key: set to the last key the user had typed that may need to be completed/suggestions
+  #  - partialValue: to the last value being typed that needs to be completed/suggestions
+  #  - unrelatedPrefix: unrelated previous words in the text box where autosuggestion is not being performed
+  #     on but needs to be added back to the front of suggested values
+  #  - searchType: whether complete should be performed on "key" or "value"
+  #
+  #  Example, parsePartialQuery("repos:db, barkeep,coffee").returns
+  #    key: "repos:",
+  #    value: "coffee",
+  #    unrelatedPrefix: "repos:db,barkeep,",
+  #    searchType: "value"
   #
   parsePartialQuery: (searchString) ->
     # trim multiple spaces and remove spaces around separators ':' and ','
@@ -66,15 +74,16 @@ class window.SmartSearch
     result
 
   # suggests keys see autocomplete
-  autocompleteKey: (incompleteKey, unrelatedPrefix, callback) ->
+  autocompleteKey: (incompleteKey, unrelatedPrefix, onSuggestionReceived) ->
     nokey = (incompleteKey == "")
     results = []
     for key in KEYS
-      results.push {"label": key, "value": unrelatedPrefix + key} if nokey || key.indexOf(incompleteKey) > -1
-    callback(results)
+      if nokey || key.indexOf(incompleteKey) > -1
+        results.push { "label": key, "value": unrelatedPrefix + key }
+    onSuggestionReceived(results)
 
   # suggests values see autocomplete
-  autocompleteValue: (incompleteValue, key, unrelatedPrefix, callback) ->
+  autocompleteValue: (incompleteValue, key, unrelatedPrefix, onSuggestionReceived) ->
     if key in ["authors:", "repos:"]
       # regex to get value out of full label
       valueRegex = /^.*$/
@@ -88,9 +97,9 @@ class window.SmartSearch
         success: (completion) ->
           fullValues = $.map completion.values, (x) ->
             {"label" : x, "value" : unrelatedPrefix + (valueRegex.exec(x)[0] || "")}
-          callback(fullValues)
-        error: -> callback ""
-    else callback ""
+          onSuggestionReceived(fullValues)
+        error: -> onSuggestionReceived ""
+    else onSuggestionReceived ""
 
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume
