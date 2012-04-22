@@ -31,6 +31,7 @@ require "lib/filters"
 require "lib/inspire"
 require "lib/redis_manager"
 require "lib/redcarpet_extensions"
+require "lib/mustache_renderer"
 require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
@@ -214,12 +215,8 @@ class Barkeep < Sinatra::Base
 
   # render a simple html div that holds the controls for incrementally expanding context in the diff view
   get "/context_expander" do
-    erb :_context_expander, :layout => false, :locals => {
-      :top => params[:top] == "true",
-      :bottom => params[:bottom] == "true",
-      :incremental => params[:incremental] == "true",
-      :line_number => params[:line_number],
-    }
+    MustacheRenderer.context_expander(params[:top] == "true", params[:bottom] == "true",
+        params[:line_number], params[:incremental] == "true")
   end
 
   get "/comment_form" do

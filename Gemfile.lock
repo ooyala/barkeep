@@ -61,6 +61,7 @@ GEM
     mime-types (1.17.2)
     minitest (2.4.0)
     multi_json (1.1.0)
+    mustache (0.99.4)
     mysql (2.8.1)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
@@ -163,6 +164,7 @@ DEPENDENCIES
   grit!
   json
   methodchain
+  mustache
   mysql
   nokogiri
   pathological

@@ -54,6 +54,9 @@ gem "backtrace_shortener"
 # For running our app in production, using multiple workers.
 gem "unicorn"
 
+# for templates that can be rendered client and server side
+gem "mustache"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"
