@@ -28,6 +28,8 @@ window.Commit =
     $(".expandLink.all").click (e) => @expandContextAll(e)
     $(".expandLink.below").click (e) => @expandContext(e, 10, "below")
     $(".expandLink.above").click (e) => @expandContext(e, 10, "above")
+    $(document).on("mouseenter", ".expandEllipsis", @expandContextHoverIn)
+    $(document).on("mouseleave", ".contextExpander", @expandContextHoverOut)
 
     # Put the approval overlay message div on the page.
     $("body").append $(Snippets.approvalOverlay)
@@ -202,6 +204,15 @@ window.Commit =
     return if selectedLine.length == 0 or @linenewCodeWidthVisible(selectedLine)
     @selectNextVisibleLine()
 
+  expandContextHoverIn: (event) ->
+    row = $(event.target).closest(".contextExpander")
+    row.find(".expandEllipsisContainer").hide()
+    row.find(".expandContainer").css("display", "inline-block")
+
+  expandContextHoverOut: (event) ->
+    row = $(event.target).closest(".contextExpander")
+    row.find(".expandContainer").hide()
+    row.find(".expandEllipsisContainer").css("display", "inline-block")
 
   # Expand all the context hidden when a user clicks "Show all"
   expandContextAll: (event) ->
@@ -294,6 +305,7 @@ window.Commit =
     codeLines.before(contextExpander) if attachDirection == "above"
     codeLines.after(contextExpander) if attachDirection == "below"
     expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
+    expander.find(".expandEllipsis").trigger("mouseenter")
     # NOTE(kle): rerender hack to get around disappearing diffline border (issue #197)
     refreshLine?.hide()
     refreshLine?.show(1)

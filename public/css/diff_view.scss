@@ -433,9 +433,15 @@
     &:not(.bottomExpander) { border-bottom: $standardBorder; }
     td {
       position: relative;
-      .expandContainer {
+      .expandEllipsisContainer {
         text-align: right;
         display: inline-block;
+        font-size: 12px;
+        width: 470px;
+      }
+      .expandContainer {
+        text-align: right;
+        display: none;
         &.incrementalExpansion { width: 600px; }
         &:not(.incrementalExpansion) { width: 485px; }
         span.expandLink {
