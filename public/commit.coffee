@@ -217,6 +217,8 @@ window.Commit =
   # Expand some number of lines either above or below the fold of the context expander
   expandContext: (event, count, direction) ->
     expander = $(event.currentTarget).closest(".contextExpander")
+    if expander.is(".topExpander") and direction == "below"
+      refreshLine = $(expander.nextAll(":visible")[0])
     if expander.prev().is(":visible")
       lineRange = expander.nextUntil(":visible")
     else
@@ -227,7 +229,7 @@ window.Commit =
     top = attachDirection == "above" && attachLines.first().prevAll(":visible").length == 0
     bottom = attachDirection == "below" && attachLines.first().nextAll(":visible").length == 0
     incremental = lineRange.length * 2 - rangeToExpand.length > 10 * 2
-    @createContextExpander(attachLines, attachDirection, top, bottom, incremental)
+    @createContextExpander(attachLines, attachDirection, top, bottom, incremental, refreshLine ? null)
 
   # Context expander helper function
   #
@@ -282,7 +284,8 @@ window.Commit =
   #  - incremental: Indicates whether or not to render the "Show 10 Above" and "Show 10 Below" options. If
   #       incremental is false, then only the "Show All" option will appear for this context expander.
   #       Valid options: (true, false)
-  createContextExpander: (codeLines, attachDirection, top, bottom, incremental) ->
+  #  - refreshLine: Nasty hack to get around a rendering bug. Happens to topExpanders expanding below.
+  createContextExpander: (codeLines, attachDirection, top, bottom, incremental, refreshLine) ->
     renderedExpander = Snippets.contextExpander(top, bottom, codeLines.attr("diff-line-number"), incremental)
     contextExpander = $(renderedExpander)
     contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
@@ -290,13 +293,10 @@ window.Commit =
     contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
     codeLines.before(contextExpander) if attachDirection == "above"
     codeLines.after(contextExpander) if attachDirection == "below"
-    # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
     expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
-    refreshLine = $(expander.nextAll(":visible")[0])
-    expander.hide()
-    expander.show(1)
-    refreshLine.hide()
-    refreshLine.show(1)
+    # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
+    refreshLine?.hide()
+    refreshLine?.show(1)
 
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
