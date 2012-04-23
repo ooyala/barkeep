@@ -38,7 +38,7 @@ NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 LOGIN_WHITELIST_ROUTES = [
   /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^statusz/, /^api\/.*/,
-  /^.*\.css/, /^.*\.js/, /^.*\.woff/, /^context_expander/
+  /^.*\.css/, /^.*\.js/, /^.*\.woff/
 ]
 
 # OPENID_PROVIDERS is a string env variable. It's a comma-separated list of OpenID providers.
@@ -211,12 +211,6 @@ class Barkeep < Sinatra::Base
     tagged_diff = GitDiffUtils::get_tagged_commit_diffs(repo_name, commit.grit_commit,
         :use_syntax_highlighting => true)
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
-  end
-
-  # render a simple html div that holds the controls for incrementally expanding context in the diff view
-  get "/context_expander" do
-    MustacheRenderer.context_expander(params[:top] == "true", params[:bottom] == "true",
-        params[:line_number], params[:incremental] == "true")
   end
 
   get "/comment_form" do
