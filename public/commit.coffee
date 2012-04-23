@@ -294,7 +294,7 @@ window.Commit =
     codeLines.before(contextExpander) if attachDirection == "above"
     codeLines.after(contextExpander) if attachDirection == "below"
     expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
-    # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
+    # NOTE(kle): rerender hack to get around disappearing diffline border (issue #197)
     refreshLine?.hide()
     refreshLine?.show(1)
 
