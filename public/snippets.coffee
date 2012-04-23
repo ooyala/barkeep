@@ -34,3 +34,18 @@ window.Snippets =
     """
   approvalPopup: (approveOrDisapprove) ->
     "<div>Press <code>a</code> again to #{approveOrDisapprove} this commit.</div>"
+
+  contextExpander: (isTop, isBottom, lineNumber, isIncremental) ->
+    contextExtraClass = "topExpander" if isTop
+    contextExtraClass = "bottomExpander" if isBottom
+    contextExtraClass ?= ""
+    expandInnerClass = if isIncremental then "incrementalExpansion" else ""
+
+    view =
+      context_extra_class: contextExtraClass
+      expand_inner_class: expandInnerClass
+      incremental: isIncremental
+      line_number: lineNumber
+
+    source = $("#context-expander-template").html()
+    Mustache.render(source, view)

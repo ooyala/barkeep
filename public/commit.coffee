@@ -283,26 +283,18 @@ window.Commit =
   #       incremental is false, then only the "Show All" option will appear for this context expander.
   #       Valid options: (true, false)
   createContextExpander: (codeLines, attachDirection, top, bottom, incremental) ->
-    $.ajax
-      type: "get"
-      url: "/context_expander"
-      data:
-        top: top
-        bottom: bottom
-        incremental: incremental
-        line_number: codeLines.attr "diff-line-number"
-      success: (html) =>
-        contextExpander = $(html)
-        contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
-        contextExpander.find(".expandLink.above").click (e) => @expandContext(e, 10, "above")
-        contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
-        codeLines.before(contextExpander) if attachDirection == "above"
-        codeLines.after(contextExpander) if attachDirection == "below"
-        # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
-        expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
-        refreshLine = $(expander.nextAll(":visible")[0])
-        refreshLine.hide()
-        refreshLine.show(1)
+    renderedExpander = Snippets.contextExpander(top, bottom, codeLines.attr("diff-line-number"), incremental)
+    contextExpander = $(renderedExpander)
+    contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
+    contextExpander.find(".expandLink.above").click (e) => @expandContext(e, 10, "above")
+    contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
+    codeLines.before(contextExpander) if attachDirection == "above"
+    codeLines.after(contextExpander) if attachDirection == "below"
+    # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
+    expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
+    refreshLine = $(expander.nextAll(":visible")[0])
+    refreshLine.hide()
+    refreshLine.show(1)
 
   onDiffLineDblClickOrReply: (e) ->
     window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
