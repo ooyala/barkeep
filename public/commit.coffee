@@ -293,6 +293,8 @@ window.Commit =
     # NOTE(kle): rerender hack to get around disappearing diffline border (issue #198)
     expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
     refreshLine = $(expander.nextAll(":visible")[0])
+    expander.hide()
+    expander.show(1)
     refreshLine.hide()
     refreshLine.show(1)
 
