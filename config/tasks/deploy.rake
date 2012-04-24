@@ -45,7 +45,10 @@ namespace :fezzik do
           "cp ~/.ssh/authorized_keys /home/#{user}/.ssh",
           "chown -R #{user} /home/#{user}/.ssh")
       # Ensure users in the "admin" group can passwordless sudo.
-      run "echo '%admin ALL=NOPASSWD:ALL' >> /etc/sudoers"
+      sudoers_line = "'%admin ALL=NOPASSWD:ALL'"
+      run "if test -f /etc/sudoers.local; then " +
+          "echo #{sudoers_line} >> /etc/sudoers.local; " +
+          "else echo #{sudoers_line} >> /etc/sudoers; fi"
     end
     run "mkdir -p #{deploy_to}/releases && chown #{user} #{deploy_to} #{deploy_to}/releases"
   end
