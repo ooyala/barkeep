@@ -73,5 +73,5 @@ group :development do
   gem "vagrant" # For testing deployments.
   # For scripting system setup. Use the git version for the time being to pull in the latest changes.
   # TODO(caleb): Tie this to a real rubygems release once the Terraform feature set has stabilized a bit.
-  gem "terraform", :git => "http://github.com/philc/terraform.git", :ref => "8964078"
+  gem "terraform"
 end

@@ -8,13 +8,6 @@ GIT
       mime-types (~> 1.15)
       posix-spawn (~> 0.3.6)
 
-GIT
-  remote: http://github.com/philc/terraform.git
-  revision: 896407894513ce6c852b7b9e61cf59900d5b29c7
-  ref: 8964078
-  specs:
-    terraform (0.0.2)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -123,6 +116,7 @@ GEM
       sinatra (~> 1.3.0)
       tilt (~> 1.3)
     slop (1.9.1)
+    terraform (0.0.4)
     thin (1.2.11)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -184,7 +178,7 @@ DEPENDENCIES
   sequel
   sinatra (~> 1.3.2)
   sinatra-contrib
-  terraform!
+  terraform
   thin
   tilt
   unicorn

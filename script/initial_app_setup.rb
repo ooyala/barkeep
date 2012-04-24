@@ -23,7 +23,7 @@ end
 require "bundler/setup"
 require "pathological"
 require "terraform/dsl"
-include Terraform::Dsl
+include Terraform::DSL
 require "environment.rb"
 
 def mysql_command() @mysql_command ||= (`which mysql || which mysql5`).chomp end
