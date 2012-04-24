@@ -7,7 +7,7 @@ set :deploy_to, "/opt/ooyala/#{app}"
 set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :local_path, Dir.pwd
 # TODO(caleb): Set up roles, run as role-barkeep (i.e. not root)
-set :user, "root"
+set :user, "barkeep"
 # Concurrency setting given to foreman
 set :concurrency, "web=1,resque=4,cron=1"
 
@@ -47,10 +47,14 @@ Fezzik.destination :vagrant do
   set :hostname, "barkeep_vagrant"
   set :domain, "#{user}@#{hostname}"
   include_options(common_options.merge({ unicorn_workers: 2 }))
+  host "#{user}@#{hostname}", :deploy_user
+  host "root@#{hostname}", :root_user
 end
 
 Fezzik.destination :prod do
   set :hostname, "barkeep.sv2"
   set :domain, "#{user}@#{hostname}"
   include_options(common_options.merge({ unicorn_workers: 4 }))
+  host "#{user}@#{hostname}", :deploy_user
+  host "root@#{hostname}", :root_user
 end

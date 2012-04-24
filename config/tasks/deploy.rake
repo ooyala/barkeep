@@ -2,6 +2,9 @@ require "fileutils"
 require "terraform"
 require "tilt"
 
+# Run multiple commands in one big ssh invocation, for brevity and ssh efficiency.
+def run_commands(*commands) run commands.join(" && ") end
+
 namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
@@ -29,43 +32,54 @@ namespace :fezzik do
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"
-  remote_task :setup do
+  remote_task :setup, :roles => [:root_user] do
     puts "Setting up servers."
-    run "mkdir -p #{deploy_to}/releases"
+    has_user = Fezzik::Util.capture_output { run "getent passwd #{user} || true" }.size > 0
+    unless has_user
+      puts "Creating #{user} user."
+      # Make a user which has the same authorized keys as root, so we can ssh in as that user.
+      run_commands(
+          "useradd --create-home --shell /bin/bash #{user}",
+          "adduser #{user} --add_extra_groups admin",
+          "mkdir -p /home/#{user}/.ssh/",
+          "cp ~/.ssh/authorized_keys /home/#{user}/.ssh",
+          "chown -R #{user} /home/#{user}/.ssh")
+      # Ensure users in the "admin" group can passwordless sudo.
+      run "echo '%admin ALL=NOPASSWD:ALL' >> /etc/sudoers"
+    end
+    run "mkdir -p #{deploy_to}/releases && chown #{user} #{deploy_to} #{deploy_to}/releases"
   end
 
   desc "rsyncs the project from its staging location to each destination server"
-  remote_task :push => [:stage, :setup] do
+  remote_task({ :push => [:stage, :setup] }, { :roles => [:deploy_user] }) do
     puts "Pushing to #{target_host}:#{release_path}."
     # Copy on top of previous release to optimize rsync
     rsync "-q", "--copy-dest=#{current_path}", "/tmp/#{app}/staged/", "#{target_host}:#{release_path}"
   end
 
   desc "symlinks the latest deployment to /deploy_path/project/current"
-  remote_task :symlink do
+  remote_task :symlink, :roles => [:deploy_user] do
     puts "Symlinking current to #{release_path}."
     run "cd #{deploy_to} && ln -fns #{release_path} current"
     # Add a symlink to the current deploy in root's home directory, for convenience.
     run "rm ~/#{app} 2> /dev/null; ln -s #{current_path} ~/current"
   end
 
-  remote_task :initial_system_setup do
+  remote_task :initial_system_setup, :roles => [:deploy_user] do
     puts "Checking system state."
     # This PATH addition is required for Vagrant, which has Ruby installed, but it's not in the default PATH.
     run "cd #{release_path} && PATH=$PATH:/opt/ruby/bin script/system_setup.rb"
     run "cd #{release_path} && script/initial_app_setup.rb production"
   end
 
-  remote_task :install_gems do
-    puts "Installing gems."
-    run "cd #{release_path} && bundle install"
-  end
-
-  remote_task :generate_foreman_upstart_scripts do
+  remote_task :generate_foreman_upstart_scripts, :roles => [:deploy_user] do
     puts "Exporting foreman daemon scripts to /etc/init"
-    foreman_command = "foreman export upstart /etc/init -a #{app} -l /var/log/#{app} -u #{user} " <<
-                      "-c #{concurrency} -f Procfile > /dev/null"
-    run "cd #{release_path} && bundle exec #{foreman_command}"
+    foreman_command = "foreman export upstart upstart_scripts/ -a #{app} -l /var/log/#{app} -u #{user} " +
+        "-c #{concurrency} -f Procfile > /dev/null"
+    run_commands("cd #{release_path}",
+        "bundle exec #{foreman_command}",
+        "sudo mv upstart_scripts/* /etc/init",
+        "rm -R upstart_scripts")
 
     # Munge the Foreman-generated upstart conf files so that our app starts on system startup (right after
     # mysql). This is a bit hacky -- Foreman supports templates which you can use to modify the generated
@@ -75,18 +89,15 @@ namespace :fezzik do
 
   desc "after the app code has been rsynced, sets up the app's dependencies, like gems"
   remote_task :setup_app =>
-      [:push, :initial_system_setup, :install_gems, :generate_foreman_upstart_scripts] do
+      [:push, :initial_system_setup, :generate_foreman_upstart_scripts] do
     puts "Setting up server dependencies."
   end
 
   desc "runs the executable in project/bin"
-  remote_task :start do
+  remote_task :start, :roles => [:root_user] do
     puts "Starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}."
     # Upstart will not let you start a started job. Check if it's started already prior to invoking start.
     run "(status #{app} | grep stop) && start #{app} || true"
-    # Give the server some time to start before checking on its status.
-    # sleep 5
-    # server_is_up?
   end
 
   remote_task :check_healthz do
@@ -94,7 +105,7 @@ namespace :fezzik do
   end
 
   desc "kills the application by searching for the specified process name"
-  remote_task :stop do
+  remote_task :stop, :roles => [:root_user] do
     # Upstart will not let you stop a stopped job. Check if it's stopped already prior to invoking stop.
     run "(status #{app} | grep start) && stop #{app} || true"
   end
@@ -110,7 +121,7 @@ namespace :fezzik do
   task :deploy_without_tests => [:push, :symlink, :setup_app, :restart]
 
   desc "Run the integration tests remotely on the server"
-  remote_task :run_integration_tests do
+  remote_task :run_integration_tests, :roles => [:deploy_user] do
     puts "Running the integration tests."
     run "cd #{current_path} && bundle exec rake test:integrations"
   end
