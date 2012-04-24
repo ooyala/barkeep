@@ -21,14 +21,11 @@ ENABLE_CLOCKWORK_OUTPUT = (defined?(RACK_ENV) && RACK_ENV == "production")
 Clockwork.handler do |job_name|
   case job_name
   when "fetch_commits"
-    clear_resque_queue("fetch_commits")
-    Resque.enqueue(FetchCommits)
+    Resque.enqueue(FetchCommits) if queue_empty?("fetch_commits")
   when "batch_comment_emails"
-    clear_resque_queue("batch_comment_emails")
-    Resque.enqueue(BatchCommentEmails)
+    Resque.enqueue(BatchCommentEmails) if queue_empty?("batch_comment_emails")
   when "delete_old_comments_by_demo_users"
-    clear_resque_queue("delete_old_comments_by_demo_users")
-    Resque.enqueue(DeleteOldCommentsByDemoUsers)
+    Resque.enqueue(DeleteOldCommentsByDemoUsers) if queue_empty?("delete_old_comments_by_demo_users")
   end
 end
 
@@ -39,7 +36,7 @@ if defined?(ENABLE_READONLY_DEMO_MODE) && ENABLE_READONLY_DEMO_MODE
 end
 
 
-def clear_resque_queue(queue_name) Resque.redis.del("queue:#{queue_name}") end
+def queue_empty?(queue_name) Resque.size(queue_name) == 0 end
 
 STDOUT.sync = true if ENABLE_CLOCKWORK_OUTPUT
 STDOUT.reopen("/dev/null") unless ENABLE_CLOCKWORK_OUTPUT
