@@ -88,6 +88,13 @@ class Barkeep < Sinatra::Base
     nil
   end
 
+  # You can view log files from within the UI.
+  get "/admin/log/:file_name" do
+    next if params[:file_name].include?("..")
+    content_type "text/plain"
+    `tail -n 500 log/#{params[:file_name]}`
+  end
+
   helpers do
     def admin_page_breadcrumb(display_name)
       %Q(<div id="adminBreadcrumb"><a href="/admin">Admin</a> &raquo; #{display_name}</div>)
