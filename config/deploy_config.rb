@@ -11,7 +11,6 @@ set :user, "barkeep"
 # Concurrency setting given to foreman
 set :concurrency, "web=1,resque=4,cron=1"
 
-
 # When deploying, we must deploy the private credentials for the email user account we send emails from.
 # We do not want to check these into the repository, and so they should be stored in a file in
 # $BARKEEP_CREDENTIALS. It should be of the form:
@@ -57,4 +56,14 @@ Fezzik.destination :prod do
   include_options(common_options.merge({ unicorn_workers: 4 }))
   host "#{user}@#{hostname}", :deploy_user
   host "root@#{hostname}", :root_user
+end
+
+
+# Ensure every required environment var needed for deploy is present, either in the above config blocks or in
+# BARKEEP_CREDENTIALS.
+required_options = [:gmail_address, :gmail_password]
+required_options.each do |option|
+  next if Fezzik.environments[hostname][option]
+  puts "You haven't defined the env variable #{option}, which is needed for this deploy. See deploy_config.rb."
+  exit 1
 end
