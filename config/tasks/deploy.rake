@@ -11,7 +11,7 @@ namespace :fezzik do
     FileUtils.mkdir_p staging_dir
 
     # Use rsync to preserve executability and follow symlinks.
-    system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/ --exclude=.git/ --exclude=test/")
+    system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/ --exclude=/.git/")
     Terraform.write_dsl_file("#{staging_dir}/script/")
     Rake::Task["fezzik:evaluate_conf_file_templates"].invoke
   end
