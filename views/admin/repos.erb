@@ -53,7 +53,7 @@
 
     <% repos_hashes.each do |repo_hash| %>
       <tr>
-        <td><%= repo_hash[:grit_repo].name %></a></td>
+        <td><%= repo_hash[:grit_repo].name %></td>
         <td><%= repo_hash[:grit_repo].origin_url %></td>
         <td>
           <% grit_commit = repo_hash[:newest_commit] ? repo_hash[:newest_commit].grit_commit : nil %>
