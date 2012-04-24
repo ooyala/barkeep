@@ -12,7 +12,7 @@ def setup
   run_command("vagrant up")
   setup_ssh_config
   # Ensure no old packages are lingering around. This will avoid possible 404's when installing packages.
-  `ssh #{hostname} aptitude update`
+  run_command("ssh #{hostname} aptitude update -y > /dev/null")
 end
 
 def setup_ssh_config
@@ -48,9 +48,18 @@ end
 def run_command(command)
   require "open3"
   puts command
-  stdout, stderr, status = Open3.capture3(command)
-  raise %Q(The command "#{command}" failed: #{stderr}) unless status == 0
-  stdout
+  exit_status = nil
+  output = ""
+  Open3.popen3(command) do |stdin, stdout, stderr, wait_thread|
+    stdout.each do |line|
+      output << line
+      puts line
+    end
+    exit_status = wait_thread.value.to_i
+  end
+
+  raise %Q(The command "#{command}" failed.) unless exit_status == 0
+  output
 end
 
 setup()
