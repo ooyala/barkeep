@@ -53,6 +53,11 @@
       padding-left: 10px;
     }
     td:first-of-type { font-weight: bold; }
+    .commitSha {
+      display: inline-block;
+      width: 90px;
+    }
+    .commitDate { color: #777; }
   }
 
   #cloneForm {

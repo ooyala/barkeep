@@ -58,7 +58,8 @@
         <td>
           <% grit_commit = repo_hash[:newest_commit] ? repo_hash[:newest_commit].grit_commit : nil %>
           <% if grit_commit %>
-            <a href="<%= grit_commit.link %>"><%= grit_commit.id_abbrev %></a><br/>
+            <a href="<%= grit_commit.link %>" class="commitSha"><%= grit_commit.id_abbrev %></a>
+            <span class="commitDate"><%= grit_commit.date.to_pretty %></span><br/>
             <%= grit_commit.author %>
           <% end %>
         </td>
