@@ -64,7 +64,7 @@ namespace :fezzik do
   remote_task :symlink, :roles => [:deploy_user] do
     puts "Symlinking current to #{release_path}."
     run "cd #{deploy_to} && ln -fns #{release_path} current"
-    # Add a symlink to the current deploy in root's home directory, for convenience.
+    # Add a symlink to the current deploy in the deploy user's home directory, for convenience.
     run "rm ~/#{app} 2> /dev/null; ln -s #{current_path} ~/current"
   end
 
