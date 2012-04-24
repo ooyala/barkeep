@@ -16,7 +16,7 @@ StringFilter.define_filter :replace_shas_with_links do |str, repo_name|
   str.gsub(/(^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{40})/m) do
     repo = Regexp.last_match(3) || repo_name
     sha = Regexp.last_match(4)
-    "[#{sha[0..6]}](/commits/#{repo}/#{sha})"
+    " [#{sha[0..6]}](/commits/#{repo}/#{sha})"
   end
 end
 
