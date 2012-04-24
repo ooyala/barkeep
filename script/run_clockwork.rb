@@ -10,7 +10,7 @@ require "resque_jobs/delete_old_comments_by_demo_users"
 require "environment"
 
 # The output of clockwork is not very useful in development. Toggle when debugging Clockwork.
-ENABLE_CLOCKWORK_OUTPUT = (ENV["RACK_ENV"] == "production")
+ENABLE_CLOCKWORK_OUTPUT = (defined?(RACK_ENV) && RACK_ENV == "production")
 
 # We're enqueing Resque jobs to be performed instead of trying to actually perform the work here from within
 # the Clockwork process. This is recommended by the Clockwork maintainer. Since Clockwork is a
