@@ -64,7 +64,7 @@ class Barkeep < Sinatra::Base
     enable :logging
     set :show_exceptions, false
     set :dump_errors, false
-    set :session_secret, SESSION_SECRET if defined?(SESSION_SECRET)
+    set :session_secret, COOKIE_SESSION_SECRET if defined?(COOKIE_SESSION_SECRET)
 
     GitDiffUtils.setup(RedisManager.redis_instance)
 

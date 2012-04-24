@@ -28,4 +28,4 @@ ENABLE_READONLY_DEMO_MODE = true
 
 # If specified, this will be used as the session secret in development mode.
 # This prevents the session being cleared when sinatra reloads changes.
-SESSION_SECRET = "AssimilationSuccessful"
+COOKIE_SESSION_SECRET = "AssimilationSuccessful"

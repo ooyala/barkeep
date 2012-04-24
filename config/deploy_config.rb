@@ -17,6 +17,8 @@ set :concurrency, "web=1,resque=4,cron=1"
 #   Fezzik.destination :prod do
 #     Fezzik.env :gmail_address, "..."
 #     Fezzik.env :gmail_password, "..."
+#     # This secret is used to encrypt session information into cookies.
+#     Fezzik.env :cookie_session_secret, "a long, random, and secret string."
 #   end
 #
 if ENV.has_key?("BARKEEP_CREDENTIALS") && File.exist?(ENV["BARKEEP_CREDENTIALS"])
@@ -61,7 +63,7 @@ end
 
 # Ensure every required environment var needed for deploy is present, either in the above config blocks or in
 # BARKEEP_CREDENTIALS.
-required_options = [:gmail_address, :gmail_password]
+required_options = [:gmail_address, :gmail_password, :cookie_session_secret]
 required_options.each do |option|
   next if Fezzik.environments[hostname][option]
   puts "You haven't defined the env variable #{option}, which is needed for this deploy. See deploy_config.rb."
