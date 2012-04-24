@@ -22,18 +22,23 @@ ensure_file("deploy/system_setup_files/.bashrc", "#{ENV['HOME']}/.bashrc")
 
 ensure_rbenv_ruby("1.9.2-p290")
 
+ensure_run_once("nginx site-enabled has correct permissions") do
+  shell "sudo chgrp admin -R /etc/nginx/sites-enabled", :silent => true
+  shell "sudo chmod g+w -R /etc/nginx/sites-enabled", :silent => true
+end
+
 ensure_file("deploy/system_setup_files/nginx_site.conf", "/etc/nginx/sites-enabled/barkeep.conf") do
-  `/etc/init.d/nginx restart`
+  `sudo /etc/init.d/nginx restart`
 end
 
 dep "configure nginx" do
   met? { !File.exists?("/etc/nginx/sites-enabled/default") }
   meet do
     # Ensure nginx gets started on system boot. It's still using non-Upstart init scripts.
-    `update-rc.d nginx defaults`
+    `sudo update-rc.d nginx defaults`
     # This default site configuration is not useful.
-    FileUtils.rm("/etc/nginx/sites-enabled/default")
-    `/etc/init.d/nginx restart`
+    shell "sudo rm /etc/nginx/sites-enabled/default"
+    `sudo /etc/init.d/nginx restart`
   end
 end
 
@@ -64,11 +69,11 @@ end
 ensure_package("python-setuptools")
 dep "pip" do
   met? { in_path? "pip" }
-  meet { shell "easy_install pip" }
+  meet { shell "sudo easy_install pip" }
 end
 dep "pygments" do
   met? { in_path? "pygmentize" }
-  meet { shell "pip install pygments" }
+  meet { shell "sudo pip install pygments" }
 end
 
 # Get a more recent node than the very out-of-date one Ubuntu will install by default (this is necessary for
