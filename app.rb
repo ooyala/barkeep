@@ -92,7 +92,8 @@ class Barkeep < Sinatra::Base
 
   configure :production do
     enable :logging
-    MetaRepo.logger.level = Logger::INFO
+    set :session_secret, COOKIE_SESSION_SECRET if defined?(COOKIE_SESSION_SECRET)
+    Logging.logger.level = Logger::INFO
     GitDiffUtils.setup(RedisManager.redis_instance)
   end
 
