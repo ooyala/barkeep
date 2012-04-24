@@ -6,9 +6,11 @@ require "pathological"
 require "lib/script_environment"
 require "resque"
 require "resque_jobs/db_commit_ingest"
+require "timeout"
 
 class FetchCommits
   @queue = :fetch_commits
+  FETCH_TIMEOUT = 10 # The per repo timeout, in seconds.
 
   def self.perform
     logger = Logging.logger = Logging.create_logger("fetch_commits.log")
@@ -28,6 +30,7 @@ class FetchCommits
       next unless File.exists?(repo.path)
       db_repo = GitRepo.first(:name => repo.name)
       is_first_time_import = db_repo.commits_dataset.first.nil?
+      # Logging.logger.debug("Fetching #{repo.name}")
       remotes_to_ingest = fetch_commits_for_repo(repo)
 
       # We should ingest commits from all remotes (not just the ones that have changed) the first time a
@@ -46,15 +49,33 @@ class FetchCommits
     grit_repo.remotes.each { |remote| head_of_remote[remote.name] = remote.commit.sha }
 
     begin
-      grit_repo.git.fetch
-    rescue Grit::Git::GitTimeout => e
-      Logging.logger.error "Timed out attempting to fetch new commits in the repo '#{grit_repo.name}'."
+      # Shell out here instead of using grit_repo.git.fetch, because running git fetch through the shell
+      # gives far more useful error information and actually fails if the fetch fails.
+      Timeout::timeout(FETCH_TIMEOUT) { run_shell("cd '#{grit_repo.path}' && git fetch") }
+    rescue Timeout::Error
+      Logging.logger.error "Timed out while fetching commits in the repo '#{grit_repo.name}'"
+    rescue StandardError => e
+      Logging.logger.error "Unable to fetch new commits in the repo '#{grit_repo.name}'."
     end
 
     # Note: invoking grit_repo.remotes refreshes the remotes, so "remote.commit" will be fresh.
     modified_remotes = grit_repo.remotes.select { |remote| head_of_remote[remote.name] != remote.commit.sha }
     modified_remotes.map(&:name)
   end
+
+  # Runs a command and progressively streams its output and stderr. Throws an error if exit status is nonzero.
+  def self.run_shell(command)
+    require "open3"
+    exit_status = nil
+    Open3.popen3(command) do |stdin, stdout, stderr, wait_thread|
+      stdout.each { |line| Logging.logger.info line.strip }
+      stderr.each { |line| Logging.logger.info line.strip }
+      exit_status = wait_thread.value.to_i
+    end
+    raise %Q(The command "#{command}" failed.) unless exit_status == 0
+    nil
+  end
+
 end
 
 if $0 == __FILE__
