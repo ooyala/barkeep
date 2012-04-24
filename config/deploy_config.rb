@@ -39,7 +39,8 @@ common_options = {
   openid_providers: "https://www.google.com/accounts/o8/ud",
   barkeep_hostname: "barkeep",
   repos_root: "#{deploy_to}/repos",
-  unicorn_pid_file: "#{deploy_to}/unicorn.pid"
+  unicorn_pid_file: "#{deploy_to}/unicorn.pid",
+  rack_env: "production"
 }
 
 def include_options(options) options.each { |key, value| Fezzik.env key, value } end
