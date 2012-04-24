@@ -1,6 +1,6 @@
 /dev.db
 /tmp/*
-/log/*
+/log/*.log
 /dump.rdb
 /.vagrant
 .sass-cache
