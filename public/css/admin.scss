@@ -46,6 +46,7 @@
     border: 1px dashed #333;
     display: none;
   }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -54,12 +55,27 @@
       text-align: left;
       padding-left: 10px;
     }
+
     td:first-of-type { font-weight: bold; }
+
     .commitSha {
       display: inline-block;
       width: 90px;
     }
     .commitDate { color: #777; }
+
+    td:last-of-type {
+      opacity: 0.3;
+      &:hover { opacity: 1.0; }
+    }
+
+    .trash {
+      margin-left: 10px;
+      width: 20px;
+      height: 25px;
+      cursor: pointer;
+      background: url(/images/trash.png) no-repeat;
+    }
   }
 
   #cloneForm {
