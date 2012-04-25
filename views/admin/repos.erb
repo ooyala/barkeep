@@ -6,11 +6,12 @@
 
 <script>
   $(document).ready(function() {
+    var showConfirmationMessage = function(message) {
+      $("#confirmationMessage").show();
+      $("#confirmationMessage").html(message);
+    };
+
     $("button#clone").click(function() {
-      var showConfirmationMessage = function(message) {
-        $("#confirmationMessage").show();
-        $("#confirmationMessage").html(message);
-      };
       var repoUrl = $("#newRepoUrl").val();
       $.ajax({
         type: "post",
@@ -20,6 +21,24 @@
         success: function() { showConfirmationMessage(repoUrl + " has been scheduled to be cloned.") },
         error: function(response) { showConfirmationMessage(response.responseText); }
       });
+    });
+
+    $(".trash").click(function(e) {
+      var repoRow = $(e.target).closest("tr");
+      var repoName = repoRow.find("td:nth-of-type(1)").html();
+      var repoUrl = repoRow.find("td:nth-of-type(2)").html();
+      if(confirm("Are you sure you want to delete this repository?\n\n" + repoName + "\n" + repoUrl)) {
+        $.ajax({
+          type: "post",
+          url: "/admin/repos/delete_repo",
+          data: { name: repoName },
+          success: function() {
+            repoRow.remove();
+            showConfirmationMessage(repoName + " has been deleted.");
+          },
+          error: function(response) { showConfirmationMessage(response.responseText); }
+        })
+      }
     });
   });
 </script>

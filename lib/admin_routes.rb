@@ -3,6 +3,7 @@
 #
 require "resque_jobs/clone_new_repo"
 require "addressable/uri"
+require "fileutils"
 
 class Barkeep < Sinatra::Base
   before "/admin*" do
@@ -85,6 +86,13 @@ class Barkeep < Sinatra::Base
     repo_path = File.join(REPOS_ROOT, repo_name)
     halt 400, "There is already a folder named \"#{repo_name}\" in #{REPOS_ROOT}." if File.exists?(repo_path)
     Resque.enqueue(CloneNewRepo, repo_name, params[:url])
+    nil
+  end
+
+  post "/admin/repos/delete_repo" do
+    repo = GitRepo.first(:name => params[:name])
+    FileUtils.rm_rf(repo.path)
+    repo.destroy
     nil
   end
 

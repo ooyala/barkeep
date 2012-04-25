@@ -12,7 +12,7 @@ class Commit < Sequel::Model
   one_to_many :comments
   many_to_one :approved_by_user, :class => User
 
-  add_association_dependencies :comments => :destroy, :commit_files => :delete
+  add_association_dependencies :comments => :destroy, :commit_files => :destroy
 
   add_filter(:message) { |message| StringFilter.escape_html(message) }
   add_filter(:message) do |message, commit|
