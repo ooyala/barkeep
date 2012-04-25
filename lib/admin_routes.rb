@@ -2,6 +2,7 @@
 # Sinatra routes which implement the Admin pages.
 #
 require "resque_jobs/clone_new_repo"
+require "resque_jobs/delete_repo"
 require "addressable/uri"
 require "fileutils"
 
@@ -90,9 +91,7 @@ class Barkeep < Sinatra::Base
   end
 
   post "/admin/repos/delete_repo" do
-    repo = GitRepo.first(:name => params[:name])
-    FileUtils.rm_rf(repo.path)
-    repo.destroy
+    Resque.enqueue(DeleteRepo, params[:name])
     nil
   end
 

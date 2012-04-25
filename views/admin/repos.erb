@@ -32,10 +32,7 @@
           type: "post",
           url: "/admin/repos/delete_repo",
           data: { name: repoName },
-          success: function() {
-            repoRow.remove();
-            showConfirmationMessage(repoName + " has been deleted.");
-          },
+          success: function() { showConfirmationMessage(repoName + " has been scheduled for deletion."); },
           error: function(response) { showConfirmationMessage(response.responseText); }
         })
       }
