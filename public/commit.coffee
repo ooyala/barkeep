@@ -189,7 +189,7 @@ window.Commit =
       $(visibleLines[newIndex]).addClass("selected")
     scroll = if next then "bottom" else "top"
     window.clearTimeout(@currentlyScrollingTimer) if @currentlyScrollingTimer?
-    @currentlyScrollingTimer = Util.setTimeout 50, => @currentlyScrollingTimer = null
+    @currentlyScrollingTimer = Util.setTimeout 300, => @currentlyScrollingTimer = null
     Util.scrollWithContext(".diffLine.selected", scroll)
 
   scrollChunk: (next = true) ->
