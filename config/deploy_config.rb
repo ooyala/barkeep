@@ -10,23 +10,6 @@ set :user, "barkeep"
 # Concurrency setting given to foreman
 set :concurrency, "web=1,resque=4,cron=1"
 
-# When deploying, we must deploy the private credentials for the email user account we send emails from.
-# We do not want to check these into the repository, and so they should be stored in a file in
-# $BARKEEP_CREDENTIALS. It should be of the form:
-#   Fezzik.destination :prod do
-#     Fezzik.env :gmail_address, "..."
-#     Fezzik.env :gmail_password, "..."
-#     # This secret is used to encrypt session information into cookies.
-#     Fezzik.env :cookie_session_secret, "a long, random, and secret string."
-#   end
-#
-if ENV.has_key?("BARKEEP_CREDENTIALS") && File.exist?(ENV["BARKEEP_CREDENTIALS"])
-  load ENV["BARKEEP_CREDENTIALS"]
-else
-  puts "Unable to locate the file $BARKEEP_CREDENTIALS. You need this to deploy. See deploy_config.rb."
-  exit 1
-end
-
 common_options = {
   barkeep_port: 8040,
   db_location: "DBI:Mysql:barkeep:localhost",
@@ -60,6 +43,22 @@ Fezzik.destination :prod do
   host "root@#{hostname}", :root_user
 end
 
+# When deploying, we must deploy the private credentials for the email user account we send emails from.
+# We do not want to check these into the repository, and so they should be stored in a file in
+# $BARKEEP_CREDENTIALS. It should be of the form:
+#   Fezzik.destination :prod do
+#     Fezzik.env :gmail_address, "..."
+#     Fezzik.env :gmail_password, "..."
+#     # This secret is used to encrypt session information into cookies.
+#     Fezzik.env :cookie_session_secret, "a long, random, and secret string."
+#   end
+#
+if ENV.has_key?("BARKEEP_CREDENTIALS") && File.exist?(ENV["BARKEEP_CREDENTIALS"])
+  load ENV["BARKEEP_CREDENTIALS"]
+else
+  puts "Unable to locate the file $BARKEEP_CREDENTIALS. You need this to deploy. See deploy_config.rb."
+  exit 1
+end
 
 # Ensure every required environment var needed for deploy is present, either in the above config blocks or in
 # BARKEEP_CREDENTIALS.
