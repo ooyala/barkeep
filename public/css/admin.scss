@@ -67,19 +67,14 @@
     }
     .commitDate { color: #777; }
 
-    td:last-of-type {
-      .trash {
-        opacity: 0.3;
-        &:hover { opacity: 1.0; }
-      }
-    }
-
     .trash {
-      margin-left: 10px;
+      margin-left: 13px;
       width: 20px;
       height: 25px;
       cursor: pointer;
       background: url(/images/trash.png) no-repeat;
+      opacity: 0.3;
+      &:hover { opacity: 1.0; }
     }
   }
 
