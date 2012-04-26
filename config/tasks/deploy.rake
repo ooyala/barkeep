@@ -17,6 +17,9 @@ namespace :fezzik do
     system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/ --exclude=/.git/ --exclude=log/*.log")
     Terraform.write_dsl_file("#{staging_dir}/script/")
     Rake::Task["fezzik:evaluate_conf_file_templates"].invoke
+    # Write out a bit of useful deploy-time info
+    `./deploy/write_git_info.sh > #{staging_dir}/git_deploy_info.txt`
+    `git log --pretty=%H > #{staging_dir}/all_commits.txt`
   end
 
   # We setting up a system for deploy, we fill in some conf file templates (like nginx.conf) using env vars
