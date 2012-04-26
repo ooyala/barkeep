@@ -31,6 +31,8 @@ window.Commit =
     $("#commit .file").on("mouseenter", ".contextExpander", @expandContextHoverIn)
     $("#commit .file").on("mouseleave", ".contextExpander", @expandContextHoverOut)
 
+    @currentlyScrollingTimer = null
+
     # Put the approval overlay message div on the page.
     $("body").append $(Snippets.approvalOverlay)
     approvalPopup = $(".approvalPopup.overlay .container")
@@ -151,9 +153,11 @@ window.Commit =
       else lineTop >= windowTop and lineBottom <= windowBottom
 
   clearSelectedLine: ->
+    return if @currentlyScrollingTimer?
     $(".diffLine.selected").removeClass("selected")
 
   selectLine: (event) ->
+    return if @currentlyScrollingTimer?
     target = $(event.currentTarget)
     return if target.hasClass("selected")
     @clearSelectedLine()
@@ -184,8 +188,9 @@ window.Commit =
       newIndex = if next then index + 1 else index - 1
       $(visibleLines[newIndex]).addClass("selected")
     scroll = if next then "bottom" else "top"
+    window.clearTimeout(@currentlyScrollingTimer) if @currentlyScrollingTimer?
+    @currentlyScrollingTimer = Util.setTimeout 50, => @currentlyScrollingTimer = null
     Util.scrollWithContext(".diffLine.selected", scroll)
-
 
   scrollChunk: (next = true) ->
     @scrollSelector(".diffLine.chunk-start", next)
