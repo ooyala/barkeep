@@ -68,8 +68,10 @@
     .commitDate { color: #777; }
 
     td:last-of-type {
-      opacity: 0.3;
-      &:hover { opacity: 1.0; }
+      .trash {
+        opacity: 0.3;
+        &:hover { opacity: 1.0; }
+      }
     }
 
     .trash {
