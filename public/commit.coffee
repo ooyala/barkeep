@@ -165,8 +165,10 @@ window.Commit =
     if @isSideBySide
       visibleLines = visibleLines.filter("[replace='false']")
     selectedLine.removeClass("selected")
-    select = _(visibleLines).detect((x) => @lineVisible(x,"top"))
-    $(select).addClass("selected")
+    for line in visibleLines
+      if @lineVisible(line, "top")
+        $(line).addClass("selected")
+        break
 
   selectNextLine: (next = true) ->
     selectedLine = $(".diffLine.selected")
@@ -176,7 +178,7 @@ window.Commit =
     if selectedLine.length == 0 or not @lineVisible(selectedLine)
       @selectNextVisibleLine()
     else
-      index = _(visibleLines).indexOf(selectedLine[0])
+      index = visibleLines.index(selectedLine[0])
       return if (not next and index == 0) or (next and index == (visibleLines.length - 1))
       selectedLine.removeClass("selected")
       newIndex = if next then index + 1 else index - 1
