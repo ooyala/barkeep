@@ -1,7 +1,11 @@
+@import "mixins";
+
 #admin {
+  table { border-collapse: collapse; }
+
   td {
     padding: 10px;
-    border: 1px solid #e0e0e0;
+    border: $standardBorder;
   }
 
   #failedEmails { width: 100%; }
@@ -25,7 +29,7 @@
     td {
       font-size: 12px;
       padding: 10px;
-      border: 1px solid #e0e0e0;
+      border: $standardBorder;
     }
   }
   input[type="radio"] {
@@ -36,7 +40,6 @@
 
   label { cursor: pointer; }
 }
-
 
 #repos {
   #confirmationMessage {
