@@ -28,8 +28,8 @@ window.Commit =
     $(".expandLink.all").click (e) => @expandContextAll(e)
     $(".expandLink.below").click (e) => @expandContext(e, 10, "below")
     $(".expandLink.above").click (e) => @expandContext(e, 10, "above")
-    $(document).on("mouseenter", ".expandEllipsis", @expandContextHoverIn)
-    $(document).on("mouseleave", ".contextExpander", @expandContextHoverOut)
+    $("#commit .file").on("mouseenter", ".contextExpander", @expandContextHoverIn)
+    $("#commit .file").on("mouseleave", ".contextExpander", @expandContextHoverOut)
 
     # Put the approval overlay message div on the page.
     $("body").append $(Snippets.approvalOverlay)
