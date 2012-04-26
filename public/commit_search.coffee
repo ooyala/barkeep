@@ -41,6 +41,8 @@ window.CommitSearch =
       source: (request, callback) => @smartSearch.autocomplete(request.term, callback),
       open: (event, ui) => @autocompleteOpen = true
       close: (event, ui) => @autocompleteOpen = false
+      autoFocus: true
+      delay: 0
 
     $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
