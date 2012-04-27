@@ -108,6 +108,9 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
         $ sudo ./install.sh
         $ rbenv install 1.9.2-p290
 
+        (on Mac, setup your 1.9.2-p290 with your Macports SSL if you've installed openssl through Macports)
+        CONFIGURE_OPTS="--with-openssl-dir=/opt/local" rbenv install 1.9.2-p290
+
 1. Install [node.js](http://nodejs.org/):
 
         $ wget http://nodejs.org/dist/node-v0.4.12.tar.gz
