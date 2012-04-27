@@ -7,6 +7,9 @@ Vagrant::Config.run do |config|
   # computers to access the VM, whereas host only networking does not.
   config.vm.forward_port 8040, 8080
 
+  # More memory than the default, since we're running a lot of stuff (1GB)
+  config.vm.customize ["modifyvm", :id, "--memory", 1024]
+
   # Have ssh be accessible through port 2250. Hard coding this so we don't collide with other vagrant vms.
   config.vm.forward_port 22, 2250
   config.ssh.port = 2250
