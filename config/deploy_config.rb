@@ -7,7 +7,7 @@ set :deploy_to, "/opt/ooyala/#{app}"
 set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :local_path, Dir.pwd
 set :user, "barkeep"
-# Concurrency setting given to foreman
+# The concurrency setting given to foreman.
 set :concurrency, "web=1,resque=4,cron=1"
 
 common_options = {

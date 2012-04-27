@@ -31,7 +31,7 @@ namespace :test do
 end
 
 namespace :resque do
-  # The resque:work task is defined by the Resque gem. Before running it, we need to require the workers.
+  # The resque:work task is defined by the Resque gem. Before running it, we need to require the worker code.
   task :work => :require_resque_tasks
 
   # These tasks must be defined for Resque to be able to run tasks on these queues.
