@@ -1,8 +1,10 @@
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
+require "lib/resque_job_helper"
 
 class CloneNewRepo
+  include ResqueJobHelper
   @queue = :clone_new_repo
 
   # We're willing to spend up to 5 minutes to clone a repo. This can be necessary for giant repos or
@@ -10,9 +12,7 @@ class CloneNewRepo
   TIMEOUT = 5 * 60
 
   def self.perform(repo_name, repo_url)
-    logger = Logging.logger = Logging.create_logger("clone_new_repo.log")
-    MetaRepo.logger = logger
-
+    setup
     # This can take awhile if the repo is very large.
     repo_path = File.join(REPOS_ROOT, repo_name)
     if File.exists?(repo_name)

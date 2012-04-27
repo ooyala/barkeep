@@ -11,10 +11,7 @@ class DeliverCommitEmails
   @queue = :deliver_commit_emails
 
   def self.perform(repo_name, commit_sha)
-    logger = Logging.logger = Logging.create_logger("deliver_commit_emails.log")
-    MetaRepo.logger = logger
-
-    reconnect_to_database
+    setup
     MetaRepo.instance.scan_for_new_repos
 
     commit = MetaRepo.instance.db_commit(repo_name, commit_sha)

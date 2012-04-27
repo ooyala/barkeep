@@ -17,10 +17,7 @@ class BatchCommentEmails
 
   # - filter_by_user_id: an optional parameter which is supplied by the integration tests only.
   def self.perform(filter_by_user_id = nil)
-    logger = Logging.logger = Logging.create_logger("batch_comment_emails.log")
-    MetaRepo.logger = logger
-
-    reconnect_to_database
+    setup
 
     comments_dataset = Comment.filter(:has_been_emailed => false)
     comments_dataset = comments_dataset.filter(:user_id => filter_by_user_id) if filter_by_user_id

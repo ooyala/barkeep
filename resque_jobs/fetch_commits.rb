@@ -15,12 +15,8 @@ class FetchCommits
   FETCH_TIMEOUT = 10 # The per repo timeout, in seconds.
 
   def self.perform
-    logger = Logging.logger = Logging.create_logger("fetch_commits.log")
-    MetaRepo.logger = logger
-
-    reconnect_to_database
+    setup
     MetaRepo.instance.scan_for_new_repos
-
     fetch_commits(MetaRepo.instance.repos)
   end
 

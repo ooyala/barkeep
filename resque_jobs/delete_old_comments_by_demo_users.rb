@@ -12,10 +12,7 @@ class DeleteOldCommentsByDemoUsers
   @queue = :delete_old_comments_by_demo_users
 
   def self.perform
-    logger = Logging.logger = Logging.create_logger("delete_old_comments_by_demo_users.log")
-
-    reconnect_to_database
-
+    setup
     old_comments = Time.now - COMMENT_EXPIRATION
     demo_users = User.filter(:permission => "demo").select(:id).all # There should only be one demo user.
     return if demo_users.empty?

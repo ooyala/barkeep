@@ -11,10 +11,7 @@ class DeliverCommentEmails
   @queue = :deliver_comment_emails
 
   def self.perform(comment_ids)
-    logger = Logging.logger = Logging.create_logger("deliver_comment_emails.log")
-    MetaRepo.logger = logger
-    reconnect_to_database
-
+    setup
     MetaRepo.instance.scan_for_new_repos
 
     comments = Comment.filter(:id => comment_ids).all

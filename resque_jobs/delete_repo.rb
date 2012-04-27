@@ -11,11 +11,7 @@ class DeleteRepo
   TIMEOUT = 5 * 60
 
   def self.perform(repo_name)
-    logger = Logging.logger = Logging.create_logger("delete_repo.log")
-    MetaRepo.logger = logger
-
-    reconnect_to_database
-
+    setup
     repo = GitRepo.first(:name => repo_name)
     raise message "Error deleting repo: #{repo_name} does not exist in the database." if repo.nil?
 

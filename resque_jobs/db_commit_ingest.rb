@@ -15,12 +15,7 @@ class DbCommitIngest
 
   # Called by Resque.
   def self.perform(repo_name, remote_name)
-    logger = Logging.logger = Logging.create_logger("db_commit_ingest.log")
-    logger.info "Importing new commits from #{repo_name}:#{remote_name} into the database."
-    MetaRepo.logger = logger
-
-    reconnect_to_database
-
+    setup
     MetaRepo.instance.scan_for_new_repos
 
     # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
