@@ -4,16 +4,17 @@
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
+require "lib/resque_job_helper"
 
 class DeleteOldCommentsByDemoUsers
+  include ResqueJobHelper
   COMMENT_EXPIRATION = 60 * 60 # one hour
   @queue = :delete_old_comments_by_demo_users
 
   def self.perform
     logger = Logging.logger = Logging.create_logger("delete_old_comments_by_demo_users.log")
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
+    reconnect_to_database
 
     old_comments = Time.now - COMMENT_EXPIRATION
     demo_users = User.filter(:permission => "demo").select(:id).all # There should only be one demo user.

@@ -9,8 +9,10 @@ require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
 require "resque_jobs/deliver_comment_emails"
+require "lib/resque_job_helper"
 
 class BatchCommentEmails
+  include ResqueJobHelper
   @queue = :batch_comment_emails
 
   # - filter_by_user_id: an optional parameter which is supplied by the integration tests only.
@@ -18,8 +20,7 @@ class BatchCommentEmails
     logger = Logging.logger = Logging.create_logger("batch_comment_emails.log")
     MetaRepo.logger = logger
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
+    reconnect_to_database
 
     comments_dataset = Comment.filter(:has_been_emailed => false)
     comments_dataset = comments_dataset.filter(:user_id => filter_by_user_id) if filter_by_user_id

@@ -7,8 +7,10 @@ require "pathological"
 require "lib/script_environment"
 require "resque"
 require "set"
+require "lib/resque_job_helper"
 
 class DbCommitIngest
+  include ResqueJobHelper
   @queue = :db_commit_ingest
 
   # Called by Resque.
@@ -16,10 +18,10 @@ class DbCommitIngest
     logger = Logging.logger = Logging.create_logger("db_commit_ingest.log")
     logger.info "Importing new commits from #{repo_name}:#{remote_name} into the database."
     MetaRepo.logger = logger
-    MetaRepo.instance.scan_for_new_repos
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
+    reconnect_to_database
+
+    MetaRepo.instance.scan_for_new_repos
 
     # A value of 200 is not so useful when we're importing single new commits, but really useful when we're
     # importing a brand new repository. Setting this page size to 2,000 will result in a stack overflow --

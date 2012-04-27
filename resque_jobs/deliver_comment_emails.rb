@@ -2,19 +2,20 @@
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
+require "lib/resque_job_helper"
 
 # NOTE(philc): This task can take up to 60 seconds, because it must scan through all saved searches to build
 # the recipients list for an email. This is expensive at the moment.
 class DeliverCommentEmails
+  include ResqueJobHelper
   @queue = :deliver_comment_emails
 
   def self.perform(comment_ids)
     logger = Logging.logger = Logging.create_logger("deliver_comment_emails.log")
     MetaRepo.logger = logger
-    MetaRepo.instance.scan_for_new_repos
+    reconnect_to_database
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
+    MetaRepo.instance.scan_for_new_repos
 
     comments = Comment.filter(:id => comment_ids).all
     return if comments.empty?

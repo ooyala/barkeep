@@ -2,17 +2,19 @@
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
+require "lib/resque_job_helper"
 
 class DeliverReviewRequestEmails
+  include ResqueJobHelper
   @queue = :deliver_review_request_emails
 
   def self.perform(repo_name, commit_sha, requester_email, emails)
     logger = Logging.logger = Logging.create_logger("deliver_review_request_emails.log")
     MetaRepo.logger = logger
+
+    reconnect_to_database
     MetaRepo.instance.scan_for_new_repos
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
     commit = MetaRepo.instance.db_commit(repo_name, commit_sha)
     requester = User.find(:email => requester_email)
 

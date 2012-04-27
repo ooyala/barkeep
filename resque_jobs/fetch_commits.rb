@@ -7,18 +7,19 @@ require "lib/script_environment"
 require "resque"
 require "resque_jobs/db_commit_ingest"
 require "timeout"
+require "lib/resque_job_helper"
 
 class FetchCommits
+  include ResqueJobHelper
   @queue = :fetch_commits
   FETCH_TIMEOUT = 10 # The per repo timeout, in seconds.
 
   def self.perform
     logger = Logging.logger = Logging.create_logger("fetch_commits.log")
     MetaRepo.logger = logger
-    MetaRepo.instance.scan_for_new_repos
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
+    reconnect_to_database
+    MetaRepo.instance.scan_for_new_repos
 
     fetch_commits(MetaRepo.instance.repos)
   end

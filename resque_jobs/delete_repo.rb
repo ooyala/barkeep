@@ -1,8 +1,10 @@
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
+require "lib/resque_job_helper"
 
 class DeleteRepo
+  include ResqueJobHelper
   @queue = :delete_repo
 
   # We're willing to spend up to 5 minutes deleting a repo. This can be necessary for giant repos.
@@ -11,6 +13,8 @@ class DeleteRepo
   def self.perform(repo_name)
     logger = Logging.logger = Logging.create_logger("delete_repo.log")
     MetaRepo.logger = logger
+
+    reconnect_to_database
 
     repo = GitRepo.first(:name => repo_name)
     raise message "Error deleting repo: #{repo_name} does not exist in the database." if repo.nil?

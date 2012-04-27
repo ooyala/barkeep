@@ -2,19 +2,20 @@
 require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
+require "lib/resque_job_helper"
 
 # NOTE(philc): This task can take up to 60 seconds, because it must scan through all saved searches to build
 # the recipients list for an email. This is expensive at the moment.
 class DeliverCommitEmails
+  include ResqueJobHelper
   @queue = :deliver_commit_emails
 
   def self.perform(repo_name, commit_sha)
     logger = Logging.logger = Logging.create_logger("deliver_commit_emails.log")
     MetaRepo.logger = logger
-    MetaRepo.instance.scan_for_new_repos
 
-    # Reconnect to the database if our connection has timed out.
-    Comment.select(1).first rescue nil
+    reconnect_to_database
+    MetaRepo.instance.scan_for_new_repos
 
     commit = MetaRepo.instance.db_commit(repo_name, commit_sha)
     if commit.nil?

@@ -5,13 +5,14 @@ require "bundler/setup"
 require "pathological"
 require "lib/script_environment"
 require "resque"
+require "lib/resque_job_helper"
 
 class GenerateTaggedDiffs
+  include ResqueJobHelper
   @queue = :generate_tagged_diffs
 
   def self.perform(repo_name, commit_sha)
-    # Reconnect to the database if our connection has timed out.
-    GitRepo.select(1).first rescue nil
+    reconnect_to_database
     GitDiffUtils.setup(RedisManager.redis_instance)
     MetaRepo.instance.scan_for_new_repos
     grit_commit = MetaRepo.instance.get_grit_repo(repo_name).commits(commit_sha, 1).first
