@@ -62,7 +62,7 @@ GEM
     nokogiri (1.5.0)
     open4 (1.3.0)
     pathological (0.2.4)
-    pinion (0.1.3)
+    pinion (0.1.4)
       rack (~> 1.0)
     polyglot (0.3.2)
     pony (1.3)
@@ -164,7 +164,7 @@ DEPENDENCIES
   mysql
   nokogiri
   pathological
-  pinion (~> 0.1.3)
+  pinion (~> 0.1.4)
   pony
   pry
   pygments.rb

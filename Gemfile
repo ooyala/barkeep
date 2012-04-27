@@ -13,7 +13,7 @@ gem "resque"
 gem "sass"
 
 # For managing compiling and caching assets
-gem "pinion", "~> 0.1.3"
+gem "pinion", "~> 0.1.4"
 
 # We're pulling in our own grit fork with bugfixes.
 gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "bf141c49c392781a3a683c06b77d8c3b782e7985"
