@@ -52,9 +52,6 @@ class Barkeep < Sinatra::Base
     super()
   end
 
-  # Quick logging hack -- Sinatra 1.3 will expose logger inside routes.
-  Logging.logger = Logger.new(STDOUT)
-
   # Pinion will handle all static routes
   disable :static
   set :views, "views"
@@ -94,9 +91,8 @@ class Barkeep < Sinatra::Base
   end
 
   configure :production do
-    enable :logging
+    set :logging, Logger::INFO
     set :session_secret, COOKIE_SESSION_SECRET if defined?(COOKIE_SESSION_SECRET)
-    Logging.logger.level = Logger::INFO
     GitDiffUtils.setup(RedisManager.redis_instance)
   end
 
