@@ -10,6 +10,8 @@ class GenerateTaggedDiffs
   @queue = :generate_tagged_diffs
 
   def self.perform(repo_name, commit_sha)
+    # Reconnect to the database if our connection has timed out.
+    GitRepo.select(1).first rescue nil
     GitDiffUtils.setup(RedisManager.redis_instance)
     MetaRepo.instance.scan_for_new_repos
     grit_commit = MetaRepo.instance.get_grit_repo(repo_name).commits(commit_sha, 1).first
