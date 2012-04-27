@@ -2,4 +2,4 @@
 # In production, this file is used as a basis for generating Upstart daemon scripts.
 web: bin/run_app.bash
 cron: bundle exec script/run_clockwork.rb
-resque: bundle exec rake resque:work QUEUE=*
+resque: script/run_resque.rb
