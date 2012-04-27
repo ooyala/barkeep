@@ -8,6 +8,7 @@ require "coffee-script"
 require "nokogiri"
 require "open-uri"
 require "methodchain"
+require "pinion"
 require "redis"
 require "sass"
 
@@ -37,8 +38,7 @@ require "resque_jobs/deliver_review_request_emails.rb"
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
 LOGIN_WHITELIST_ROUTES = [
-  /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^statusz/, /^api\/.*/,
-  /^.*\.css/, /^.*\.js/, /^.*\.woff/
+  /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^statusz/, /^api\/.*/
 ]
 
 # OPENID_PROVIDERS is a string env variable. It's a comma-separated list of OpenID providers.
@@ -47,13 +47,16 @@ OPENID_PROVIDERS_ARRAY = OPENID_PROVIDERS.split(",")
 class Barkeep < Sinatra::Base
   attr_accessor :current_user
 
-  # Cache for static compiled files (LESS css, coffeescript). In development, we want to only render when the
-  # files have changed.
-  $compiled_cache = Hash.new { |hash, key| hash[key] = {} }
+  def initialize(pinion)
+    @pinion = pinion
+    super()
+  end
+
   # Quick logging hack -- Sinatra 1.3 will expose logger inside routes.
   Logging.logger = Logger.new(STDOUT)
 
-  set :public_folder, "public"
+  # Pinion will handle all static routes
+  disable :static
   set :views, "views"
   enable :sessions
 
@@ -425,29 +428,6 @@ class Barkeep < Sinatra::Base
     redirect "/stats"
   end
 
-  # Serve CSS written in the "Less" DSL by first compiling it. We cache the output of the compilation and only
-  # recompile it the source CSS file has changed.
-  get "/css/:filename.css" do
-    next if params[:filename].include?(".")
-    asset_path = "public/css/#{params[:filename]}.scss"
-    content_type "text/css", :charset => "utf-8"
-    # Set the last modified to the most recently modified less file in the directory, as a quick way to get
-    # around the problem of included files not working with livecss.
-    last_modified Dir.glob(File.join(File.dirname(asset_path), "*.scss")).map { |f| File.mtime(f) }.max
-    compile_asset_from_cache(asset_path) do |filename|
-      Sass::Engine.new(File.read(filename), :syntax => :scss, :load_paths => ["public/css"]).render()
-    end
-  end
-
-  # Render and cache coffeescript when we request the JS of the same name
-  get "/js/:filename.js" do
-    next if params[:filename].include?(".")
-    asset_path = "public/#{params[:filename]}.coffee"
-    content_type "application/javascript", :charset => "utf-8"
-    last_modified File.mtime(asset_path)
-    compile_asset_from_cache(asset_path) { |filename| CoffeeScript.compile(File.read(filename)).chomp }
-  end
-
   get "/profile/:id" do
     user = User[params[:id]]
     halt 404 unless user
@@ -515,21 +495,6 @@ class Barkeep < Sinatra::Base
   private
 
   def logged_in?() self.current_user && !self.current_user.demo? end
-
-  # Fetch a file from the cache unless its MD5 has changed. Use a block to specify a transformation to be
-  # performed on the asset before caching (e.g. compiling LESS css).
-  def compile_asset_from_cache(asset_path, &block)
-    # TODO(philc): We should not check the file's md5 more than once when we're running in production mode.
-    block.yield(asset_path)
-    #contents = File.read(asset_path)
-    #md5 = Digest::MD5.hexdigest(contents)
-    #cached_asset = $compiled_cache[asset_path]
-    #if md5 != cached_asset[:md5]
-      #cached_asset[:contents] = block_given? ? block.yield(asset_path) : File.read(contents)
-      #cached_asset[:md5] = md5
-    #end
-    #cached_asset[:contents]
-  end
 
   # Construct redirect url to google openid.
   def get_openid_login_redirect(openid_provider_url)

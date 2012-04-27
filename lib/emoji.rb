@@ -49,7 +49,7 @@ class Emoji
       next match unless @@emoji_set.include?(emoji)
       # apparently you can't have '+' in S3 buckets
       emoji = "plus1" if emoji == "+1"
-      "<img class='emoji' height='20' width='20' src='/images/emoji/#{emoji}.png' align='absmiddle'>"
+      "<img class='emoji' height='20' width='20' src='/assets/images/emoji/#{emoji}.png' align='absmiddle'>"
     end
   end
 

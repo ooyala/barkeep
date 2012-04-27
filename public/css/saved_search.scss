@@ -1,7 +1,7 @@
 /*
  * Styles for the saved search page.
  */
-@import "mixins";
+@import "css/mixins";
 .searchPanel { @include embossedPanel; }
 
 .savedSearchPlaceholder {
@@ -15,7 +15,7 @@
 .savedSearch, .statistic {
   position: relative;
   /* We want the background of a saved search to be opaque while we're dragging it around. */
-  background-image: url(/images/background.png);
+  background-image: url(/assets/images/background.png);
   padding-bottom: 20px;
   margin-bottom: 8px;
   padding-right: 30px;
@@ -53,7 +53,7 @@
       height: 20px;
       background-repeat: no-repeat;
       opacity: 0.8;
-      background: transparent url(/images/drag_handle.png) no-repeat center bottom;
+      background: transparent url(/assets/images/drag_handle.png) no-repeat center bottom;
       cursor: move;
       &:hover {
         background-color: #f1f1f1;
@@ -124,7 +124,7 @@
     margin-top: 22px;
     margin-right: 5px;
     background-color: white;
-    background-image: url(/images/background.png);
+    background-image: url(/assets/images/background.png);
     opacity: 0;
   }
 

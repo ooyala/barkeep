@@ -4,17 +4,17 @@
   <title>Barkeep</title>
   <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic' \
         rel='stylesheet' type='text/css' />
-  <link rel="stylesheet" type="text/css" href="/css/styles.css?bust=<%= File.mtime(__FILE__).to_i %>" />
-  <script src="/jquery-1.7.min.js"></script>
-  <script src="/jquery-ui-1.8.16.custom.min.js"></script>
-  <script src="/jquery.json-2.2.min.js"></script>
-  <script src="/jquery.tipsy.js"></script>
-  <script src="/jquery.hotkeys.js"></script>
-  <script src="/jquery.rwcookie.js"></script>
-  <script src="/livecss.js"></script>
-  <script src="/js/constants.js?bust=<%= Time.now.to_i %>"></script>
-  <script src="/js/util.js?bust=<%= Time.now.to_i %>"></script>
-  <script src="/js/snippets.js?bust=<%= Time.now.to_i %>"></script>
+  <%= @pinion.css_url("/css/styles.css") %>
+  <%= @pinion.js_url("/vendor/jquery-1.7.min.js") %>
+  <%= @pinion.js_url("/vendor/jquery-ui-1.8.16.custom.min.js") %>
+  <%= @pinion.js_url("/vendor/jquery.json-2.2.min.js") %>
+  <%= @pinion.js_url("/vendor/jquery.tipsy.js") %>
+  <%= @pinion.js_url("/vendor/jquery.hotkeys.js") %>
+  <%= @pinion.js_url("/vendor/jquery.rwcookie.js") %>
+  <%= @pinion.js_url("/vendor/livecss.js") %>
+  <%= @pinion.js_url("/coffee/constants.js") %>
+  <%= @pinion.js_url("/coffee/util.js") %>
+  <%= @pinion.js_url("/coffee/snippets.js") %>
 
   <script>
     $(document).ready(function() {
@@ -40,7 +40,7 @@
 
     // Preload the icon's on-hover state. Otherwise it flickers for a second while it's loading and you might
     // not see it... which would be tragic.
-    preloadImage("/images/barkeep_logo_howdy_80px.png");
+    preloadImage("/assets/images/barkeep_logo_howdy_80px.png");
   </script>
 </head>
 

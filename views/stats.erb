@@ -1,6 +1,7 @@
-<script src="/flot/jquery.flot.min.js"></script>
-<script src="/flot/jquery.flot.pie.min.js"></script>
-<script src="/js/stats.js?bust=<%= Time.now.to_i %>"></script>
+<%= @pinion.js_url("/vendor/flot/jquery.flot.min.js") %>
+<%= @pinion.js_url("/vendor/flot/jquery.flot.pie.min.js") %>
+<%= @pinion.js_url("/coffee/stats.js") %>
+
 <div id="stats">
   <% if current_user %>
     <form id="statsRangeForm" action="/set_stats_time_range" method="post">

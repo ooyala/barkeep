@@ -1,8 +1,8 @@
-@import "mixins";
-@import "saved_search";
-@import "diff_view";
-@import "code_styles/default";
-@import "tipsy_styles";
+@import "css/mixins";
+@import "css/saved_search";
+@import "css/diff_view";
+@import "css/code_styles/default";
+@import "css/tipsy_styles";
 
 /*
  * Common styles shared by all pages.
@@ -12,7 +12,7 @@ body {
   background-color: white;
   font-family: $sansFont;
   color: $textColor;
-  background-image: url(/images/background.png);
+  background-image: url(/assets/images/background.png);
 }
 
 * {
@@ -213,7 +213,7 @@ header {
 
   #icon {
     opacity: 0.9;
-    background-image: url(/images/barkeep_logo_80px.png);
+    background-image: url(/assets/images/barkeep_logo_80px.png);
     position: absolute;
     left: -100px;
     /* NOTE(philc): This logo might look better on the right. */
@@ -222,7 +222,7 @@ header {
     height: 80px;
     text-align: center;
     /* This image gets preloaded by the javascript so it's available on-hover. */
-    &:hover { background-image: url(/images/barkeep_logo_howdy_80px.png); }
+    &:hover { background-image: url(/assets/images/barkeep_logo_howdy_80px.png); }
   }
 
   h1 {
@@ -384,11 +384,11 @@ table.commitsList, table.authorList {
       }
     }
     &.approved {
-      background: transparent url(/images/light_checkmark.png) no-repeat left center;
+      background: transparent url(/assets/images/light_checkmark.png) no-repeat left center;
     }
   }
   .selectArrow { min-width: 7px; }
-  .selected .selectArrow { background: url(/images/right_arrow.png) no-repeat 0px 2px; }
+  .selected .selectArrow { background: url(/assets/images/right_arrow.png) no-repeat 0px 2px; }
 }
 
 
@@ -555,7 +555,7 @@ table.commitsList, table.authorList {
     padding-top: 0px;
     padding-right: 125px;
     text-align: right;
-    background: url(/images/barkeep-head.png) no-repeat right;
+    background: url(/assets/images/barkeep-head.png) no-repeat right;
 
     span {
       display: inline-block;

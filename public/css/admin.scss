@@ -1,4 +1,4 @@
-@import "mixins";
+@import "css/mixins";
 
 #admin {
   table { border-collapse: collapse; }
@@ -72,7 +72,7 @@
       width: 20px;
       height: 25px;
       cursor: pointer;
-      background: url(/images/trash.png) no-repeat;
+      background: url(/assets/images/trash.png) no-repeat;
       opacity: 0.3;
       &:hover { opacity: 1.0; }
     }

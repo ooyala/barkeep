@@ -1,6 +1,6 @@
-<script src="/js/commit.js?bust=<%= Time.now.to_i %>"></script>
-<script src="/jquery.easing.1.3.js"></script>
-<script src="/mustache.js"></script>
+<%= @pinion.js_url("/coffee/commit.js") %>
+<%= @pinion.js_url("/vendor/jquery.easing.1.3.js") %>
+<%= @pinion.js_url("/vendor/mustache.js") %>
 <script id="context-expander-template" type="text/x-mustache-template">
 <%= MustacheRenderer.context_expander_source %>
 </script>
