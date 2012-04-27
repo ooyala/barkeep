@@ -1,11 +1,16 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../test_helper.rb"))
 require "app"
 
+class MockPinion
+  def css_url(_) "" end
+  def js_url(_) "" end
+end
+
 class AppTest < Scope::TestCase
   include Rack::Test::Methods
   include StubHelper
 
-  def app() Barkeep end
+  def app() Barkeep.new(MockPinion.new) end
 
   setup do
     @@repo = MetaRepo.new("/dev/null")

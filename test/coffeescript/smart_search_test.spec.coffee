@@ -1,5 +1,5 @@
 GLOBAL.window = GLOBAL
-require "../../public/smart_search.coffee"
+require "../../public/coffee/smart_search.coffee"
 
 describe "search query parser", ->
   beforeEach ->
