@@ -1,9 +1,8 @@
 #
 # Sinatra routes which implement the Admin pages.
 #
-require "resque_jobs/clone_new_repo"
+require "lib/api"
 require "resque_jobs/delete_repo"
-require "addressable/uri"
 require "fileutils"
 
 class Barkeep < Sinatra::Base
@@ -82,11 +81,11 @@ class Barkeep < Sinatra::Base
   #  - url
   post "/admin/repos/create_new_repo" do
     halt 400, "'url' is required." if (params[:url] || "").strip.empty?
-    halt 400, "This is not a valid URL." unless Addressable::URI.parse(params[:url])
-    repo_name = File.basename(params[:url], ".*")
-    repo_path = File.join(REPOS_ROOT, repo_name)
-    halt 400, "There is already a folder named \"#{repo_name}\" in #{REPOS_ROOT}." if File.exists?(repo_path)
-    Resque.enqueue(CloneNewRepo, repo_name, params[:url])
+    begin
+      add_repo params[:url]
+    rescue RuntimeError => e
+      halt 400, e.message
+    end
     nil
   end
 
