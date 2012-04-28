@@ -69,7 +69,7 @@ class Barkeep < Sinatra::Base
 
     log_directory = File.expand_path(File.join(File.dirname(__FILE__), "../log"))
     # NOTE(philc): Native ruby would be better, but I was too lazy to find a better solution.
-    tail_log = Proc.new { |log_file| `tail -n 20 '#{File.join(log_directory, log_file)}'` }
+    tail_log = Proc.new { |log_file| `tail -n 20 '#{File.join(log_directory, log_file)}' 2> /dev/null` }
     admin_erb :repos, :locals => {
       :repos_hashes => repos_hashes,
       :repos_being_cloned => repos_being_cloned,
