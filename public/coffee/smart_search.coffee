@@ -105,9 +105,8 @@ class window.SmartSearch
     else onSuggestionReceived ""
 
   showTabCompleteHint: (incompleteTerm, suggestions) ->
-    hint = ""
-    value = ""
-    if (incompleteTerm)
+    hint = value = ""
+    if incompleteTerm
       # Get the first autocomplete suggestion that starts with the search term. If one doesn't exist,
       # don't offer a hint.
       $.each suggestions, (i, v) ->

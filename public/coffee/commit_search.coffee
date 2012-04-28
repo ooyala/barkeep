@@ -30,7 +30,7 @@ window.CommitSearch =
       $("#commitSearch input[name=filter_value]").blur()
     KeyboardShortcuts.registerShortcut searchBox, "tab", (e) =>
       # Tab complete only if a suggestion isn't highlighted. jQuery gives the highlighted suggestion this id.
-      if(!$('#ui-active-menuitem')[0])
+      if !$('#ui-active-menuitem')[0]
         @smartSearch.tabComplete()
         return false
       false if @autocompleteOpen
@@ -46,8 +46,7 @@ window.CommitSearch =
       close: (event, ui) =>
         @autocompleteOpen = false
         @smartSearch.hideTabCompleteHint()
-      focus: (event, ui) =>
-        @smartSearch.hideTabCompleteHint()
+      focus: (event, ui) => @smartSearch.hideTabCompleteHint()
       delay: 0
 
     $("#savedSearches").sortable
