@@ -1,4 +1,5 @@
 require "addressable/uri"
+require "digest/sha1"
 require "resque_jobs/clone_new_repo"
 
 module Api
@@ -9,4 +10,7 @@ module Api
     raise "There is already a folder named \"#{repo_name}\" in #{REPOS_ROOT}." if File.exists?(repo_path)
     Resque.enqueue(CloneNewRepo, repo_name, url)
   end
+
+  # Generate a random API key or API secret for a user.
+  def self.generate_user_key() Digest::SHA1.hexdigest(rand(1000000).to_s + Time.now.to_s) end
 end
