@@ -16,7 +16,8 @@ class window.SmartSearch
   #   eg. [ { label: "Choice1", value: "value1" }, ... ]
   # see jqueryUI autocomplete for more infomation
   autocomplete: (searchString, onSuggestionReceived) ->
-    parseResult = @parsePartialQuery(searchString)
+    @searchString = searchString
+    parseResult = @parsePartialQuery(@searchString)
     if parseResult.searchType == "key"
       @autocompleteKey(parseResult.key, parseResult.unrelatedPrefix, onSuggestionReceived)
     else
@@ -80,6 +81,7 @@ class window.SmartSearch
     for key in KEYS
       if nokey || key.indexOf(incompleteKey) > -1
         results.push { "label": key, "value": unrelatedPrefix + key }
+    @showTabCompleteHint(incompleteKey, results)
     onSuggestionReceived(results)
 
   # suggests values see autocomplete
@@ -94,12 +96,44 @@ class window.SmartSearch
         url: "/autocomplete/#{key[0..key.length-2]}"
         data: { substring: incompleteValue }
         dataType: "json"
-        success: (completion) ->
+        success: (completion) =>
           fullValues = $.map completion.values, (x) ->
             {"label" : x, "value" : unrelatedPrefix + (valueRegex.exec(x)[0] || "")}
+          @showTabCompleteHint(incompleteValue, fullValues)
           onSuggestionReceived(fullValues)
         error: -> onSuggestionReceived ""
     else onSuggestionReceived ""
+
+  showTabCompleteHint: (incompleteTerm, suggestions) ->
+    hint = ""
+    value = ""
+    if (incompleteTerm)
+      # Get the first autocomplete suggestion that starts with the search term. If one doesn't exist,
+      # don't offer a hint.
+      $.each suggestions, (i, v) ->
+        if v.label.indexOf(incompleteTerm) == 0
+          hint = v.label
+          value = v.value
+          false
+      # Copy everything up to the incomplete search term to the hint box and append the hint to the end.
+      lastTermIndex = Math.max(@searchString.lastIndexOf(" "),
+                               @searchString.lastIndexOf(","),
+                               @searchString.lastIndexOf(":"))
+      hint = @searchBox.val().slice(0, lastTermIndex + 1) + hint if hint
+    # Store the actual tab complete value because the label in the suggestion box and the value that actually
+    # gets inserted can be different
+    @searchBox.data("tabComplete", value).siblings(".tabCompletionHint").val(hint)
+
+  hideTabCompleteHint: () ->
+    @searchBox.removeData("tabComplete").siblings(".tabCompletionHint").val("")
+
+  tabComplete: () ->
+    # Tab complete only if a hint exists.
+    if @searchBox.data("tabComplete")
+      @searchBox.val(@searchBox.data("tabComplete"))
+      @hideTabCompleteHint()
+      # Trigger the next round of autocomplete suggestions
+      @searchBox.autocomplete("search")
 
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume

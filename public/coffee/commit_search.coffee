@@ -26,10 +26,13 @@ window.CommitSearch =
       # events fired once we have focus will be handled appropriately by jquery.hotkeys.
       false
     KeyboardShortcuts.registerShortcut searchBox, "return", (e) =>
-      return false if @autocompleteOpen
       @smartSearch.search()
       $("#commitSearch input[name=filter_value]").blur()
     KeyboardShortcuts.registerShortcut searchBox, "tab", (e) =>
+      # Tab complete only if a suggestion isn't highlighted. jQuery gives the highlighted suggestion this id.
+      if(!$('#ui-active-menuitem')[0])
+        @smartSearch.tabComplete()
+        return false
       false if @autocompleteOpen
     KeyboardShortcuts.registerShortcut searchBox, "esc", (e) =>
       $("#commitSearch input[name=filter_value]").blur()
@@ -40,8 +43,11 @@ window.CommitSearch =
     $("#commitSearch input[name=filter_value]").autocomplete
       source: (request, callback) => @smartSearch.autocomplete(request.term, callback),
       open: (event, ui) => @autocompleteOpen = true
-      close: (event, ui) => @autocompleteOpen = false
-      autoFocus: true
+      close: (event, ui) =>
+        @autocompleteOpen = false
+        @smartSearch.hideTabCompleteHint()
+      focus: (event, ui) =>
+        @smartSearch.hideTabCompleteHint()
       delay: 0
 
     $("#savedSearches").sortable

@@ -176,21 +176,8 @@
   padding: 10px 8px;
   width: 80%;
   position: relative;
-
-  table { border-collapse: collapse; }
-  td { padding: 0 3px; }
-  td:first-of-type { padding-left: 0; }
   margin-bottom: 20px;
 
-  input[name=filter_value] {
-    padding: 2px;
-    height: 22px;
-    width: 400px;
-    box-shadow: inset 0px 5px 5px $sunkenColor;
-    font-size: 16px;
-    background-color: $almostWhite;
-    border: $standardBorder;
-  }
   select { font-size: 14px; }
   button.submit {
     font-size: 16px;
@@ -217,6 +204,33 @@
       margin-right: 3px;
     }
     select { font-size: 12px; }
+  }
+
+  .searchContainer {
+    position: relative;
+    display: inline-block;
+    margin-right: 2px;
+    vertical-align: top;
+
+    input[type=text] {
+      padding: 2px;
+      height: 22px;
+      width: 400px;
+      font-size: 16px;
+    }
+    input[name=filter_value] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: none;
+      border: $standardBorder;
+    }
+    .tabCompletionHint {
+      color: #bbb;
+      border: $standardBorder;
+      box-shadow: inset 0px 5px 5px $sunkenColor;
+      background-color: $almostWhite;
+    }
   }
 }
 

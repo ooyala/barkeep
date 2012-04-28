@@ -5,24 +5,16 @@
 <!-- These options apply to all commit lists shown on the page. -->
 <% if current_user %>
   <div id="commitSearch" class="searchPanel">
-    <table>
-      <tr>
-        <td>
-          <input type="text" name="filter_value" value="" spellcheck="false" />
-        </td>
-        <td><button class="fancy submit">Search</button></td>
-      </tr>
-      <tr>
-        <td>
-          <div class="example">keywords: <span class="keyword">repos, authors, paths, branches</span></div>
-          <div class="example">
-            <span class="keyword">branches</span> defaults to "master".
-            Use <span class="keyword">branches</span>:all to search all branches.
-          </div>
-        </td>
-        <td></td>
-      </tr>
-    </table>
+    <div class="searchContainer">
+      <input type="text" class="tabCompletionHint" value="" spellcheck="false" />
+      <input type="text" name="filter_value" value="" spellcheck="false" />
+    </div>
+    <button class="fancy submit">Search</button>
+    <div class="example">keywords: <span class="keyword">repos, authors, paths, branches</span></div>
+    <div class="example">
+      <span class="keyword">branches</span> defaults to "master".
+      Use <span class="keyword">branches</span>:all to search all branches.
+    </div>
 
     <div id="timeRangeOptions">
       <span>Limit to</span>
