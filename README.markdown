@@ -97,19 +97,20 @@ We're deploying to Ubuntu Lucid (10.04 LTS). This is the required setup before w
           source "$HOME/.bashrc"
         $ exec $SHELL
 
-1.  Install bundler:
-
-        $ gem install bundler
-
 1.  Install [ruby-build](https://github.com/sstephenson/ruby-build) and get Ruby 1.9.2-p290:
 
         $ git clone git://github.com/sstephenson/ruby-build.git
         $ cd ruby-build
         $ sudo ./install.sh
         $ rbenv install 1.9.2-p290
+        $ rbenv shell 1.9.2-p290
 
         (on Mac, setup your 1.9.2-p290 with your Macports SSL if you've installed openssl through Macports)
         CONFIGURE_OPTS="--with-openssl-dir=/opt/local" rbenv install 1.9.2-p290
+
+1.  Install bundler:
+
+        $ gem install bundler
 
 1. Install [node.js](http://nodejs.org/):
 
@@ -136,8 +137,8 @@ on your development system from the target production environment.
 
 First, you'll need to install vagrant and install the box:
 
-    $ gem install vagrant # Need 0.9.X
     $ cd path/to/barkeep/project/root
+    $ bundle install
     $ vagrant up
 
 Next ssh into the running vagrant box (`vagrant ssh`) and do the setup tasks described under 'Deployment'.
