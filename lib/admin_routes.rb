@@ -6,6 +6,8 @@ require "resque_jobs/delete_repo"
 require "fileutils"
 
 class Barkeep < Sinatra::Base
+  include Api
+
   before "/admin*" do
     unless current_user.admin?
       message = "You do not have permission to view this admin page."
