@@ -127,12 +127,13 @@ class window.SmartSearch
     @searchBox.removeData("tabComplete").siblings(".tabCompletionHint").val("")
 
   tabComplete: () ->
+    value = @searchBox.data("tabComplete")
     # Tab complete only if a hint exists.
-    if @searchBox.data("tabComplete")
-      @searchBox.val(@searchBox.data("tabComplete"))
+    if value
+      @searchBox.val(value)
       @hideTabCompleteHint()
-      # Trigger the next round of autocomplete suggestions
-      @searchBox.autocomplete("search")
+      # Trigger the next round of autocomplete suggestions if value is a key (e.g. "repos:", "authors:")
+      @searchBox.autocomplete(if value[value.length - 1] == ":" then "search" else "close")
 
   parseSearch: (searchString) ->
     # This could be repo, author, etc. If it is nil when we're done processing a key/value pair, then assume
