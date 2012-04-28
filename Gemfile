@@ -16,7 +16,7 @@ gem "sass"
 gem "pinion", "~> 0.1.5"
 
 # We're pulling in our own grit fork with bugfixes.
-gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "bf141c49c392781a3a683c06b77d8c3b782e7985"
+gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "38d0e6660b78bff97499280fae09a78b087c50b4"
 gem "json"
 gem "sequel"
 gem "mysql"

@@ -1,7 +1,7 @@
 GIT
   remote: http://github.com/ooyala/grit.git
-  revision: bf141c49c392781a3a683c06b77d8c3b782e7985
-  ref: bf141c49c392781a3a683c06b77d8c3b782e7985
+  revision: 38d0e6660b78bff97499280fae09a78b087c50b4
+  ref: 38d0e6660b78bff97499280fae09a78b087c50b4
   specs:
     grit (2.4.1)
       diff-lcs (~> 1.1)
