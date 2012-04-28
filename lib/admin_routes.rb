@@ -117,8 +117,8 @@ class Barkeep < Sinatra::Base
   end
 
   def admin_erb(view, view_params = {})
-    # NOTE(philc): This use of nested Sinatra layouts is a little klunky. It's the best approach I could find.
-    html_with_admin_layout = erb("admin/#{view}".to_sym, { :layout => :"admin/layout" }.merge(view_params))
+    # NOTE(philc): This use of nested Sinatra layouts is a little clunky. It's the best approach I could find.
+    html_with_admin_layout = erb(:"admin/#{view}", { :layout => :"admin/layout" }.merge(view_params))
     erb html_with_admin_layout
   end
 end
