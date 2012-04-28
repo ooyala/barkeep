@@ -31,8 +31,9 @@ class CloneNewRepo
 
       # Unfortunately, Grit::Git.new(...).clone() will not throw an exception if the repo_url was invalid.
       # It will just... do nothing.
-      unless File.exists?(repo_path) && (Grit::Git.new(repo_path).is_valid? rescue false)
-        raise "Unable to clone repo. Perhaps the repo at #{repo_url} is invalid or unreachable?"
+      # TODO(caleb) We should be able to clone an empty repo; distinguish that case from an invalid one.
+      unless File.exists?(repo_path) && (Grit::Git.new(repo_path).has_refs? rescue false)
+        raise "Unable to clone repo. Perhaps the repo at #{repo_url} is invalid, empty, or unreachable?"
       end
       logger.info "Finished cloning the repo #{repo_url}."
     rescue Exception => error
