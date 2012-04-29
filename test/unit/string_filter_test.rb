@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), "../test_helper.rb"))
+require File.expand_path(File.join(File.dirname(__FILE__), "../unit_test_helper.rb"))
 require "lib/string_filter"
 require "lib/filters"
 require "dedent"

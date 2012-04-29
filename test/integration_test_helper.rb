@@ -1,14 +1,8 @@
 require "bundler/setup"
 require "pathological"
-require "lib/script_environment"
-require "minitest/autorun"
-require "scope"
+require "test/test_helper"
 require "test/http_test_helper"
 require "rr"
-require "test/stub_helper"
-
-FIXTURES_PATH = File.join(File.dirname(__FILE__), "/fixtures")
-TEST_REPO_NAME = "test_git_repo"
 
 module IntegrationTestHelper
   def integration_test_user
