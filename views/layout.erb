@@ -6,11 +6,10 @@
         rel='stylesheet' type='text/css' />
   <%= @pinion.css_url("/css/styles.css") %>
   <%= @pinion.js_url("/vendor/jquery-1.7.min.js") %>
-  <%= @pinion.js_url("/vendor/jquery-ui-1.8.16.custom.min.js") %>
+  <%= @pinion.js_url("/vendor/jquery-ui-1.8.19.custom.min.js") %>
   <%= @pinion.js_url("/vendor/jquery.json-2.2.min.js") %>
   <%= @pinion.js_url("/vendor/jquery.tipsy.js") %>
   <%= @pinion.js_url("/vendor/jquery.hotkeys.js") %>
-  <%= @pinion.js_url("/vendor/jquery.rwcookie.js") %>
   <%= @pinion.js_url("/vendor/livecss.js") %>
   <%= @pinion.js_url("/coffee/constants.js") %>
   <%= @pinion.js_url("/coffee/util.js") %>
@@ -70,6 +69,7 @@
             <% if current_user.admin? %>
               <a href="/admin">Admin</a> |
             <% end %>
+            <a href="/settings">Settings</a> |
           <% end %>
           <% if current_user.nil? || current_user.demo? %>
             <a href="/signin">Sign in</a>

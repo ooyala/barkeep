@@ -9,7 +9,6 @@ window.Commit =
   SIDE_BY_SIDE_SLIDE_DURATION: 300
   SIDE_BY_SIDE_SPLIT_DURATION: 700
   SIDE_BY_SIDE_CODE_WIDTH: 830
-  SIDE_BY_SIDE_COOKIE: "sideBySide"
 
   init: ->
     $(".diffLine").dblclick (e) => @onDiffLineDblClickOrReply e
@@ -85,8 +84,7 @@ window.Commit =
       # Return false to prevent clearing the text box.
       false
 
-    # Eventually this should be a user preference stored server side. For now, it's just a cookie.
-    @toggleSideBySide(false) if $.cookies(@SIDE_BY_SIDE_COOKIE) == "true"
+    @toggleSideBySide(false) if $("#commit").attr("data-default-to-side-by-side") == "true"
 
     # Review request author autocompletion
     $("#reviewRequest #authorInput").autocomplete
@@ -542,7 +540,6 @@ window.Commit =
     unless @isSideBySide
       @isSideBySide = true
       $("div.file").addClass("sideBySide")
-      $.cookies(@SIDE_BY_SIDE_COOKIE, "true")
       $("#sideBySideButton").text("View Unified")
 
       # Save size of the code table so it doesn't drift after many animations.
@@ -584,7 +581,6 @@ window.Commit =
       # callapse to unified diff
       @isSideBySide = false
       $("div.file").removeClass("sideBySide")
-      $.cookies(@SIDE_BY_SIDE_COOKIE, "false")
       $("#sideBySideButton").text("View Side-By-Side")
 
       collapseCodeTablesIntoOne = =>

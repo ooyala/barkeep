@@ -80,6 +80,21 @@ a:active {
  * "Copy" styles, which we use for pages displaying normal headings, paragraphs and text (like the admin page)
  */
 .copy{
+  table { border-collapse: collapse; }
+
+  td {
+    padding: 10px;
+    border: $standardBorder;
+  }
+
+  .column {
+    box-sizing: border-box;
+    padding-right: 20px;
+    width: 50%;
+    float: left;
+    vertical-align: top;
+  }
+
   h2 {
     font-size: 20px;
     margin: 14px 0;
@@ -100,7 +115,6 @@ a:active {
     margin: 6px 0;
   }
 }
-
 
 img:active { background-color: white }
 

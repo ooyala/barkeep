@@ -1,0 +1,54 @@
+<%= @pinion.css_url("/css/settings.css") %>
+<%= @pinion.js_url("/coffee/settings.js") %>
+
+<div id="settings" class="copy">
+  <div class="column">
+    <h2>User profile</h2>
+    <table>
+      <tr>
+        <td>Name</td>
+        <td>
+          <span id="editUsername" class="editable west" rel="tipsy" title="Edit">
+            <%= current_user.name %>
+          </span>
+        </td>
+      </tr>
+      <tr><td>Email</td><td><%= current_user.email %></td></tr>
+      <tr>
+        <td>Gravatar</td>
+        <td>
+          <a class="gravatarLink" href="https://en.gravatar.com/site/login" target="_blank">
+            <img class="bigGravatar west" rel="tipsy" title="Change your gravatar" src="<%= current_user.gravatar %>" />
+          </a>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="column">
+    <h2>Commit preferences</h2>
+    <div class="preference">
+      Line length indicator bar: <% line_length = current_user.line_length.to_s || "110" %>
+      <span id="lineLength" class="value"><%= line_length %> characters</span>
+      <div id="lineLengthSlider" data-value="<%= line_length %>" ></div>
+    </div>
+    <div class="preference">
+      <span class="preference">Default diff view:</span>
+      <% default_to_side_by_side = current_user.default_to_side_by_side %>
+      <input type="radio" name="diffView" value="false"
+        <%= "checked" unless default_to_side_by_side %>> unified</input>
+      <input type="radio" name="diffView" value="true"
+        <%= "checked" if default_to_side_by_side %>> side-by-side</input>
+    </div>
+    <h2>API credentials</h2>
+    <table>
+      <tr>
+        <td>Key</td>
+        <td><span class="key"><%= current_user.api_key %></span></td>
+      </tr>
+      <tr>
+        <td>Secret</td>
+        <td><span class="key"><%= current_user.api_secret %></span></td>
+      </tr>
+    </table>
+  </div>
+</div>

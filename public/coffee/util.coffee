@@ -27,6 +27,14 @@ window.Util =
         (scroll == "all" or scroll == "bottom")
       window.scroll(0, selectionBottom + Constants.CONTEXT_BUFFER_PIXELS - $(window).height())
 
+  # Save a user preference
+  saveUserPreference: (preference, value, callback) ->
+    $.ajax
+      url: "/settings/#{preference}"
+      type: "PUT"
+      data: { value: value }
+      success: callback
+
   # Run multiple functions which eventually run callbacks. After all of these callbacks are finished, run
   # another callback once.
   # (This sounds confusing -- here's a simple example: you can run three animations at once (assuming that

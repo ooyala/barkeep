@@ -1,0 +1,54 @@
+@import "css/mixins";
+
+#settings {
+  .editable {
+    &:hover {
+      cursor: text;
+      background-color: $sunkenColor;
+    }
+  }
+
+  .key { font: 14px $monoFont; }
+
+  .gravatarLink {
+    &:active {
+      background-color: transparent;
+      img { background-color: transparent; }
+    }
+  }
+
+  .preference {
+    margin-bottom: 25px;
+    #lineLengthSlider {
+      margin-top: 8px;
+      height: 3px;
+      width: 100%;
+      background-color: $borderColor;
+      @include roundedCorners(3px);
+      .ui-slider-handle {
+        width: 15px;
+        height: 12px;
+        @include roundedCorners(2px);
+        background-color: darken($borderColor, 40%);
+      }
+    }
+    input[type="radio"] { margin-left: 8px; }
+  }
+
+  // Magic CSS copied from jquery-ui slider css.
+  .ui-slider { position: relative; text-align: left; }
+  .ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
+  .ui-slider-horizontal .ui-slider-handle { top: -.3em; margin-left: -.6em; }
+  .ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
+
+  table {
+    td {
+      border: none;
+      &:first-child {
+        font-weight: bold;
+        text-align: right;
+      }
+      &:last-child { border-left: 4px solid $borderColor; }
+    }
+  }
+}

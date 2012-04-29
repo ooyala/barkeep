@@ -1,23 +1,6 @@
 @import "css/mixins";
 
-#admin {
-  table { border-collapse: collapse; }
-
-  td {
-    padding: 10px;
-    border: $standardBorder;
-  }
-
-  #failedEmails { width: 100%; }
-
-  .column {
-    box-sizing: border-box;
-    padding-right: 20px;
-    width: 50%;
-    float: left;
-    vertical-align: top;
-  }
-}
+#failedEmails { width: 100%; }
 
 #manageUsers {
   table {

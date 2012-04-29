@@ -37,9 +37,7 @@ require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
-LOGIN_WHITELIST_ROUTES = [
-  /^signin/, /^signout/, /^commits/, /^stats/, /^inspire/, /^statusz/, /^api\/.*/
-]
+LOGIN_WHITELIST_ROUTES = ["/signin", "/signout", "/commits/", "/stats", "/inspire", "/statusz", "/api/"]
 
 # OPENID_PROVIDERS is a string env variable. It's a comma-separated list of OpenID providers.
 OPENID_PROVIDERS_ARRAY = OPENID_PROVIDERS.split(",")
@@ -124,7 +122,7 @@ class Barkeep < Sinatra::Base
     else
       SavedSearch.raise_on_save_failure = true
     end
-    next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path[1..-1] =~ route }
+    next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path =~ /^#{route}/ }
     unless current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
@@ -163,6 +161,22 @@ class Barkeep < Sinatra::Base
   get "/signout" do
     session.clear
     redirect request.referrer
+  end
+
+  get("/settings") { erb :settings }
+
+  put "/settings/:preference" do
+    preference = params[:preference]
+    if preference == "username"
+      current_user.name = params[:value]
+      current_user.save
+    elsif ["line_length", "default_to_side_by_side"].include? preference
+      current_user.send :"#{preference}=", params[:value]
+      current_user.save
+    else
+      halt 400, "Bad preference."
+    end
+    nil
   end
 
   get "/commits" do
