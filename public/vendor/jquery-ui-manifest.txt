@@ -12,3 +12,4 @@ Interactions
 
 Widgets
 * Autocomplete
+* Slider
