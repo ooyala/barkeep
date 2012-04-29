@@ -60,6 +60,9 @@ gem "unicorn"
 # for templates that can be rendered client and server side
 gem "mustache"
 
+# For executing javascript inside Ruby (for compiling coffeescript).
+gem "therubyracer"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"
