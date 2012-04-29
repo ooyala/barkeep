@@ -121,12 +121,12 @@ class window.SmartSearch
       hint = @searchBox.val().slice(0, lastTermIndex + 1) + hint if hint
     # Store the actual tab complete value because the label in the suggestion box and the value that actually
     # gets inserted can be different
-    @searchBox.data("tabComplete", value).siblings(".tabCompletionHint").val(hint)
+    @searchBox.data("tabComplete", value).siblings(".tabCompleteHint").val(hint)
 
-  hideTabCompleteHint: () ->
-    @searchBox.removeData("tabComplete").siblings(".tabCompletionHint").val("")
+  hideTabCompleteHint: ->
+    @searchBox.removeData("tabComplete").siblings(".tabCompleteHint").val("")
 
-  tabComplete: () ->
+  tabComplete: ->
     value = @searchBox.data("tabComplete")
     # Tab complete only if a hint exists.
     if value
