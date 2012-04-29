@@ -94,8 +94,8 @@ namespace :fezzik do
   end
 
   desc "after the app code has been rsynced, sets up the app's dependencies, like gems"
-  remote_task :setup_app =>
-      [:push, :initial_system_setup, :generate_foreman_upstart_scripts] do
+  remote_task({ :setup_app => [:push, :initial_system_setup, :generate_foreman_upstart_scripts] },
+      { :roles => [:deploy_user] }) do
     puts "Setting up server dependencies."
   end
 
@@ -103,21 +103,19 @@ namespace :fezzik do
   remote_task :start, :roles => [:root_user] do
     puts "Starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}."
     # Upstart will not let you start a started job. Check if it's started already prior to invoking start.
-    run "(status #{app} | grep stop) && start #{app} || true"
-  end
-
-  remote_task :check_healthz do
-    # server_is_up?
+    run "(status #{app} | grep stop) > /dev/null && start #{app} || true"
+    puts "Checking if server availabled."
+    server_is_up?
   end
 
   desc "kills the application by searching for the specified process name"
   remote_task :stop, :roles => [:root_user] do
     # Upstart will not let you stop a stopped job. Check if it's stopped already prior to invoking stop.
-    run "(status #{app} | grep start) && stop #{app} || true"
+    run "(status #{app} | grep start) > /dev/null && stop #{app} || true"
   end
 
   desc "restarts the application"
-  remote_task :restart => [:stop, :start]
+  remote_task({ :restart => [:stop, :start] }, :roles => [:root_user])
 
   desc "full deployment pipeline"
   task :deploy => [:deploy_without_tests, :run_integration_tests] do
@@ -131,4 +129,39 @@ namespace :fezzik do
     puts "Running the integration tests."
     run "cd #{current_path} && bundle exec rake test:integrations"
   end
+
+  # Ensures that the server is up and can respond to requests.
+  remote_task :is_server_up, :roles => [:deploy_user] do
+    server_is_up?
+  end
+
+  def server_is_up?
+    begin
+      port = Fezzik.environments[hostname][:barkeep_port]
+      # We try and connect to Barkeep multiple times, because it can take awhile to come up after we start it.
+      # We can remove this once we figure out how to make Barkeep start up faster.
+      try_n_times(n = 4, timeout = 3) do
+        run "curl --silent --show-error --max-time 20 localhost:#{port}/ > /dev/null"
+      end
+    rescue StandardError => error
+      puts "#{error}\nBarkeep is not responding. It may have had trouble starting."
+      exit 1
+    end
+  end
+
+  def try_n_times(n, sleep_duration, &block)
+    attempt = 0
+    while attempt < n
+      begin
+        block.call
+      rescue StandardError => error
+        attempt += 1
+        raise error if attempt >= n
+        sleep sleep_duration
+      else
+        return
+      end
+    end
+  end
+
 end
