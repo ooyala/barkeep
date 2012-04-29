@@ -60,19 +60,6 @@ class FetchCommits
     modified_remotes.map(&:name)
   end
 
-  # Runs a command and progressively streams its output and stderr. Throws an error if exit status is nonzero.
-  def self.run_shell(command)
-    require "open3"
-    exit_status = nil
-    Open3.popen3(command) do |stdin, stdout, stderr, wait_thread|
-      stdout.each { |line| Logging.logger.info line.strip }
-      stderr.each { |line| Logging.logger.info line.strip }
-      exit_status = wait_thread.value.to_i
-    end
-    raise %Q(The command "#{command}" failed.) unless exit_status == 0
-    nil
-  end
-
 end
 
 if $0 == __FILE__
