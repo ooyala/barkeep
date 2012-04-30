@@ -251,21 +251,11 @@ class Barkeep < Sinatra::Base
       comment.save
       return comment.filter_text
     end
-    commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
-    return 400 unless commit
-    file = nil
-    if params[:filename] && params[:filename] != ""
-      file = commit.commit_files_dataset.filter(:filename => params[:filename]).first ||
-                CommitFile.new(:filename => params[:filename], :commit => commit).save
+    begin
+      comment = create_comment(*[:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] })
+    rescue RuntimeError => e
+      halt 400, e.message
     end
-    line_number = params[:line_number] && params[:line_number] != "" ? params[:line_number].to_i : nil
-    comment = Comment.create(
-      :commit => commit,
-      :commit_file => file,
-      :line_number => line_number,
-      :user => current_user,
-      :text => params[:text],
-      :has_been_emailed => current_user.demo?) # Don't email comments made by demo users.
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
@@ -524,6 +514,25 @@ class Barkeep < Sinatra::Base
       host = "#{request.scheme}://#{request.host_with_port}"
       oidreq.redirect_url(host, "#{host}/signin/complete")
     end
+  end
+
+  def create_comment(repo_name, sha, filename, line_number_string, text)
+    commit = MetaRepo.instance.db_commit(repo_name, sha)
+    raise "No such commit." unless commit
+    file = nil
+    if filename && !filename.empty?
+      file = commit.commit_files_dataset.filter(:filename => filename).first
+      file ||= CommitFile.new(:filename => filename, :commit => commit).save
+    end
+    line_number = (line_number_string && !line_number_string.empty?) ? line_number_string.to_i : nil
+    comment = Comment.create(
+      :commit => commit,
+      :commit_file => file,
+      :line_number => line_number,
+      :user => current_user,
+      :text => text,
+      :has_been_emailed => current_user.demo?) # Don't email comments made by demo users.
+    comment
   end
 
   def validate_comment(comment_id)
