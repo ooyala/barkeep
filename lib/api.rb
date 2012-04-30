@@ -20,7 +20,8 @@ module Api
 
   # Generate a signature from a request and a user's api secret. This is used in authenticating an API
   # request. The user of this method needs to verify that there is a timestamp, that it is correct, check the
-  # api_key, etc.
+  # api_key, etc. See https://github.com/ooyala/barkeep/wiki/REST-API for more information about request
+  # signing.
   # - request: Sinatra request
   # - api_secret: The user's api secret from the DB
   def self.generate_request_signature(request, api_secret)
