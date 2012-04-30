@@ -164,7 +164,7 @@ class Barkeep < Sinatra::Base
     redirect request.referrer
   end
 
-  get("/settings") { erb :settings }
+  get("/settings") { erb :user_settings }
 
   put "/settings/:preference" do
     preference = params[:preference]
