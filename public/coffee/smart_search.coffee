@@ -109,10 +109,10 @@ class window.SmartSearch
     if incompleteTerm
       # Get the first autocomplete suggestion that starts with the search term. If one doesn't exist,
       # don't offer a hint.
-      $.each suggestions, (i, v) ->
-        if v.label.indexOf(incompleteTerm) == 0
-          hint = v.label
-          value = v.value
+      $.each suggestions, (i, suggestion) ->
+        if suggestion.label.indexOf(incompleteTerm) == 0
+          hint = suggestion.label
+          value = suggestion.value
           false
       # Copy everything up to the incomplete search term to the hint box and append the hint to the end.
       lastTermIndex = Math.max(@searchString.lastIndexOf(" "),
