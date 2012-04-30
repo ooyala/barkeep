@@ -1,16 +1,11 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../unit_test_helper.rb"))
 require "app"
 
-class MockPinion
-  def css_url(_) "" end
-  def js_url(_) "" end
-end
-
 class AppTest < Scope::TestCase
   include Rack::Test::Methods
   include StubHelper
 
-  def app() Barkeep.new(MockPinion.new) end
+  def app() Barkeep.new(StubPinion.new) end
 
   setup do
     @@repo = MetaRepo.new("/dev/null")
@@ -102,44 +97,6 @@ class AppTest < Scope::TestCase
       assert_status 302
       assert_match last_response.location, /sha_123/
       assert_match last_response.location, /repo1/
-    end
-  end
-
-  context "api routes" do
-    context "commit" do
-      should "return a 404 and human-readable error message when given a bad repo or sha" do
-        stub(@@repo).db_commit("my_repo", "sha1") { nil } # No results
-        get "/api/commits/my_repo/sha1"
-        assert_status 404
-        assert JSON.parse(last_response.body).include? "message"
-      end
-
-      should "return the relevant metadata for an unapproved commit as expected" do
-        unapproved_commit = stub_commit("sha1", @user)
-        stub(unapproved_commit).approved_by_user_id { nil }
-        stub(unapproved_commit).comment_count { 0 }
-        stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
-        get "/api/commits/my_repo/sha1"
-        assert_status 200
-        result = JSON.parse(last_response.body)
-        refute result["approved"]
-        assert_equal 0, result["comment_count"]
-        assert_match /commits\/my_repo\/sha1$/, result["link"]
-      end
-
-      should "return the relevant metadata for an approved commit as expected" do
-        approved_commit = stub_commit("sha1", @user)
-        stub(approved_commit).approved_by_user_id { 42 }
-        stub(approved_commit).approved_by_user { @user }
-        stub(approved_commit).comment_count { 155 }
-        stub(Commit).prefix_match("my_repo", "sha2") { approved_commit }
-        get "/api/commits/my_repo/sha2"
-        assert_status 200
-        result = JSON.parse(last_response.body)
-        assert result["approved"]
-        assert_equal 155, result["comment_count"]
-        assert_equal "The Barkeep <thebarkeep@barkeep.com>", result["approved_by"]
-      end
     end
   end
 

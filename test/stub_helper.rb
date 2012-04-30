@@ -21,6 +21,11 @@ module StubHelper
   end
 end
 
+class StubPinion
+  def css_url(_) "" end
+  def js_url(_) "" end
+end
+
 # This dataset stub can be used to spy on the parameters being sent through our datasets. Use it like this:
 # @dataset = DatasetStub.new([movie1, movie2])
 # Movie.stubs(:dataset).returns(@dataset)

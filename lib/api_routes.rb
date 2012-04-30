@@ -1,9 +1,42 @@
 # API to allow for a RESTful interface to Barkeep.
+require "time"
+
 require "lib/api"
 
 class Barkeep < Sinatra::Base
   include Api
-  # TODO(caleb/dmac): API authentication before filter. Need to assign users an API key and sign requests.
+
+  # API routes that don't require authentication
+  AUTHENTICATION_WHITELIST_ROUTES = ["/api/commits/"]
+  # API routes that require admin
+  ADMIN_ROUTES = ["/api/add_repo"]
+  # How out of date an API call may be before it is rejected
+  ALLOWED_API_STALENESS_MINUTES = 5
+
+  before "/api/*" do
+    next if AUTHENTICATION_WHITELIST_ROUTES.any? { |route| request.path =~ /^#{route}/ }
+    api_key = params[:api_key]
+    halt 400, "No API key provided." unless api_key
+    user = User[:api_key => api_key]
+    halt 400, "Bad API key provided." unless user
+    halt 400, "No timestamp in API request." unless params[:timestamp]
+    halt 400, "Bad timestamp." unless params[:timestamp] =~ /^\d+$/
+    timestamp = Time.at(params[:timestamp].to_i) rescue Time.at(0)
+    staleness = (Time.now.to_i - timestamp.to_i) / 60.0
+    if staleness < 0
+      halt 400, "Bad timestamp."
+    elsif staleness > ALLOWED_API_STALENESS_MINUTES
+      halt 400, "Timestamp too stale."
+    end
+    halt 400, "No signature given." unless params[:signature]
+    unless Api.generate_request_signature(request, user.api_secret) == params[:signature]
+      halt 400, "Bad signature."
+    end
+    if ADMIN_ROUTES.any? { |route| request.path =~ /^#{route}/ }
+      halt 400, "Admin only." unless user.admin?
+    end
+    self.current_user = user
+  end
 
   post "/api/add_repo" do
     halt 400, "'url' is required." if (params[:url] || "").strip.empty?
@@ -19,7 +52,7 @@ class Barkeep < Sinatra::Base
     begin
       commit = Commit.prefix_match params[:repo_name], params[:sha]
     rescue RuntimeError => e
-      next [404, { :message => e.message }.to_json]
+      halt 404, { :message => e.message }.to_json
     end
     content_type :json
     approver = commit.approved? ? commit.approved_by_user : nil
