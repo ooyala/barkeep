@@ -175,7 +175,7 @@ class AppTest < Scope::TestCase
         signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(@params)}"
         @params[:signature] = signature
         get create_request_url(@params)
-        assert_status 400
+        assert_status 403
       end
     end
   end

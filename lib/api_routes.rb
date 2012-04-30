@@ -33,7 +33,7 @@ class Barkeep < Sinatra::Base
       halt 400, "Bad signature."
     end
     if ADMIN_ROUTES.any? { |route| request.path =~ /^#{route}/ }
-      halt 400, "Admin only." unless user.admin?
+      halt 403, "Admin only." unless user.admin?
     end
     self.current_user = user
   end
