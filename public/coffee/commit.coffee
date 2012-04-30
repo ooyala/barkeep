@@ -316,9 +316,13 @@ window.Commit =
     refreshLine?.show(1)
 
   onDiffLineDblClickOrReply: (e) ->
-    window.getSelection().removeAllRanges() unless e.target.tagName.toLowerCase() in ["input", "textarea"]
-    return if $(e.target).is(".delete, .edit, .commentText, .commentSubmit")
-    return if $(e.target).parents(".diffLine").find(".commentForm").size() > 0
+    $target = $(e.target)
+    unless ($target.parents(".commentBody").size() > 0) ||
+        e.target.tagName.toLowerCase() in ["input", "textarea"]
+      window.getSelection().removeAllRanges()
+    return if $target.is(".delete, .edit, .commentText, .commentSubmit .commentBody")
+    return if $target.parents(".commentBody").size() > 0
+    return if $target.parents(".diffLine").find(".commentForm").size() > 0
     return unless window.userLoggedIn
 
     if $(e.currentTarget).hasClass("diffLine")
