@@ -238,9 +238,9 @@ class Barkeep < Sinatra::Base
 
   # I'm using POST even though this is idempotent to avoid massive urls.
   post "/comment_preview" do
-    return 400, "No text given" unless params[:text]
+    halt 400, "No text given" unless params[:text]
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
-    return 400, "No such commit." unless commit
+    halt 400, "No such commit." unless commit
     Comment.new(:text => params[:text], :commit => commit).filter_text
   end
 
@@ -249,7 +249,7 @@ class Barkeep < Sinatra::Base
       comment = validate_comment(params[:comment_id])
       comment.text = params[:text]
       comment.save
-      return comment.filter_text
+      next comment.filter_text
     end
     begin
       comment = create_comment(*[:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] })
@@ -267,14 +267,14 @@ class Barkeep < Sinatra::Base
 
   post "/approve_commit" do
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
-    return 400 unless commit
+    halt 400 unless commit
     commit.approve(current_user)
     erb :_approved_banner, :layout => false, :locals => { :commit => commit }
   end
 
   post "/disapprove_commit" do
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
-    return 400 unless commit
+    halt 400 unless commit
     commit.disapprove
     nil
   end
