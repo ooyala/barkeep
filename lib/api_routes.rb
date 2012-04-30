@@ -49,6 +49,18 @@ class Barkeep < Sinatra::Base
     [204, "Repo #{repo_name} is scheduled to be cloned."]
   end
 
+  post "/api/comment" do
+    [:repo_name, :sha, :text].each do |field|
+      halt 400, "#{field} is a required field." unless params[field] && !params[field].empty?
+    end
+    begin
+      create_comment(*[:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] })
+    rescue RuntimeError => e
+      halt 400, e.message
+    end
+    nil
+  end
+
   # TODO(caleb): If you include lots of shas, you will end up with a very large GET request. Apparently many
   # servers/proxies may not handle GETs over some limit 4k, 8k, ... Experiment with requesting lots of shas,
   # and put a warning in the documentation. We may have to make this a POST if this is an issue.
