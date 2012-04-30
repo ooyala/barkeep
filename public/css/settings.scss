@@ -2,6 +2,8 @@
 
 #settings {
   .editable {
+    background: url("/assets/images/pencil_icon.png") no-repeat right top;
+    padding-right: 24px;
     &:hover {
       cursor: text;
       background-color: $sunkenColor;
