@@ -17,6 +17,14 @@ class AppTest < Scope::TestCase
   end
 
   context "get commit" do
+    def approved_stub_commit(sha)
+      commit = stub_commit(sha, @user)
+      stub(commit).approved_by_user_id { 42 }
+      stub(commit).approved_by_user { @user }
+      stub(commit).comment_count { 155 }
+      commit
+    end
+
     should "return a 404 and human-readable error message when given a bad repo or sha" do
       stub(@@repo).db_commit("my_repo", "sha1") { nil } # No results
       get "/api/commits/my_repo/sha1"
@@ -31,31 +39,50 @@ class AppTest < Scope::TestCase
       stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
       get "/api/commits/my_repo/sha1"
       assert_status 200
-      result = JSON.parse(last_response.body)
+      result = JSON.parse(last_response.body)["sha1"]
       refute result["approved"]
       assert_equal 0, result["comment_count"]
-      assert_match /commits\/my_repo\/sha1$/, result["link"]
+      assert_match %r[commits/my_repo/sha1$], result["link"]
     end
 
     should "return the relevant metadata for an approved commit as expected" do
-      approved_commit = stub_commit("sha1", @user)
-      stub(approved_commit).approved_by_user_id { 42 }
-      stub(approved_commit).approved_by_user { @user }
-      stub(approved_commit).comment_count { 155 }
-      stub(Commit).prefix_match("my_repo", "sha2") { approved_commit }
-      get "/api/commits/my_repo/sha2"
+      approved_commit = approved_stub_commit("sha1")
+      stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
+      get "/api/commits/my_repo/sha1"
       assert_status 200
-      result = JSON.parse(last_response.body)
+      result = JSON.parse(last_response.body)["sha1"]
       assert result["approved"]
       assert_equal 155, result["comment_count"]
       assert_equal "The Barkeep <thebarkeep@barkeep.com>", result["approved_by"]
+    end
+
+    should "allow for fetching multiple shas at once" do
+      commit1 = approved_stub_commit("sha1")
+      commit2 = approved_stub_commit("sha2")
+      stub(Commit).prefix_match("my_repo", "sha1") { commit1 }
+      stub(Commit).prefix_match("my_repo", "sha2") { commit2 }
+      get "/api/commits/my_repo/sha1,sha2"
+      assert_status 200
+      result = JSON.parse(last_response.body)
+      assert_equal 2, result.size
+      ["sha1", "sha2"].each { |sha| assert_equal 155, result[sha]["comment_count"] }
+    end
+
+    should "only return requested fields" do
+      approved_commit = approved_stub_commit("sha1")
+      stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
+      get "/api/commits/my_repo/sha1?fields=approved"
+      assert_status 200
+      result = JSON.parse(last_response.body)["sha1"]
+      assert result["approved"]
+      assert_equal 1, result.size
     end
   end
 
   context "api authentication" do
     def check_response
       assert_status 200
-      assert_equal 155, JSON.parse(last_response.body)["comment_count"]
+      assert_equal 155, JSON.parse(last_response.body)["sha1"]["comment_count"]
     end
 
     def create_request_url(params)

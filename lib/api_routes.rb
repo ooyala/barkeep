@@ -48,20 +48,31 @@ class Barkeep < Sinatra::Base
     [204, "Repo #{repo_name} is scheduled to be cloned."]
   end
 
-  get "/api/commits/:repo_name/:sha" do
-    begin
-      commit = Commit.prefix_match params[:repo_name], params[:sha]
-    rescue RuntimeError => e
-      halt 404, { :message => e.message }.to_json
+  # TODO(caleb): If you include lots of shas, you will end up with a very large GET request. Apparently many
+  # servers/proxies may not handle GETs over some limit 4k, 8k, ... Experiment with requesting lots of shas,
+  # and put a warning in the documentation. We may have to make this a POST if this is an issue.
+  get "/api/commits/:repo_name/:shas" do
+    shas = params[:shas].split(",")
+    fields = params[:fields] ? params[:fields].split(",") : nil
+    commits = {}
+    shas.each do |sha|
+      begin
+        commit = Commit.prefix_match params[:repo_name], sha
+      rescue RuntimeError => e
+        halt 404, { :message => e.message }.to_json
+      end
+      approver = commit.approved? ? commit.approved_by_user : nil
+      commit_data = {
+        :approved => commit.approved?,
+        :approved_by => commit.approved? ? "#{approver.name} <#{approver.email}>" : nil,
+        :approved_at => commit.approved? ? commit.approved_at.to_i : nil,
+        :comment_count => commit.comment_count,
+        :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
+      }
+      commit_data.select! { |key, value| fields.include? key.to_s } if fields
+      commits[commit.sha] = commit_data
     end
     content_type :json
-    approver = commit.approved? ? commit.approved_by_user : nil
-    {
-      :approved => commit.approved?,
-      :approved_by => commit.approved? ? "#{approver.name} <#{approver.email}>" : nil,
-      :approved_at => commit.approved? ? commit.approved_at.to_i : nil,
-      :comment_count => commit.comment_count,
-      :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
-    }.to_json
+    commits.to_json
   end
 end
