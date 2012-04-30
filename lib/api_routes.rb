@@ -19,6 +19,7 @@ class Barkeep < Sinatra::Base
     halt 400, "No API key provided." unless api_key
     user = User[:api_key => api_key]
     halt 400, "Bad API key provided." unless user
+    halt 403, "The demo user is not allowed to make API requests." if user.demo?
     halt 400, "No timestamp in API request." unless params[:timestamp]
     halt 400, "Bad timestamp." unless params[:timestamp] =~ /^\d+$/
     timestamp = Time.at(params[:timestamp].to_i) rescue Time.at(0)
