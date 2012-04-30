@@ -1,6 +1,6 @@
 require "addressable/uri"
 require "base64"
-require "digest/sha1"
+require "securerandom"
 require "openssl"
 require "uri"
 
@@ -16,9 +16,7 @@ module Api
   end
 
   # Generate a random API key or API secret for a user.
-  def self.generate_user_key()
-    Base64.encode64(Digest::SHA1.hexdigest(rand(2**256).to_s)).strip.sub("==", "")
-  end
+  def self.generate_user_key() SecureRandom.uuid.gsub("-", "") end
 
   # Generate a signature from a request and a user's api secret. This is used in authenticating an API
   # request. The user of this method needs to verify that there is a timestamp, that it is correct, check the
