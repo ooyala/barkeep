@@ -46,7 +46,7 @@ class Barkeep < Sinatra::Base
     rescue RuntimeError => e
       halt 400, e.message
     end
-    [204, "Repo #{repo_name} is scheduled to be cloned."]
+    [202, "Repo #{repo_name} is scheduled to be cloned."]
   end
 
   post "/api/comment" do
