@@ -26,7 +26,7 @@ module BarkeepClient
       end
 
       begin
-        result = BarkeepClient.commits(configuration, repo, [sha])[sha]
+        result = BarkeepClient.commits(configuration, repo, [sha]).values[0]
       rescue RuntimeError => e
         puts e.message
         exit 1

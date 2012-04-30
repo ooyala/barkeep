@@ -41,7 +41,7 @@ module BarkeepClient
       if commits.empty?
         puts "No commits in range."
         exit 0
-      elsif commits.size > 100
+      elsif commits.size > 1000
         puts "Warning: #{commits.size} commits in range. Lookup could be very slow. Proceed? [yN]"
         unless STDIN.gets.downcase.strip =~ /^y(es)?/
           puts "Aborting."
@@ -50,7 +50,7 @@ module BarkeepClient
       end
 
       begin
-        commit_data = BarkeepClient.commits(configuration, repo, commits)
+        commit_data = BarkeepClient.commits(configuration, repo, commits, ["approved"])
       rescue RuntimeError => e
         puts e.message
         exit 1

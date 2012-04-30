@@ -29,7 +29,7 @@ module BarkeepClient
       end
 
       begin
-        result = BarkeepClient.commits(configuration, repo, [sha])[sha]
+        result = BarkeepClient.commits(configuration, repo, [sha]).values[0]
       rescue RuntimeError => e
         puts e.message
         exit 1
@@ -55,21 +55,22 @@ module BarkeepClient
   end
 
   # Core method for calling Barkeep's commit API call.
-  # TODO: Support querying lots of commits at once using the altered API call.
-  def self.commits(configuration, repo, shas)
+  def self.commits(configuration, repo, shas, fields = [])
     result = {}
-    shas.each do |sha|
-      uri = URI.parse(File.join(configuration["barkeep_server"], "/api/commits/#{repo}/#{sha}"))
-      begin
-        response = Net::HTTP.get_response uri
-      rescue SocketError
-        raise "Cannot connect to the Barkeep server."
-      end
-      if response.code.to_i != 200
-        error = JSON.parse(response.body)["message"] rescue nil
-        raise error ? "Error: #{error}" : "Unspecified server error."
-      end
-      info = JSON.parse(response.body)
+    params = { :shas => shas.join(",") }
+    params[:fields] = fields.join(",") unless fields.empty?
+    uri = URI.parse(File.join(configuration["barkeep_server"], "/api/commits/#{repo}"))
+    begin
+      response = Net::HTTP.post_form uri, params
+    rescue SocketError
+      raise "Cannot connect to the Barkeep server."
+    end
+    if response.code.to_i != 200
+      error = JSON.parse(response.body)["message"] rescue nil
+      raise error ? "Error: #{error}" : "Unspecified server error."
+    end
+    commits = JSON.parse(response.body)
+    commits.each do |sha, info|
       commit_data = {}
       info.each do |key, value|
         next if value.nil?
