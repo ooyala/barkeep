@@ -391,7 +391,7 @@ window.Commit =
         commentForm.click (e) -> e.stopPropagation()
         # Add a random id so matching comments on both sides of side-by-side can be shown.
         commentForm.attr("form-id", Math.floor(Math.random() * 10000))
-        commentForm.find(".commentCancel").click @onCommentCancel
+        commentForm.find(".commentCancel").click (e) => @onCommentCancel(e)
         commentForm.find(".commentPreview").click @onCommentPreview
         codeLine.append(comment)
         @setSideBySideCommentVisibility()
