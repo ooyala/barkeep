@@ -19,9 +19,7 @@ class AppTest < Scope::TestCase
   context "get commit" do
     def approved_stub_commit(sha)
       commit = stub_commit(sha, @user)
-      stub(commit).approved_by_user_id { 42 }
-      stub(commit).approved_by_user { @user }
-      stub(commit).comment_count { 155 }
+      stub_many commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
       commit
     end
 
@@ -34,8 +32,7 @@ class AppTest < Scope::TestCase
 
     should "return the relevant metadata for an unapproved commit as expected" do
       unapproved_commit = stub_commit("sha1", @user)
-      stub(unapproved_commit).approved_by_user_id { nil }
-      stub(unapproved_commit).comment_count { 0 }
+      stub_many unapproved_commit, :approved_by_user_id => nil, :comment_count => 0
       stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
       get "/api/commits/my_repo/sha1"
       assert_status 200
@@ -85,8 +82,14 @@ class AppTest < Scope::TestCase
       assert_equal 155, JSON.parse(last_response.body)["comment_count"]
     end
 
-    def create_request_url(params)
-      "#{@base_url}?#{params.keys.sort.map { |k| "#{k}=#{params[k]}" }.join("&") }"
+    def create_request_url(url, params)
+      "#{url}?#{params.keys.sort.map { |k| "#{k}=#{params[k]}" }.join("&") }"
+    end
+
+    def get_with_signature(url, params)
+      signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(url, params)}"
+      params[:signature] = signature
+      get create_request_url(url, params)
     end
 
     setup do
@@ -95,14 +98,11 @@ class AppTest < Scope::TestCase
       @whitelist_routes.each { |route| Barkeep::AUTHENTICATION_WHITELIST_ROUTES.delete route }
 
       approved_commit = stub_commit("sha1", @user)
-      stub(approved_commit).approved_by_user_id { 42 }
-      stub(approved_commit).approved_by_user { @user }
-      stub(approved_commit).comment_count { 155 }
+      stub_many approved_commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
       stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
 
       stub(User).[](:api_key => "apikey") { @user }
-      stub(@user).api_secret { "apisecret" }
-      stub(@user).api_key { "apikey" }
+      stub_many @user, :api_secret => "apisecret", :api_key => "apikey"
       @base_url = "/api/commits/my_repo/sha1"
       @params = { :api_key => "apikey", :timestamp => Time.now.to_i }
     end
@@ -112,9 +112,7 @@ class AppTest < Scope::TestCase
     end
 
     should "return proper result for up-to-date, correctly signed request" do
-      signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(@params)}"
-      @params[:signature] = signature
-      get create_request_url(@params)
+      get_with_signature @base_url, @params
       check_response
     end
 
@@ -122,39 +120,33 @@ class AppTest < Scope::TestCase
       [:timestamp, :api_key].each do |missing_field|
         params = @params.dup
         params.delete missing_field
-        signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(params)}"
-        params[:signature] = signature
-        get create_request_url(@params)
+        get_with_signature @base_url, params
         assert_status 400
       end
     end
 
     should "reject unsigned requests" do
-      get create_request_url(@params)
+      get create_request_url(@base_url, @params)
       assert_status 400
     end
 
     should "reject requests with bad api keys" do
       stub(User).[](:api_key => "apikey") { nil }
-      signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(@params)}"
-      @params[:signature] = signature
-      get create_request_url(@params)
+      get_with_signature @base_url, @params
       assert_status 400
     end
 
     should "reject requests with malformed or outdated timestamps" do
       ["asdf", (Time.now - (525_600 * 60)).to_i, (Time.now + 60).to_i].each do |bad_timestamp|
         @params[:timestamp] = bad_timestamp
-        signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(@params)}"
-        @params[:signature] = signature
-        get create_request_url(@params)
+        get_with_signature @base_url, @params
         assert_status 400
       end
     end
 
     should "reject requests with bad signatures" do
       @params[:signature] = "asdf"
-      get create_request_url(@params)
+      get create_request_url(@base_url, @params)
       assert_status 400
     end
 
@@ -164,17 +156,13 @@ class AppTest < Scope::TestCase
 
       should "allow requests for admin-only routes made by admin users" do
         mock(@user).admin? { true }
-        signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(@params)}"
-        @params[:signature] = signature
-        get create_request_url(@params)
+        get_with_signature @base_url, @params
         check_response
       end
 
       should "reject requests for admin-only routes made by non-admin users" do
         mock(@user).admin? { false }
-        signature = OpenSSL::HMAC.hexdigest "sha1", "apisecret", "GET #{create_request_url(@params)}"
-        @params[:signature] = signature
-        get create_request_url(@params)
+        get_with_signature @base_url, @params
         assert_status 403
       end
     end

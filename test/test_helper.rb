@@ -6,3 +6,8 @@ require "scope"
 FIXTURES_PATH ||= File.join(File.dirname(__FILE__), "/fixtures")
 TEST_REPO_NAME ||= "test_git_repo"
 
+# A helper method to allow stubbing out multiple properties (to static values) at once by passing in the
+# object and a hash of { <method name symbol>, <value> }.
+def stub_many(object, stubs)
+  stubs.each { |name, value| stub(object).method_missing(name, &Proc.new { value }) }
+end
