@@ -37,7 +37,7 @@ This is how it works on our Mac OS dev laptops; YMMV. First, ensure you've insta
 Make sure you're up to date on Ruby gems (`bundle install`) and on migrations (`ruby run_migrations.rb`).
 
     $ bin/run_app.bash # run the server
-    # navigate to localhost:4567
+    # navigate to localhost:8040
 
 These are somewhat optional services to run while developing. These background jobs periodically fetch new
 commits, pre-generate commit diffs, and send emails when comments are posted.
@@ -50,7 +50,7 @@ If you want to run all three services together, you can do so using foreman.
 
     $ bundle exec foreman start
 
-You can view the Resque dashboard and inspect failed Resque jobs by navigating to [http://localhost:4567/resque](http://localhost:4567/resque).
+You can view the Resque dashboard and inspect failed Resque jobs by navigating to [http://localhost:8040/resque](http://localhost:8040/resque).
 
 ## <a name="section_3"></a>3 Viewing Repositories
 
