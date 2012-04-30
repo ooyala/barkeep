@@ -27,8 +27,8 @@
   <div class="column">
     <h2>Commit preferences</h2>
     <div class="preference">
-      Line length indicator bar: <% line_length = current_user.line_length.to_s || "110" %>
-      <span id="lineLength" class="value"><%= line_length %> characters</span>
+      <% line_length = (current_user.line_length || 110).to_s %>
+      Line length indicator bar: <span id="lineLength" class="value"><%= line_length %> characters</span>
       <div id="lineLengthSlider" data-value="<%= line_length %>" ></div>
     </div>
     <div class="preference">
