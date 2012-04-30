@@ -29,7 +29,7 @@ class AppTest < Scope::TestCase
       stub(@@repo).db_commit("my_repo", "sha1") { nil } # No results
       get "/api/commits/my_repo/sha1"
       assert_status 404
-      assert JSON.parse(last_response.body).include? "message"
+      assert JSON.parse(last_response.body).include? "error"
     end
 
     should "return the relevant metadata for an unapproved commit as expected" do
