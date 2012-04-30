@@ -61,8 +61,9 @@ class Barkeep < Sinatra::Base
     format_commit_data(commit, params[:repo_name], fields).to_json
   end
 
-  # NOTE(caleb): Large GET requests (say, containing 30 SHA-1s in the uri) do not work. Hence, to
-  # batch-request commit data, we must use a POST.
+  # NOTE(caleb): Large GET requests are rejected by the Ruby web servers we use. (Unicorn, in particular,
+  # doesn't seem to like paths > 1k and rejects them silently.) Hence, to batch-request commit data, we must
+  # use a POST.
   post "/api/commits/:repo_name" do
     shas = params[:shas].split(",")
     fields = params[:fields] ? params[:fields].split(",") : nil
