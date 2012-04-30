@@ -61,10 +61,20 @@ class Barkeep < Sinatra::Base
     nil
   end
 
-  # TODO(caleb): If you include lots of shas, you will end up with a very large GET request. Apparently many
-  # servers/proxies may not handle GETs over some limit 4k, 8k, ... Experiment with requesting lots of shas,
-  # and put a warning in the documentation. We may have to make this a POST if this is an issue.
-  get "/api/commits/:repo_name/:shas" do
+  get "/api/commits/:repo_name/:sha" do
+    fields = params[:fields] ? params[:fields].split(",") : nil
+    begin
+      commit = Commit.prefix_match params[:repo_name], params[:sha]
+    rescue RuntimeError => e
+      halt 404, { :message => e.message }.to_json
+    end
+    content_type :json
+    format_commit_data(commit, params[:repo_name], fields).to_json
+  end
+
+  # NOTE(caleb): Large GET requests (say, containing 30 SHA-1s in the uri) do not work. Hence, to
+  # batch-request commit data, we must use a POST.
+  post "/api/commits/:repo_name" do
     shas = params[:shas].split(",")
     fields = params[:fields] ? params[:fields].split(",") : nil
     commits = {}
@@ -74,18 +84,23 @@ class Barkeep < Sinatra::Base
       rescue RuntimeError => e
         halt 404, { :message => e.message }.to_json
       end
-      approver = commit.approved? ? commit.approved_by_user : nil
-      commit_data = {
-        :approved => commit.approved?,
-        :approved_by => commit.approved? ? "#{approver.name} <#{approver.email}>" : nil,
-        :approved_at => commit.approved? ? commit.approved_at.to_i : nil,
-        :comment_count => commit.comment_count,
-        :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
-      }
-      commit_data.select! { |key, value| fields.include? key.to_s } if fields
-      commits[commit.sha] = commit_data
+      commits[commit.sha] = format_commit_data(commit, params[:repo_name], fields)
     end
     content_type :json
     commits.to_json
+  end
+
+  private
+
+  def format_commit_data(commit, repo_name, fields)
+    approver = commit.approved? ? commit.approved_by_user : nil
+    commit_data = {
+      :approved => commit.approved?,
+      :approved_by => commit.approved? ? "#{approver.name} <#{approver.email}>" : nil,
+      :approved_at => commit.approved? ? commit.approved_at.to_i : nil,
+      :comment_count => commit.comment_count,
+      :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
+    }
+    fields ? commit_data.select { |key, value| fields.include? key.to_s } : commit_data
   end
 end

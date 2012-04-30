@@ -39,7 +39,7 @@ class AppTest < Scope::TestCase
       stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
       get "/api/commits/my_repo/sha1"
       assert_status 200
-      result = JSON.parse(last_response.body)["sha1"]
+      result = JSON.parse(last_response.body)
       refute result["approved"]
       assert_equal 0, result["comment_count"]
       assert_match %r[commits/my_repo/sha1$], result["link"]
@@ -50,18 +50,18 @@ class AppTest < Scope::TestCase
       stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
       get "/api/commits/my_repo/sha1"
       assert_status 200
-      result = JSON.parse(last_response.body)["sha1"]
+      result = JSON.parse(last_response.body)
       assert result["approved"]
       assert_equal 155, result["comment_count"]
       assert_equal "The Barkeep <thebarkeep@barkeep.com>", result["approved_by"]
     end
 
-    should "allow for fetching multiple shas at once" do
+    should "allow for fetching multiple shas at once using the post route" do
       commit1 = approved_stub_commit("sha1")
       commit2 = approved_stub_commit("sha2")
       stub(Commit).prefix_match("my_repo", "sha1") { commit1 }
       stub(Commit).prefix_match("my_repo", "sha2") { commit2 }
-      get "/api/commits/my_repo/sha1,sha2"
+      post "/api/commits/my_repo", :shas => "sha1,sha2"
       assert_status 200
       result = JSON.parse(last_response.body)
       assert_equal 2, result.size
@@ -73,7 +73,7 @@ class AppTest < Scope::TestCase
       stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
       get "/api/commits/my_repo/sha1?fields=approved"
       assert_status 200
-      result = JSON.parse(last_response.body)["sha1"]
+      result = JSON.parse(last_response.body)
       assert result["approved"]
       assert_equal 1, result.size
     end
@@ -82,7 +82,7 @@ class AppTest < Scope::TestCase
   context "api authentication" do
     def check_response
       assert_status 200
-      assert_equal 155, JSON.parse(last_response.body)["sha1"]["comment_count"]
+      assert_equal 155, JSON.parse(last_response.body)["comment_count"]
     end
 
     def create_request_url(params)
