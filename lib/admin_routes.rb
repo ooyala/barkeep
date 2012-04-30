@@ -4,6 +4,7 @@
 require "lib/api"
 require "resque_jobs/delete_repo"
 require "fileutils"
+require "sinatra/base"
 
 class Barkeep < Sinatra::Base
   include Api
