@@ -5,6 +5,37 @@ This file summarizes changes between tagged Barkeep versions. It lists tags in r
 Each tag is followed by a description of the changes it represents. This is not in a typical Changelog format,
 but rather general markdown text describing important notes about the versions and progress of Barkeep.
 
+0.3.0
+-----
+
+### Major features
+
+* Autocomplete in the commit search box.
+* Emoji!
+* Demo mode
+* Gradual context expander for diff view.
+* Management dashboard for adding/removing repositories and troubleshooting Barkeep.
+* User permissions (admin/normal) and admin dashboard for managing users.
+* Massive provisioning/deployment rewrite to make it easy to get up and running.
+* Introduced a vagrant-based development workflow to make it easy to test deployment.
+
+### Minor features and bugfixes
+
+* Using unicorn as well as multiple resque workers in production.
+* Ported our styles from less to scss.
+* Allow for using multiple OpenID providers.
+* Greatly improved developer workflow with foreman.
+* Tests for client-side coffeescript code.
+* Partial sha matching redirects.
+* Introduced the Barkeep client gem.
+* [Fix corner cases in diff generation](https://github.com/ooyala/barkeep/issues/134)
+* [Comment previews](https://github.com/ooyala/barkeep/issues/70)
+* [Commit view refreshes automatically.](https://github.com/ooyala/barkeep/issues/60)
+* [Replace SHAs with links in commit messages.](https://github.com/ooyala/barkeep/commit/ede08a3cbe8ffb7eb959a3bdea5dd093ac43476f)
+* Introduced our own grit fork and updated it to fix many bugs and incompatibilities with recent git versions.
+* [Show a list of repos on the admin page.](https://github.com/ooyala/barkeep/issues/127)
+* Tons of bugfixes and too many minor features to write about.
+
 0.2.1
 -----
 
