@@ -14,7 +14,7 @@
   }
 
   #commitMetadata {
-    @include flexbox;
+    @include display-box;
     @include embossedPanel;
     box-shadow: none;
 
@@ -29,12 +29,12 @@
     z-index: 2;
 
     #messageAndAuthor {
-      @include flexbox(vertical);
+      @include box(vertical);
       width: 730px;
 
       #messageMetadata {
-        @include flexbox(vertical);
-        @include flex;
+        @include box(vertical);
+        @include box-flex(1);
 
         .name {
           margin-bottom: 10px;
@@ -54,7 +54,7 @@
       }
 
       #authorMetadata {
-        @include flexbox(horizontal);
+        @include display-box;
         display: block;
 
         .avatar {
@@ -73,9 +73,8 @@
     }
 
     #metadataButtons {
-      @include flexbox(vertical);
-      @include boxAlign(end);
-      @include flex;
+      @include box(vertical, center, end);
+      @include box-flex(1);
 
       button {
         display: block;
@@ -96,21 +95,13 @@
         border-bottom: 1px solid darken($greenApproveButton, 25%);
         text-shadow: 0px -1px 1px darken($greenApproveButton, 30%);
 
-        background-color: darken($greenApproveButton, 18%);
-
-        background-image: -webkit-gradient(linear, left top, left bottom,
-          color-stop(0, lighten($greenApproveButton, 3%)), color-stop(0.95, darken($greenApproveButton, 10%)));
-        background-image: -moz-linear-gradient(top, lighten($greenApproveButton, 3%) 0%,
-          darken($greenApproveButton, 15%) 95%);
+        @include linear-gradient(lighten($greenApproveButton, 3%) 0%, darken($greenApproveButton, 15%) 95%,
+            $fallback: darken($greenApproveButton, 18%));
 
         &:hover {
           border: 1px solid darken(#890128, 25%);
-
-          background-image: -webkit-gradient(linear, left top, left bottom,
-            color-stop(0, lighten($greenApproveButton, 8%)),
-            color-stop(0.95, darken($greenApproveButton, 10%)));
-          background-image: -moz-linear-gradient(top, lighten($greenApproveButton, 10%) 0%,
-            darken($greenApproveButton, 15%) 95%);
+          @include linear-gradient(lighten($greenApproveButton, 10%) 0%, darken($greenApproveButton, 15%) 95%,
+            $fallback: darken($greenApproveButton, 18%));
         }
 
         &:active { background-image: none; }
@@ -124,9 +115,8 @@
       }
 
       #minorButtons {
-        @include flexbox(vertical);
-        @include boxPack(end);
-        @include flex;
+        @include box(vertical, end);
+        @include box-flex(1);
 
         button {
           font-size: 11px;
@@ -324,9 +314,7 @@
       padding: 5px;
       position: relative;
 
-      background-image: -webkit-gradient(linear, left top, left bottom,
-        color-stop(0, $sunkenColor), color-stop(0.95, darken($sunkenColor, 10%)));
-      background-image: -moz-linear-gradient(top, $sunkenColor 0%, darken($sunkenColor, 10%) 95%);
+      @include linear-gradient($sunkenColor 0%, darken($sunkenColor, 10%) 95%);
 
       background-color: $sunkenColor;
       .addAComment, .name {
@@ -390,22 +378,21 @@
     .commentControls {
       margin: 10px 0;
       width: 100%;
-      @include flexbox;
-      @include boxPack(end);
+      @include box(horizontal, end);
       .buttonSpacer {
-        @include flexbox;
-        @include flex(1);
-        @include boxOrdinalGroup(1);
+        @include display-box;
+        @include box-flex(1);
+        @include box-ordinal-group(1);
         margin-left: 10px;
       }
       .commentCancel {
-        @include flexbox;
-        @include boxOrdinalGroup(2);
+        @include display-box;
+        @include box-ordinal-group(2);
         margin-right: 3px;
       }
       .commentSubmit {
-        @include flexbox;
-        @include boxOrdinalGroup(3);
+        @include display-box;
+        @include box-ordinal-group(3);
         margin-right: 10px;
       }
     }
@@ -466,7 +453,7 @@
     &.spacingLine { background-color: $sunkenColor; }
 
     .lineNumber {
-      @include noUserSelect;
+      @include user-select(none);
       font: 14px $monoFont;
       background-color: $sunkenColor;
       color: $lightTextColor;

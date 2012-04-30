@@ -53,7 +53,7 @@ body {
       background: $textColor;
       color: $almostWhite;
       opacity: 0.95;
-      @include roundedCorners(3px);
+      @include border-radius(3px);
     }
   }
 }
@@ -123,32 +123,27 @@ button.fancy {
   border: 1px solid $deepRed;
   /* This darker border helps distinguish the drop shadow. */
   border-bottom: 1px solid darken($deepRed, 5%);
-  @include roundedCorners(3px);
+  @include border-radius(3px);
   box-shadow: 0 2px 4px #999;
   text-shadow: 0px -1px 1px $deepRed;
   padding: 5px 18px;
   color: white;
   cursor: pointer;
 
-  background-color: darken($coreRed, 18%);
-
-  background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, lighten($coreRed, 3%)), color-stop(0.95, darken($coreRed, 10%)));
-  background-image: -moz-linear-gradient(top, lighten($coreRed, 3%) 0%, darken($coreRed, 15%) 95%);
+  @include linear-gradient(lighten($coreRed, 3%) 0%, darken($coreRed, 10%) 95%,
+        $fallback: darken($coreRed, 18%));
 
   &:hover {
     border: 1px solid darken(#890128, 25%);
-
-    background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten($coreRed, 8%)), color-stop(0.95, darken($coreRed, 10%)));
-    background-image: -moz-linear-gradient(top, lighten($coreRed, 10%) 0%, darken($coreRed, 15%) 95%);
+    @include linear-gradient(lighten($coreRed, 8%) 0%, darken($coreRed, 10%) 95%,
+        $fallback: darken($coreRed, 18%));
   }
   &:active { background-image: none; }
 }
 
 /* Our standard buttons are flat grey buttons. */
 button.standard, input[type=button], input[type=submit] {
-  @include roundedCorners(3px);
+  @include border-radius(3px);
   padding: 7px 12px;
   text-shadow: 0px -1px 1px #EEEEEE;
   border: 1px solid #AAAAAA;
@@ -157,22 +152,13 @@ button.standard, input[type=button], input[type=submit] {
   color: #333333;
   $standardButtonGrey: #F2F1EF;
 
-  background-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0, $standardButtonGrey), color-stop(0.90, darken($standardButtonGrey, 8%)));
-  background-image: -moz-linear-gradient(top, $standardButtonGrey 0%, darken($standardButtonGrey, 8%) 95%);
+  @include linear-gradient($standardButtonGrey 0%, darken($standardButtonGrey, 8%) 95%);
   box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
-
   &:hover {
-    background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, lighten($standardButtonGrey, 2%)), color-stop(0.95, darken($standardButtonGrey, 5%)));
-    background-image: -moz-linear-gradient(top, lighten($standardButtonGrey, 2%) 0%,
-      darken($standardButtonGrey, 5%) 95%);
+    @include linear-gradient(lighten($standardButtonGrey, 2%) 0%, darken($standardButtonGrey, 5%) 95%);
   }
-
   &:active {
-    background-image: -webkit-gradient(linear, left top, left bottom,
-      color-stop(0, darken($standardButtonGrey, 8%)), color-stop(0.95, $standardButtonGrey));
-    background-image: -moz-linear-gradient(top, darken($standardButtonGrey, 8%), $standardButtonGrey 95%);
+    @include linear-gradient(darken($standardButtonGrey, 8%), $standardButtonGrey 95%);
   }
 }
 
@@ -217,7 +203,7 @@ button.standard, input[type=button], input[type=submit] {
 }
 
 header {
-  @include flexbox();
+  @include display-box;
   position: relative;
   width: $pageWidth;
   margin: 0 auto;
@@ -259,7 +245,7 @@ header {
   }
 
   nav {
-    @include flex(1);
+    @include box-flex(1);
     margin-top: 10px;
     margin-left: 40px;
     ul li {
@@ -273,7 +259,7 @@ header {
         box-shadow: 0px 2px 1px white;
       }
       a {
-        @include roundedCorners(4px);
+        @include border-radius(4px);
         border: $standardBorder;
         border-top: 0;
 
@@ -310,7 +296,7 @@ header {
     margin-top: 17px;
 
     .signInGravatar {
-      @include roundedCorners(3px);
+      @include border-radius(3px);
       width: 20px;
       height: 20px;
       margin-right: 5px;

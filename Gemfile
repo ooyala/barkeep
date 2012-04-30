@@ -10,10 +10,13 @@ gem "pathological"
 gem "resque"
 
 # For writing CSS more conveniently.
-gem "sass"
+gem "sass", "~> 3.1.16"
 
 # For managing compiling and caching assets
 gem "pinion", "~> 0.1.5"
+
+# Really nice scss mixin library
+gem "bourbon"
 
 # We're pulling in our own grit fork with bugfixes.
 gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "38d0e6660b78bff97499280fae09a78b087c50b4"

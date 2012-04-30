@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 .tipsy-inner {
-  @include roundedCorners(2px);
+  @include border-radius(2px);
   background-color: $textColor;
   color: $almostWhite;
   max-width: 200px;
