@@ -1,6 +1,6 @@
 window.Settings =
   init: ->
-    $("#editUsername").on "click", (e) => @makeTextEditable(e)
+    $("#editDisplayName").on "click", (e) => @makeTextEditable(e)
     $("#lineLengthSlider").slider
       value: parseInt($("#lineLengthSlider").attr("data-value"))
       min: 80

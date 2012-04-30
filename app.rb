@@ -168,7 +168,7 @@ class Barkeep < Sinatra::Base
 
   put "/settings/:preference" do
     preference = params[:preference]
-    if preference == "username"
+    if preference == "displayname"
       current_user.name = params[:value]
       current_user.save
     elsif ["line_length", "default_to_side_by_side"].include? preference
