@@ -8,7 +8,6 @@ class Barkeep < Sinatra::Base
 
   helpers do
     def api_error(status, message)
-      content_type :json
       halt status, { "error" => message }.to_json
     end
   end
@@ -21,6 +20,7 @@ class Barkeep < Sinatra::Base
   ALLOWED_API_STALENESS_MINUTES = 5
 
   before "/api/*" do
+    content_type :json
     next if AUTHENTICATION_WHITELIST_ROUTES.any? { |route| request.path =~ /^#{route}/ }
     user = ensure_properly_signed(request, params)
     if ADMIN_ROUTES.any? { |route| request.path =~ /^#{route}/ }
@@ -30,7 +30,7 @@ class Barkeep < Sinatra::Base
   end
 
   post "/api/add_repo" do
-    api_error 400, "'url' is required." if (params[:url] || "").strip.empty?
+    ensure_required_params :url
     begin
       add_repo params[:url]
     rescue RuntimeError => e
@@ -41,7 +41,7 @@ class Barkeep < Sinatra::Base
 
   post "/api/comment" do
     [:repo_name, :sha, :text].each do |field|
-      api_error 400, "#{field} is a required field." unless params[field] && !params[field].empty?
+      ensure_required_params field
     end
     begin
       create_comment(*[:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] })
@@ -58,7 +58,6 @@ class Barkeep < Sinatra::Base
     rescue RuntimeError => e
       api_error 404, e.message
     end
-    content_type :json
     format_commit_data(commit, params[:repo_name], fields).to_json
   end
 
@@ -76,7 +75,6 @@ class Barkeep < Sinatra::Base
       end
       commits[commit.sha] = format_commit_data(commit, params[:repo_name], fields)
     end
-    content_type :json
     commits.to_json
   end
 
@@ -102,7 +100,7 @@ class Barkeep < Sinatra::Base
     user = User[:api_key => api_key]
     api_error 400, "Bad API key provided." unless user
     api_error 403, "The demo user is not allowed to make API requests." if user.demo?
-    api_error 400, "No timestamp in API request." unless params[:timestamp]
+    ensure_required_params :timestamp, :signature
     api_error 400, "Bad timestamp." unless params[:timestamp] =~ /^\d+$/
     timestamp = Time.at(params[:timestamp].to_i) rescue Time.at(0)
     staleness = (Time.now.to_i - timestamp.to_i) / 60.0
@@ -111,7 +109,6 @@ class Barkeep < Sinatra::Base
     elsif staleness > ALLOWED_API_STALENESS_MINUTES
       api_error 400, "Timestamp too stale."
     end
-    api_error 400, "No signature given." unless params[:signature]
     unless Api.generate_request_signature(request, user.api_secret) == params[:signature]
       api_error 400, "Bad signature."
     end

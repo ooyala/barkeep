@@ -109,6 +109,19 @@ class Barkeep < Sinatra::Base
       end
       commit
     end
+
+    def ensure_required_params(*required_params)
+      required_params.each do |param|
+        unless params[param] && !params[param].strip.empty?
+          message = "Missing required parameter '{param}'."
+          if content_type == "application/json"
+            halt 400, { :error => message }.to_json
+          else
+            halt 400, message
+          end
+        end
+      end
+    end
   end
 
   before do
@@ -190,7 +203,7 @@ class Barkeep < Sinatra::Base
 
   # get the one commit that the user is looking for.
   get "/commits/search/by_sha" do
-    halt 404, "No sha pattern" unless params[:sha]
+    ensure_required_params :sha
     partial_sha = params[:sha]
 
     repos = MetaRepo.instance.repos.map(&:name)
@@ -239,7 +252,7 @@ class Barkeep < Sinatra::Base
 
   # I'm using POST even though this is idempotent to avoid massive urls.
   post "/comment_preview" do
-    halt 400, "No text given" unless params[:text]
+    ensure_required_params :text
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:sha])
     halt 400, "No such commit." unless commit
     Comment.new(:text => params[:text], :commit => commit).filter_text
