@@ -1,7 +1,6 @@
 require "bundler/setup"
 require "pathological"
 
-require "bourbon"
 require "coffee-script"
 require "json"
 require "methodchain"
