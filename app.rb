@@ -147,9 +147,9 @@ class Barkeep < Sinatra::Base
     end
   end
 
-  get "/" do
-    redirect "/commits"
-  end
+  get("/favicon.ico") { redirect "/assets/favicon.ico" }
+
+  get("/") { redirect "/commits" }
 
   get "/signin" do
     session.clear
