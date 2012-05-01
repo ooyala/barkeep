@@ -147,7 +147,7 @@ class Barkeep < Sinatra::Base
     end
   end
 
-  get("/favicon.ico") { redirect "/assets/favicon.ico" }
+  get("/favicon.ico") { redirect @pinion.asset_url("favicon.ico") }
 
   get("/") { redirect "/commits" }
 
