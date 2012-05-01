@@ -320,8 +320,8 @@ window.Commit =
     unless ($target.parents(".commentBody").size() > 0) ||
         e.target.tagName.toLowerCase() in ["input", "textarea"]
       window.getSelection().removeAllRanges()
-    return if $target.is(".delete, .edit, .commentText, .commentSubmit .commentBody")
-    return if $target.parents(".commentBody").size() > 0
+    return unless $(e.target).closest(".codeText, button.reply").size() > 0
+    # Don't show multiple comment boxes
     return if $target.parents(".diffLine").find(".commentForm").size() > 0
     return unless window.userLoggedIn
 
