@@ -22,8 +22,8 @@
         <div id="authorMetadata">
           <div class="avatar"><img src="<%= commit.grit_commit.author.gravatar %>" /></div>
           <div class="authorInfo">
-            <p class="author"><%= commit.grit_commit.author.name %></p>
-            <p class="email"><%= commit.grit_commit.author.email %></p>
+            <p class="author"><%= commit.grit_commit.author.name.force_encoding("utf-8") %></p>
+            <p class="email"><%= commit.grit_commit.author.email.force_encoding("utf-8") %></p>
             <p class="date">
               <span class="north" rel="tipsy" title="<%= commit.date.strftime("%Y-%m-%d %H:%M:%S") %>">
                 <%= commit.date.to_pretty %>
