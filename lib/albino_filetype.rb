@@ -14,6 +14,7 @@ class AlbinoFiletype
     ".sh" => :bash,
     ".css" => :css,
     ".less" => :scss,
+    ".scss" => :scss,
     ".py" => :python,
     ".c" => :c,
     ".h" => :cpp,
