@@ -12,7 +12,9 @@ set :concurrency, "web=1,resque=4,cron=1"
 
 common_options = {
   barkeep_port: 8040,
-  db_location: "DBI:Mysql:barkeep:localhost",
+  db_host: "localhost",
+  db_port: 3306,
+  db_name: "barkeep",
   db_user: "root",
   db_password: "",
   redis_host: "localhost",

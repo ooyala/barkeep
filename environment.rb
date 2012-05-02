@@ -1,5 +1,6 @@
-DB_LOCATION = "DBI:Mysql:barkeep:localhost"
-
+DB_HOST = "localhost"
+DB_PORT = 3306
+DB_NAME = "barkeep"
 DB_USER = "root"
 DB_PASSWORD = ""
 

@@ -4,8 +4,6 @@ require "bundler/setup"
 require "pathological"
 require "environment.rb"
 
-PROTOCOL, DB_TYPE, DB_NAME, DB_HOST = DB_LOCATION.split(":")
-
 migrate_to_version = nil
 if ARGV.include?("rollback")
   versions = Dir.entries("migrations").map do |filename|
@@ -21,5 +19,5 @@ command += " -M #{migrate_to_version}" if migrate_to_version
 
 puts "Migrating to version #{migrate_to_version}" if migrate_to_version
 
-host_string = "mysql://#{DB_USER}@#{DB_HOST}/#{DB_NAME}"
+host_string = "mysql2://#{DB_USER}@#{DB_HOST}/#{DB_NAME}"
 puts `#{command} "#{host_string}"`
