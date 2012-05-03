@@ -5,14 +5,8 @@ require "grit"
 module Grit
   class Commit
     attr_accessor :repo_name
-
-    def link
-      "/commits/#{@repo_name}/#{@id}"
-    end
-
-    def timestamp
-      date.to_i
-    end
+    def link() "/commits/#{@repo_name}/#{@id}" end
+    def timestamp() date.to_i end
   end
 
   class Repo
@@ -22,9 +16,7 @@ module Grit
   end
 
   class Actor
-    def user
-      @user ||= User.find(:email => self.email)
-    end
+    def user() @user ||= User.find(:email => self.email) end
 
     # The default to_s() for Actor only includes the author's name, not email.
     def display_string
