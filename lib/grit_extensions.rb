@@ -25,20 +25,21 @@ module Grit
   end
 
   class Actor
-    def user() @user ||= User.find(:email => self.email) end
     alias_method :name_original, :name
     def name() name_original.then { force_encoding("utf-8") } end
     alias_method :email_original, :email
     def email() email_original.then { force_encoding("utf-8") } end
 
+    def user() @user ||= User.find(:email => email) end
+
     # The default to_s() for Actor only includes the author's name, not email.
     def display_string
       # If the author's display name is empty, which it sometimes is, strip() will eliminate the whitespace.
-      "#{self.to_s} <#{self.email}>".strip
+      "#{name} <#{email}>".strip
     end
 
     def gravatar
-      hash = Digest::MD5.hexdigest(self.email.downcase)
+      hash = Digest::MD5.hexdigest(email.downcase)
       image_src = "http://www.gravatar.com/avatar/#{hash}"
     end
   end
