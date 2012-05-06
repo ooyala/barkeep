@@ -7,7 +7,9 @@ require "resque/tasks"
 if ENV["fezzik_destination"]
   require "fezzik"
   Fezzik.init(:tasks => "config/tasks")
-  require "config/deploy_config"
+  require "config/deploy_targets/common"
+  Dir.glob("config/deploy_targets/*.rb").each { |path| require path }
+  BarkeepDeploy.ensure_all_options_are_present
 end
 
 task :test => ["test:units", "test:integrations", "test:coffeescripts"]

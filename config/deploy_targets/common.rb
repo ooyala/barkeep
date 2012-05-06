@@ -1,13 +1,24 @@
-# This helper module is intended to be required from deploy_config.rb.
-# It provides some common deploy-related configuration, like common Barkeep configuration options which
-# you can override in your specific deploy_config.rb. See deploy_config.example.rb for sample usage.
-module BarkeepDeployHelper
+# This is the configuration file for Fezzik (see https://github.com/dmacdougall/fezzik), which is used for
+# deploying Barkeep. Have a look at Fezzik's README to understand the basic flow of Fezzik deployments.
+# This file specifies the common options that most Barkeep deployments share. Add your own per-host
+# configuration file in config/deploy_targets to specify your specific settings like the hostname to deploy to.
+# See config/deploy_targets/vagrant.rb for an example.
 
-  # Call this from within a Fezzik.destination block to include each of the common Barkeep options.
-  # After this has been called, you can then override any of those options by calling Fezzik.env(key, value).
-  def self.include_common_deploy_options
-    # Note that these options use the "deploy_to" and "hostname" var, so those must've been defined prior to
-    # calling this function (e.g. via set :deploy_to, "path").
+set :app, "barkeep"
+set :deploy_to, "/opt/#{app}"
+set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
+set :local_path, Dir.pwd
+set :user, "barkeep"
+
+# The concurrency setting given to Foreman, which we use to generate our Upstart init scripts.
+# We run the Barkeep HTTP app using Unicorn which impelments its own workers, so use only 1 web worker.
+set :concurrency, "web=1,resque=4,cron=1"
+
+# This deploy helper provides some common deploy-related configuration, like common Barkeep options.
+module BarkeepDeploy
+  def self.common_options
+    # Note that these options use the "deploy_to" and "hostname" vars, so those must have been defined prior
+    # to calling this function (e.g. via set :deploy_to, "path").
     common_options = {
       barkeep_port: 8040,
       db_host: "localhost",
@@ -26,7 +37,11 @@ module BarkeepDeployHelper
       unicorn_workers: 4,
       rack_env: "production"
     }
+  end
 
+  # Call this from within a Fezzik.destination block to include each of the common Barkeep deploy options.
+  # After this has been called, you can then override any of those options by calling Fezzik.env(key, value).
+  def self.include_common_deploy_options
     common_options.each { |key, value| Fezzik.env key, value }
   end
 
@@ -37,7 +52,7 @@ module BarkeepDeployHelper
     required_options.each do |option|
       next if Fezzik.environments[hostname][option]
       puts "You haven't defined the Fezzik env variable #{option}, which is needed for this deploy. " +
-          "Add it to config/deploy_config.rb."
+          "Add it to your configuration in config/deploy_targets/."
       exit 1
     end
   end
