@@ -27,6 +27,7 @@ class CloneNewRepo
     begin
       # Shell out instead of using Grit::Git.new(repo_path).clone({}, repo_url, repo_path) because
       # Grit doesn't raise an exception when it has trouble cloning a repo, so there's no good error feedback.
+      FileUtils.mkdir_p(REPOS_ROOT)
       Timeout::timeout(CLONE_TIMEOUT) do
         run_shell("cd '#{REPOS_ROOT}' && git clone '#{repo_url}' #{repo_name}")
       end
