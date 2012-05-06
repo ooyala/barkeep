@@ -104,7 +104,7 @@ namespace :fezzik do
     puts "Starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}."
     # Upstart will not let you start a started job. Check if it's started already prior to invoking start.
     run "(status #{app} | grep stop) > /dev/null && start #{app} || true"
-    puts "Checking if server availabled."
+    puts "Checking that the server is up and running."
     server_is_up?
   end
 
