@@ -22,7 +22,7 @@ namespace :fezzik do
     `git log --pretty=%H > #{staging_dir}/all_commits.txt`
   end
 
-  # We setting up a system for deploy, we fill in some conf file templates (like nginx.conf) using env vars
+  # When setting up a system for deploy, we fill in some conf file templates (like nginx.conf) using env vars
   # from this deploy, and then copy those conf files to the remote system.
   desc "Evaluates the templates in script/system_setup_files using Fezzik's current env vars."
   task :evaluate_conf_file_templates do
