@@ -91,7 +91,7 @@ namespace :fezzik do
     # Munge the Foreman-generated upstart conf files so that our app starts on system startup (right after
     # mysql). This is a bit hacky -- Foreman supports templates which you can use to modify the generated
     # upstart conf files. At the time of writing this was not worth the extra effort.
-    run "echo 'start on starting mysql' >> /etc/init/#{app}.conf"
+    run "echo 'start on started mysql' >> /etc/init/#{app}.conf"
   end
 
   desc "after the app code has been rsynced, sets up the app's dependencies, like gems"
