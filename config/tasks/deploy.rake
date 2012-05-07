@@ -25,11 +25,11 @@ namespace :fezzik do
   desc "Evaluates the templates in script/system_setup_files using Fezzik's current env vars."
   task :evaluate_conf_file_templates do
     env_settings = Fezzik.environments[hostname]
-    nginx_conf = Tilt::ERBTemplate.new("deploy/system_setup_files/nginx_site.conf.erb").render(Object.new,
+    nginx_conf = Tilt::ERBTemplate.new("config/system_setup_files/nginx_site.conf.erb").render(Object.new,
         :port => env_settings[:barkeep_port],
         :hostname => hostname,
         :path => current_path)
-    File.open("/tmp/#{app}/staged/deploy/system_setup_files/nginx_site.conf", "w") { |f| f.write(nginx_conf) }
+    File.open("/tmp/#{app}/staged/config/system_setup_files/nginx_site.conf", "w") { |f| f.write(nginx_conf) }
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"

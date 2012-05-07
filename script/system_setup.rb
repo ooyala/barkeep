@@ -18,7 +18,7 @@ ensure_packages(
   "python-dev", # For using ruby-python
   "redis-server", "mysql-server", "nginx")
 
-ensure_file("deploy/system_setup_files/.bashrc", "#{ENV['HOME']}/.bashrc")
+ensure_file("config/system_setup_files/.bashrc", "#{ENV['HOME']}/.bashrc")
 
 ensure_rbenv_ruby("1.9.2-p290")
 
@@ -27,7 +27,7 @@ ensure_run_once("nginx site-enabled has correct permissions") do
   shell "sudo chmod g+w -R /etc/nginx/sites-enabled", :silent => true
 end
 
-ensure_file("deploy/system_setup_files/nginx_site.conf", "/etc/nginx/sites-enabled/barkeep.conf") do
+ensure_file("config/system_setup_files/nginx_site.conf", "/etc/nginx/sites-enabled/barkeep.conf") do
   `sudo /etc/init.d/nginx restart`
 end
 
@@ -91,6 +91,6 @@ end
 #   shell "chmod 0600 #{ENV['HOME']}/.ssh/git_ssh_private_key"
 # end
 
-# ensure_file("deploy/system_setup_files/ssh_config", "#{ENV['HOME']}/.ssh/config")
+# ensure_file("config/system_setup_files/ssh_config", "#{ENV['HOME']}/.ssh/config")
 
 satisfy_dependencies()
