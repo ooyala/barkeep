@@ -2,17 +2,25 @@
 # Sets up vagrant for your developer machine. This will:
 # 1. Modify .ssh/config file so you can log in to Vagrant using `ssh barkeep_vagrant`
 #    instead of `vagrant ssh` (which is required to deploy to Vagrant).
-# 2. Add vagrant's public ssh key to root's .ssh/authorized_keys file, so you can login as root.
+# 2. Add the vagrant user's public ssh key to root's .ssh/authorized_keys file, so you can login as root.
 
 require "bundler/setup"
+require "timeout"
 
 def hostname() "barkeep_vagrant" end
 
-def setup
+def setup_vagrant
   run_command("vagrant up")
   setup_ssh_config
   # Ensure no old packages are lingering around. This will avoid possible 404's when installing packages.
-  run_command("ssh #{hostname} aptitude update -y > /dev/null")
+  puts "* Updating Vagrant's apt packages. This will take a minute."
+  # apt-get update can hang while downloading packages from unresponsive mirrors, and never times itself
+  # out. Often the problem can be solved by retrying.
+  unless try_n_times(2, "ssh #{hostname} apt-get update -y -qq", 60)
+    puts "Unable to complete `apt-get update` inside your Vagrant VM. " +
+        "This can happen when Ubuntu's apt mirrors are being unresponsive."
+    exit 1
+  end
 end
 
 def setup_ssh_config
@@ -62,4 +70,22 @@ def run_command(command)
   output
 end
 
-setup()
+def try_n_times(n, command, timeout)
+  attempt = 0
+  while (attempt < n)
+    error = nil
+    attempt += 1
+    begin
+      Timeout::timeout(timeout) { run_command(command) }
+    rescue Timeout::Error => error
+      puts "The command '#{command}' didn't finish within #{timeout} seconds."
+    rescue StandardError => error
+      puts error.message
+    end
+    return true unless error
+    puts "Trying again." if attempt < n
+  end
+  false
+end
+
+setup_vagrant
