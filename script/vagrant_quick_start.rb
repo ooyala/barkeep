@@ -17,6 +17,6 @@ puts "* Setting up Vagrant."
 require "script/setup_vagrant.rb"
 
 puts "* Deploying Barkeep to your Vagrant VM."
-stream_output("bundle exec fez vagrant deploy")
+stream_output("bundle exec fez vagrant deploy 2>&1")
 
 puts "* Barkeep is up and running inside of Vagrant. Visit http://localhost:8080"
