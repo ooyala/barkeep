@@ -2,6 +2,7 @@ require "redis"
 
 class RedisManager
   @@redis = nil
+
   def self.redis_instance
     return @@redis if @@redis
     begin
@@ -15,5 +16,10 @@ class RedisManager
       @@redis = nil
     end
     @@redis
+  end
+
+  def self.reconnect
+    @@redis = nil
+    redis_instance
   end
 end
