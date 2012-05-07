@@ -14,7 +14,7 @@ module Grit
     def link() "/commits/#{@repo_name}/#{@id}" end
     def timestamp() date.to_i end
 
-    unless defined? :message_original
+    unless self.method_defined? :message_original
       alias_method :message_original, :message
       def message() message_original.then { force_encoding("utf-8") } end
     end
@@ -27,11 +27,11 @@ module Grit
   end
 
   class Actor
-    unless defined? :name_original
+    unless self.method_defined? :name_original
       alias_method :name_original, :name
       def name() name_original.then { force_encoding("utf-8") } end
     end
-    unless defined? :email_original
+    unless self.method_defined? :email_original
       alias_method :email_original, :email
       def email() email_original.then { force_encoding("utf-8") } end
     end
