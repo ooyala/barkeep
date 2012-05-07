@@ -40,10 +40,9 @@ def setup_ssh_config
     #   IdentityFile /Users/philc/.vagrant.d/insecure_private_key
     #   IdentitiesOnly yes
 
-    # Change your local .ssh/config to use root by default to login to vagrant.
+    # Don't check the "known hosts file" when sshing into Vagrant.
     vagrant_ssh_config = vagrant_ssh_config.split("\n").
-        reject { |line| line.match(/User vagrant|UserKnownHostsFile/) }.join("\n")
-    vagrant_ssh_config += "\n  User root\n\n"
+        reject { |line| line.match(/UserKnownHostsFile/) }.join("\n") + "\n"
     File.open(ssh_config_path, "w") { |file| file.write(vagrant_ssh_config + original_ssh_config) }
   end
 
