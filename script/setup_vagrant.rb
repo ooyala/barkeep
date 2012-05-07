@@ -16,7 +16,7 @@ def setup_vagrant
   puts "* Updating Vagrant's apt packages. This will take a minute."
   # apt-get update can hang while downloading packages from unresponsive mirrors, and never times itself
   # out. Often the problem can be solved by retrying.
-  unless try_n_times(2, "ssh #{hostname} apt-get update -y -qq", 60)
+  unless try_n_times(2, "ssh root@#{hostname} apt-get update -y -qq", 90)
     puts "Unable to complete `apt-get update` inside your Vagrant VM. " +
         "This can happen when Ubuntu's apt mirrors are being unresponsive."
     exit 1
