@@ -2,7 +2,7 @@
 
 Barkeep is a fast, fun way to review code. Engineering organizations can use it to keep the bar high.
 
-To a video of Barkeep in action, visit [getbarkeep.org](http://getbarkeep.org).
+To see a video of Barkeep in action, visit [getbarkeep.org](http://getbarkeep.org).
 
 ### Getting started
 
