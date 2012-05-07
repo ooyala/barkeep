@@ -1,31 +1,13 @@
 #!/usr/bin/env ruby-local-exec
 # A quick environment setup script to help developers get started quickly.
 # This will:
-# - setup bundler
+# - bundle install the required gems
 # - create mysql tables & run migrations
 #
 # Usage:
 #   initial_app_setup.rb [envrionment=development]
 
-require "open3"
-environment = ARGV[0] || "development"
-
-# Runs the command and raises an exception if its status code is nonzero.
-def stream_output(command)
-  exit_status = nil
-  Open3.popen3(command) do |stdin, stdout, stderr, wait_thread|
-    stdout.each { |line| puts line }
-    exit_status = wait_thread.value.to_i
-  end
-  raise %Q(The command "#{command}" failed.) unless exit_status == 0
-end
-
-`bundle check > /dev/null`
-unless $?.to_i == 0
-  puts "running `bundle install` (this may take a minute)"
-  args = (environment == "production") ? "--without dev" : ""
-  stream_output("bundle install #{args}")
-end
+require File.expand_path(File.join(File.dirname(__FILE__), "setup_ruby"))
 
 require "bundler/setup"
 require "pathological"
