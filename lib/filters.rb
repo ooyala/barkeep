@@ -20,7 +20,8 @@ StringFilter.define_filter :replace_shas_with_links do |str, repo_name|
   end
 end
 
-# compiled list from https://jira.corp.ooyala.com/secure/BrowseProjects.jspa#all
+# Add Ooyala-specific Jira links. This list is from https://jira.corp.ooyala.com/secure/BrowseProjects.jspa#all
+# TODO(philc): We'll be removing this out of Core barkeep soon. See issue #238.
 JIRA_WHITELIST = Set.new(["BL", "PROD", "PL", "APP", "OCS", "BIG", "CCC", "CST", "DS", "IOS", "JIRA", "NH",
     "PSE", "OTA", "TOOL", "OTS", "WEB", "MIRA", "PWS", "AUTO", "HELP"])
 StringFilter.define_filter :link_jira_issue do |str|
