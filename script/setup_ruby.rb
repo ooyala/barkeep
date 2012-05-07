@@ -27,6 +27,7 @@ def stream_output(command)
   exit_status = nil
   Open3.popen3(command) do |stdin, stdout, stderr, wait_thread|
     stdout.each { |line| puts line }
+    stderr.each { |line| puts line }
     exit_status = wait_thread.value.to_i
   end
   raise %Q(The command "#{command}" failed.) unless exit_status == 0
