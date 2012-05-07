@@ -143,7 +143,7 @@ namespace :fezzik do
       "Latest commit:",
       `git log --pretty=%H -n 1`,
       "Current branch:",
-      `git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`,
+      `git symbolic-ref HEAD`.strip,
       "Date:",
       `date -u`,
       "Current user on host:",
