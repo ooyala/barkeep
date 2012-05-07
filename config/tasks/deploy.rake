@@ -5,6 +5,8 @@ require "tilt"
 # Run multiple commands in one big ssh invocation, for brevity and ssh efficiency.
 def run_commands(*commands) run commands.join(" && ") end
 
+STDOUT.sync = true # If deploy.rake gets run from another script, output will be buffered. Prevent that.
+
 namespace :fezzik do
   desc "stages the project for deployment in /tmp"
   task :stage do
