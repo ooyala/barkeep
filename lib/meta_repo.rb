@@ -267,7 +267,9 @@ class MetaRepo
       original_results = GitHelper.commits_with_limit(repo, git_command_options, limit_with_padding + 1,
           :commits, retain)
       has_more = (original_results.size > limit_with_padding)
-      original_results = retain == :first ?
+      # Commits are ordered by git ordering, so grab the first limit_with_padding amount when paging to
+      # older commits and the last limit_with_padding amount when paging to newer commits.
+      original_results = (retain == :first) ?
           original_results.take(limit_with_padding) :
           original_results.last(limit_with_padding)
       filtered_results += commit_filter_proc ?
