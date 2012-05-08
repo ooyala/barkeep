@@ -451,6 +451,9 @@
         .removed, .same, .added {
           background-color: #FFC;
         }
+        .addCommentButton img{
+          visibility: visible;
+        }
       }
     }
 
@@ -492,6 +495,7 @@
         .added { background-color: #e2fce2; }
       }
       .addCommentButton {
+        img { visibility: hidden; }
         position: absolute;
         left: 0px;
         margin-left: -25px;
