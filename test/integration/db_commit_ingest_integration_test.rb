@@ -16,10 +16,20 @@ class DbCommitIngestIntegrationTest < Scope::TestCase
     end
   end
 
-  should "import commits which are not yet in the database" do
+  should "import commits from a new repository without sending email" do
+    test_repo_id = GitRepo.find(:name => test_repo.name).id
+    Commit.filter(:git_repo_id => test_repo_id).destroy
+
+    DbCommitIngest.perform(test_repo.name, "master")
+
+    expected_tasks = [GenerateTaggedDiffs]
+    assert_equal expected_tasks, @enqueued_jobs.map(&:first).uniq
+  end
+
+  should "import commits which are not yet in the database and send email" do
     head = test_repo.commit "master"
     Commit.filter(:sha => head.id).destroy
-    DbCommitIngest.perform("test_git_repo", "master")
+    DbCommitIngest.perform(test_repo.name, "master")
 
     commits = Commit.filter(:sha => test_repo.commit("master").id).all
     assert_equal 1, commits.size

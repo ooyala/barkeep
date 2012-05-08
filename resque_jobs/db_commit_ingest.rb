@@ -28,6 +28,10 @@ class DbCommitIngest
     repo = MetaRepo.instance.get_grit_repo(repo_name)
     db_repo = GitRepo.first(:name => repo_name)
 
+    # We don't send new commit emails when ingesting a new repository.
+    # A "new repository" is one which has 0 commits in the database.
+    should_send_emails = Commit.filter(:git_repo_id => db_repo.id).select(1).count > 0
+
     begin
       # repo.commits is ultimately shelling out to git rev-list.
       commits = repo.commits(remote_name, page_size, page * page_size)
@@ -70,7 +74,7 @@ class DbCommitIngest
 
     # Enqueue commits in the logical ordering (particularly for sending emails).
     rows_to_insert.reverse.each do |row|
-      Resque.enqueue(DeliverCommitEmails, repo_name, row[:sha])
+      Resque.enqueue(DeliverCommitEmails, repo_name, row[:sha]) if should_send_emails
       Resque.enqueue(GenerateTaggedDiffs, repo_name, row[:sha])
     end
   end
