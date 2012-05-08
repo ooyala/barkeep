@@ -121,7 +121,7 @@ GEM
       sinatra (~> 1.3.0)
       tilt (~> 1.3)
     slop (1.9.1)
-    terraform (0.0.4)
+    terraform (0.0.5)
     therubyracer (0.10.1)
       libv8 (~> 3.3.10)
     thin (1.2.11)
