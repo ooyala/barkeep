@@ -493,10 +493,7 @@
       .addCommentButton {
         img {
           opacity: 0;
-          -moz-transition: opacity .1s linear;
-          -webkit-transition: opacity .1s linear;
-          -o-transition: opacity .1s linear;
-          transition: opacity .1s linear;
+          @include transition(opacity 0.1s linear);
         }
         position: absolute;
         left: 0px;
