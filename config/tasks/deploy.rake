@@ -94,8 +94,8 @@ namespace :fezzik do
 
   remote_task :generate_foreman_upstart_scripts, :roles => [:deploy_user] do
     puts "Exporting foreman daemon scripts to /etc/init"
-    foreman_command = "foreman export upstart upstart_scripts/ -a #{app} -l /var/log/#{app} -u #{user} " +
-        "-c #{concurrency} -f Procfile > /dev/null"
+    foreman_command = "foreman export upstart upstart_scripts/ -a #{app} -l /var/log/#{app} -u #{user} " <<
+        "-f Procfile > /dev/null"
     run_commands("cd #{release_path}",
         "bundle exec #{foreman_command}",
         "sudo rm /etc/init/barkeep*.conf",

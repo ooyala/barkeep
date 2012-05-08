@@ -30,3 +30,6 @@ ENABLE_READONLY_DEMO_MODE = true
 # If specified, this will be used as the session secret in development mode.
 # This prevents the session being cleared when sinatra reloads changes.
 COOKIE_SESSION_SECRET = "AssimilationSuccessful"
+
+# The number of resque workers to spawn
+RESQUE_WORKERS = 2

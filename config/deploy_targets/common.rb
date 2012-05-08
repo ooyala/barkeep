@@ -10,10 +10,6 @@ set :release_path, "#{deploy_to}/releases/#{Time.now.strftime("%Y%m%d%H%M")}"
 set :local_path, Dir.pwd
 set :user, "barkeep"
 
-# The concurrency setting given to Foreman, which we use to generate our Upstart init scripts.
-# We run the Barkeep HTTP app using Unicorn which impelments its own workers, so use only 1 web worker.
-set :concurrency, "web=1,resque=4,cron=1"
-
 # This deploy helper provides some common deploy-related configuration, like common Barkeep options.
 module BarkeepDeploy
   def self.common_options
@@ -35,6 +31,7 @@ module BarkeepDeploy
       repos_root: "#{deploy_to}/repos",
       unicorn_pid_file: "#{deploy_to}/unicorn.pid",
       unicorn_workers: 4,
+      resque_workers: 4,
       rack_env: "production"
     }
   end
