@@ -40,12 +40,20 @@ def ensure_gem(gem)
   stream_output "gem install #{gem} --no-ri --no-rdoc"
 end
 
-
 required_ruby_version = rbenv_version.split("-").first
 ensure_ruby_version(required_ruby_version)
 ensure_gem("bundler")
+ensure_gem("terraform")
+
+require "terraform/dsl"
+include Terraform::DSL
 
 environment = ARGV[0] || "development"
+
+if (`lsb_release --id`["Ubuntu"] rescue nil)
+  # Before running bundle install, ensure we have the necessary native dependencies for our gems.
+  ensure_packages("build-essential", "libmysqlclient-dev", "libxml2-dev", "libxslt-dev")
+end
 
 `bundle check > /dev/null`
 unless $?.to_i == 0
