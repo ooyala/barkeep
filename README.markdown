@@ -6,21 +6,24 @@ To see a video of Barkeep in action, visit [getbarkeep.org](http://getbarkeep.or
 
 ### Getting started
 
-Since Barkeep is a web app with dependencies (like MySQL, Redis, and others), the easiest way to get it
+Since Barkeep is a web app with dependencies like MySQL, Redis, and others, the easiest way to get it
 running quickly is to run it inside a virtual machine using Vagrant:
 
     $ cd barkeep
     $ script/vagrant_quick_start.rb
 
 You need a few dependencies (like VirtualBox) before you can set up Barkeep inside of Vagrant, but this script
-will help you get them. It will take a few minutes, and once that's done, Barkeep will be running inside of
+will help you get them. It will take a few minutes and once it's done, Barkeep will be running inside of
 Vagrant. You can then browse to **http://localhost:8080** to play with it.
 
-Later you can shut it all down using `bundle exec vagrant halt`.
+You can shut it all down later using `bundle exec vagrant halt`.
 
 ### Documentation
 
-See [the wiki](https://github.com/ooyala/barkeep/wiki) for docs on everything else.
+**See [the wiki](https://github.com/ooyala/barkeep/wiki)** for instructions on deploying Barkeep to your own
+server and for developer docs.
+
+### Credits
 
 Barkeep was written by the following Ooyala engineers:
 
