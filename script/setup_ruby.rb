@@ -12,8 +12,8 @@ def ensure_ruby_version(expected_version)
   b = RUBY_VERSION.split(".").map { |n| n.to_i }
   return if (b <=> a) >= 0
   puts "Barkeep requires Ruby version #{expected_version} or greater. You have #{RUBY_VERSION}."
-  puts "You can remedy this by installing a newer Ruby using rbenv.\n"
-      "See http://github.com/sstephenson/rbenv for more details:\n\n"
+  puts "You can remedy this by installing a newer Ruby using rbenv."
+  puts "See http://github.com/sstephenson/rbenv for more details:\n"
   commands = [
     "curl https://raw.github.com/fesplugas/rbenv-installer/master/bin/rbenv-installer | bash",
     "rbenv install #{rbenv_version}"]
