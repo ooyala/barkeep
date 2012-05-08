@@ -11,8 +11,9 @@ window.Commit =
   SIDE_BY_SIDE_CODE_WIDTH: 830
 
   init: ->
-    $(".diffLine").dblclick (e) => @onDiffLineDblClickOrReply e
-    $(".reply").live "click", (e) => @onDiffLineDblClickOrReply e
+    $(".addCommentButton").click (e) => @onAddCommentAction e
+    $(".diffLine").dblclick (e) => @onAddCommentAction e
+    $(".reply").live "click", (e) => @onAddCommentAction e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
     $(".commentPreview").click (e) => @onCommentPreview e
@@ -315,7 +316,7 @@ window.Commit =
     refreshLine?.hide()
     refreshLine?.show(1)
 
-  onDiffLineDblClickOrReply: (e) ->
+  onAddCommentAction: (e) ->
     $target = $(e.target)
     unless ($target.parents(".commentBody").size() > 0) ||
         e.target.tagName.toLowerCase() in ["input", "textarea"]
