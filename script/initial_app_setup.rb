@@ -8,10 +8,17 @@
 #   initial_app_setup.rb [environment=development]
 
 require File.expand_path(File.join(File.dirname(__FILE__), "setup_ruby"))
+environment = ARGV[0] || "development"
 
-require "bundler/setup"
-require "pathological"
-require "terraform/dsl"
+if environment == "development"
+  require "bundler/setup"
+  require "pathological"
+  require "terraform/dsl"
+else
+  $:.unshift(File.join(File.dirname(__FILE__), ".."))
+  require "script/terraform_dsl"
+end
+
 include Terraform::DSL
 require "environment.rb"
 
