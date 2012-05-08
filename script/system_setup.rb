@@ -16,6 +16,7 @@ ensure_packages(
   "g++", # For installing native extensions.
   "libmysqlclient-dev", # For building the native MySQL gem.
   "python-dev", # For using ruby-python
+  "libxml2-dev", "libxslt-dev", # Nokogiri
   "redis-server", "mysql-server", "nginx")
 
 ensure_file("config/system_setup_files/.bashrc", "#{ENV['HOME']}/.bashrc")
