@@ -5,7 +5,7 @@
 # - create mysql tables & run migrations
 #
 # Usage:
-#   initial_app_setup.rb [envrionment=development]
+#   initial_app_setup.rb [environment=development]
 
 require File.expand_path(File.join(File.dirname(__FILE__), "setup_ruby"))
 
