@@ -41,6 +41,6 @@ environment = ARGV[0] || "development"
 `bundle check > /dev/null`
 unless $?.to_i == 0
   puts "running `bundle install` (this may take a minute)"
-  args = (environment == "production") ? "--without dev" : ""
+  args = (environment == "production") ? "--without development" : ""
   stream_output("bundle install #{args}")
 end
