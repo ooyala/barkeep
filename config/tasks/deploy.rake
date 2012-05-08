@@ -17,6 +17,20 @@ namespace :fezzik do
 
     # Use rsync to preserve executability and follow symlinks.
     system("rsync -aqE #{local_path}/. #{staging_dir} --exclude tmp/ --exclude=/.git/ --exclude=log/*.log")
+    # Copy over the test git metadata if the .git in that directory is a gitfile
+    test_git_repo = "test/fixtures/test_git_repo"
+    if File.file?("#{staging_dir}/#{test_git_repo}/.git")
+      FileUtils.rm "#{staging_dir}/#{test_git_repo}/.git"
+      FileUtils.mkdir "#{staging_dir}/#{test_git_repo}/.git"
+      system("rsync -aqE #{local_path}/.git/modules/#{test_git_repo}/. #{staging_dir}/#{test_git_repo}/.git")
+      # core.worktree makes the repo dependent on location...seems to work to remove it.
+      # TODO(caleb): Revisit the whole copying-the-test-repo thing.
+      config_lines = File.readlines "#{staging_dir}/#{test_git_repo}/.git/config"
+      config_lines.reject! { |line| line =~ /worktree/ }
+      File.open("#{staging_dir}/#{test_git_repo}/.git/config", "w") do |file|
+        config_lines.each { |line| file.write(line) }
+      end
+    end
     Terraform.write_dsl_file("#{staging_dir}/script/")
     Rake::Task["fezzik:evaluate_conf_file_templates"].invoke
     Rake::Task["fezzik:write_git_manifest_for_current_version"].invoke
