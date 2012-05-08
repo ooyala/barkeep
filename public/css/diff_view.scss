@@ -447,7 +447,7 @@
   .diffLine {
     &:not(.chunk) { display: none; }
     &.selected {
-      .code {
+      .code .codeContainer {
         .removed, .same, .added { background-color: #FFC; }
         .addCommentButton { opacity: 1; }
       }
