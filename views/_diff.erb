@@ -40,14 +40,19 @@
               <td class="lineNumber rightNumber"><div class="slideDiv"><%= line.line_num_after || "&nbsp;" %>
                 </div></td>
               <td class="code <%= line.tag %>">
-                <div class="marginLine slideDiv"></div>
-                <div class="codeText slideDiv"><%= line.formatted %></div>
-                <% # add line comments
-                  while comment_index < line_comments.length &&
-                    line_comments[comment_index].line_number == i + 1 %>
-                  <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
-                  <% comment_index += 1 %>
-                <% end %>
+                <div class="addCommentButton slideDiv"></div>
+                <div class="codeContainer slideDiv">
+                  <div class="marginLine"></div>
+                  <div class="codeText">
+                    <%= line.formatted %>
+                  </div>
+                  <% # add line comments
+                    while comment_index < line_comments.length &&
+                      line_comments[comment_index].line_number == i + 1 %>
+                    <%= erb :_comment, :locals => { :comment => line_comments[comment_index] } %>
+                    <% comment_index += 1 %>
+                  <% end %>
+                </div>
               </td>
             </tr>
             <% if !line.chunk && file.lines[i+1].nil? && unchunked_lines > 0 %>
