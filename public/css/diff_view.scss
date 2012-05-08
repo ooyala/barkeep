@@ -449,8 +449,8 @@
     &.selected {
       .code .codeContainer {
         .removed, .same, .added { background-color: #FFC; }
-        .addCommentButton { opacity: 1; }
       }
+      .code .addCommentButton { opacity: 1; }
     }
 
     &.spacingLine { background-color: $sunkenColor; }
