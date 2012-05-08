@@ -449,7 +449,7 @@
     &.selected {
       .code {
         .removed, .same, .added { background-color: #FFC; }
-        .addCommentButton img { opacity: 1; }
+        .addCommentButton { opacity: 1; }
       }
     }
 
@@ -491,15 +491,17 @@
         .added { background-color: #e2fce2; }
       }
       .addCommentButton {
-        img {
-          opacity: 0;
-          @include transition(opacity 0.1s linear);
-        }
+        opacity: 0;
+        @include transition(opacity 0.1s linear);
+        background-image: url(/assets/images/left_comment_bubble.png);
+        background-repeat: no-repeat;
         position: absolute;
         left: 0px;
         margin-left: -20px;
         width: 20px;
         z-index: 0;
+
+        &:hover { background-image: url(/assets/images/red_left_comment_bubble.png); }
       }
     }
 
