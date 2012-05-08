@@ -448,12 +448,8 @@
     &:not(.chunk) { display: none; }
     &.selected {
       .code {
-        .removed, .same, .added {
-          background-color: #FFC;
-        }
-        .addCommentButton img{
-          visibility: visible;
-        }
+        .removed, .same, .added { background-color: #FFC; }
+        .addCommentButton img { opacity: 1; }
       }
     }
 
@@ -495,7 +491,13 @@
         .added { background-color: #e2fce2; }
       }
       .addCommentButton {
-        img { visibility: hidden; }
+        img {
+          opacity: 0;
+          -moz-transition: opacity .1s linear;
+          -webkit-transition: opacity .1s linear;
+          -o-transition: opacity .1s linear;
+          transition: opacity .1s linear;
+        }
         position: absolute;
         left: 0px;
         margin-left: -20px;
