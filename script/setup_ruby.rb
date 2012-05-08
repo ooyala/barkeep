@@ -52,7 +52,7 @@ environment = ARGV[0] || "development"
 
 if (`lsb_release --id`["Ubuntu"] rescue nil)
   # Before running bundle install, ensure we have the necessary native dependencies for our gems.
-  ensure_packages("build-essential", "libmysqlclient-dev", "libxml2-dev", "libxslt-dev")
+  ensure_packages("build-essential", "libmysqlclient-dev", "libxml2-dev", "libxslt1-dev")
 end
 
 `bundle check > /dev/null`
