@@ -5,4 +5,5 @@ if [ -f environment.sh ]; then
   source environment.sh
 fi
 
-bundle exec unicorn -c config/unicorn.barkeep.conf 2> >(grep --line-buffered -v "bust")
+# Filter livecss's requests (with cache_bust=<randomnumber>)
+bundle exec unicorn -c config/unicorn.barkeep.conf 2> >(grep --line-buffered -v "cache_bust=")
