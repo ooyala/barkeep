@@ -30,7 +30,7 @@ end
 RESQUE_WORKERS.times do |i|
   # In production, wait 10 seconds before spawning workers and in between workers to give the web workers a
   # chance to start up quickly without contending for resources.
-  sleep 10 if defined? RACK_ENV && RACK_ENV == "production"
+  sleep 10 if defined?(RACK_ENV) && RACK_ENV == "production"
   spawn({ "QUEUE" => queue_order.join(",") }, "bundle exec rake resque:work")
 end
 
