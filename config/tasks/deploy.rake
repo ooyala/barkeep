@@ -98,7 +98,7 @@ namespace :fezzik do
         "-f Procfile > /dev/null"
     run_commands("cd #{release_path}",
         "bundle exec #{foreman_command}",
-        "sudo rm /etc/init/barkeep*.conf",
+        "sudo rm /etc/init/barkeep*.conf || true",
         "sudo mv upstart_scripts/* /etc/init",
         "rm -R upstart_scripts")
 
