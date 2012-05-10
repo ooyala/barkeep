@@ -55,7 +55,7 @@ module BarkeepDeploy
   end
 
   # This loads an optional credentials file from the path $BARKEEP_CREDENTIALS.
-  # 
+  #
   # When deploying, we must provide the private credentials for the email user account we use to send emails.
   # We do not want to check these credentials into the git repository, and so by convention we're expecting
   # them to be stored in a file whose path is the $BARKEEP_CREDENTIALS env variable. The file should look
