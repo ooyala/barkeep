@@ -115,8 +115,8 @@ class window.SmartSearch
           hint = suggestion.label
           value = suggestion.value
           false
-      # Copy everything including the incomplete search term to the hint box and append the hint to the end.
-      hint = @searchBox.val().slice(0, @searchString.length) + hint.slice(incompleteTerm.length) if hint
+      # Copy the entire current search to the hint box and append the hint to the end.
+      hint = @searchString + hint.slice(incompleteTerm.length) if hint
     # Store the actual tab complete value because the label in the suggestion box and the value that actually
     # gets inserted can be different
     @searchBox.data("tabComplete", value).siblings(".tabCompleteHint").val(hint)
@@ -129,7 +129,6 @@ class window.SmartSearch
     # Tab complete only if a hint exists.
     if value
       @searchBox.val(value)
-      @hideTabCompleteHint()
       # Trigger the next round of autocomplete suggestions if value is a key (e.g. "repos:", "authors:")
       @searchBox.autocomplete(if value[value.length - 1] == ":" then "search" else "close")
 
