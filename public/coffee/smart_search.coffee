@@ -107,18 +107,16 @@ class window.SmartSearch
   showTabCompleteHint: (incompleteTerm, suggestions) ->
     hint = value = ""
     if incompleteTerm
-      # Get the first autocomplete suggestion that starts with the search term. If one doesn't exist,
-      # don't offer a hint.
+      # Get the first autocomplete suggestion that starts with the search term (case insensitive). If one
+      # doesn't exist, don't offer a hint.
+      re = new RegExp("^" + Util.escapeRegex(incompleteTerm), "i")
       $.each suggestions, (i, suggestion) ->
-        if suggestion.label.indexOf(incompleteTerm) == 0
+        if re.test(suggestion.label)
           hint = suggestion.label
           value = suggestion.value
           false
-      # Copy everything up to the incomplete search term to the hint box and append the hint to the end.
-      lastTermIndex = Math.max(@searchString.lastIndexOf(" "),
-                               @searchString.lastIndexOf(","),
-                               @searchString.lastIndexOf(":"))
-      hint = @searchBox.val().slice(0, lastTermIndex + 1) + hint if hint
+      # Copy everything including the incomplete search term to the hint box and append the hint to the end.
+      hint = @searchBox.val().slice(0, @searchString.length) + hint.slice(incompleteTerm.length) if hint
     # Store the actual tab complete value because the label in the suggestion box and the value that actually
     # gets inserted can be different
     @searchBox.data("tabComplete", value).siblings(".tabCompleteHint").val(hint)

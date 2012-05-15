@@ -55,6 +55,10 @@ window.Util =
       callback(context) if finished >= functions.length
     f(context, after) for f in functions
 
+  # Escape any special regex characters. Taken from jQuery UI's autocomplete plugin.
+  escapeRegex: (value) ->
+    return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+
 window.ShortcutOverlay =
   init: ->
     $(".kbShortcuts.overlay .container").focus -> $(".kbShortcuts.overlay").css("visibility", "visible")
