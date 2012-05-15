@@ -6,6 +6,7 @@ class AlbinoFiletype
     "Gemfile" => :ruby,
     "Vagrantfile" => :ruby,
     ".god" => :ruby,
+    ".rake" => :ruby,
     "Makefile" => :make,
     ".erb" => :rhtml,
     ".xml" => :xml,
