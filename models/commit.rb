@@ -53,11 +53,13 @@ class Commit < Sequel::Model
   end
 
   # Attempt to prefix-match a SHA
-  def self.prefix_match(git_repo, partial_sha, zero_commits_ok=false)
+  def self.prefix_match(git_repo, partial_sha, zero_commits_ok = false)
     raise "No such repository: #{git_repo}" unless GitRepo[:name => git_repo]
     commits = Commit.join(:git_repos, :id => :git_repo_id).
                      filter(:git_repos__name => git_repo).
-                     filter(:sha.like("#{partial_sha}%")).limit(2).all
+                     filter(:sha.like("#{partial_sha}%")).
+                     select(*Commit.columns.map { |column| :"commits__#{column}" }).
+                     limit(2).all
     raise "Ambiguous commit in #{git_repo}: #{partial_sha}" if commits.size > 1
     if commits.empty?
       raise "No such commit in #{git_repo}: #{partial_sha}" unless zero_commits_ok
