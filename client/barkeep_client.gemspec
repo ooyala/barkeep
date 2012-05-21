@@ -21,4 +21,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "trollop", "~> 1.16.2"
   s.add_dependency "dedent", "~> 0.0.2"
+  s.add_dependency "rest-client"
 end

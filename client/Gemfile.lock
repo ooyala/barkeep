@@ -1,14 +1,18 @@
 PATH
   remote: .
   specs:
-    barkeep-client (0.0.2)
+    barkeep-client (0.1.6)
       dedent (~> 0.0.2)
+      rest-client
       trollop (~> 1.16.2)
 
 GEM
   remote: http://rubygems.org/
   specs:
     dedent (0.0.2)
+    mime-types (1.17.2)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     trollop (1.16.2)
 
 PLATFORMS

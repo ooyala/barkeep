@@ -1,7 +1,7 @@
 require "rubygems"
 require "trollop"
 require "dedent"
-require "net/http"
+require "rest_client"
 require "json"
 
 require "barkeep/constants"
@@ -59,13 +59,12 @@ module BarkeepClient
     result = {}
     params = { :shas => shas.join(",") }
     params[:fields] = fields.join(",") unless fields.empty?
-    uri = URI.parse(File.join(configuration["barkeep_server"], "/api/commits/#{repo}"))
     begin
-      response = Net::HTTP.post_form uri, params
+      response = RestClient.post "http://#{configuration["barkeep_server"]}/api/commits/#{repo}", params
     rescue SocketError
-      raise "Cannot connect to the Barkeep server."
+      raise "Cannot connect to the Barkeep server at http:#{configuration["barkeep_server"]}."
     end
-    if response.code.to_i != 200
+    if response.code != 200
       error = JSON.parse(response.body)["message"] rescue nil
       raise error ? "Error: #{error}" : "Unspecified server error."
     end

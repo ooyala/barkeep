@@ -1,7 +1,6 @@
 require "rubygems"
 require "trollop"
 require "dedent"
-require "net/http"
 require "json"
 
 require "barkeep/constants"

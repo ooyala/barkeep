@@ -23,6 +23,10 @@ module BarkeepClient
               REQUIRED_CONFIG_KEYS.join(', ')
       raise error
     end
+
+    # Tweak parameters for backwards compatibility:
+    configuration["barkeep_server"].sub! %r{^http://}, ""
+
     configuration
   end
 end
