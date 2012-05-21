@@ -58,8 +58,7 @@ class Commit < Sequel::Model
     commits = Commit.join(:git_repos, :id => :git_repo_id).
                      filter(:git_repos__name => git_repo).
                      filter(:sha.like("#{partial_sha}%")).
-                     select(*Commit.columns.map { |column| :"commits__#{column}" }).
-                     limit(2).all
+                     select_all(:commits).limit(2).all
     raise "Ambiguous commit in #{git_repo}: #{partial_sha}" if commits.size > 1
     if commits.empty?
       raise "No such commit in #{git_repo}: #{partial_sha}" unless zero_commits_ok
