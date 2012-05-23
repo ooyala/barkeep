@@ -66,6 +66,9 @@ gem "mustache"
 # For executing javascript inside Ruby (for compiling coffeescript).
 gem "therubyracer"
 
+# For scripting system setup.
+gem "terraform"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"
@@ -80,6 +83,4 @@ group :development do
   gem "pry"
   gem "awesome_print"
   gem "vagrant" # For testing deployments.
-  # For scripting system setup.
-  gem "terraform"
 end
