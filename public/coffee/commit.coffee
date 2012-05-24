@@ -70,7 +70,8 @@ window.Commit =
       "shift+c": =>
         commitComment.focus()
         false
-      "return": => $(".diffLine.selected").first().dblclick() unless $(".commentCancel").length > 0
+      "return": =>
+        $(".diffLine.selected .addCommentButton").first().dblclick() unless $(".commentCancel").length > 0
       # TODO(kle): cancel comment forms
       "esc": => @clearSelectedLine()
 
