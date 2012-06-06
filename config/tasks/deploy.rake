@@ -1,6 +1,7 @@
 require "fileutils"
 require "terraform"
 require "tilt"
+require "statusz"
 
 # Run multiple commands in one big ssh invocation, for brevity and ssh efficiency.
 def run_commands(*commands) run commands.join(" && ") end
@@ -33,7 +34,7 @@ namespace :fezzik do
     end
     Terraform.write_dsl_file("#{staging_dir}/script/")
     Rake::Task["fezzik:evaluate_conf_file_templates"].invoke
-    Rake::Task["fezzik:write_git_manifest_for_current_version"].invoke
+    Rake::Task["fezzik:write_statusz_file"].invoke
   end
 
   # When setting up a system for deploy, we fill in some conf file templates (like nginx.conf) using env vars
@@ -152,23 +153,7 @@ namespace :fezzik do
 
   # This information is exposed via the URL /statusz, so you can tell which version is currently deployed.
   desc "Records information about the current version of Barkeep at the time of deploy"
-  task :write_git_manifest_for_current_version do
-    staging_dir = "/tmp/#{app}/staged"
-    manifest = [
-      "Latest commit:",
-      `git log --pretty=%H -n 1`,
-      "Current branch:",
-      `git symbolic-ref HEAD`.strip,
-      "Date:",
-      `date -u`,
-      "Current user on host:",
-      `whoami`,
-      "Git user info:",
-      `git config --get user.name`,
-      `git config --get user.email`].join("\n")
-    File.open("#{staging_dir}/git_deploy_info.txt", "w") { |file| file.puts(manifest) }
-    `git log --pretty=%H > #{staging_dir}/all_commits.txt`
-  end
+  task(:write_statusz_file) { Statusz.write_file("/tmp/#{app}/staged/statusz.html") }
 
   def server_is_up?
     begin

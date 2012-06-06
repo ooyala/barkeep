@@ -452,12 +452,8 @@ class Barkeep < Sinatra::Base
   end
 
   get %r{/statusz$} do
-    erb :statusz
-  end
-
-  get "/statusz/:sha_part" do
-    content_type "text/plain"
-    Statusz.commit_info params[:sha_part]
+    statusz_file = File.join(settings.root, "statusz.html")
+    File.file?(statusz_file) ? send_file(statusz_file) : "No deploy data."
   end
 
   post "/request_review" do
