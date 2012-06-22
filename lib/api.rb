@@ -24,11 +24,17 @@ module Api
   # signing.
   # - request: Sinatra request
   # - api_secret: The user's api secret from the DB
-  def self.generate_request_signature(request, api_secret)
-    canonical_request_string = "#{request.env["REQUEST_METHOD"]} #{request.path}"
-    ordered_keys = request.params.keys.reject { |k| k == "signature" }.sort
-    # Sinatra has already url-decoded the query-string parameters at this point, so re-encode them.
-    canonical_query_string = ordered_keys.map { |key| "#{key}=#{URI.encode(request.params[key])}" }.join("&")
+  def self.generate_signature_from_request(request, api_secret)
+    params_without_signature = request.params.reject { |key, value| key == "signature" }
+    generate_signature(request.env["REQUEST_METHOD"], request.path, params_without_signature, api_secret)
+  end
+
+  # Generate a signature from an http request (method, path, querystring parameters) and api secret. The
+  # parameters should be a hash, and the values should not already by url-encoded.
+  def self.generate_signature(http_method, path, params, api_secret)
+    canonical_request_string = "#{http_method.to_s.upcase} #{path}"
+    ordered_keys = params.keys.sort
+    canonical_query_string = ordered_keys.map { |key| "#{key}=#{URI.encode(params[key])}" }.join("&")
     canonical_request_string << "?#{canonical_query_string}" unless canonical_query_string.empty?
     OpenSSL::HMAC.hexdigest("sha1", api_secret, canonical_request_string)
   end

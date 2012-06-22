@@ -110,7 +110,7 @@ class BarkeepServer < Sinatra::Base
     elsif staleness > ALLOWED_API_STALENESS_MINUTES
       api_error 400, "Timestamp too stale."
     end
-    unless Api.generate_request_signature(request, user.api_secret) == params[:signature]
+    unless Api.generate_signature_from_request(request, user.api_secret) == params[:signature]
       api_error 400, "Bad signature."
     end
     user
