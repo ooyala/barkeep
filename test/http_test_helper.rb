@@ -49,8 +49,7 @@ module HttpTestHelper
   # going to fail) if the server is not reachable.
   def ensure_reachable!(server_url, server_display_name)
     unless server_reachable?(server_url)
-      puts "FAIL: Unable to connect to #{server_display_name} at #{server_url} "
-      exit 1
+      abort "FAIL: Unable to connect to #{server_display_name} at #{server_url} "
     end
   end
 
