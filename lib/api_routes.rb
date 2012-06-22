@@ -40,9 +40,7 @@ class BarkeepServer < Sinatra::Base
   end
 
   post "/api/comment" do
-    [:repo_name, :sha, :text].each do |field|
-      ensure_required_params field
-    end
+    ensure_required_params :repo_name, :sha, :text
     begin
       create_comment(*[:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] })
     rescue RuntimeError => e
