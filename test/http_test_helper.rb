@@ -3,6 +3,8 @@ require "nokogiri"
 require "json"
 require "net/http"
 
+require "lib/api"
+
 #
 # Helpers for writing integration tests which make HTTP requests to the servers being tested.
 # TODO(philc): We may want to use rest_client throughout instead of Ruby's Net::HTTP library.
@@ -65,11 +67,17 @@ module HttpTestHelper
     !response.nil? && response.code.to_i >= 200 && response.code.to_i < 500
   end
 
-  def delete(url, params = {}, request_body = nil) perform_request(url, :delete, params, request_body) end
-  def get(url, params = {}, request_body = nil) perform_request(url, :get, params, request_body) end
-  def post(url, params = {}, request_body = nil) perform_request(url, :post, params, request_body) end
-  def put(url, params = {}, request_body = nil) perform_request(url, :put, params, request_body) end
-  def patch(url, params = {}, request_body = nil) perform_request(url, :patch, params, request_body) end
+  [:delete, :get, :post, :put, :patch].each do |http_method|
+    define_method(http_method) do |url, params = {}, request_body = nil|
+      perform_request(url, http_method, params, request_body)
+    end
+    define_method(:"#{http_method}_with_auth") do |url, api_secret, params = {}, request_body = nil|
+      raise "Authenticated requests must have api_key in the params." unless params.include? :api_key
+      params[:timestamp] ||= Time.now.to_i
+      signature = Api.generate_signature(http_method, url, params, api_secret)
+      perform_request(url, http_method, params.merge(:signature => signature), request_body)
+    end
+  end
 
   # Used by perform_request. This can be overridden by integration tests to append things to the request,
   # like adding a login cookie.
