@@ -47,7 +47,7 @@ Barkeep was written by the following Ooyala engineers:
 
 and with contributions from:
 
-* [Noah Gibbs](mailto:noah@ooyala.com)
+* Noah Gibbs ([noahgibbs](https://github.com/noahgibbs))
 * Brian Zhou ([zdyn](https://github.com/zdyn))
 * Manish Khettry ([mkhettry](https://github.com/mkhettry))
 
