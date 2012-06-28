@@ -28,6 +28,13 @@ development, deploying it to your own server and tracking git repos with it.
 [Read here](https://github.com/ooyala/barkeep/wiki/Comparing-Barkeep-to-other-code-review-tools) for a
 comparison of Barkeep to other code review systems.
 
+### Contributing
+
+Barkeep was designed to be easy to hack on, so feel free to dive in. Open a ticket to suggest a new feature or
+just send a pull request with your changes.
+
+Simple style guidelines: mimic the style around you, cap lines at 110 characters.
+
 ### Credits
 
 Barkeep was written by the following Ooyala engineers:
