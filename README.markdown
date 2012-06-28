@@ -4,6 +4,8 @@ Barkeep is a fast, fun way to review code. Engineering organizations can use it 
 
 To see a video of Barkeep in action, visit [getbarkeep.org](http://getbarkeep.org).
 
+Barkeep is standalone software that you host. Once it's setup, you can use it to track and code review any number of git repos available on the internet. It's designed to be easy to run on Mac or Ubuntu.
+
 ### Getting started
 
 Since Barkeep is a web app with dependencies like MySQL, Redis, and others, the easiest way to get it
@@ -12,16 +14,19 @@ running quickly is to run it inside a virtual machine using Vagrant:
     $ cd barkeep
     $ script/vagrant_quick_start.rb
 
-You need a few dependencies (like VirtualBox) before you can set up Barkeep inside of Vagrant, but this script
-will help you get them. It will take a few minutes and once it's done, Barkeep will be running inside of
-Vagrant. You can then browse to **http://localhost:8080** to play with it.
+You will need a few dependencies (like VirtualBox) before you can set up Barkeep inside of Vagrant, but this
+script will help you get them. It will take a few minutes and once it's done, Barkeep will be running inside
+of Vagrant. You can then browse to **http://localhost:8080** to play with it.
 
 You can shut it all down later using `bundle exec vagrant halt`.
 
-### Documentation
+### Docs
 
-**See [the wiki](https://github.com/ooyala/barkeep/wiki)** for instructions on deploying Barkeep to your own
-server and for developer docs.
+See **[the wiki](https://github.com/ooyala/barkeep/wiki)** for instructions on setting up Barkeep for
+development, deploying it to your own server and tracking git repos with it.
+
+[Read here](https://github.com/ooyala/barkeep/wiki/Comparing-Barkeep-to-other-code-review-tools) for a
+comparison of Barkeep to other code review systems.
 
 ### Credits
 
