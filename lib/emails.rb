@@ -52,7 +52,7 @@ class Emails
     subject = subject_for_commit_email(grit_commit)
     html_body = comment_email_body(commit, comments)
 
-    all_previous_commenters = commit.comments.map { |comment| comment.user.email }
+    all_previous_commenters = commit.comments.map { |comment| comment.user.email }.reject(&:demo?)
     to = commit.grit_commit.author.email
     cc = (users_with_saved_searches_matching(commit, :email_comments => true).map(&:email) +
           all_previous_commenters).uniq
@@ -102,10 +102,12 @@ class Emails
   # Returns a list of User objects who have saved searches which match the given commit.
   # This can take up to 0.5 seconds per saved search, as it calls out to git for every repo tracked
   # unless the saved search limits by repo.
+  # Excludes any demo accounts.
   def self.users_with_saved_searches_matching(commit, saved_search_filter_options = {})
     searches = SavedSearch.filter(saved_search_filter_options).eager(:user).all
     searches_by_user = searches.group_by(&:user)
     users_with_matching_searches = searches_by_user.map do |user, searches|
+      next if user.demo?
       searches.any? { |search| search.matches_commit?(commit) } ? user : nil
     end
     users_with_matching_searches.compact
