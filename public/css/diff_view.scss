@@ -480,12 +480,13 @@
           height: 100%;
           position: absolute;
           top: 0px;
-          /* This value is just a guess; it will be adjusted in JS. */
+          // This value is just a guess; it will be adjusted in JS.
           left: 820px;
           right: 0px;
           border-left: 1px solid black;
           background-color: #333;
-          opacity: 0.1;
+          // The margin line will be made visible after it is sized in JS.
+          opacity: 0;
         }
         .removed { background-color: #fce2e2; }
         .added { background-color: #e2fce2; }

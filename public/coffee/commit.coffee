@@ -126,7 +126,8 @@ window.Commit =
     commit.append(marginSizer)
     marginSize = marginSizer.width()
     marginSizer.remove()
-    $("#commit .marginLine").css("left", "#{marginSize}px")
+    # Position the margin line and show it once it's in the right place.
+    $("#commit .marginLine").css("left", "#{marginSize}px").css("opacity", 0.1)
 
   # Display a popup prompt when the user hits 'a' to confirm that they want to approve.
   approveOrDisapprove: ->
