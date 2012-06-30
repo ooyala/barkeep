@@ -20,6 +20,8 @@ body {
   padding: 0;
 }
 
+strong { font-weight: bold; }
+
 // There are cases where we want focus for tooltips but we don't want to show an outline
 .noFocusOutline {
   // FF
