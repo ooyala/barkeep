@@ -52,10 +52,10 @@ class Emails
     subject = subject_for_commit_email(grit_commit)
     html_body = comment_email_body(commit, comments)
 
-    all_previous_commenters = commit.comments.map { |comment| comment.user.email }.reject(&:demo?)
+    all_previous_commenters = commit.comments.map(&:user).reject(&:demo?)
     to = commit.grit_commit.author.email
     cc = (users_with_saved_searches_matching(commit, :email_comments => true).map(&:email) +
-          all_previous_commenters).uniq
+          all_previous_commenters.map(&:email)).uniq
 
     completed_email = CompletedEmail.new(:to => ([to] + cc).join(","), :subject => subject,
         :result => "success", :comment_ids => comments.map(&:id).join(","))
