@@ -4,7 +4,8 @@ Barkeep is a fast, fun way to review code. Engineering organizations can use it 
 
 To see a video of Barkeep in action, visit [getbarkeep.org](http://getbarkeep.org).
 
-Barkeep is standalone software that you host. Once it's setup, you can use it to track and code review any number of git repos available on the internet. It's designed to be easy to run on Mac or Ubuntu.
+Barkeep is standalone software that you host. Once it's set up, you can use it to track and code review any
+number of git repos available on the internet. It's designed to be easy to run on Mac or Ubuntu.
 
 ### Getting started
 
