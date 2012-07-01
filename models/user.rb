@@ -72,6 +72,8 @@ class User < Sequel::Model
   end
 
   def new_saved_search(options)
+    options[:user_id] = id
+    options[:user_order] ||= (saved_searches.map(&:user_order).max || -1) + 1
     if demo?
       options[:id] = @session[:last_demo_saved_search_id] += 1
       create_cookie_backed_saved_search(options)

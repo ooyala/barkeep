@@ -308,8 +308,6 @@ class BarkeepServer < Sinatra::Base
     options[:paths] = params[:paths].to_json if params[:paths] && !params[:paths].empty?
     # Default to only searching master unless branches are explicitly specified.
     options[:branches] = params[:branches].else { "master" }.then { self == "all" ? nil : self }
-    options[:user_id] = current_user.id
-    options[:user_order] = (current_user.saved_searches.map(&:user_order).max || -1) + 1
     saved_search = current_user.new_saved_search(options)
     saved_search.save
     erb :_saved_search, :layout => false,
