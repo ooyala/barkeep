@@ -20,11 +20,16 @@ class User < Sequel::Model
   def rack_session=(session)
     return unless demo?
     @session = session
-    @session[:saved_searches] ||= []
     @session[:last_demo_saved_search_id] ||= 0
     # Use ALL_TIME as the saved search time period for demo users, so they see many commits, even if
     # the Barkeep install hasn't had any new commits in awhile.
     @session[:saved_search_time_period] ||= User::ALL_TIME
+    if @session[:saved_searches].nil?
+      # Have one default saved search for the demo account, so they can click around without searching.
+      has_barkeep_repo = MetaRepo.instance.repos.find { |repo| repo.name == "barkeep" }
+      @session[:saved_searches] = []
+      @session[:saved_searches] << new_saved_search(:repos => "barkeep").values if has_barkeep_repo
+    end
     nil
   end
 
