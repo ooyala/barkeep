@@ -347,13 +347,13 @@ class BarkeepServer < Sinatra::Base
 
   delete "/saved_searches/:id" do
     id = params[:id].to_i
-    current_user.delete_saved_search(params[:id])
+    current_user.delete_saved_search(params[:id].to_i)
     nil
   end
 
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
   post "/saved_searches/:id/search_options" do
-    saved_searches = current_user.find_saved_search(params[:id])
+    saved_search = current_user.find_saved_search(params[:id].to_i)
     body_params = JSON.parse(request.body.read)
     [:unapproved_only, :email_commits, :email_comments].each do |setting|
       saved_search.send("#{setting}=", body_params[setting.to_s]) unless body_params[setting.to_s].nil?
