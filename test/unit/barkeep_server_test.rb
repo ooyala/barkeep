@@ -1,17 +1,17 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../unit_test_helper.rb"))
-require "app"
+require "barkeep_server"
 
-class AppTest < Scope::TestCase
+class BarkeepServerTest < Scope::TestCase
   include Rack::Test::Methods
   include StubHelper
 
-  def app() Barkeep.new(StubPinion.new) end
+  def app() BarkeepServer.new(StubPinion.new) end
 
   setup do
     @@repo = MetaRepo.new("/dev/null")
     stub(MetaRepo).instance { @@repo }
     @user = User.new(:email => "thebarkeep@barkeep.com", :name => "The Barkeep")
-    any_instance_of(Barkeep, :current_user => @user)
+    any_instance_of(BarkeepServer, :current_user => @user)
   end
 
   context "comments" do
@@ -112,7 +112,7 @@ class AppTest < Scope::TestCase
     context "with admin logged in" do
       setup do
         @admin = User.new(:email => "admin@barkeep.com", :name => "The Admin", :permission => "admin")
-        any_instance_of(Barkeep, :current_user => @admin)
+        any_instance_of(BarkeepServer, :current_user => @admin)
       end
 
       should "allow access to /admin/users" do
@@ -129,7 +129,7 @@ class AppTest < Scope::TestCase
       end
 
       teardown do
-        any_instance_of(Barkeep, :current_user => @user)
+        any_instance_of(BarkeepServer, :current_user => @user)
       end
     end
   end

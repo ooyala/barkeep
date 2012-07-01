@@ -42,7 +42,7 @@ LOGIN_WHITELIST_ROUTES = ["/signin", "/signout", "/commits/", "/stats", "/inspir
 # OPENID_PROVIDERS is a string env variable. It's a comma-separated list of OpenID providers.
 OPENID_PROVIDERS_ARRAY = OPENID_PROVIDERS.split(",")
 
-class Barkeep < Sinatra::Base
+class BarkeepServer < Sinatra::Base
   attr_accessor :current_user
 
   def initialize(pinion)

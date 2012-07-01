@@ -3,7 +3,7 @@ require "time"
 
 require "lib/api"
 
-class Barkeep < Sinatra::Base
+class BarkeepServer < Sinatra::Base
   include Api
 
   helpers do

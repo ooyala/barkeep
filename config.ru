@@ -1,4 +1,4 @@
-require "./app"
+require "./barkeep_server"
 require "resque/server"
 require "pinion"
 
@@ -17,4 +17,4 @@ pinion.watch "#{Gem.loaded_specs["bourbon"].full_gem_path}/app/assets/stylesheet
 
 map(PINION_MOUNT_POINT) { run pinion }
 map("/resque") { run Resque::Server.new }
-map("/") { run Barkeep.new(pinion) }
+map("/") { run BarkeepServer.new(pinion) }

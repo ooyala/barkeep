@@ -6,7 +6,7 @@ require "resque_jobs/delete_repo"
 require "fileutils"
 require "sinatra/base"
 
-class Barkeep < Sinatra::Base
+class BarkeepServer < Sinatra::Base
   include Api
 
   before "/admin*" do

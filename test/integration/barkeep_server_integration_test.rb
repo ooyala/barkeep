@@ -4,7 +4,7 @@ require "test/integration_test_helper"
 
 SERVER = "http://localhost:8040"
 
-class AppIntegrationTest < Scope::TestCase
+class BarkeepServerIntegrationTest < Scope::TestCase
   include HttpTestHelper
   def server() SERVER end
 

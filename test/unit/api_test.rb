@@ -1,19 +1,19 @@
 require File.expand_path(File.join(File.dirname(__FILE__), "../unit_test_helper.rb"))
 
-require "app"
+require "barkeep_server"
 require "lib/api_routes"
 
-class AppTest < Scope::TestCase
+class ApiTest < Scope::TestCase
   include Rack::Test::Methods
   include StubHelper
 
-  def app() Barkeep.new(StubPinion.new) end
+  def app() BarkeepServer.new(StubPinion.new) end
 
   setup do
     @@repo = MetaRepo.new("/dev/null")
     stub(MetaRepo).instance { @@repo }
     @user = User.new(:email => "thebarkeep@barkeep.com", :name => "The Barkeep")
-    any_instance_of(Barkeep, :current_user => @user)
+    any_instance_of(BarkeepServer, :current_user => @user)
   end
 
   context "get commit" do
@@ -94,8 +94,8 @@ class AppTest < Scope::TestCase
 
     setup do
       # Temporarily make every api route require authentication
-      @whitelist_routes = Barkeep::AUTHENTICATION_WHITELIST_ROUTES.dup
-      @whitelist_routes.each { |route| Barkeep::AUTHENTICATION_WHITELIST_ROUTES.delete route }
+      @whitelist_routes = BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.dup
+      @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.delete route }
 
       approved_commit = stub_commit("sha1", @user)
       stub_many approved_commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
@@ -108,7 +108,7 @@ class AppTest < Scope::TestCase
     end
 
     teardown do
-      @whitelist_routes.each { |route| Barkeep::AUTHENTICATION_WHITELIST_ROUTES << route }
+      @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES << route }
     end
 
     should "return proper result for up-to-date, correctly signed request" do
@@ -151,8 +151,8 @@ class AppTest < Scope::TestCase
     end
 
     context "admin routes" do
-      setup { Barkeep::ADMIN_ROUTES << @base_url }
-      teardown { Barkeep::ADMIN_ROUTES.delete @base_url }
+      setup { BarkeepServer::ADMIN_ROUTES << @base_url }
+      teardown { BarkeepServer::ADMIN_ROUTES.delete @base_url }
 
       should "allow requests for admin-only routes made by admin users" do
         mock(@user).admin? { true }
