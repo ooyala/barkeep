@@ -25,6 +25,13 @@
         <option <%= "selected" if days_ago == 7 %> value="7">1 week ago</option>
         <option <%= "selected" if days_ago == 14 %> value="14">2 weeks ago</option>
         <option <%= "selected" if days_ago == 30 %> value="30">1 month ago</option>
+        <%# This option helps make the demo experience a bit nicer. It can be performance intensive, so it's
+            not shown for normal users. %>
+        <% if current_user.demo? %>
+          <option <%= "selected" if days_ago == User::ALL_TIME %> value="<%= User::ALL_TIME %>">
+            All time
+          </option>
+        <% end %>
       </select>
     </div>
   </div>
