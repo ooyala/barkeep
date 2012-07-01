@@ -126,9 +126,9 @@ class BarkeepServer < Sinatra::Base
   before do
     # When running in read-only demo mode, if the user is not logged in, treat them as a demo user.
     self.current_user ||= User.find(:email => session[:email])
-    if !self.current_user && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
+    if current_user.nil? && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
       self.current_user = User.first(:permission => "demo")
-      SavedSearch.sync_session(session)
+      current_user.rack_session = session
       # Setting this to false silences the exception that Sequel generates when we cancel the default save
       # behavior for demo searches.
       SavedSearch.raise_on_save_failure = false
@@ -193,11 +193,7 @@ class BarkeepServer < Sinatra::Base
   end
 
   get "/commits" do
-    saved_searches = []
-    if current_user
-      saved_searches = current_user.demo? ? SavedSearch.demo_saved_searches : current_user.saved_searches
-    end
-    erb :commit_search, :locals => { :saved_searches => saved_searches }
+    erb :commit_search, :locals => { :saved_searches => current_user ? current_user.saved_searches : [] }
   end
 
   # get the one commit that the user is looking for.
@@ -313,12 +309,8 @@ class BarkeepServer < Sinatra::Base
     # Default to only searching master unless branches are explicitly specified.
     options[:branches] = params[:branches].else { "master" }.then { self == "all" ? nil : self }
     options[:user_id] = current_user.id
-    options[:user_order] = SavedSearch.incremented_user_order(current_user)
-    if current_user.demo?
-      saved_search = SavedSearch.new_demo_search(options)
-    else
-      saved_search = SavedSearch.new(options)
-    end
+    options[:user_order] = (current_user.saved_searches.map(&:user_order).max || -1) + 1
+    saved_search = current_user.new_saved_search(options)
     saved_search.save
     erb :_saved_search, :layout => false,
       :locals => { :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 }
@@ -332,11 +324,7 @@ class BarkeepServer < Sinatra::Base
   #   inaccurate.
   get "/saved_searches/:id" do
     MetaRepo.instance.scan_for_new_repos
-    if current_user.demo?
-      saved_search = SavedSearch.find_demo_search(params[:id])
-    else
-      saved_search = SavedSearch[params[:id]]
-    end
+    saved_search = current_user.find_saved_search(params[:id].to_i)
     halt 400, "Bad saved search id." unless saved_search
     token = params[:token] && !params[:token].empty? ? params[:token] : nil
     direction = params[:direction] || "before"
@@ -350,11 +338,7 @@ class BarkeepServer < Sinatra::Base
   # I'm sure there's a more RESTFUl way to do this call.
   post "/saved_searches/reorder" do
     searches = JSON.parse(request.body.read)
-    if current_user.demo?
-      previous_searches = SavedSearch.demo_saved_searches
-    else
-      previous_searches = SavedSearch.filter(:user_id => current_user.id).to_a
-    end
+    previous_searches = current_user.saved_searches
     halt 401, "Mismatch in the number of saved searches" unless searches.size == previous_searches.size
     previous_searches.each do |search|
       search.user_order = searches.index(search.id)
@@ -365,21 +349,13 @@ class BarkeepServer < Sinatra::Base
 
   delete "/saved_searches/:id" do
     id = params[:id].to_i
-    if current_user.demo?
-      SavedSearch.delete_demo_search(params[:id])
-    else
-      SavedSearch.filter(:user_id => current_user.id, :id => id).delete
-    end
+    current_user.delete_saved_search(params[:id])
     nil
   end
 
   # Toggles the "unapproved_only" checkbox and renders the first page of the saved search.
   post "/saved_searches/:id/search_options" do
-    if current_user.demo?
-      saved_search = SavedSearch.find_demo_search(params[:id])
-    else
-      saved_search = SavedSearch[params[:id]]
-    end
+    saved_searches = current_user.find_saved_search(params[:id])
     body_params = JSON.parse(request.body.read)
     [:unapproved_only, :email_commits, :email_comments].each do |setting|
       saved_search.send("#{setting}=", body_params[setting.to_s]) unless body_params[setting.to_s].nil?
@@ -505,7 +481,7 @@ class BarkeepServer < Sinatra::Base
 
   private
 
-  def logged_in?() self.current_user && !self.current_user.demo? end
+  def logged_in?() current_user && !current_user.demo? end
 
   # Construct redirect url to google openid.
   def get_openid_login_redirect(openid_provider_url)
