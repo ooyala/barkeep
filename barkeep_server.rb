@@ -457,7 +457,9 @@ class BarkeepServer < Sinatra::Base
   end
 
   post "/request_review" do
+    next nil if current_user.demo?
     commit = Commit.first(:sha => params[:sha])
+    halt 404 unless commit
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
     Resque.enqueue(DeliverReviewRequestEmails, commit.git_repo.name, commit.sha, current_user.email, emails)
     nil

@@ -100,6 +100,15 @@ class BarkeepServerTest < Scope::TestCase
     end
   end
 
+  context "request_review" do
+    should "not actually send an email when the user is a demo user" do
+      stub(@user).permission { "demo" }
+      dont_allow(Resque).enqueue
+      post "/request_review?emails=abc@gmail.com&sha=123"
+      assert_status 200
+    end
+  end
+
   context "/admin" do
 
     should "only allow users with admin permission" do
