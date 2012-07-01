@@ -310,8 +310,8 @@ class BarkeepServer < Sinatra::Base
     options[:branches] = params[:branches].else { "master" }.then { self == "all" ? nil : self }
     saved_search = current_user.new_saved_search(options)
     saved_search.save
-    erb :_saved_search, :layout => false,
-      :locals => { :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 }
+    erb :_saved_search, :layout => false, :locals => { :current_user => current_user,
+      :saved_search => saved_search, :token => nil, :direction => "before", :page_number => 1 }
   end
 
   # Gets a page of a saved search.
@@ -328,7 +328,7 @@ class BarkeepServer < Sinatra::Base
     direction = params[:direction] || "before"
     page_number = params[:current_page_number].to_i + (direction == "before" ? 1 : -1)
     page_number = [page_number, 1].max
-    erb :_saved_search, :layout => false, :locals => {
+    erb :_saved_search, :layout => false, :locals => { :current_user => current_user,
       :saved_search => saved_search, :token => token, :direction => direction, :page_number => page_number }
   end
 
