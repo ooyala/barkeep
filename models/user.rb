@@ -13,7 +13,7 @@ class User < Sequel::Model
   one_to_many :saved_searches, :order => [:user_order.desc]
   one_to_many :comments
 
-  ALL_TIME = 365 * 100
+  ONE_YEAR = 365
 
   # The Rack session (the cookie) for this current user. This cookie is only used to store saved searches
   # for demo users.
@@ -21,9 +21,9 @@ class User < Sequel::Model
     return unless demo?
     @session = session
     @session[:last_demo_saved_search_id] ||= 0
-    # Use ALL_TIME as the saved search time period for demo users, so they see many commits, even if
+    # Use ONE_YEAR as the saved search time period for demo users, so they see many commits, even if
     # the Barkeep install hasn't had any new commits in awhile.
-    @session[:saved_search_time_period] ||= User::ALL_TIME
+    @session[:saved_search_time_period] ||= User::ONE_YEAR
     if @session[:saved_searches].nil?
       # Have one default saved search for the demo account, so they can click around without searching.
       has_barkeep_repo = MetaRepo.instance.repos.find { |repo| repo.name == "barkeep" }
@@ -35,7 +35,7 @@ class User < Sequel::Model
 
   def validate
     super
-    valid_saved_search_time_periods = [1, 3, 7, 14, 30, User::ALL_TIME]
+    valid_saved_search_time_periods = [1, 3, 7, 14, 30, User::ONE_YEAR]
     unless valid_saved_search_time_periods.include?(saved_search_time_period)
       errors.add(:saved_search_time_period, "is invalid")
     end

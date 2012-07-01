@@ -28,8 +28,8 @@
         <%# This option helps make the demo experience a bit nicer. It can be performance intensive, so it's
             not shown for normal users. %>
         <% if current_user.demo? %>
-          <option <%= "selected" if days_ago == User::ALL_TIME %> value="<%= User::ALL_TIME %>">
-            All time
+          <option <%= "selected" if days_ago == User::ONE_YEAR %> value="<%= User::ONE_YEAR %>">
+            One year
           </option>
         <% end %>
       </select>
