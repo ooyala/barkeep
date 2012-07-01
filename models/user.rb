@@ -60,6 +60,7 @@ class User < Sequel::Model
   end
 
   def gravatar
+    return "/assets/images/demo_avatar.png" if demo?
     hash = Digest::MD5.hexdigest(email.downcase)
     image_src = "http://www.gravatar.com/avatar/#{hash}"
   end
