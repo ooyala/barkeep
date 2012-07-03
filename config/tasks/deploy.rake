@@ -89,7 +89,8 @@ namespace :fezzik do
   remote_task :initial_system_setup, :roles => [:deploy_user] do
     puts "Checking system state."
     # This PATH addition is required for Vagrant, which has Ruby installed, but it's not in the default PATH.
-    run "cd #{release_path} && PATH=$PATH:/opt/ruby/bin script/system_setup.rb"
+    # Include two ruby paths because Vagrant has been known to use both.
+    run "cd #{release_path} && PATH=$PATH:/opt/ruby/bin:/opt/vagrant_ruby/bin script/system_setup.rb"
     run "cd #{release_path} && script/initial_app_setup.rb production"
   end
 
