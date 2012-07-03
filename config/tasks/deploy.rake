@@ -43,9 +43,8 @@ namespace :fezzik do
   task :evaluate_conf_file_templates do
     env_settings = Fezzik.environments[hostname]
     nginx_conf = Tilt::ERBTemplate.new("config/system_setup_files/nginx_site.conf.erb").render(Object.new,
-        :port => env_settings[:barkeep_port],
         :hostname => hostname,
-        :path => current_path)
+        :unicorn_socket => env_settings[:unicorn_socket])
     File.open("/tmp/#{app}/staged/config/system_setup_files/nginx_site.conf", "w") { |f| f.write(nginx_conf) }
   end
 
@@ -158,11 +157,10 @@ namespace :fezzik do
 
   def server_is_up?
     begin
-      port = Fezzik.environments[hostname][:barkeep_port]
       # We try and connect to Barkeep multiple times, because it can take awhile to come up after we start it.
       # We can remove this once we figure out how to make Barkeep start up faster.
       try_n_times(n = 4, timeout = 3) do
-        run "curl --silent --show-error --max-time 20 localhost:#{port}/ > /dev/null"
+        run "curl --silent --show-error --max-time 20 localhost:80/ > /dev/null"
       end
     rescue StandardError => error
       puts "#{error}\nBarkeep is not responding. It may have had trouble starting."

@@ -1,27 +1,45 @@
 # This file gets placed into /etc/nginx/sites-enabled/barkeep
-# It's a standard nginx setup for receiving traffic on port 80 and then proxying it to some application
-# server listening on a non-privileged port.
+# Modified from Unicorn's sample nginx configuration.
+
 # Render this file using ERB. It requires the params:
-#   - path - the path that the app is being deployed to.
 #   - hostname
-#   - port
+#   - unicorn_socket - the filename of the socket on which the unicorn master listens
+
+upstream barkeep {
+  # fail_timeout=0 means we always retry an upstream even if it failed
+  # to return a good HTTP response (in case the Unicorn master nukes a
+  # single worker for timing out).
+
+  # for UNIX domain socket setups:
+  server unix:<%= unicorn_socket %> fail_timeout=0;
+}
+
+# TODO(caleb): Use nginx's caching to serve Pinion's static assets.
 
 server {
-  listen 80;
-  root <%= current_path %>;
+  listen 80 default deferred;
+
+  client_max_body_size 4G;
   server_name <%= hostname %> localhost;
 
-  # Pass along the user's real IP.
-  proxy_set_header X-Real-IP $remote_addr;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header Host $host;
+  # ~2 seconds is often enough for most folks to parse HTML/CSS and
+  # retrieve needed images/icons/frames, connections are cheap in
+  # nginx so increasing this is generally safe...
+  keepalive_timeout 5;
 
   location / {
-    # Serve up static files directly.
-    if (-f $request_filename) { break; }
+    # an HTTP header important enough to have its own Wikipedia entry:
+    #   http://en.wikipedia.org/wiki/X-Forwarded-For
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
-    proxy_pass http://localhost:<%= port %>;
+    # pass the Host: header from the client right along so redirects
+    # can be set properly within the Rack application
+    proxy_set_header Host $http_host;
 
-    error_page 500 502 503 504 /500.html;
+    # we don't want nginx trying to do something clever with
+    # redirects, we set the Host: header above already.
+    proxy_redirect off;
+
+    proxy_pass http://barkeep;
   }
 }

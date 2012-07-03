@@ -2,7 +2,10 @@ require "bundler/setup"
 require "pathological"
 require "test/integration_test_helper"
 
-SERVER = "http://localhost:8040"
+require "environment.rb"
+
+PORT = (defined?(RACK_ENV) && RACK_ENV == "production") ? 80 : 8040
+SERVER = "http://localhost:#{PORT}"
 
 class BarkeepServerIntegrationTest < Scope::TestCase
   include HttpTestHelper
