@@ -23,7 +23,6 @@ gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "38d0e6660b78bf
 gem "json"
 gem "sequel"
 gem "mysql2"
-gem "coffee-script"
 gem "thin"
 gem "pygments.rb"
 gem "redis"
