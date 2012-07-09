@@ -35,7 +35,7 @@ class User < Sequel::Model
 
   def validate
     super
-    valid_saved_search_time_periods = [1, 3, 7, 14, 30, User::ONE_YEAR]
+    valid_saved_search_time_periods = [nil, 1, 3, 7, 14, 30, User::ONE_YEAR]
     unless valid_saved_search_time_periods.include?(saved_search_time_period)
       errors.add(:saved_search_time_period, "is invalid")
     end
