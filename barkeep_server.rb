@@ -379,7 +379,7 @@ class BarkeepServer < Sinatra::Base
       unless User.find(:email => email)
         # If there are no admin users yet, make the first user to log in the first admin.
         permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
-        User.new(:email => email, :name => email, :permission => permission).save
+        User.new(:email => email, :name => email, :permission => permission, :saved_search_time_period => User::ONE_YEAR).save
       end
       redirect session[:login_started_url] || "/"
     end
