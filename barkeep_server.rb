@@ -126,7 +126,7 @@ class BarkeepServer < Sinatra::Base
   before do
     # When running in read-only demo mode, if the user is not logged in, treat them as a demo user.
     self.current_user ||= User.find(:email => session[:email])
-    if current_user.nil? && (defined? ENABLE_READONLY_DEMO_MODE && ENABLE_READONLY_DEMO_MODE)
+    if current_user.nil? && (defined?(ENABLE_READONLY_DEMO_MODE) && ENABLE_READONLY_DEMO_MODE)
       self.current_user = User.first(:permission => "demo")
       current_user.rack_session = session
       # Setting this to false silences the exception that Sequel generates when we cancel the default save
