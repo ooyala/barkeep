@@ -1,16 +1,9 @@
 require "bundler/setup"
 require "pathological"
+
+require "pygments"
 require "lib/logging"
 require "lib/ruby_extensions"
-
-silence_stream(STDERR) do
-  require "pygments"
-  RubyPython.start
-  # This generates an annoying, one-time import error from within the Pygments gem. Force the import now,
-  # while we're silencing this stream.
-  RubyPython.import("pygments")
-end
-
 
 class SyntaxHighlighter
   WEEK = 60*60*24*7

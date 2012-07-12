@@ -1,5 +1,4 @@
 require "redcarpet"
-require "pygments"
 require "lib/syntax_highlighter"
 
 class RedcarpetManager

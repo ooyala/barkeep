@@ -66,17 +66,6 @@ dep "git 1.7.6+" do
   meet { install_package("git") }
 end
 
-# Pygments -- python library for syntax coloring
-ensure_package("python-setuptools")
-dep "pip" do
-  met? { in_path? "pip" }
-  meet { shell "sudo easy_install pip" }
-end
-dep "pygments" do
-  met? { in_path? "pygmentize" }
-  meet { shell "sudo pip install pygments" }
-end
-
 # Get a more recent node than the very out-of-date one Ubuntu will install by default (this is necessary for
 # compatibility with some changes to how libraries are handled).
 ensure_ppa("ppa:chris-lea/node.js") # This PPA is endorsed on the node GH wiki
