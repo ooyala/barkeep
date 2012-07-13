@@ -18,12 +18,23 @@
     <% [:codeLeft, :codeRight].each do |table_class| # make 2 identical tables for side-by-side diff %>
     <% comment_index = 0
        unchunked_lines = 0
+       comments_on_line = 0
        first_expander = true %>
       <div class="<%= table_class %>"><table class="data">
         <% if file.special_case %>
           <tr><td class="fileSpecial"><%= file.special_case %></td></tr>
         <% else %>
           <% file.lines.each_with_index do |line, i| %>
+
+            <% index = comment_index %>
+            <% comments_on_line = 0 %>
+            <%  while index < line_comments.length %>
+              <% if line_comments[index].line_number == i + 1 %>
+                <% comments_on_line += 1 %>
+              <% end %>
+              <% index += 1 %>
+            <% end %>
+
             <% if line.chunk && unchunked_lines > 0 %>
               <%= MustacheRenderer.context_expander(first_expander, false, i, unchunked_lines > 10) %>
               <% first_expander = false
@@ -41,7 +52,19 @@
                 </div></td>
               <td class="code <%= line.tag %>">
                 <% # the space is needed so that the comment button takes the same height as the code text %>
+
                 <div class="addCommentButton slideDiv">&nbsp;</div>
+                <% if true %>
+                  <% has_comment = (comments_on_line > 0) ? "true" : "false" %>
+                  <div class="diffCommentCount slideDiv">
+                  <%
+                     comment_count_text = "#{comments_on_line} comment#{'s' unless comments_on_line == 1}"
+                  %>
+                  <a class="noLink tipsyCommentCount" commentCount="<%= comments_on_line %>" style="display:none">
+                    <span><%= comments_on_line %></span><img src="/assets/images/comment_bubble.png" />
+                  </a>
+                </div>
+                <% end %>
                 <div class="codeContainer slideDiv">
                   <div class="marginLine"></div>
                   <div class="codeText">
@@ -54,6 +77,8 @@
                     <% comment_index += 1 %>
                   <% end %>
                 </div>
+
+
               </td>
             </tr>
             <% if !line.chunk && file.lines[i+1].nil? && unchunked_lines > 0 %>

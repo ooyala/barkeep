@@ -12,6 +12,8 @@ window.Commit =
 
   init: ->
     $(".addCommentButton").click (e) => @onAddCommentMouseAction e
+    $("a.tipsyCommentCount").tipsy(
+        {gravity: "w", title: () -> this.getAttribute("commentcount") + " comments"})
     $(".diffLine").dblclick (e) => @onAddCommentMouseAction e
     $(".reply").live "click", (e) => @onAddCommentMouseAction e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
@@ -24,6 +26,8 @@ window.Commit =
     $(".edit").live "click", (e) => @onCommentEdit e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
     $("#requestReviewButton").click (e) => @toggleReviewRequest()
+    $("#hideCommentButton").live "click", (e) => @toggleComments()
+    $(".diffCommentCount > a").live "click", (e) => @toggleSingleComment(e)
     $("#requestInput button").click (e) => @submitReviewRequest()
     $(".expandLink.all").click (e) => @expandContextAll(e)
     $(".expandLink.below").click (e) => @expandContext(e, 10, "below")
@@ -57,6 +61,7 @@ window.Commit =
       false
 
     shortcuts =
+      "h": => @toggleComments()
       "a": => @approveOrDisapprove()
       "j": => @selectNextLine true
       "k": => @selectNextLine false
@@ -398,6 +403,7 @@ window.Commit =
         commentForm.find(".commentPreview").click @onCommentPreview
         codeLine.append(comment)
         @setSideBySideCommentVisibility()
+
         textarea = codeLine.find(".commentForm .commentText").filter(-> $(@).css("visibility") == "visible")
         KeyboardShortcuts.createShortcutContext textarea
         textarea.focus()
@@ -436,9 +442,12 @@ window.Commit =
       type: "POST",
       data: data,
       url: e.currentTarget.action,
-      success: (html) => @onCommentSubmitSuccess(html, form)
+      success: (html) =>
+        @onCommentSubmitSuccess(html, form, target)
 
-  onCommentSubmitSuccess: (html, formElement) ->
+
+  onCommentSubmitSuccess: (html, formElement, target) ->
+    @updateCommentCount(target.parents(".diffLine"))
     form = $(formElement)
     comment = form.parents(".commentContainer")
     comment.before(html)
@@ -455,6 +464,12 @@ window.Commit =
         preview.hide()
         textarea.show()
         form.find(".commentPreview").val("Preview Comment")
+
+  updateCommentCount: (diffLineElement) ->
+    numComments = diffLineElement.find(".commentContainer").size()
+    link = diffLineElement.find('a.tipsyCommentCount')
+    $(link).children("span").text(numComments)
+    $(link).attr("commentcount", numComments)
 
   onCommentCancel: (e) ->
     e.stopPropagation()
@@ -496,6 +511,7 @@ window.Commit =
       success: =>
         # Make sure that changes to forms happen to both tables to maintain height if deleting a line comment.
         target = $(e.currentTarget)
+        diffLine = target.parents(".diffLine")
         file = target.parents(".file")
         if file.size() > 0
           form = file.find(".comment[commentid='" + commentId + "']")
@@ -503,6 +519,7 @@ window.Commit =
           form = target.parents(".comment")
         form.parents(".commentContainer").remove()
         @setSideBySideCommentVisibility()
+        @updateCommentCount(diffLine)
 
   onApproveClicked: (e) ->
     $.ajax({
@@ -574,6 +591,9 @@ window.Commit =
       container.animate({ "width": newCodeWidth * 2 + 2 }, @SIDE_BY_SIDE_SPLIT_DURATION)
       # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
       container.css("overflow", "visible")
+      # push the comment count bubbles out
+      $('.diffCommentCount').css("left", newCodeWidth * 2 + 4)
+
       # slide up the replaced rows
       Util.animateTimeout @SIDE_BY_SIDE_SPLIT_DURATION, ->
         $(".diffLine[replace='true'] .slideDiv").slideUp @SIDE_BY_SIDE_SLIDE_DURATION
@@ -608,6 +628,8 @@ window.Commit =
               @sideBySideAnimating = false
         # jQuery sets this to "hidden" while animating width. We don't want to hide our logo, which overflows.
         container.css("overflow", "visible")
+        # unset the absolute position of the comment count bubbles.
+        $('.diffCommentCount').css("left", "")
 
       # Animate the diff lines; when we're done, animate collapsing both sides of the diff into one.
       # slide the extra lines out
@@ -630,9 +652,29 @@ window.Commit =
 
       rightCodeTable.find(".commentContainer, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".removed").find(".commentContainer, .commentForm").css("visibility", "hidden")
+
     else
       leftCodeTable.find(".commentContainer, .commentForm").css("visibility", "visible")
       rightCodeTable.find(".commentContainer, .commentForm").css("visibility", "hidden")
+
+  toggleSingleComment: (event) ->
+    target = $(event.target)
+    target.parents(".code").find("a").hide()
+    comments = target.parents(".code").find(".commentContainer")
+    comments.each (i, e) -> $(e).show()
+
+  toggleComments:  ->
+    unless (@commentsHidden)
+      @commentsHidden = true
+      $("#hideCommentButton").text("Show comments")
+      # only hide comments for files, not commit comments at the bottom of the page.
+      $(".file .commentContainer").has(".comment").hide()
+      $('.diffCommentCount > a[commentCount != "0"]').show()
+    else
+      @commentsHidden = false
+      $("#hideCommentButton").text("Hide comments")
+      $(".commentContainer").has(".comment").show()
+      $(".diffCommentCount > a").hide()
 
   toggleReviewRequest: (showRequest = null) ->
     return unless window.userLoggedIn

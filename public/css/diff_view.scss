@@ -507,6 +507,21 @@
 
         &:hover { background-image: url(/assets/images/red_left_comment_bubble.png); }
       }
+
+      .diffCommentCount {
+        background-repeat: no-repeat;
+        position: absolute;
+        left: $pageWidth + 4px;
+        width: 40px;
+        font-size: 14px;
+
+        a {
+          text-decoration: none;
+          color: $textColor;
+          border: 0;
+        }
+      }
+
     }
 
     pre {
