@@ -34,16 +34,18 @@
       </div>
 
       <div id="metadataButtons">
-        <% if current_user %>
-          <% if commit.approved? %>
-            <button id="disapproveButton" class="fancy" title="ಠ_ಠ">Disapprove Commit</button>
-          <% else %>
-            <button id="approveButton" class="fancy">Approve Commit</button>
+        <div id="approvalGroup">
+          <% if current_user %>
+            <% if commit.approved? %>
+              <button id="disapproveButton" class="fancy" title="ಠ_ಠ">Disapprove Commit</button>
+            <% else %>
+              <button id="approveButton" class="fancy">Approve Commit</button>
+            <% end %>
           <% end %>
-        <% end %>
-        <% if commit.approved? %>
-          <%= erb :_approved_banner, :layout => false, :locals => { :commit => commit } %>
-        <% end %>
+          <% if commit.approved? %>
+            <%= erb :_approved_banner, :layout => false, :locals => { :commit => commit } %>
+          <% end %>
+        </div>
         <div id="minorButtons">
           <% if current_user %>
             <button id="requestReviewButton" class="standard">Request Review</button>
