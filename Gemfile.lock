@@ -17,7 +17,7 @@ GEM
     backports (2.3.0)
     backtrace_shortener (0.1.0)
     blankslate (2.1.2.4)
-    bourbon (2.0.0.rc1)
+    bourbon (2.1.1)
       sass (>= 3.1)
     childprocess (0.3.1)
       ffi (~> 1.0.6)
@@ -104,7 +104,7 @@ GEM
     rubypython (0.5.1)
       blankslate (>= 2.1.2.3)
       ffi (~> 1.0.7)
-    sass (3.1.16)
+    sass (3.1.20)
     scope (0.2.3)
       minitest
     sequel (3.36.1)
@@ -157,7 +157,7 @@ DEPENDENCIES
   addressable
   awesome_print
   backtrace_shortener
-  bourbon (~> 2.0.0.rc1)
+  bourbon
   clockwork
   coffee-script
   dedent
