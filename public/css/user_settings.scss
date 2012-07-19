@@ -26,12 +26,12 @@
       height: 3px;
       width: 100%;
       background-color: $borderColor;
-      @include border-radius(3px);
+      border-radius: 3px;
       .ui-slider-handle {
         cursor: pointer;
         width: 15px;
         height: 12px;
-        @include border-radius(2px);
+        border-radius: 2px;
         background-color: darken($borderColor, 40%);
       }
     }

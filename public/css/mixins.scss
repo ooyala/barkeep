@@ -39,12 +39,12 @@ $monoFont: "Ubuntu Mono", Courier, monospace;
   vertical-align: middle;
   background-color: #eee;
   border: 1px solid #ccc;
-  @include border-radius($size / 8);
+  border-radius: $size / 8;
 
   img {
     width: 100%;
     height: 100%;
-    @include border-radius($size / 8);
+    border-radius: $size / 8;
   }
 }
 

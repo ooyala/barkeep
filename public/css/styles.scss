@@ -55,7 +55,7 @@ strong { font-weight: bold; }
       background: $textColor;
       color: $almostWhite;
       opacity: 0.95;
-      @include border-radius(3px);
+      border-radius: 3px;
     }
   }
 }
@@ -125,7 +125,7 @@ button.fancy {
   border: 1px solid $deepRed;
   /* This darker border helps distinguish the drop shadow. */
   border-bottom: 1px solid darken($deepRed, 5%);
-  @include border-radius(3px);
+  border-radius: 3px;
   box-shadow: 0 2px 4px #999;
   text-shadow: 0px -1px 1px $deepRed;
   padding: 5px 18px;
@@ -145,7 +145,7 @@ button.fancy {
 
 /* Our standard buttons are flat grey buttons. */
 button.standard, input[type=button], input[type=submit] {
-  @include border-radius(3px);
+  border-radius: 3px;
   padding: 7px 12px;
   text-shadow: 0px -1px 1px #EEEEEE;
   border: 1px solid #AAAAAA;
@@ -261,7 +261,7 @@ header {
         box-shadow: 0px 2px 1px white;
       }
       a {
-        @include border-radius(4px);
+        border-radius: 4px;
         border: $standardBorder;
         border-top: 0;
 
@@ -298,7 +298,7 @@ header {
     margin-top: 17px;
 
     .signInGravatar {
-      @include border-radius(3px);
+      border-radius: 3px;
       width: 20px;
       height: 20px;
       margin-right: 5px;
