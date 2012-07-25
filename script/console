@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby-local-exec
+#!/usr/bin/env ruby
 
 require "bundler/setup"
 require "pathological"

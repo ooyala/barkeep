@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby-local-exec
+#!/usr/bin/env ruby
 #
 # Adds a demo user to the database. This demo user is what powers the "read only" demo mode that can
 # be enabled for Barkeep. We use it for the Barkeep demo linked from getbarkeep.com.
