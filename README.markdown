@@ -46,10 +46,16 @@ Barkeep was written by the following Ooyala engineers:
 * Daniel MacDougall ([dmacdougall](https://github.com/dmacdougall))
 * Caleb Spare ([cespare](https://github.com/cespare))
 
-and with contributions from:
+and with contributions from other Ooyala engineers:
 
 * Noah Gibbs ([noahgibbs](https://github.com/noahgibbs))
 * Brian Zhou ([zdyn](https://github.com/zdyn))
 * Manish Khettry ([mkhettry](https://github.com/mkhettry))
+
+and community members:
+
+* Alberto Leal ([albertoleal](https://github.com/albertoleal))
+* Dann Luciano ([dannluciano](https://github.com/dannluciano))
+* Michael Quinn ([mikejquinn](https://github.com/mikejquinn))
 
 Barkeep is released under [the MIT license](http://www.opensource.org/licenses/mit-license.php).
