@@ -58,6 +58,7 @@ and with contributions from other Ooyala engineers:
 and community members:
 
 * Alberto Leal ([albertoleal](https://github.com/albertoleal))
+* Alice Kærast ([kaerast](https://github.com/kaerast))
 * Dann Luciano ([dannluciano](https://github.com/dannluciano))
 * Michael Quinn ([mikejquinn](https://github.com/mikejquinn))
 
