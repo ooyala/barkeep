@@ -5,7 +5,7 @@ Barkeep is a fast, fun way to review code. Engineering organizations can use it 
 To see a video of Barkeep in action, visit [getbarkeep.org](http://getbarkeep.org).
 
 Barkeep is standalone software that you host. Once it's set up, you can use it to track and code review any
-number of git repos available on the internet. It's designed to be easy to run on Mac or Ubuntu.
+number of git repos available on the internet. It's designed to be easy to run on Ubuntu.
 
 ### Getting started
 
@@ -21,6 +21,9 @@ of Vagrant. You can then browse to **http://localhost:8080** to play with it.
 
 You can shut it all down later using `bundle exec vagrant halt`.
 
+Once you decide to use Barkeep for your team, you should deploy it to an Ubuntu web server. See the [Deploying
+Barkeep](https://github.com/ooyala/barkeep/wiki/Deploying-Barkeep) wiki page for more information.
+
 ### Docs
 
 See **[the wiki](https://github.com/ooyala/barkeep/wiki)** for instructions on setting up Barkeep for
@@ -31,8 +34,8 @@ comparison of Barkeep to other code review systems.
 
 ### Contributing
 
-Barkeep was designed to be easy to hack on, so feel free to dive in. Open a ticket to suggest a new feature or
-just send a pull request with your changes.
+Barkeep was designed to be easy to hack on with Mac or Ubuntu, so feel free to dive in. Open a ticket to
+suggest a new feature or just send a pull request with your changes.
 
 Simple style guidelines: mimic the style around you, cap lines at 110 characters.
 
