@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby-local-exec
+#!/usr/bin/env ruby
 # Clockwork is a gem which provides cron-like functionality in Ruby.
 
 require "bundler/setup"

@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby-local-exec
+#!/usr/bin/env ruby
 # Sets up vagrant for your developer machine. This will:
 # 1. Modify .ssh/config file so you can log in to Vagrant using `ssh barkeep_vagrant`
 #    instead of `vagrant ssh` (which is required to deploy to Vagrant).

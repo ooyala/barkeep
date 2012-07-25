@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby-local-exec
+#!/usr/bin/env ruby
 # A quick environment setup script to help developers get started quickly.
 # This will:
 # - bundle install the required gems
