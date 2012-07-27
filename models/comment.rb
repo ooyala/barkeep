@@ -20,7 +20,7 @@ class Comment < Sequel::Model
   # replace_shas_with_links comes before markdown for simpler regex and to use markdown syntax to
   # generate links.
   add_filter(:text) do |str, comment|
-    StringFilter.replace_shas_with_links(str, comment.commit.git_repo.name)
+    StringFilter.replace_shas_with_links(str, comment.commit.git_repo.name, false)
   end
   add_filter(:text) { |str| StringFilter.markdown(str) }
   add_filter(:text) { |str| StringFilter.link_jira_issue(str) }
