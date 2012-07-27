@@ -9,14 +9,14 @@ end
 
 # Converts repo:sha to a link to the commit.
 # If repo: is omitted the provided repo_name is used.
-StringFilter.define_filter :replace_shas_with_links do |str, repo_name, skip_markdown|
+StringFilter.define_filter :replace_shas_with_links do |str, repo_name, options = {}|
   # Examples: barkeep:9097e16494a7893c4724e5fbf1a77115d066403b
   #           9097e16494a7893c4724e5fbf1a77115d066403b
   # Only matches when string starts a line or is preceded by a space character.
   str.gsub(/(^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{40})/m) do
     repo = Regexp.last_match(3) || repo_name
     sha = Regexp.last_match(4)
-    if skip_markdown
+    if options[:skip_markdown]
       " <a href='/commits/#{repo}/#{sha}' target='_blank'>#{sha[0..6]}</a>"
     else
       " [#{sha[0..6]}](/commits/#{repo}/#{sha})"

@@ -16,7 +16,7 @@ class Commit < Sequel::Model
 
   add_filter(:message) { |message| StringFilter.escape_html(message) }
   add_filter(:message) do |message, commit|
-    StringFilter.replace_shas_with_links(message, commit.git_repo.name, true)
+    StringFilter.replace_shas_with_links(message, commit.git_repo.name, :skip_markdown => true)
   end
   add_filter(:message) { |message| StringFilter.newlines_to_html(message) }
   add_filter(:message) do |message, commit|
