@@ -61,7 +61,7 @@ class BarkeepServer < Sinatra::Base
       {
         :git_repo => git_repo,
         :grit_repo => MetaRepo.instance.get_grit_repo(git_repo.name),
-        :newest_commit => git_repo.commits_dataset.order(:id.desc).first
+        :newest_commit => git_repo.commits_dataset.order(:date.desc).first
       }
     end
 
