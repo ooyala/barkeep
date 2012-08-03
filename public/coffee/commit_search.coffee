@@ -47,7 +47,6 @@ window.CommitSearch =
         @autocompleteOpen = false
         @smartSearch.hideTabCompleteHint()
       focus: (event, ui) => @smartSearch.hideTabCompleteHint()
-      delay: 0
 
     $("#savedSearches").sortable
       placeholder: "savedSearchPlaceholder"
