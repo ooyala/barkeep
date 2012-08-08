@@ -8,9 +8,7 @@
  %>
 <%
   min_commit_date = Time.now - 60 * 60 * 24 * current_user.saved_search_time_period
-  # TODO(philc): change saved_search_time_period.commits to not return a page number any more. We now keep
-  # track of the current page number on the client.
-  commits, ignored_page, tokens = saved_search.commits(token, direction, min_commit_date)
+  commits, tokens = saved_search.commits(token, direction, min_commit_date)
   from = tokens[:from]
   to = tokens[:to]
 %>
