@@ -404,7 +404,8 @@ class BarkeepServer < Sinatra::Base
       :commented_percent => Stats.num_reviewed_without_lgtm_commits(since).to_f / num_commits,
       :approved_percent => Stats.num_lgtm_commits(since).to_f / num_commits,
       :chatty_commits => Stats.chatty_commits(since),
-      :top_reviewers => Stats.top_reviewers(since)
+      :top_reviewers => Stats.top_reviewers(since),
+      :top_approvers => Stats.top_approvers(since)
     }
   end
 

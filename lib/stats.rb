@@ -45,7 +45,16 @@ module Stats
     user_ids_and_counts = User.join(:comments, :user_id => :id).
         filter("`comments`.`created_at` > ?", since).
         group_and_count(:users__id).order(:count.desc).limit(10).all
-    users_and_counts = user_ids_and_counts.map do |id_and_count|
+    user_ids_and_counts.map do |id_and_count|
+      [User[id_and_count[:id]], id_and_count[:count]]
+    end
+  end
+
+  def self.top_approvers(since)
+    user_ids_and_counts = User.join(:commits, :approved_by_user_id => :id).
+      filter("`commits`.`approved_at` > ?", since).
+      group_and_count(:users__id).order(:count.desc).limit(10).all
+    user_ids_and_counts.map do |id_and_count|
       [User[id_and_count[:id]], id_and_count[:count]]
     end
   end

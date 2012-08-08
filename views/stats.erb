@@ -29,7 +29,7 @@
               <a href="mailto:<%= user.email %>" rel="tipsy" class="west" title="<%= user.email %>">
                 <%= user.name[0..25] %></a>
             </td>
-            <td class="count">with <%= count %> comments</td>
+            <td class="count">with <%= StringHelper.pluralize(count, "comment") %></td>
             <td class="email">
               <a href="mailto:<%= user.email %>" rel="tipsy" class="east" title="Email"><%= user.email %>
             </a>
@@ -56,6 +56,27 @@
       <table class="commitsList">
         <% chatty_commits.each do |commit, count| %>
           <%= erb :_commit_line, :layout => false, :locals => { :commit => commit } %>
+        <% end %>
+      </table>
+    </div>
+    <div class="statistic topApprovers">
+      <div class="header"><div class="name">Top Approvers</div></div>
+      <table class="authorList">
+        <% top_approvers.each do |user, count| %>
+            <tr>
+              <td class="avatarCell">
+                <img class="avatar" src="<%= user.gravatar %>"/>
+              </td>
+              <td class="author">
+                <a href="mailto:<%= user.email %>" rel="tipsy" class="west" title="<%= user.email %>">
+                  <%= user.name[0..25] %></a>
+              </td>
+              <td class="count">with <%= StringHelper.pluralize(count, "approved commit") %></td>
+              <td class="email">
+                <a href="mailto:<%= user.email %>" rel="tipsy" class="east" title="Email"><%= user.email %>
+                </a>
+              </td>
+            </tr>
         <% end %>
       </table>
     </div>
