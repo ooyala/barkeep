@@ -21,7 +21,26 @@ ensure_packages(
 
 ensure_file("config/system_setup_files/.bashrc", "#{ENV['HOME']}/.bashrc")
 
-ensure_rbenv_ruby("1.9.2-p290")
+# NOTE(caleb): I fixed a bug with Terraform's ensure_rbenv_version here:
+# https://github.com/philc/terraform/commit/b9d4ddd5db082c87adc479cdc6a158634879af9d
+# I'm copy-pasting the code here for now.
+# TODO(caleb): Remove ensure_rbenv_ruby_fixed after we cut a new Terraform release and update the version in
+# Barkeep.
+def ensure_rbenv_ruby_fixed(ruby_version)
+  ensure_rbenv
+  ensure_packages "curl", "build-essential", "libxslt1-dev", "libxml2-dev", "libssl-dev"
+
+  dep "rbenv ruby: #{ruby_version}" do
+    met? { `bash -lc 'which ruby'`.include?("rbenv") && `rbenv versions`.include?(ruby_version) }
+    meet do
+      puts "Compiling Ruby will take a few minutes."
+      shell "rbenv install #{ruby_version}"
+      shell "rbenv rehash"
+    end
+  end
+end
+
+ensure_rbenv_ruby_fixed(File.read(".rbenv-version").strip)
 
 ensure_run_once("nginx site-enabled has correct permissions") do
   shell "sudo chgrp admin -R /etc/nginx/sites-enabled", :silent => true

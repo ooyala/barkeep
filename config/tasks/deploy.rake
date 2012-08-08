@@ -87,6 +87,16 @@ namespace :fezzik do
 
   remote_task :initial_system_setup, :roles => [:deploy_user] do
     puts "Checking system state."
+
+    # NOTE(caleb): This is a hack to make the system setup work in cases where we've updated the Ruby version
+    # in the .rbenv-version file. Figure out a better way to do this. See this issue:
+    # https://github.com/philc/terraform/issues/3
+    rbenv_version = File.read(".rbenv-version").strip
+    if Fezzik::Util.capture_output { run "which ruby" }.include?(".rbenv") &&
+        !Fezzik::Util.capture_output { run "rbenv versions" }.include?(rbenv_version)
+      run "rbenv install #{rbenv_version}"
+    end
+
     # This PATH addition is required for Vagrant, which has Ruby installed, but it's not in the default PATH.
     # Include two ruby paths because Vagrant has been known to use both.
     run "cd #{release_path} && PATH=$PATH:/opt/ruby/bin:/opt/vagrant_ruby/bin script/system_setup.rb"
