@@ -5,6 +5,7 @@
 /.vagrant
 .sass-cache
 unicorn.pid
+.idea
 
 # The config file for deploying Barkeep to Ooyala's internal servers, which we don't check in.
 config/deploy_targets/ooyala.rb
