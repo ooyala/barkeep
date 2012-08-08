@@ -431,6 +431,27 @@ table.commitsList, table.authorList {
       }
 
       .commitsList { width: $pageWidth; }
+
+      &.topApprovers {
+        width: 100%;
+
+        .authorList {
+          width: $pageWidth;
+
+          td.author {
+            padding-right: 30px;
+          }
+          td.email {
+            color: $lightTextColor;
+            font-size: 90%;
+            text-align: right;
+          }
+          td.count {
+            width: 100%;
+            color: $lightTextColor;
+          }
+        }
+      }
     }
   }
 }

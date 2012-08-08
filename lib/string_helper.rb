@@ -19,4 +19,9 @@ module StringHelper
   def self.short_date(time)
     time.strftime "%b %d, %Y"
   end
+
+  def self.pluralize(count, singular, plural = nil)
+    text = (count == 1) ? singular : (plural || "#{singular}s")
+    "#{count} #{text}"
+  end
 end
