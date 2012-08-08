@@ -22,8 +22,7 @@ class SavedSearch < Sequel::Model
           self.method(:select_commits_currently_in_db).to_proc,
       :after => min_commit_date,
       :limit => PAGE_SIZE)
-    page = (result[:count] / PAGE_SIZE).to_i + 1
-    [result[:commits], page, result[:tokens]]
+    [result[:commits], result[:tokens]]
   end
 
   # True if this saved search's results include this commit.
