@@ -40,7 +40,8 @@ to implement a larger feature, please post a description of the feature on the [
 list](https://groups.google.com/d/forum/getbarkeep) beforehand so that we can be sure it's something we want
 to add.
 
-Simple style guidelines: mimic the style around you and cap lines at 110 characters.
+Simple style guidelines: mimic the style around you, cap lines at 110 characters, and follow the [usual
+conventions](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) for commit messages.
 
 ### Mailing list
 
