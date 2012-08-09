@@ -34,10 +34,21 @@ comparison of Barkeep to other code review systems.
 
 ### Contributing
 
-Barkeep was designed to be easy to hack on with Mac or Ubuntu, so feel free to dive in. Open a ticket to
-suggest a new feature or just send a pull request with your changes.
+Barkeep was designed to be easy to hack on with Mac or Ubuntu, so feel free to dive in. You can open a ticket
+to suggest a new feature. If you fix a bug or implement a small feature, send us a pull request. If you want
+to implement a larger feature, please post a description of the feature on the [mailing
+list](https://groups.google.com/d/forum/getbarkeep) beforehand so that we can be sure it's something we want
+to add.
 
-Simple style guidelines: mimic the style around you, cap lines at 110 characters.
+Simple style guidelines: mimic the style around you and cap lines at 110 characters.
+
+### Mailing list
+
+Please file user issues as [tickets](https://github.com/ooyala/barkeep/issues) here on Github.
+
+The Barkeep developer [mailing list](https://groups.google.com/d/forum/getbarkeep) is used for discussion
+around developing Barkeep. You can email the group at
+[getbarkeep@googlegroups.com](mailto:getbarkeep@googlegroups.com).
 
 ### Credits
 
