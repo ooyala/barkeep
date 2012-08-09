@@ -401,11 +401,9 @@ table.commitsList, table.authorList {
   #statistics {
     .statistic {
       border-collapse: collapse;
-      &.topReviewers {
-        margin-top: 30px;
-        display: inline-block;
+      &.topReviewers, &.topApprovers {
         .authorList {
-          width: $pageWidth * 0.5;
+          td:last-child { padding-right: 0 }
           td.email {
             color: $lightTextColor;
             font-size: 90%;
@@ -415,6 +413,22 @@ table.commitsList, table.authorList {
             width: 100%;
             color: $lightTextColor;
           }
+        }
+      }
+
+      &.topReviewers {
+        margin-top: 30px;
+        display: inline-block;
+        .authorList {
+          width: $pageWidth * 0.5;
+        }
+      }
+
+      &.topApprovers {
+        width: 100%;
+        .authorList {
+          width: $pageWidth;
+          td.author { padding-right: 30px; }
         }
       }
 
@@ -430,27 +444,10 @@ table.commitsList, table.authorList {
         }
       }
 
-      .commitsList { width: $pageWidth; }
-
-      &.topApprovers {
-        width: 100%;
-
-        .authorList {
-          width: $pageWidth;
-
-          td.author {
-            padding-right: 30px;
-          }
-          td.email {
-            color: $lightTextColor;
-            font-size: 90%;
-            text-align: right;
-          }
-          td.count {
-            width: 100%;
-            color: $lightTextColor;
-          }
-        }
+      .commitsList {
+        .selectArrow { display: none; }
+        .commentCount { padding-right: 0; }
+        width: $pageWidth;
       }
     }
   }
