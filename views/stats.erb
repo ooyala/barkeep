@@ -1,6 +1,5 @@
-<%= js_url("/vendor/flot/jquery.flot.min.js") %>
-<%= js_url("/vendor/flot/jquery.flot.pie.min.js") %>
-<%= js_url("/coffee/stats.js") %>
+<%= js_bundle(:stats_vendor_js) %>
+<%= js_bundle(:stats_app_js) %>
 
 <div id="stats">
   <% if current_user %>

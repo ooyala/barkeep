@@ -1,6 +1,6 @@
-<%= js_url("/coffee/commit.js") %>
-<%= js_url("/vendor/jquery.easing.1.3.js") %>
-<%= js_url("/vendor/mustache.js") %>
+<%= js_bundle(:commit_app_js) %>
+<%= js_bundle(:commit_vendor_js) %>
+
 <script id="context-expander-template" type="text/x-mustache-template">
 <%= MustacheRenderer.context_expander_source %>
 </script>

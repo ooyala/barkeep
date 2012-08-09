@@ -5,15 +5,11 @@
   <link href='//fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic' \
         rel='stylesheet' type='text/css' />
   <%= css_url("/css/styles.css") %>
-  <%= js_url("/vendor/jquery-1.7.min.js") %>
-  <%= js_url("/vendor/jquery-ui-1.8.19.custom.min.js") %>
-  <%= js_url("/vendor/jquery.json-2.2.min.js") %>
-  <%= js_url("/vendor/jquery.tipsy.js") %>
-  <%= js_url("/vendor/jquery.hotkeys.js") %>
-  <%= js_url("/vendor/livecss.js") %>
-  <%= js_url("/coffee/constants.js") %>
-  <%= js_url("/coffee/util.js") %>
-  <%= js_url("/coffee/snippets.js") %>
+  <%= js_bundle(:vendor_js) %>
+  <%= js_bundle(:app_js) %>
+  <% if ((defined?(RACK_ENV) && RACK_ENV) || ENV["RACK_ENV"]) == "development" %>
+    <%= js_url("/vendor/livecss.js") %>
+  <% end %>
 
   <script>
     $(document).ready(function() {

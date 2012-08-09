@@ -17,6 +17,7 @@ require "redis"
 require "sass"
 require "sinatra/base"
 require "sinatra/reloader"
+require "uglifier"
 
 require "environment"
 require "lib/ruby_extensions"
@@ -54,6 +55,39 @@ class BarkeepServer < Sinatra::Base
     pinion.convert :coffee => :js
     pinion.watch "public"
     pinion.watch "#{Gem.loaded_specs["bourbon"].full_gem_path}/app/assets/stylesheets"
+
+    # Set up asset bundles
+    pinion.create_bundle :vendor_js, :concatenate_and_uglify_js, [
+      "/vendor/jquery-1.7.min.js",
+      "/vendor/jquery-ui-1.8.19.custom.min.js",
+      "/vendor/jquery.json-2.2.min.js",
+      "/vendor/jquery.tipsy.js",
+      "/vendor/jquery.hotkeys.js"
+    ]
+    pinion.create_bundle :app_js, :concatenate_and_uglify_js, [
+      "/coffee/constants.js",
+      "/coffee/util.js",
+      "/coffee/snippets.js"
+    ]
+    pinion.create_bundle :repo_app_js, :concatenate_and_uglify_js, ["/coffee/repos.js"]
+    pinion.create_bundle :commit_app_js, :concatenate_and_uglify_js, ["/coffee/commit.js"]
+    pinion.create_bundle :commit_vendor_js, :concatenate_and_uglify_js, [
+      "/vendor/jquery.easing.1.3.js",
+      "/vendor/mustache.js"
+    ]
+    pinion.create_bundle :commit_search_app_js, :concatenate_and_uglify_js, [
+      "/coffee/smart_search.js",
+      "/coffee/commit_search.js"
+    ]
+    pinion.create_bundle :commit_search_vendor_js, :concatenate_and_uglify_js, [
+      "/vendor/jquery.easing.1.3.js"
+    ]
+    pinion.create_bundle :stats_app_js, :concatenate_and_uglify_js, ["/coffee/stats.js"]
+    pinion.create_bundle :stats_vendor_js, :concatenate_and_uglify_js, [
+      "/vendor/flot/jquery.flot.min.js",
+      "/vendor/flot/jquery.flot.pie.min.js"
+    ]
+    pinion.create_bundle :user_settings_app_js, :concatenate_and_uglify_js, ["/coffee/user_settings.js"]
   end
 
   helpers Pinion::SinatraHelpers
