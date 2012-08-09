@@ -1,15 +1,17 @@
 require "bundler/setup"
 require "pathological"
 
+require "bourbon"
 require "coffee-script"
 require "json"
 require "methodchain"
 require "nokogiri"
+require "open-uri"
 require "openid"
 require "openid/extensions/ax"
 require "openid/store/filesystem"
-require "open-uri"
 require "pinion"
+require "pinion/sinatra_helpers"
 require "redcarpet"
 require "redis"
 require "sass"
@@ -45,10 +47,16 @@ OPENID_PROVIDERS_ARRAY = OPENID_PROVIDERS.split(",")
 class BarkeepServer < Sinatra::Base
   attr_accessor :current_user
 
-  def initialize(pinion)
-    @pinion = pinion
-    super()
+  # Set up Pinion to manage static and compiled assets.
+  set :pinion, Pinion::Server.new("/assets")
+  configure do
+    pinion.convert :scss => :css
+    pinion.convert :coffee => :js
+    pinion.watch "public"
+    pinion.watch "#{Gem.loaded_specs["bourbon"].full_gem_path}/app/assets/stylesheets"
   end
+
+  helpers Pinion::SinatraHelpers
 
   # Pinion will handle all static routes
   disable :static
@@ -147,7 +155,7 @@ class BarkeepServer < Sinatra::Base
     end
   end
 
-  get("/favicon.ico") { redirect @pinion.asset_url("favicon.ico") }
+  get("/favicon.ico") { redirect asset_url("favicon.ico") }
 
   get("/") { redirect "/commits" }
 

@@ -7,7 +7,7 @@ class ApiTest < Scope::TestCase
   include Rack::Test::Methods
   include StubHelper
 
-  def app() BarkeepServer.new(StubPinion.new) end
+  def app() BarkeepServer.new end
 
   setup do
     @@repo = MetaRepo.new("/dev/null")

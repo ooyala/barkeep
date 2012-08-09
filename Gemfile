@@ -13,7 +13,7 @@ gem "resque"
 gem "sass", "~> 3.1.16"
 
 # For managing compiling and caching assets
-gem "pinion", "~> 0.1.5"
+gem "pinion"
 
 # Really nice scss mixin library.
 gem "bourbon"
