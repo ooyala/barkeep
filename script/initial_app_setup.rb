@@ -16,15 +16,16 @@ require "terraform/dsl"
 include Terraform::DSL
 require "environment.rb"
 
+raise 'DB_PASSWORD is not met, meet it in the environment.rb.' if DB_PASSWORD.empty?
 def mysql_command() @mysql_command ||= (`which mysql || which mysql5`).chomp end
 def mysqladmin_command() @mysql_admin ||= (`which mysqladmin || which mysqladmin5`).chomp end
 def db_exists?(db_name)
-  shell("#{mysql_command} -u root #{db_name} -e 'select 1' 2> /dev/null", :silent => true) rescue false
+  shell("#{mysql_command} -u root -p#{DB_PASSWORD} #{db_name} -e 'select 1' 2> /dev/null", :silent => true) rescue false
 end
 
 dep "create mysql barkeep database" do
   met? { db_exists?("barkeep") }
-  meet { shell "#{mysqladmin_command} -u root create barkeep" }
+  meet { shell "#{mysqladmin_command} -u root -p#{DB_PASSWORD} create barkeep" }
 end
 
 ensure_run_once("database migrations") { shell "script/run_migrations.rb" }
