@@ -28,7 +28,7 @@
     <% comment_count = db_commit.comment_count %>
     <% if comment_count > 0 %>
       <a class="noLink west" rel="tipsy" title="<%= StringHelper.pluralize(comment_count, "comment") %>">
-        <span><%= comment_count %></span><img src="/assets/images/comment_bubble.png" />
+        <span><%= comment_count %></span><img src="<%= asset_url("/assets/images/comment_bubble.png") %>" />
       </a>
     <% end %>
   </td>
