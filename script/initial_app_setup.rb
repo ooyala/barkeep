@@ -19,7 +19,8 @@ require "environment.rb"
 def mysql_command() @mysql_command ||= (`which mysql || which mysql5`).chomp end
 def mysqladmin_command() @mysql_admin ||= (`which mysqladmin || which mysqladmin5`).chomp end
 def db_exists?(db_name)
-  shell("#{mysql_command} -u root #{db_name} --password=#{DB_PASSWORD} -e 'select 1' 2> /dev/null", :silent => true) rescue false
+  mysql_command_options = "-u root #{db_name} --password=#{DB_PASSWORD} -e 'select 1'"
+  shell("#{mysql_command} #{mysql_command_options} 2> /dev/null", :silent => true) rescue false
 end
 
 dep "create mysql barkeep database" do
