@@ -12,8 +12,7 @@ window.Commit =
 
   init: ->
     $(".addCommentButton").click (e) => @onAddCommentMouseAction e
-    $("a.tipsyCommentCount").tipsy(
-        {gravity: "w", title: () -> this.getAttribute("commentcount") + " comments"})
+    $("a.tipsyCommentCount").tipsy(gravity: "w")
     $(".diffLine").dblclick (e) => @onAddCommentMouseAction e
     $(".reply").live "click", (e) => @onAddCommentMouseAction e
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
@@ -121,6 +120,10 @@ window.Commit =
       search: (event, ui) ->
         # Don't attempt to search if the input value ends with a comma and whitespace.
         false if $("#authorInput").val().match(/,\s*$/)
+
+  pluralize: (count, singular, plural = nil) ->
+    text = (count == 1) ? singular : (plural || "#{singular}s")
+    "#{count} #{text}"
 
   calculateMarginSize: ->
     commit = $("#commit")
@@ -442,8 +445,7 @@ window.Commit =
       type: "POST",
       data: data,
       url: e.currentTarget.action,
-      success: (html) =>
-        @onCommentSubmitSuccess(html, form, target)
+      success: (html) => @onCommentSubmitSuccess(html, form, target)
 
 
   onCommentSubmitSuccess: (html, formElement, target) ->
@@ -470,6 +472,7 @@ window.Commit =
     link = diffLineElement.find('a.tipsyCommentCount')
     $(link).children("span").text(numComments)
     $(link).attr("commentcount", numComments)
+    $(link).attr("title", @pluralize(numComments, "comment"))
 
   onCommentCancel: (e) ->
     e.stopPropagation()
@@ -661,20 +664,20 @@ window.Commit =
     target = $(event.target)
     target.parents(".code").find("a").hide()
     comments = target.parents(".code").find(".commentContainer")
-    comments.each (i, e) -> $(e).show()
+    comments.show()
 
   toggleComments:  ->
-    unless (@commentsHidden)
+    if (@commentsHidden)
+      @commentsHidden = false
+      $("#hideCommentButton").text("Hide Comments")
+      $(".commentContainer").has(".comment").show()
+      $(".diffCommentCount > a").hide()
+    else
       @commentsHidden = true
-      $("#hideCommentButton").text("Show comments")
+      $("#hideCommentButton").text("Show Comments")
       # only hide comments for files, not commit comments at the bottom of the page.
       $(".file .commentContainer").has(".comment").hide()
       $('.diffCommentCount > a[commentCount != "0"]').show()
-    else
-      @commentsHidden = false
-      $("#hideCommentButton").text("Hide comments")
-      $(".commentContainer").has(".comment").show()
-      $(".diffCommentCount > a").hide()
 
   toggleReviewRequest: (showRequest = null) ->
     return unless window.userLoggedIn

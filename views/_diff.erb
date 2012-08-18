@@ -60,7 +60,8 @@
                   <%
                      comment_count_text = "#{comments_on_line} comment#{'s' unless comments_on_line == 1}"
                   %>
-                  <a class="noLink tipsyCommentCount" commentCount="<%= comments_on_line %>" style="display:none">
+                  <a class="noLink tipsyCommentCount" commentCount="<%= comments_on_line %>"
+                      title="<%= StringHelper.pluralize(comments_on_line, 'comment') %>" style="display:none">
                     <span><%= comments_on_line %></span><img src="/assets/images/comment_bubble.png" />
                   </a>
                 </div>
