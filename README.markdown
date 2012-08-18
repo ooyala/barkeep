@@ -75,5 +75,6 @@ and community members:
 * Dylan Tack ([dylantack](https://github.com/dylantack))
 * Liron Yahdav ([lyahdav](https://github.com/lyahdav))
 * Michael Quinn ([mikejquinn](https://github.com/mikejquinn))
+* Ron Toland ([mindbat](https://github.com/mindbat))
 
 Barkeep is released under [the MIT license](http://www.opensource.org/licenses/mit-license.php).
