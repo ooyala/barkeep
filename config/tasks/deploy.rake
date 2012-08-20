@@ -109,7 +109,7 @@ namespace :fezzik do
         "-f Procfile > /dev/null"
     run_commands("cd #{release_path}",
         "bundle exec #{foreman_command}",
-        "sudo rm /etc/init/barkeep*.conf || true",
+        "sudo rm /etc/init/#{app}*.conf || true",
         "sudo mv upstart_scripts/* /etc/init",
         "rm -R upstart_scripts")
 
@@ -173,7 +173,7 @@ namespace :fezzik do
         run "curl --silent --show-error --max-time 20 localhost:80/ > /dev/null"
       end
     rescue StandardError => error
-      puts "#{error}\nBarkeep is not responding. It may have had trouble starting."
+      puts "#{error}\n#{app} is not responding. It may have had trouble starting."
       exit 1
     end
   end
