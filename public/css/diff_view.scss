@@ -520,6 +520,10 @@
           color: $textColor;
           border: 0;
         }
+        span {
+          font-size: 80%;
+          color: $lightTextColor;
+        }
       }
 
     }
