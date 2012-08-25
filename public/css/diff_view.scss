@@ -515,11 +515,16 @@
         width: 40px;
         font-size: 14px;
 
+        a:active { background:none; }
         a {
           text-decoration: none;
           color: $textColor;
           border: 0;
         }
+        a:hover {
+          color: $textColor;
+        }
+
         span {
           font-size: 80%;
           color: $lightTextColor;

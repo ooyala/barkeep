@@ -662,6 +662,7 @@ window.Commit =
 
   toggleSingleComment: (event) ->
     target = $(event.target)
+    target.parent("a").hide()
     target.parent("a").tipsy("hide")
     comments = target.parents(".code").find(".commentContainer")
     comments.show()
