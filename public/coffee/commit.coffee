@@ -667,6 +667,11 @@ window.Commit =
     comments = target.parents(".code").find(".commentContainer")
     comments.show()
 
+    if ($(".diffCommentCount > a:visible").size() == 0)
+      @commentsHidden = false
+      $("#hideCommentButton").text("Hide Comments")
+
+
   toggleComments:  ->
     if (@commentsHidden)
       @commentsHidden = false
