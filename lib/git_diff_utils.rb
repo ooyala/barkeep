@@ -186,7 +186,7 @@ class GitDiffUtils
 
   def self.show(repo, commit)
     if commit.parents.size > 0
-      diff = repo.git.native(:diff, { :full_index => true, :find_renames => true }, commit.parents[0].id,
+      diff = repo.git.native(:diff, { :full_index => true }, commit.parents[0].id,
           commit.id)
     else
       raw_diff = repo.git.native(:show, { :full_index => true, :pretty => "raw" }, commit.id)

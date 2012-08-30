@@ -1,0 +1,3 @@
+FetchCommits:
+  cron: "*/15 * * * *"
+  queue: "fetch_commits"

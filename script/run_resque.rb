@@ -33,5 +33,6 @@ RESQUE_WORKERS.times do |i|
   sleep 10 if defined?(RACK_ENV) && RACK_ENV == "production"
   spawn({ "QUEUE" => queue_order.join(",") }, "bundle exec rake resque:work")
 end
+spawn("bundle exec rake resque:scheduler")
 
 Process.waitall

@@ -8,6 +8,8 @@ gem "rake"
 gem "pathological"
 
 gem "resque"
+# for scheduled resque tasks, a la cron
+gem 'resque-scheduler', :require => 'resque_scheduler'
 
 # For writing CSS more conveniently.
 gem "sass", "~> 3.1.16"
@@ -22,7 +24,7 @@ gem "bourbon"
 gem "uglifier"
 
 # We're pulling in our own grit fork with bugfixes.
-gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "38d0e6660b78bff97499280fae09a78b087c50b4"
+gem "grit"
 gem "json"
 gem "sequel"
 gem "mysql2"

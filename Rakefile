@@ -1,7 +1,11 @@
 require "bundler/setup"
 require "pathological"
 require "rake/testtask"
-require "resque/tasks"
+require 'resque'
+require 'resque/tasks'
+require 'resque_scheduler'
+require 'resque_scheduler/tasks'
+require 'resque/scheduler'
 
 # We use Fezzik for deployments. Fezzik requires this Rakefile, which should in turn require all deploy tasks.
 if ENV["fezzik_destination"]
@@ -33,6 +37,10 @@ namespace :test do
 end
 
 namespace :resque do
+  task :setup do
+    Resque.schedule = YAML.load_file('config/resque_schedule.yml')
+  end
+
   # The resque:work task is defined by the Resque gem. Before running it, we need to require the worker code.
   task :work => :require_resque_tasks
 
