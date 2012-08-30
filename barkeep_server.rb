@@ -273,7 +273,7 @@ class BarkeepServer < Sinatra::Base
       end
       redirect "/commits/#{repo_name}/#{commit.sha}"
     end
-    tagged_diff = GitDiffUtils::get_tagged_commit_diffs(repo_name, commit.grit_commit,
+    tagged_diff = GitDiffUtils.get_tagged_commit_diffs(repo_name, commit.grit_commit,
         :use_syntax_highlighting => true)
     erb :commit, :locals => { :tagged_diff => tagged_diff, :commit => commit }
   end
