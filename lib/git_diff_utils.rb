@@ -21,9 +21,12 @@ class GitDiffUtils
   # returns: [ { :binary, :lines, :breaks}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
+    logger = Logger.new(STDOUT)
+    logger.info "in get_tagged_commit_diffs"
     repo = MetaRepo.instance.get_grit_repo(repo_name)
     begin
       GitDiffUtils.show(repo, commit).map do |diff|
+        logger.info "looking at diff #{diff.inspect}"
         a_path = diff.a_path
         b_path = diff.b_path
         data = TaggedDiff.new(:file_name_before => a_path, :file_name_after => b_path,
@@ -188,8 +191,12 @@ class GitDiffUtils
   end
 
   def self.show(repo, commit)
+    logger = Logger.new(STDOUT)
+    logger.info "in GitDiffUtils.show"
     if commit.parents.size > 0
-      diff = repo.git.native(:diff, { :full_index => true, :find_renames => true }, commit.parents[0].id,
+      logger.info "parents id is #{commit.parents[0].id}, commit id is #{commit.id}"
+      logger.info "repo.git is #{repo.git.inspect}"
+      diff = repo.git.native(:diff, { :full_index => true }, commit.parents[0].id,
           commit.id)
     else
       raw_diff = repo.git.native(:show, { :full_index => true, :pretty => "raw" }, commit.id)
@@ -197,6 +204,7 @@ class GitDiffUtils
       cutpoint = raw_diff.index("diff --git a")
       diff = cutpoint ? raw_diff[cutpoint, raw_diff.length] : ""
     end
+    logger.info "in GitDiffUtils.show diff is #{diff.inspect}"
 
     Grit::Diff.list_from_string(repo, diff)
   end
