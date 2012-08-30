@@ -21,12 +21,9 @@ class GitDiffUtils
   # returns: [ { :binary, :lines, :breaks}, ... ]
   # TODO(philc): Make colored diffs optional. Emails do not require them, and generating them is expensive.
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
-    logger = Logger.new(STDOUT)
-    logger.info "in get_tagged_commit_diffs"
     repo = MetaRepo.instance.get_grit_repo(repo_name)
     begin
       GitDiffUtils.show(repo, commit).map do |diff|
-        logger.info "looking at diff #{diff.inspect}"
         a_path = diff.a_path
         b_path = diff.b_path
         data = TaggedDiff.new(:file_name_before => a_path, :file_name_after => b_path,
@@ -60,15 +57,12 @@ class GitDiffUtils
           raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
 
           unless options[:warm_the_cache]
-            logger.info "Generating new_data from GitDiffUtils.tag_file"
             new_data = GitDiffUtils.tag_file(before, after, diff, raw_diff)
             [:lines, :lines_added, :lines_removed, :breaks].each do |symbol|
-              logger.info "Sending data #{new_data.inspect} to #{symbol.inspect}"
               data.send(:"#{symbol}=", new_data[symbol])
             end
           end
         end
-        logger.info "data is #{data.inspect}"
         data
       end
     rescue Grit::Git::GitTimeout => e
@@ -191,11 +185,7 @@ class GitDiffUtils
   end
 
   def self.show(repo, commit)
-    logger = Logger.new(STDOUT)
-    logger.info "in GitDiffUtils.show"
     if commit.parents.size > 0
-      logger.info "parents id is #{commit.parents[0].id}, commit id is #{commit.id}"
-      logger.info "repo.git is #{repo.git.inspect}"
       diff = repo.git.native(:diff, { :full_index => true }, commit.parents[0].id,
           commit.id)
     else
@@ -204,7 +194,6 @@ class GitDiffUtils
       cutpoint = raw_diff.index("diff --git a")
       diff = cutpoint ? raw_diff[cutpoint, raw_diff.length] : ""
     end
-    logger.info "in GitDiffUtils.show diff is #{diff.inspect}"
 
     Grit::Diff.list_from_string(repo, diff)
   end
