@@ -16,6 +16,7 @@ class FetchCommits
 
   def self.perform
     setup
+    Logging.logger.info "Looking for new commits to fetch."
     MetaRepo.instance.scan_for_new_repos
     fetch_commits(MetaRepo.instance.repos)
   end
