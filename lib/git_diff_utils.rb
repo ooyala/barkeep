@@ -57,12 +57,15 @@ class GitDiffUtils
           raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
 
           unless options[:warm_the_cache]
+            logger.info "Generating new_data from GitDiffUtils.tag_file"
             new_data = GitDiffUtils.tag_file(before, after, diff, raw_diff)
             [:lines, :lines_added, :lines_removed, :breaks].each do |symbol|
+              logger.info "Sending data #{new_data.inspect} to #{symbol.inspect}"
               data.send(:"#{symbol}=", new_data[symbol])
             end
           end
         end
+        logger.info "data is #{data.inspect}"
         data
       end
     rescue Grit::Git::GitTimeout => e
