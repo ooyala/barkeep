@@ -8,6 +8,8 @@ gem "rake"
 gem "pathological"
 
 gem "resque"
+# for scheduled resque tasks, a la cron
+gem 'resque-scheduler', :require => 'resque_scheduler'
 
 # For writing CSS more conveniently.
 gem "sass", "~> 3.1.16"
