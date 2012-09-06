@@ -3,6 +3,7 @@ class AlbinoFiletype
     ".as" => :actionscript,
     ".c" => :c,
     ".cc" => :cpp,
+    ".clj" => :clojure,
     ".coffee" => :coffeescript,
     ".cpp" => :cpp,
     ".css" => :css,
