@@ -121,8 +121,8 @@ window.Commit =
         # Don't attempt to search if the input value ends with a comma and whitespace.
         false if $("#authorInput").val().match(/,\s*$/)
 
-  pluralize: (count, singular, plural = nil) ->
-    text = (count == 1) ? singular : (plural || "#{singular}s")
+  pluralize: (count, singular, plural) ->
+    text = if count == 1 then singular else (plural || "#{singular}s")
     "#{count} #{text}"
 
   calculateMarginSize: ->
