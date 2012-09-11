@@ -138,8 +138,9 @@ class Emails
   # Sends an email using Pony.
   # pony_options: extra options to pass through to Pony. Used for setting mail headers like
   # "message-ID" to enable threading.
+  # Subject forced to utf-8 to avoid issues with mail encodings (ooyala/barkeep#285)
   def self.deliver_mail(to, subject, html_body, pony_options = {})
-    options = { :to => to, :via => :smtp, :subject => subject, :html_body => html_body,
+    options = { :to => to, :via => :smtp, :subject => subject.force_encoding("utf-8"), :html_body => html_body,
       # These settings are from the Pony documentation and work with Gmail's SMTP TLS server.
       :via_options => {
         :address => "smtp.gmail.com",
