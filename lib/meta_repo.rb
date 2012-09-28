@@ -357,6 +357,8 @@ class MetaRepo
 
     git_options[:after] = search_options[:after] unless search_options[:after].blank?
 
+    git_options[:grep] = search_options[:grep] unless search_options[:grep].blank?
+
     git_arguments = search_options[:branches].blank? ? [] :
         search_options[:branches].map { |name| "origin/#{name}" }
     git_options[:all] = true if git_arguments.empty?

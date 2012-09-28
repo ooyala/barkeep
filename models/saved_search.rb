@@ -15,6 +15,7 @@ class SavedSearch < Sequel::Model
       :branches => branches_list,
       :authors => authors_list,
       :paths => paths_list,
+      :grep => messages,
       :token => token,
       :direction => direction,
       :commit_filter_proc => self.unapproved_only ?
