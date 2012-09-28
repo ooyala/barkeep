@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # A saved search represents a list of commits, some read and some unread.
 #
 # Columns:
