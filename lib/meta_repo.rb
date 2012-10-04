@@ -101,8 +101,7 @@ class MetaRepo
     repos = search_options[:repos].blank? ? @repos : repos_which_match(search_options[:repos])
 
     commit_matches_search = false
-    # TODO(philc): Abort searches in other threads when we find a match.
-    parallel_each_repos(repos) do |repo, mutex|
+    repos.each do |repo|
       commit_ids = GitHelper.rev_list(repo, git_command_options).map(&:sha)
       commit_matches_search = true if commit_ids.include?(grit_commit.sha)
     end
@@ -211,29 +210,27 @@ class MetaRepo
     git_command_options[:after] += 1 if git_command_options[:after]
 
     commits = []
-    parallel_each_repos(repos) do |repo, mutex|
+    repos.each do |repo|
       local_results = commits_from_repo(repo, git_command_options, limit, retain, commit_filter_proc)
 
       # If two commits have the same timestamp, we want to order them as they were originally ordered by
       # GitHelper.commits_with_limit. We could just sort by timestamp if Ruby's sort was stable, but it's not.
       # Instead, we must remember the array position of each commit so that we can use this later to sort.
-      commit_tuples = local_results.each_with_index.map do |commit, i|
+      commits += local_results.each_with_index.map do |commit, i|
         [commit, [commit.timestamp, commit.repo_name, i]]
       end
-      mutex.synchronize { commits += commit_tuples }
     end
 
     # Hokay, now let's add in all the boundary commits (if necessary)
     boundary_commits = []
     if original_timestamp
       git_command_options[:before] = git_command_options[:after] = original_timestamp
-      parallel_each_repos(repos) do |repo, mutex|
+      repos.each do |repo|
         # Hopefully there aren't > 1000 commits with a single timestamp...
         local_results = commits_from_repo(repo, git_command_options, 1000, retain, commit_filter_proc)
-        commit_tuples = local_results.each_with_index.map do |commit, i|
+        boundary_commits += local_results.each_with_index.map do |commit, i|
           [commit, [commit.timestamp, commit.repo_name, i]]
         end
-        mutex.synchronize { boundary_commits += commit_tuples }
       end
     end
 
@@ -308,23 +305,10 @@ class MetaRepo
 
     count = 0
     # TODO(caleb): Fix the case where we've paged back > 10000 commits into a single repo.
-    parallel_each_repos(repos) do |repo, mutex|
-      local_count = GitHelper.commits_with_limit(repo, git_command_options, 10_000, :count, :first)
-      mutex.synchronize { count += local_count }
+    repos.each do |repo|
+      count += GitHelper.commits_with_limit(repo, git_command_options, 10_000, :count, :first)
     end
     count
-  end
-
-  # Perform some operation with a thread for each repo.
-  # Caller gets a thread-local repo and a mutex.
-  def parallel_each_repos(repos, &block)
-    mutex = Mutex.new
-    threads = repos.map do |r|
-      Thread.new(r) do |repo|
-        yield repo, mutex
-      end
-    end
-    threads.each(&:join)
   end
 
   # Compare two commit tuples: [timestamp, repo_name, index]
