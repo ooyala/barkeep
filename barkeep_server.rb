@@ -112,7 +112,7 @@ class BarkeepServer < Sinatra::Base
       # Show a more developer-friendly error page and stack traces.
       content_type "text/plain"
       error = request.env["sinatra.error"]
-      message = error.message + "\n" + error.backtrace.join("\n")
+      message = ([error.class, error.message] + error.backtrace).join("\n")
       puts message
       message
     end
