@@ -46,9 +46,12 @@ class GitDiffUtils
             begin
               before = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.a_blob)
               after = @@syntax_highlighter.colorize_blob(repo_name, filetype, diff.b_blob)
-            rescue RubyPython::PythonError
-              data.special_case = "This file contains unexpected characters."
-              next data
+            rescue MentosError => error
+              if error.message.include? "UnicodeDecodeError"
+                data.special_case = "This file contains unexpected characters."
+                next data
+              end
+              raise
             end
           else
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
@@ -288,7 +291,7 @@ class LineDiff
   def line_prefix() LINE_PREFIX[self.tag] end
 
   def formatted
-    "<div class='#{@tag}'><pre>#{line_prefix + @data}</pre></div>"
+    "<div class='#{@tag}'><pre>#{line_prefix}#{@data}</pre></div>"
   end
 end
 

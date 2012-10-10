@@ -16,7 +16,6 @@ GEM
     awesome_print (1.0.2)
     backports (2.3.0)
     backtrace_shortener (0.1.0)
-    blankslate (2.1.2.4)
     bourbon (2.1.1)
       sass (>= 3.1)
     childprocess (0.3.1)
@@ -76,8 +75,9 @@ GEM
       method_source (>= 0.6.0)
       ruby_parser (>= 2.0.5)
       slop (~> 1.9.0)
-    pygments.rb (0.2.1)
-      rubypython (>= 0.5.1)
+    pygments.rb (0.3.1)
+      posix-spawn (~> 0.3.6)
+      yajl-ruby (~> 1.1.0)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
@@ -101,9 +101,6 @@ GEM
     ruby-openid (2.1.8)
     ruby_parser (2.0.6)
       sexp_processor (~> 3.0)
-    rubypython (0.5.1)
-      blankslate (>= 2.1.2.3)
-      ffi (~> 1.0.7)
     sass (3.1.20)
     scope (0.2.3)
       minitest
@@ -152,6 +149,7 @@ GEM
       net-ssh (~> 2.2.2)
     vegas (0.1.11)
       rack (>= 1.0.0)
+    yajl-ruby (1.1.0)
 
 PLATFORMS
   ruby
