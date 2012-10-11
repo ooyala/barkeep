@@ -39,10 +39,7 @@
         .name {
           margin-bottom: 10px;
             color: $lightTextColor;
-          .repoName {
-            font: 18px $sansFont;
-            font-variant: small-caps;
-          }
+          .repoName { font: 16px $sansFont; }
           .sha { font: 14px $monoFont; }
         }
 
