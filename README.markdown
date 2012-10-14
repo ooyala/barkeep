@@ -24,6 +24,8 @@ You can shut it all down later using `bundle exec vagrant halt`.
 Once you decide to use Barkeep for your team, you should deploy it to an Ubuntu web server. See the [Deploying
 Barkeep](https://github.com/ooyala/barkeep/wiki/Deploying-Barkeep) wiki page for more information.
 
+Read `RUN-WITHOUT-VM.markdown` quick standalone instructions.
+
 ### Docs
 
 See **[the wiki](https://github.com/ooyala/barkeep/wiki)** for instructions on setting up Barkeep for
