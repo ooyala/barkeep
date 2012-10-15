@@ -56,16 +56,16 @@ around developing Barkeep. You can email the group at
 Barkeep was written by the following Ooyala engineers:
 
 * Bo Chen ([bo-chen](https://github.com/bo-chen))
-* Phil Crosby ([philc](https://github.com/philc))
-* Kevin Le ([bkad](https://github.com/bkad))
-* Daniel MacDougall ([dmacdougall](https://github.com/dmacdougall))
 * Caleb Spare ([cespare](https://github.com/cespare))
+* Daniel MacDougall ([dmacdougall](https://github.com/dmacdougall))
+* Kevin Le ([bkad](https://github.com/bkad))
+* Phil Crosby ([philc](https://github.com/philc))
 
 and with contributions from other Ooyala engineers:
 
-* Noah Gibbs ([noahgibbs](https://github.com/noahgibbs))
 * Brian Zhou ([zdyn](https://github.com/zdyn))
 * Manish Khettry ([mkhettry](https://github.com/mkhettry))
+* Noah Gibbs ([noahgibbs](https://github.com/noahgibbs))
 
 and community members:
 
@@ -73,6 +73,8 @@ and community members:
 * Alice Kærast ([kaerast](https://github.com/kaerast))
 * Dann Luciano ([dannluciano](https://github.com/dannluciano))
 * Dylan Tack ([dylantack](https://github.com/dylantack))
+* Fabio Kenji ([fkenji](https://github.com/fkenji))
+* Guzmán Brasó ([guzmanbraso](https://github.com/guzmanbraso))
 * Liron Yahdav ([lyahdav](https://github.com/lyahdav))
 * Michael Quinn ([mikejquinn](https://github.com/mikejquinn))
 * Ron Toland ([mindbat](https://github.com/mindbat))
