@@ -119,7 +119,7 @@ GEM
       tilt (~> 1.3)
     slop (1.9.1)
     statusz (0.0.3)
-    terraform (0.0.5)
+    terraform (0.0.6)
     therubyracer (0.10.1)
       libv8 (~> 3.3.10)
     thin (1.2.11)
