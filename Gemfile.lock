@@ -18,8 +18,8 @@ GEM
     backtrace_shortener (0.1.0)
     bourbon (2.1.1)
       sass (>= 3.1)
-    childprocess (0.3.1)
-      ffi (~> 1.0.6)
+    childprocess (0.3.5)
+      ffi (~> 1.0, >= 1.0.6)
     clockwork (0.2.4)
     coderay (0.9.8)
     coffee-script (2.2.0)
@@ -38,7 +38,7 @@ GEM
       colorize (>= 0.5.8)
       rake (~> 0.8.7)
       rake-remote_task (~> 2.0.2)
-    ffi (1.0.11)
+    ffi (1.1.5)
     foreman (0.41.0)
       thor (>= 0.13.6)
     i18n (0.6.0)
@@ -138,7 +138,7 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
-    vagrant (1.0.1)
+    vagrant (1.0.5)
       archive-tar-minitar (= 0.5.2)
       childprocess (~> 0.3.1)
       erubis (~> 2.7.0)
@@ -196,4 +196,4 @@ DEPENDENCIES
   tilt
   uglifier
   unicorn
-  vagrant
+  vagrant (~> 1.0.5)

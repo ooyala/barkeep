@@ -84,6 +84,6 @@ group :development do
   gem "fezzik"
   gem "pry"
   gem "awesome_print"
-  gem "vagrant" # For testing deployments
+  gem "vagrant", "~> 1.0.5" # For testing deployments
   gem "statusz" # For the deploy information status page
 end
