@@ -6,6 +6,7 @@
 
 require "bundler/setup"
 require "timeout"
+require "open3"
 
 def hostname() "barkeep_vagrant" end
 
