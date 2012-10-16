@@ -3,7 +3,6 @@ require "pathological"
 
 require "bourbon"
 require "coffee-script"
-require "json"
 require "methodchain"
 require "nokogiri"
 require "open-uri"
