@@ -92,10 +92,14 @@ namespace :fezzik do
     # in the .rbenv-version file. Figure out a better way to do this. See this issue:
     # https://github.com/philc/terraform/issues/3
     rbenv_version = File.read(".rbenv-version").strip
-    if Fezzik::Util.capture_output { run "which ruby" }.include?(".rbenv") &&
-        !Fezzik::Util.capture_output { run "rbenv versions" }.include?(rbenv_version)
-      run "rbenv install #{rbenv_version}"
+
+    should_run_rbenv_install = begin
+      Fezzik::Util.capture_output { run "which ruby" }.include?(".rbenv") && !Fezzik::Util.capture_output { run "rbenv versions" }.include?(rbenv_version)
+    rescue Rake::CommandFailedError
+      false
     end
+
+    run "rbenv install #{rbenv_version}" if should_run_rbenv_install
 
     # This PATH addition is required for Vagrant, which has Ruby installed, but it's not in the default PATH.
     # Include two ruby paths because Vagrant has been known to use both.
