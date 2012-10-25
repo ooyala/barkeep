@@ -2,10 +2,10 @@ require "bundler/setup"
 require "pathological"
 require "rake/testtask"
 require "resque/tasks"
+require "fezzik"
 
 # We use Fezzik for deployments. Fezzik requires this Rakefile, which should in turn require all deploy tasks.
-if ENV["fezzik_destination"]
-  require "fezzik"
+if Fezzik.activated?
   Fezzik.init(:tasks => "config/tasks")
   require "config/deploy_targets/common"
   Dir.glob("config/deploy_targets/*.rb").each { |path| require path }
