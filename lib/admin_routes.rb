@@ -5,6 +5,7 @@ require "lib/api"
 require "resque_jobs/delete_repo"
 require "fileutils"
 require "sinatra/base"
+require "methodchain"
 
 class BarkeepServer < Sinatra::Base
   include Api
@@ -58,16 +59,22 @@ class BarkeepServer < Sinatra::Base
     # TODO(philc): Currently importing.
     git_repos = GitRepo.all.sort_by(&:name)
     repos_hashes = git_repos.map do |git_repo|
+      grit_repo = MetaRepo.instance.get_grit_repo(git_repo.name)
+      origin = begin
+                 grit_repo.then { origin_url }
+               rescue IndexError => e # If this repo is in a bad state after cloning
+                 nil
+               end
       {
-        :git_repo => git_repo,
-        :grit_repo => MetaRepo.instance.get_grit_repo(git_repo.name),
+        :name => git_repo.name,
+        :exists_on_disk => !!grit_repo,
+        :origin_url => origin,
         :newest_commit => git_repo.commits_dataset.order(:date.desc).first
       }
     end
 
-    # As of April 2012, we can have GitRepo records in the database which have no corresponding repo on disk,
-    # because that repo was moved or deleted. Do not include these old repos in the admin page.
-    repos_hashes.reject! { |repo_hash| repo_hash[:grit_repo].nil? }
+    # Don't show git repos that don't actually exist in the repos directory, such as test repos.
+    repos_hashes.reject! { |repo_hash| !repo_hash[:exists_on_disk] }
 
     log_directory = File.expand_path(File.join(File.dirname(__FILE__), "../log"))
     # NOTE(philc): Native ruby would be better, but I was too lazy to find a better solution.

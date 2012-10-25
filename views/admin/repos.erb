@@ -36,8 +36,12 @@
 
     <% repos_hashes.each do |repo_hash| %>
       <tr>
-        <td><%= repo_hash[:grit_repo].name %></td>
-        <td><%= repo_hash[:grit_repo].origin_url %></td>
+        <td><%= repo_hash[:name] %></td>
+        <% if repo_hash[:origin_url] %>
+          <td><%= repo_hash[:origin_url] %></td>
+        <% else %>
+          <td>(No origin -- repo is likely in a bad state)</td>
+        <% end %>
         <td>
           <% grit_commit = repo_hash[:newest_commit] ? repo_hash[:newest_commit].grit_commit : nil %>
           <% if grit_commit %>
