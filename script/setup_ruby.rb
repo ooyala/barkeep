@@ -58,6 +58,5 @@ end
 `bundle check > /dev/null`
 unless $?.to_i == 0
   puts "running `bundle install` (this may take a minute)"
-  args = (environment == "production") ? "--without development" : ""
-  stream_output("bundle install #{args}")
+  stream_output("bundle install")
 end
