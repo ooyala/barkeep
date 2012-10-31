@@ -32,7 +32,8 @@ module KeyboardShortcuts
     "a then a" => "Toggle approval of commit",
     "e" => "Show full diff view",
     "b" => "Toggle side-by-side diff view",
-    "r" => "Request code review"
+    "r" => "Request code review",
+    "h" => "Hide/Show comments"
   }
 
   def self.shortcuts(view)
