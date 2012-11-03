@@ -125,7 +125,7 @@ namespace :fezzik do
     puts "Setting up server dependencies."
   end
 
-  desc "runs the executable in project/bin"
+  desc "starts the server"
   remote_task :start, :roles => [:root_user] do
     puts "Starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}."
     # Upstart will not let you start a started job. Check if it's started already prior to invoking start.
@@ -134,7 +134,7 @@ namespace :fezzik do
     server_is_up?
   end
 
-  desc "kills the application by searching for the specified process name"
+  desc "stops the applications erver"
   remote_task :stop, :roles => [:root_user] do
     # Upstart will not let you stop a stopped job. Check if it's stopped already prior to invoking stop.
     run "(status #{app} | grep start) > /dev/null && stop #{app} || true"
