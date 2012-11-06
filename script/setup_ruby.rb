@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # A Ruby setup script to help developers get started quickly.
 # This will:
 # - ensure you are running the required version of Ruby.
