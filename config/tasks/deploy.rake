@@ -169,11 +169,19 @@ namespace :fezzik do
   task(:write_statusz_file) { Statusz.write_file("/tmp/#{app}/staged/statusz.html") }
 
   def server_is_up?
+    url = "http://localhost:80/"
     begin
       # We try and connect to Barkeep multiple times, because it can take awhile to come up after we start it.
       # We can remove this once we figure out how to make Barkeep start up faster.
       try_n_times(n = 4, timeout = 3) do
         run "curl --silent --show-error --max-time 20 localhost:80/ > /dev/null"
+        response_code = Fezzik::Util.capture_output {
+          run("curl --write-out %{http_code} --silent --output /dev/null #{url}") }.to_i
+        if response_code < 200 || response_code >= 500
+          raise "The remote server at #{url} is either not responding or giving 500's. " +
+            "It may have had trouble starting. You can start troubleshooting by checking the logs in " +
+            "#{hostname}:#{deploy_to}/logs"
+        end
       end
     rescue StandardError => error
       puts "#{error}\n#{app} is not responding. It may have had trouble starting."
