@@ -49,7 +49,7 @@ namespace :fezzik do
   end
 
   desc "performs any necessary setup on the destination servers prior to deployment"
-  remote_task :setup, :roles => :root_user do
+  remote_task :setup, :roles => :sudo_user do
     unless Fezzik.roles[:deploy_user]
       fail "Define a deploy user role in your deploy_targets file."
     end
@@ -59,18 +59,19 @@ namespace :fezzik do
       puts "Creating #{deploy_user} user."
       # Make a user which has the same authorized keys as our root user, so we can ssh in as that user.
       run_commands(
-          "useradd --create-home --shell /bin/bash #{deploy_user}",
-          "adduser #{deploy_user} --add_extra_groups admin",
-          "mkdir -p /home/#{deploy_user}/.ssh/",
-          "cp ~/.ssh/authorized_keys /home/#{deploy_user}/.ssh",
-          "chown -R #{deploy_user} /home/#{deploy_user}/.ssh")
+          "sudo useradd --create-home --shell /bin/bash #{deploy_user}",
+          "sudo adduser #{deploy_user} --add_extra_groups admin",
+          "sudo mkdir -p /home/#{deploy_user}/.ssh/",
+          "sudo cp ~/.ssh/authorized_keys /home/#{deploy_user}/.ssh",
+          "sudo chown -R #{deploy_user} /home/#{deploy_user}/.ssh")
       # Ensure users in the "admin" group can passwordless sudo.
       sudoers_line = "'%admin ALL=NOPASSWD:ALL'"
       run "if test -f /etc/sudoers.local; then " +
-          "echo #{sudoers_line} >> /etc/sudoers.local; " +
-          "else echo #{sudoers_line} >> /etc/sudoers; fi"
+          # # NOTE(philc): We can't do a simple "echo xyz > file" using sudo, so use tee to output instead.
+          "echo #{sudoers_line} | sudo tee /etc/sudoers.local; " +
+          "else echo #{sudoers_line} | sudo tee /etc/sudoers; fi"
     end
-    run "mkdir -p #{deploy_to}/releases && chown #{deploy_user} #{deploy_to} #{deploy_to}/releases"
+    run "sudo mkdir -p #{deploy_to}/releases && sudo chown #{deploy_user} #{deploy_to} #{deploy_to}/releases"
   end
 
   desc "rsyncs the project from its staging location to each destination server"
@@ -115,45 +116,48 @@ namespace :fezzik do
     run "cd #{release_path} && script/initial_app_setup.rb production"
   end
 
-  remote_task :generate_foreman_upstart_scripts, :roles => :deploy_user do
-    puts "Exporting foreman daemon scripts to /etc/init"
+  remote_task :initial_app_setup, :roles => :deploy_user do
+  end
+
+  remote_task :setup_foreman_upstart_scripts, :roles => :deploy_user do
+    puts "Copying foreman daemon scripts to /etc/init"
     foreman_command = "foreman export upstart upstart_scripts/ -a #{app} -l /var/log/#{app} -u #{user} " <<
         "-f Procfile > /dev/null"
-    run_commands("cd #{release_path}",
-        "bundle exec #{foreman_command}",
-        "sudo rm /etc/init/#{app}*.conf 2> /dev/null || true",
-        "sudo mv upstart_scripts/* /etc/init",
-        "rm -R upstart_scripts")
-
-    # Munge the Foreman-generated upstart conf files so that our app starts on system startup (right after
-    # mysql). This is a bit hacky -- Foreman supports templates which you can use to modify the generated
-    # upstart conf files. At the time of writing this was not worth the extra effort.
-    run "echo 'start on started mysql' >> /etc/init/#{app}.conf"
+    run_commands(
+      "cd #{release_path}",
+      "bundle exec #{foreman_command}",
+      # Munge the Foreman-generated upstart conf files so that our app starts on system startup (right after
+      # mysql). This is a bit hacky -- Foreman supports templates which you can use to modify the generated
+      # upstart conf files. At the time of writing this was not worth the extra effort.
+      "echo 'start on started mysql' >> ./upstart_scripts/#{app}.conf",
+      "sudo rm /etc/init/#{app}*.conf 2> /dev/null || true",
+      "sudo mv upstart_scripts/* /etc/init",
+      "sudo rm -R upstart_scripts")
   end
 
   desc "after the app code has been rsynced, sets up the app's dependencies, like gems"
-  remote_task({ :setup_app => [:push, :initial_system_setup, :generate_foreman_upstart_scripts] },
+  remote_task({ :setup_app => [:push, :initial_system_setup, :setup_foreman_upstart_scripts] },
       { :roles => :deploy_user }) do
     puts "Setting up server dependencies."
   end
 
   desc "starts the server"
-  remote_task :start, :roles => :root_user do
+  remote_task :start, :roles => :sudo_user do
     puts "Starting from #{Fezzik::Util.capture_output { run "readlink #{current_path}" }}."
     # Upstart will not let you start a started job. Check if it's started already prior to invoking start.
-    run "(status #{app} | grep stop) > /dev/null && start #{app} || true"
+    run "(sudo status #{app} | grep stop) > /dev/null && sudo start #{app} || true"
     puts "Checking that the server is up and running."
     server_is_up?
   end
 
   desc "stops the applications erver"
-  remote_task :stop, :roles => :root_user do
+  remote_task :stop, :roles => :sudo_user do
     # Upstart will not let you stop a stopped job. Check if it's stopped already prior to invoking stop.
-    run "(status #{app} | grep start) > /dev/null && stop #{app} || true"
+    run "(sudo status #{app} | grep start) > /dev/null && sudo stop #{app} || true"
   end
 
   desc "restarts the application"
-  remote_task({ :restart => [:stop, :start] }, :roles => :root_user)
+  remote_task({ :restart => [:stop, :start] }, :roles => :sudo_user)
 
   desc "full deployment pipeline"
   task :deploy => [:deploy_without_tests, :run_integration_tests] do

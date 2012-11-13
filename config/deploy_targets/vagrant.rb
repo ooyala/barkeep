@@ -11,6 +11,10 @@ Fezzik.destination :vagrant do
   Fezzik.env :gmail_password, "password!"
    # This secret is used to encrypt session information into cookies.
   Fezzik.env :cookie_session_secret, "This should be a long, random, secret string."
+  # This "deploy_user" is the user that code will be deployed and run as.
   Fezzik.role :deploy_user, :user => "barkeep"
-  Fezzik.role :root_user, :user => "root"
+  # This "sudo_user" is a user who can ssh into the machine you want to deploy to, and who has passwordless
+  # sudo privileges. This user is perfroms the initial system setup, which includes installing some native
+  # packages.
+  Fezzik.role :sudo_user, :user => "vagrant"
 end
