@@ -3,7 +3,7 @@
 
 Fezzik.destination :vagrant do
   set :hostname, "barkeep_vagrant"
-  set :domain, "#{hostname}"
+  set :domain, hostname
   BarkeepDeploy.include_common_deploy_options
   Fezzik.env :unicorn_workers, 2
   # Replace these with your own Gmail account credentials if you want to test Barkeep's email features.
