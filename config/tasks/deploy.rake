@@ -102,7 +102,16 @@ namespace :fezzik do
 
     # This PATH addition is required for Vagrant, which has Ruby installed, but it's not in the default PATH.
     # Include two ruby paths because Vagrant has been known to use both.
-    run "cd #{release_path} && PATH=$PATH:/opt/ruby/bin:/opt/vagrant_ruby/bin script/system_setup.rb"
+    vagrant_ruby_path = "PATH=$PATH:/opt/ruby/bin:/opt/vagrant_ruby/bin"
+
+    which_ruby = run "#{vagrant_ruby_path} which ruby || true"
+    if which_ruby.empty?
+      fail "The box you're deploying to does not have a ruby installed. Barkeep's deploy needs a ruby " +
+           "installed to bootstrap the deploy process. Log in and run `apt-get install ruby`."
+    end
+
+    run "cd #{release_path} && #{vagrant_ruby_path} script/system_setup.rb"
+    # Now Barkeep's required version of ruby has been installed, so use that.
     run "cd #{release_path} && script/initial_app_setup.rb production"
   end
 
