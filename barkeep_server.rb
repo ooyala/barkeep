@@ -212,6 +212,29 @@ class BarkeepServer < Sinatra::Base
     redirect get_openid_login_redirect(provider)
   end
 
+  # Handle login complete from openid provider.
+  get "/signin/complete" do
+    @openid_consumer ||= OpenID::Consumer.new(session,
+        OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
+    openid_response = @openid_consumer.complete(params, request.url)
+    case openid_response.status
+    when OpenID::Consumer::FAILURE
+      "Sorry, we could not authenticate you with this identifier. #{openid_response.display_identifier}"
+    when OpenID::Consumer::SETUP_NEEDED then "Immediate request failed - Setup Needed"
+    when OpenID::Consumer::CANCEL then "Login cancelled."
+    when OpenID::Consumer::SUCCESS
+      ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
+      email = ax_resp["http://axschema.org/contact/email"][0]
+      session[:email] = email
+      unless User.find(:email => email)
+        # If there are no admin users yet, make the first user to log in the first admin.
+        permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
+        User.new(:email => email, :name => email, :permission => permission).save
+      end
+      redirect session[:login_started_url] || "/"
+    end
+  end
+
   get "/signout" do
     session.clear
     redirect request.referrer
@@ -401,29 +424,6 @@ class BarkeepServer < Sinatra::Base
     end
     saved_search.save
     nil
-  end
-
-  # Handle login complete from openid provider.
-  get "/signin/complete" do
-    @openid_consumer ||= OpenID::Consumer.new(session,
-        OpenID::Store::Filesystem.new(File.join(File.dirname(__FILE__), "/tmp/openid")))
-    openid_response = @openid_consumer.complete(params, request.url)
-    case openid_response.status
-    when OpenID::Consumer::FAILURE
-      "Sorry, we could not authenticate you with this identifier. #{openid_response.display_identifier}"
-    when OpenID::Consumer::SETUP_NEEDED then "Immediate request failed - Setup Needed"
-    when OpenID::Consumer::CANCEL then "Login cancelled."
-    when OpenID::Consumer::SUCCESS
-      ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
-      email = ax_resp["http://axschema.org/contact/email"][0]
-      session[:email] = email
-      unless User.find(:email => email)
-        # If there are no admin users yet, make the first user to log in the first admin.
-        permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
-        User.new(:email => email, :name => email, :permission => permission).save
-      end
-      redirect session[:login_started_url] || "/"
-    end
   end
 
   get "/stats" do
