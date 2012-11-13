@@ -181,9 +181,13 @@ class BarkeepServer < Sinatra::Base
     else
       SavedSearch.raise_on_save_failure = true
     end
+
     next if UNAUTHENTICATED_ROUTES.any? { |route| request.path =~ /^#{route}/ }
-    next if PERMITTED_USERS.empty? &&
+    if (!defined?(PERMITTED_USERS) || PERMITTED_USERS.empty?) &&
       UNAUTHENTICATED_PREVIEW_ROUTES.any? { |route| request.path =~ /^#{route}/ }
+      next
+    end
+
     unless current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
@@ -232,8 +236,10 @@ class BarkeepServer < Sinatra::Base
     when OpenID::Consumer::SUCCESS
       ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
       email = ax_resp["http://axschema.org/contact/email"][0]
-      unless PERMITTED_USERS.split(",").map(&:strip).include?(email)
-        halt 401, "Your email #{email} is not authorized to login to Barkeep."
+      if defined?(PERMITTED_USERS) && !PERMITTED_USERS.empty?
+        unless PERMITTED_USERS.split(",").map(&:strip).include?(email)
+          halt 401, "Your email #{email} is not authorized to login to Barkeep."
+        end
       end
       session[:email] = email
       unless User.find(:email => email)
