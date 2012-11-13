@@ -112,7 +112,7 @@ namespace :fezzik do
         "-f Procfile > /dev/null"
     run_commands("cd #{release_path}",
         "bundle exec #{foreman_command}",
-        "sudo rm /etc/init/#{app}*.conf || true",
+        "sudo rm /etc/init/#{app}*.conf 2> /dev/null || true",
         "sudo mv upstart_scripts/* /etc/init",
         "rm -R upstart_scripts")
 
