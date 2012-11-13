@@ -39,7 +39,12 @@ require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
-LOGIN_WHITELIST_ROUTES = ["/signin", "/signout", "/commits/", "/stats", "/inspire", "/statusz", "/api/"]
+UNAUTHENTICATED_ROUTES = ["/signin", "/signout", "/inspire", "/statusz", "/api/"]
+# NOTE(philc): Currently we let you see previews of individual commits and the code review stats without
+# being logged in, as a friendly UX. When we flesh out our auth model, we should intentionally make this
+# configurable.
+UNAUTHENTICATED_PREVIEW_ROUTES = ["/commits/", "/stats"]
+
 
 # OPENID_PROVIDERS is a string env variable. It's a comma-separated list of OpenID providers.
 OPENID_PROVIDERS_ARRAY = OPENID_PROVIDERS.split(",")
@@ -176,7 +181,9 @@ class BarkeepServer < Sinatra::Base
     else
       SavedSearch.raise_on_save_failure = true
     end
-    next if LOGIN_WHITELIST_ROUTES.any? { |route| request.path =~ /^#{route}/ }
+    next if UNAUTHENTICATED_ROUTES.any? { |route| request.path =~ /^#{route}/ }
+    next if PERMITTED_USERS.empty? &&
+      UNAUTHENTICATED_PREVIEW_ROUTES.any? { |route| request.path =~ /^#{route}/ }
     unless current_user
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
@@ -225,6 +232,9 @@ class BarkeepServer < Sinatra::Base
     when OpenID::Consumer::SUCCESS
       ax_resp = OpenID::AX::FetchResponse.from_success_response(openid_response)
       email = ax_resp["http://axschema.org/contact/email"][0]
+      unless PERMITTED_USERS.split(",").map(&:strip).include?(email)
+        halt 401, "Your email #{email} is not authorized to login to Barkeep."
+      end
       session[:email] = email
       unless User.find(:email => email)
         # If there are no admin users yet, make the first user to log in the first admin.

@@ -33,3 +33,7 @@ COOKIE_SESSION_SECRET = "AssimilationSuccessful"
 
 # The number of resque workers to spawn
 RESQUE_WORKERS = 2
+
+# A comma-separated list of permitted users, to restrict access to barkeep. If unset, any user can log in
+# via their Gmail account. This feature is a work in progress and not ready for general use; see #361.
+PERMITTED_USERS = ""
