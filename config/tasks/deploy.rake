@@ -92,7 +92,7 @@ namespace :fezzik do
     # in the .rbenv-version file. Figure out a better way to do this. See this issue:
     # https://github.com/philc/terraform/issues/3
     rbenv_version = File.read(".rbenv-version").strip
-    if Fezzik::Util.capture_output { run "which ruby" }.include?(".rbenv") &&
+    if Fezzik::Util.capture_output { run "which ruby || true" }.include?(".rbenv") &&
         !Fezzik::Util.capture_output { run "rbenv versions" }.include?(rbenv_version)
       run "rbenv install #{rbenv_version}"
     end
