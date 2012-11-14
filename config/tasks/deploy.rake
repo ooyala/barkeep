@@ -187,7 +187,6 @@ namespace :fezzik do
       # We try and connect to Barkeep multiple times, because it can take awhile to come up after we start it.
       # We can remove this once we figure out how to make Barkeep start up faster.
       try_n_times(n = 4, timeout = 3) do
-        run "curl --silent --show-error --max-time 20 localhost:80/ > /dev/null"
         response_code = Fezzik::Util.capture_output {
           run("curl --write-out %{http_code} --silent --output /dev/null #{url}") }.to_i
         if response_code < 200 || response_code >= 500
