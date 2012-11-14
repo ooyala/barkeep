@@ -42,7 +42,7 @@ namespace :fezzik do
   desc "Evaluates the templates in script/system_setup_files using Fezzik's current env vars."
   task :evaluate_conf_file_templates do
     env_settings = Fezzik.environments[hostname]
-    nginx_conf = Tilt::ERBTemplate.new("config/system_setup_files/nginx_site.conf.erb").render(Object.new,
+    nginx_conf = Tilt::ERBTemplate.new("config/system_setup_files/nginx_site.conf.erb",1,:default_encoding => "utf-8").render(Object.new,
         :hostname => hostname,
         :unicorn_socket => env_settings[:unicorn_socket])
     File.open("/tmp/#{app}/staged/config/system_setup_files/nginx_site.conf", "w") { |f| f.write(nginx_conf) }
