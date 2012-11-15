@@ -36,6 +36,7 @@ class SyntaxHighlighter
   end
 
   def self.pygmentize(file_type, text)
+    file_type = "text" if Pygments::Lexer.find_by_alias(file_type).nil?
     Pygments.highlight(text, :lexer => file_type, :options => {
       :encoding => "utf-8", :nowrap => true, :stripnl => false, :stripall => false
     })
