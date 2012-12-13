@@ -16,6 +16,8 @@ require "terraform/dsl"
 include Terraform::DSL
 require "environment.rb"
 
+ENV["BARKEEP_INIT"] = "true"
+
 def mysql_command() @mysql_command ||= (`which mysql || which mysql5`).chomp end
 def mysqladmin_command() @mysql_admin ||= (`which mysqladmin || which mysqladmin5`).chomp end
 def db_exists?(db_name)
