@@ -19,13 +19,13 @@ require "environment.rb"
 def mysql_command() @mysql_command ||= (`which mysql || which mysql5`).chomp end
 def mysqladmin_command() @mysql_admin ||= (`which mysqladmin || which mysqladmin5`).chomp end
 def db_exists?(db_name)
-  mysql_command_options = "-u root #{db_name} --password=#{DB_PASSWORD} -e 'select 1'"
+  mysql_command_options = "-u #{DB_USER} #{db_name} --password='#{DB_PASSWORD}' -e 'select 1'"
   shell("#{mysql_command} #{mysql_command_options} 2> /dev/null", :silent => true) rescue false
 end
 
 dep "create mysql barkeep database" do
   met? { db_exists?("barkeep") }
-  meet { shell "#{mysqladmin_command} -u root --password=#{DB_PASSWORD} create barkeep" }
+  meet { shell "#{mysqladmin_command} -u #{DB_USER} --password='#{DB_PASSWORD}' create barkeep" }
 end
 
 ensure_run_once("database migrations") { shell "script/run_migrations.rb" }
