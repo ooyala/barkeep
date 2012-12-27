@@ -13,13 +13,16 @@ StringFilter.define_filter :replace_shas_with_links do |str, repo_name, options 
   # Examples: barkeep:9097e16494a7893c4724e5fbf1a77115d066403b
   #           9097e16494a7893c4724e5fbf1a77115d066403b
   # Only matches when string starts a line or is preceded by a space character.
-  str.gsub(/(^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{40})/m) do
+  str.gsub(/(^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{7,40})/m) do |match|
     repo = Regexp.last_match(3) || repo_name
-    sha = Regexp.last_match(4)
+    commit = Commit.prefix_match(repo, Regexp.last_match(4), true, true) if GitRepo[:name => repo]
+    next match unless commit
+    commit_url = "/commits/#{repo}/#{commit.sha}"
+    sha_prefix = commit.sha[0..6]
     if options[:skip_markdown]
-      " <a href='/commits/#{repo}/#{sha}' target='_blank'>#{sha[0..6]}</a>"
+      " <a href='#{commit_url}' target='_blank'>#{sha_prefix}</a>"
     else
-      " [#{sha[0..6]}](/commits/#{repo}/#{sha})"
+      " [#{sha_prefix}](#{commit_url})"
     end
   end
 end
