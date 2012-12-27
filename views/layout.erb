@@ -63,9 +63,9 @@
             <img class="signInGravatar" src="<%= current_user.gravatar %>" />
             <span class="userEmail"><%= current_user.email %></span> |
             <% if current_user.admin? %>
-              <a href="/admin">Admin</a> |
+              <a href="/admin" class="<%= current_page_if_url("admin") %>">Admin</a> |
             <% end %>
-            <a href="/settings">Settings</a> |
+            <a href="/settings" class="<%= current_page_if_url("settings") %>">Settings</a> |
           <% end %>
           <% if current_user.nil? || current_user.demo? %>
             <a href="/signin">Sign in</a>
