@@ -170,14 +170,12 @@ class Emails
 
   # The email body for commit ingestion emails.
   def self.commit_email_body(commit)
-    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/commit_email.erb"),1, :default_encoding => DEFAULT_ENCODING)
-    template.render(self, :commit => commit)
+    render_template("commit_email.erb", :commit => commit)
   end
 
   # The email body for review request emails.
   def self.review_request_email_body(commit, requester)
-    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/review_request_email.erb"),1, :default_encoding => DEFAULT_ENCODING)
-    template.render(self, :commit => commit, :requester => requester)
+    render_template("review_request_email.erb", :commit => commit, :requestor => requestor)
   end
 
   # The email body for comment emails.
@@ -192,11 +190,10 @@ class Emails
     comments_by_file = file_comments.group_by { |comment| comment.commit_file.filename }
     comments_by_file.each { |filename, comments| comments.sort_by!(&:line_number) }
 
-    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/comment_email.erb"),1, :default_encoding => DEFAULT_ENCODING)
-    locals = { :commit => commit, :comments_by_file => comments_by_file,
+    render_template("comment_email.erb",
+        :commit => commit, :comments_by_file => comments_by_file,
         :general_comments => general_comments,
-        :diffs_by_file => diffs_by_file }
-    template.render(self, locals)
+        :diffs_by_file => diffs_by_file)
   end
 
   #
@@ -216,6 +213,15 @@ class Emails
       line_diffs.pop
     end
     line_diffs
+  end
+
+  # - template_filename: the filename of the template, which must reside in the views/email/ directory.
+  # - tempalte_locals: a hash of vars to use when rendering the template.
+  def self.render_template(template_filename, template_locals)
+    line_number = 1
+    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/#{template_filename}"),
+        line_number, :default_encoding => DEFAULT_ENCODING)
+    template.render(self, template_locals)
   end
 
   # Returns the string that git log formats when you pass --stat to git log. It's a terse representation
