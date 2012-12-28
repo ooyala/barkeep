@@ -217,7 +217,7 @@ class BarkeepServer < Sinatra::Base
 
   # Users navigate to here from select_openid_provider.
   # - provider_id: an integer indicating which provider from OPENID_PROVIDERS_ARRAY to use for authentication.
-  get "/signin/login_using_openid_provider" do
+  get "/signin/signin_using_openid_provider" do
     provider = OPENID_PROVIDERS_ARRAY[params[:provider_id].to_i]
     halt 400, "OpenID provider not found." unless provider
     redirect get_openid_login_redirect(provider)
