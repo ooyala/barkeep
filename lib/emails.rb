@@ -5,6 +5,7 @@ require "lib/git_diff_utils"
 
 # Methods for sending various emails, like comment notifications and new commit notifications.
 class Emails
+  DEFAULT_ENCODING = "utf-8"
   # This encapsulates some of the recoverable errors we have sending email, like the inability to connect
   # to the SMTP server.
   class RecoverableEmailError < StandardError
@@ -169,13 +170,13 @@ class Emails
 
   # The email body for commit ingestion emails.
   def self.commit_email_body(commit)
-    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/commit_email.erb"))
+    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/commit_email.erb"),1, :default_encoding => DEFAULT_ENCODING)
     template.render(self, :commit => commit)
   end
 
   # The email body for review request emails.
   def self.review_request_email_body(commit, requester)
-    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/review_request_email.erb"))
+    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/review_request_email.erb"),1, :default_encoding => DEFAULT_ENCODING)
     template.render(self, :commit => commit, :requester => requester)
   end
 
@@ -191,7 +192,7 @@ class Emails
     comments_by_file = file_comments.group_by { |comment| comment.commit_file.filename }
     comments_by_file.each { |filename, comments| comments.sort_by!(&:line_number) }
 
-    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/comment_email.erb"))
+    template = Tilt.new(File.join(File.dirname(__FILE__), "../views/email/comment_email.erb"),1, :default_encoding => DEFAULT_ENCODING)
     locals = { :commit => commit, :comments_by_file => comments_by_file,
         :general_comments => general_comments,
         :diffs_by_file => diffs_by_file }
