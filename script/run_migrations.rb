@@ -19,5 +19,5 @@ command += " -M #{migrate_to_version}" if migrate_to_version
 
 puts "Migrating to version #{migrate_to_version}" if migrate_to_version
 
-host_string = "mysql2://#{DB_USER}:#{DB_PASSWORD}@#{DB_HOST}/#{DB_NAME}"
-puts `#{command} "#{host_string}"`
+host_string = "mysql2://#{DB_USER}:'#{DB_PASSWORD}'@#{DB_HOST}/#{DB_NAME}"
+puts `#{command} #{host_string}`
