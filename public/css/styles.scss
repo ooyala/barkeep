@@ -293,7 +293,10 @@ header {
   }
 
   #signInBox {
-    a { font-weight:bold; }
+    a {
+      font-weight:bold;
+      &.currentPage { color: #8B0000; }
+    }
     font-size: 13px;
     margin-top: 17px;
 
