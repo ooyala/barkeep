@@ -8,17 +8,18 @@ StringFilter.define_filter :markdown do |str|
 end
 
 # Converts repo:sha to a link to the commit.
-# If repo: is omitted the provided repo_name is used.
-StringFilter.define_filter :replace_shas_with_links do |str, repo_name, options = {}|
+# If repo: is omitted the provided current_repo is used.
+StringFilter.define_filter :replace_shas_with_links do |str, current_repo, options = {}|
   # Examples: barkeep:9097e16494a7893c4724e5fbf1a77115d066403b
   #           9097e16494a7893c4724e5fbf1a77115d066403b
   # Only matches when string starts a line or is preceded by a space character.
   str.gsub(/(^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{7,40})/m) do |match|
-    repo = Regexp.last_match(3) || repo_name
+    repo = Regexp.last_match(3) || current_repo
     commit = Commit.prefix_match(repo, Regexp.last_match(4), true, true) if GitRepo[:name => repo]
     next match unless commit
     commit_url = "/commits/#{repo}/#{commit.sha}"
     sha_prefix = commit.sha[0..6]
+    sha_prefix.insert(0, "#{repo}:") if repo != current_repo
     if options[:skip_markdown]
       " <a href='#{commit_url}' target='_blank'>#{sha_prefix}</a>"
     else
