@@ -13,6 +13,7 @@ Since Barkeep is a web app with dependencies like MySQL, Redis, and others, the 
 running quickly is to run it inside a virtual machine using Vagrant:
 
     $ cd barkeep
+    $ git submodule init && git submodule update
     $ script/vagrant_quick_start.rb
 
 You will need a few dependencies (like VirtualBox) before you can set up Barkeep inside of Vagrant, but this
