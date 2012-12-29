@@ -7,8 +7,10 @@ class StringFilterTest < Scope::TestCase
   context "filters" do
     setup do
       @sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
+      # StringFilter.replace_shas_with_links checks each sha-like string against the DB,
+      # so stub out the relevant ORM methods
       stub(GitRepo).[](anything) { GitRepo.new }
-      stub(Commit).prefix_match do |repo_name, sha, zero_ok, mult_ok|
+      stub(Commit).prefix_match do |repo_name, sha, options = {}|
         @sha.start_with?(sha) ? Commit.new(:sha => @sha) : nil
       end
     end

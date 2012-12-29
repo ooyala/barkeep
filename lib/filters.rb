@@ -15,7 +15,10 @@ StringFilter.define_filter :replace_shas_with_links do |str, current_repo, optio
   # Only matches when string starts a line or is preceded by a space character.
   str.gsub(/(^|\s)(([a-zA-Z0-9_-]+):)?([a-zA-Z0-9]{7,40})/m) do |match|
     repo = Regexp.last_match(3) || current_repo
-    commit = Commit.prefix_match(repo, Regexp.last_match(4), true, true) if GitRepo[:name => repo]
+    if GitRepo[:name => current_repo]
+      commit = Commit.prefix_match(repo, Regexp.last_match(4), :allow_no_match => true,
+          :allow_ambiguous_match => true)
+    end
     next match unless commit
     commit_url = "/commits/#{repo}/#{commit.sha}"
     sha_prefix = commit.sha[0..6]
