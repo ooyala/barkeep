@@ -40,7 +40,7 @@ OPENID_PROVIDERS = "https://www.google.com/accounts/o8/ud"
 
 # This is the read-only demo mode which is used in the Barkeep demo linked from getbarkeep.com.
 # Most production deployments will not want to enable the demo mode, but we want it while developing.
-ENABLE_READONLY_DEMO_MODE = false
+ENABLE_READONLY_DEMO_MODE = true
 
 # If specified, this will be used as the session secret in development mode.
 # This prevents the session being cleared when sinatra reloads changes.
