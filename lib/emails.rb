@@ -16,11 +16,6 @@ class Emails
         "#{grit_commit.short_message[0..60]}"
   end
 
-  def self.create_outgoing_address(suffix)
-    outgoing_username_suffix = defined?(SINGLE_OUTGOING_MAIL_ADDRESS) && SINGLE_OUTGOING_MAIL_ADDRESS ? "" : suffix
-    return "#{MAIL_USER}#{outgoing_username_suffix}@#{MAIL_DOMAIN}"
-  end
-
   # Sends an email notification for review requests.
   def self.send_review_request_email(requester, commit, emails)
     grit_commit = commit.grit_commit
@@ -32,7 +27,7 @@ class Emails
 
     pony_options = pony_options_for_commit(commit).merge({
       # Make the From: address e.g. "barkeep+requests@gmail.com" so it's easily filterable.
-      :from => create_outgoing_address("+requests")
+      :from => REQUESTS_OUTGOING_ADDRESS
     })
 
     begin
@@ -67,7 +62,7 @@ class Emails
 
     pony_options = pony_options_for_commit(commit).merge({
       :cc => cc.join(","),
-      :from => create_outgoing_address("+comments")
+      :from => COMMENTS_OUTGOING_ADDRESS
     })
 
     begin
@@ -95,7 +90,7 @@ class Emails
 
     pony_options = pony_options_for_commit(commit).merge({
       # Make the From: address e.g. "barkeep+commits@gmail.com" so it's easily filterable.
-      :from => create_outgoing_address("+commits")
+      :from => COMMITS_OUTGOING_ADDRESS
     })
 
     deliver_mail(to.join(","), subject, html_body, pony_options)

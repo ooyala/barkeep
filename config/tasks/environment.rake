@@ -12,7 +12,7 @@ namespace :fezzik do
       FileUtils.mkdir_p root_config_dir
       File.open(File.join(root_config_dir, "environment.rb"), "w") do |file|
         environment.each do |key, value|
-          quote = value.is_a?(Numeric) ? '' : '"'
+          quote = value.is_a?(String) ? '"' : ''
           file.puts "#{key.to_s.upcase} = #{quote}#{value}#{quote}"
         end
       end

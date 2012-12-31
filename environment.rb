@@ -7,7 +7,6 @@ DB_PASSWORD = ""
 # These are the credentials of the email account that you want to send mail as.
 MAIL_USER = ""
 MAIL_DOMAIN = ""
-SINGLE_OUTGOING_MAIL_ADDRESS = false
 
 # These settings are from the Pony documentation and work with Gmail's SMTP TLS server.
 PONY_OPTIONS = {
@@ -20,6 +19,10 @@ PONY_OPTIONS = {
   # the HELO domain provided by the client to the server
   :domain => "localhost.localdomain"
 }
+
+REQUESTS_OUTGOING_ADDRESS = "#{MAIL_USER}+requests@#{MAIL_DOMAIN}"
+COMMENTS_OUTGOING_ADDRESS = "#{MAIL_USER}+comments@#{MAIL_DOMAIN}"
+COMMITS_OUTGOING_ADDRESS  = "#{MAIL_USER}+commits@#{MAIL_DOMAIN}"
 
 # This a list of paths to git repos we should watch.
 REPOS_ROOT = "#{ENV["HOME"]}/barkeep_repos"
@@ -37,7 +40,7 @@ OPENID_PROVIDERS = "https://www.google.com/accounts/o8/ud"
 
 # This is the read-only demo mode which is used in the Barkeep demo linked from getbarkeep.com.
 # Most production deployments will not want to enable the demo mode, but we want it while developing.
-ENABLE_READONLY_DEMO_MODE = true
+ENABLE_READONLY_DEMO_MODE = false
 
 # If specified, this will be used as the session secret in development mode.
 # This prevents the session being cleared when sinatra reloads changes.

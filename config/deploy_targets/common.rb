@@ -45,7 +45,7 @@ module BarkeepDeploy
   def self.ensure_all_options_are_present
     # These usually come from the $BARKEEP_CREDENTIALS file (see "load_barkeep_credentials_file()" for more
     # info) and so are often forgotten/missing.
-    required_options = [:gmail_address, :gmail_password, :cookie_session_secret]
+    required_options = [:pony_options, :requests_outgoing_address, :comments_outgoing_address, :commits_outgoing_address, :cookie_session_secret]
     required_options.each do |option|
       next if Fezzik.environments[hostname][option]
       puts "You haven't defined the Fezzik env variable #{option}, which is needed for this deploy. " +
