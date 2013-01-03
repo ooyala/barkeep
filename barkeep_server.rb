@@ -218,11 +218,11 @@ class BarkeepServer < Sinatra::Base
     redirect get_signin_redirect()
   end
 
-  get "/signin/select_openid_provider" do
-    erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERS_ARRAY, :ldap_providers => LDAP_PROVIDERS }
+  get "/signin/select_signin_provider" do
+    erb :select_signin_provider, :locals => { :openid_providers => OPENID_PROVIDERS_ARRAY, :ldap_providers => LDAP_PROVIDERS }
   end
 
-  # Users navigate to here from select_openid_provider.
+  # Users navigate to here from select_signin_provider.
   # - provider_id: an integer indicating which provider from OPENID_PROVIDERS_ARRAY to use for authentication.
   get "/signin/signin_using_openid_provider" do
     provider = OPENID_PROVIDERS_ARRAY[params[:provider_id].to_i]
@@ -628,10 +628,11 @@ class BarkeepServer < Sinatra::Base
     if LDAP_PROVIDERS.empty?
       OPENID_PROVIDERS_ARRAY.size == 1 ?
         get_openid_login_redirect(OPENID_PROVIDERS_ARRAY.first) :
-        "/signin/select_openid_provider"
+        "/signin/select_signin_provider"
     else
-      # actually should redirect to LDAP signin page
-      "/signin/select_openid_provider"
+      LDAP_PROVIDERS.size == 1 and OPENID_PROVIDERS_ARRAY.empty? ?
+        "/signin/signin_using_ldap_provider?provider_id=0" :
+        "/signin/select_signin_provider"
     end
   end
 
