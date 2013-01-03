@@ -57,6 +57,7 @@ GEM
     multi_json (1.1.0)
     mustache (0.99.4)
     mysql2 (0.3.11)
+    net-ldap (0.3.1)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-ssh (2.2.2)
@@ -169,6 +170,7 @@ DEPENDENCIES
   methodchain
   mustache
   mysql2
+  net-ldap
   nokogiri
   pathological
   pinion

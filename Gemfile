@@ -71,6 +71,9 @@ gem "therubyracer"
 # For scripting system setup.
 gem "terraform"
 
+# For LDAP signins
+gem "net-ldap"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"

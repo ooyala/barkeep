@@ -3,6 +3,7 @@ require "pathological"
 
 require "bourbon"
 require "coffee-script"
+require "net/ldap"
 require "methodchain"
 require "nokogiri"
 require "open-uri"
@@ -92,6 +93,7 @@ class BarkeepServer < Sinatra::Base
       "/vendor/flot/jquery.flot.pie.min.js"
     ]
     pinion.create_bundle :user_settings_app_js, :concatenate_and_uglify_js, ["/coffee/user_settings.js"]
+    pinion.create_bundle :ldap_signin_app_js, :concatenate_and_uglify_js, ["/coffee/ldap_signin.js"]
   end
 
   helpers Pinion::SinatraHelpers
@@ -101,7 +103,7 @@ class BarkeepServer < Sinatra::Base
   set :views, "views"
   enable :sessions
 
-  raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
+  raise "You must have an OpenID or LDAP provider defined in OPENID_PROVIDERS or LDAP_PROVIDERS, respectively." if OPENID_PROVIDERS.empty? and LDAP_PROVIDERS.empty?
 
   configure :development do
     STDOUT.sync = true # Flush any output right away when running via Foreman.
@@ -167,6 +169,15 @@ class BarkeepServer < Sinatra::Base
         end
       end
     end
+
+    def start_session(name, email)
+      session[:email] = email
+      unless User.find(:email => email)
+        # If there are no admin users yet, make the first user to log in the first admin.
+        permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
+        User.new(:email => email, :name => name, :permission => permission).save
+      end
+    end
   end
 
   before do
@@ -193,9 +204,7 @@ class BarkeepServer < Sinatra::Base
 
       # Save url to return to it after login completes.
       session[:login_started_url] = request.url
-      redirect(OPENID_PROVIDERS_ARRAY.size == 1 ?
-         get_openid_login_redirect(OPENID_PROVIDERS_ARRAY.first) :
-        "/signin/select_openid_provider")
+      redirect get_signin_redirect()
     end
   end
 
@@ -206,13 +215,11 @@ class BarkeepServer < Sinatra::Base
   get "/signin" do
     session.clear
     session[:login_started_url] = request.referrer
-    redirect(OPENID_PROVIDERS_ARRAY.size == 1 ?
-       get_openid_login_redirect(OPENID_PROVIDERS_ARRAY.first) :
-      "/signin/select_openid_provider")
+    redirect get_signin_redirect()
   end
 
   get "/signin/select_openid_provider" do
-    erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERS_ARRAY }
+    erb :select_openid_provider, :locals => { :openid_providers => OPENID_PROVIDERS_ARRAY, :ldap_providers => LDAP_PROVIDERS }
   end
 
   # Users navigate to here from select_openid_provider.
@@ -221,6 +228,89 @@ class BarkeepServer < Sinatra::Base
     provider = OPENID_PROVIDERS_ARRAY[params[:provider_id].to_i]
     halt 400, "OpenID provider not found." unless provider
     redirect get_openid_login_redirect(provider)
+  end
+
+  get "/signin/signin_using_ldap_provider" do
+    provider = LDAP_PROVIDERS[params[:provider_id].to_i]
+    halt 400, "LDAP provider not found." unless provider
+    erb :ldap_signin, :locals => { :provider_id => params[:provider_id], :name => provider[:name] || provider[:host] }
+  end
+
+  post "/signin/ldap_authenticate" do
+    provider = LDAP_PROVIDERS[params[:provider_id].to_i]
+    halt 400, "LDAP provider not found." unless provider
+
+    begin
+      Timeout::timeout(5) do
+        conn_params = { :host => provider[:host], :port => provider[:port] }
+        auth_params = { :method => provider[:method] }
+        
+        if provider.has_key?(:username)
+          # Here we use separate credentials, i.e. those in the config file, to query
+          # the LDAP server in order to locate the correct user entry.
+          conn = Net::LDAP.new(conn_params.merge({
+                                 :auth => auth_params.merge({
+                                            :username => provider[:username],
+                                            :password => provider[:password] })}))
+
+          if conn.bind
+            # Using the field name provided in the config file, search for the entry
+            # whose value in that field is equal to the username provided on the web
+            # form.
+            filter = Net::LDAP::Filter.eq(provider[:uid], params[:username])
+            entries = conn.search(:base => provider[:base], :filter => filter)
+            if entries.nil? or entries.empty?
+              halt 401, "Invalid username or password"
+            elsif entries.size > 1
+              # TODO log error message for duplicate user state
+              halt 401, "LDAP misconfigured"
+            end
+
+            conn2 = Net::LDAP.new(conn_params.merge({
+                                   :auth => auth_params.merge({
+                                              :username => entries.first.dn,
+                                              :password => params[:password] })}))
+
+            if conn2.bind
+              start_session(entries.first.cn.first, entries.first.mail.first)
+              session[:login_started_url]
+            else
+              halt 401, "Invalid username or password"
+            end
+          else
+            halt 401, "Barkeep could not bind as query user"
+          end
+        else
+          # This is the simpler form of LDAP authentication, wherein we simply
+          # attempt to bind using the credentials provided on the web form in order
+          # to validate the user.
+          user_dn = "#{provider[:uid]}=#{params[:username]},#{provider[:base]}\n"
+          conn = Net::LDAP.new(conn_params.merge({
+                                 :auth => auth_params.merge({
+                                            :username => user_dn,
+                                            :password => params[:password] })}))
+
+          if conn.bind
+            filter = Net::LDAP::Filter.contains(provider[:uid], params[:username])
+            entries = conn.search(:base => provider[:base], :filter => filter)
+            if entries.nil? or entries.empty?
+              halt 401, "Invalid username or password"
+            elsif entries.size > 1
+              # TODO log error message for duplicate user state
+              halt 401, "LDAP misconfigured"
+            end
+
+            start_session(entries.first.cn.first, entries.first.mail.first)
+            session[:login_started_url]
+          else
+            halt 401, "Invalid username or password"
+          end
+        end
+      end
+    rescue Timeout::Error => e
+      session.clear
+      halt 401, "LDAP server took too long to respond"
+    end
   end
 
   # Handle login complete from openid provider.
@@ -241,12 +331,7 @@ class BarkeepServer < Sinatra::Base
           halt 401, "Your email #{email} is not authorized to login to Barkeep."
         end
       end
-      session[:email] = email
-      unless User.find(:email => email)
-        # If there are no admin users yet, make the first user to log in the first admin.
-        permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
-        User.new(:email => email, :name => email, :permission => permission).save
-      end
+      start_session(email, email)
       redirect session[:login_started_url] || "/"
     end
   end
@@ -538,6 +623,17 @@ class BarkeepServer < Sinatra::Base
   private
 
   def logged_in?() current_user && !current_user.demo? end
+
+  def get_signin_redirect()
+    if LDAP_PROVIDERS.empty?
+      OPENID_PROVIDERS_ARRAY.size == 1 ?
+        get_openid_login_redirect(OPENID_PROVIDERS_ARRAY.first) :
+        "/signin/select_openid_provider"
+    else
+      # actually should redirect to LDAP signin page
+      "/signin/select_openid_provider"
+    end
+  end
 
   # Construct redirect url to google openid.
   def get_openid_login_redirect(openid_provider_url)
