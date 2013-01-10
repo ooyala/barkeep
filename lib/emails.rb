@@ -175,7 +175,7 @@ class Emails
 
   # The email body for review request emails.
   def self.review_request_email_body(commit, requester)
-    render_template("review_request_email.erb", :commit => commit, :requestor => requestor)
+    render_template("review_request_email.erb", :commit => commit, :requester => requester)
   end
 
   # The email body for comment emails.
