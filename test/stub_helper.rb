@@ -4,16 +4,16 @@ module StubHelper
 
   # Creates a Commit.
   # - user: a User who is the author of this commit.
-  def stub_commit(sha, user)
+  def stub_commit(repo_name, sha, user)
     commit = Commit.new(:sha => sha)
-    stub(commit).git_repo { GitRepo.new(:name => "my_repo") }
+    stub(commit).git_repo { GitRepo.new(:name => repo_name) }
     stub(commit).user { user }
 
     commit_author = user.name.dup
     stub(commit_author).user { user }
     grit_commit = OpenStruct.new(
         :id => sha, :sha => sha, :id_abbrev => sha,
-        :repo_name => "my_repo",
+        :repo_name => repo_name,
         :short_message => "message", :author => Grit::Actor.new(user.name, user.email),
         :date => Time.now, :diffs => [])
     stub(commit).grit_commit { grit_commit }

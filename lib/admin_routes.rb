@@ -91,8 +91,9 @@ class BarkeepServer < Sinatra::Base
   #  - url
   post "/admin/repos/create_new_repo" do
     halt 400, "'url' is required." if (params[:url] || "").strip.empty?
+    halt 400, "'name' is required." if (params[:name] || "").strip.empty?
     begin
-      add_repo params[:url]
+      add_repo params[:url], params[:name]
     rescue RuntimeError => e
       halt 400, e.message
     end

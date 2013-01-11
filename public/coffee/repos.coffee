@@ -2,13 +2,25 @@ window.Repos =
   init: ->
     $("button#clone").click =>
       repoUrl = $("#newRepoUrl").val()
+      repoName = $("#newRepoName").val()
       $.ajax
         type: "post"
         url: "/admin/repos/create_new_repo"
-        data: { url: repoUrl }
+        data: { url: repoUrl, name: repoName }
         dataType: "json"
-        success: => @showConfirmationMessage("#{repoUrl} has been scheduled to be cloned.")
+        success: => @showConfirmationMessage("#{repoUrl} has been scheduled to be cloned as #{repoName}.")
         error: (response) => @showConfirmationMessage(response.responseText)
+
+    $("#newRepoUrl").bind "propertychange keyup input paste", =>
+      repoUrl = $("#newRepoUrl").val()
+      match = /.*(?:\/|:)([^/:]+)\/*$/.exec repoUrl
+      if match
+        name = match[1]
+        name = (/\s*([^\s]+)/.exec name)[1]
+        suffix_match = /(.*)\.git$/.exec name
+        if suffix_match
+          name = suffix_match[1]
+        $("#newRepoName").val(name)
 
     $(".trash").click (e) =>
       repoRow = $(e.target).closest("tr")

@@ -24,7 +24,7 @@ class SavedSearchTest < Scope::TestCase
   context "commits" do
     setup do
       @user = User.new(:name => "jimbo")
-      @commit = stub_commit("commit_id", @user)
+      @commit = stub_commit("my_repo", "commit_id", @user)
       @saved_search = SavedSearch.new
       @git_repo = GitRepo.new
       @dataset = DatasetStub.new

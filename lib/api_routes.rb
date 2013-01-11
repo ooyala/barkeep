@@ -32,7 +32,9 @@ class BarkeepServer < Sinatra::Base
   post "/api/add_repo" do
     ensure_required_params :url
     begin
-      add_repo params[:url]
+      url = params[:url]
+      name = params[:name] || File.basename(url, ".*")
+      add_repo url, name
     rescue RuntimeError => e
       api_error 400, e.message
     end
@@ -49,30 +51,33 @@ class BarkeepServer < Sinatra::Base
     nil
   end
 
-  get "/api/commits/:repo_name/:sha" do
+  get %r{^/api/commits/(.+)/(.+)$} do
     fields = params[:fields] ? params[:fields].split(",") : nil
+    repo_name = params[:captures][0]
+    sha = params[:captures][1]
     begin
-      commit = Commit.prefix_match params[:repo_name], params[:sha]
+      commit = Commit.prefix_match repo_name, sha
     rescue RuntimeError => e
       api_error 404, e.message
     end
-    format_commit_data(commit, params[:repo_name], fields).to_json
+    format_commit_data(commit, repo_name, fields).to_json
   end
 
   # NOTE(caleb): Large GET requests are rejected by the Ruby web servers we use. (Unicorn, in particular,
   # doesn't seem to like paths > 1k and rejects them silently.) Hence, to batch-request commit data, we must
   # use a POST.
-  post "/api/commits/:repo_name" do
+  post %r{^/api/commits/(.+)$} do
     shas = params[:shas].split(",")
     fields = params[:fields] ? params[:fields].split(",") : nil
+    repo_name = params[:captures][0]
     commits = {}
     shas.each do |sha|
       begin
-        commit = Commit.prefix_match params[:repo_name], sha
+        commit = Commit.prefix_match repo_name, sha
       rescue RuntimeError => e
         api_error 404, e.message
       end
-      commits[commit.sha] = format_commit_data(commit, params[:repo_name], fields)
+      commits[commit.sha] = format_commit_data(commit, repo_name, fields)
     end
     commits.to_json
   end
@@ -86,7 +91,7 @@ class BarkeepServer < Sinatra::Base
       :approved_by => commit.approved? ? "#{approver.name} <#{approver.email}>" : nil,
       :approved_at => commit.approved? ? commit.approved_at.to_i : nil,
       :comment_count => commit.comment_count,
-      :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
+      :link => "http://#{BARKEEP_HOSTNAME}/commits/#{repo_name}/#{commit.sha}"
     }
     fields ? commit_data.select { |key, value| fields.include? key.to_s } : commit_data
   end
