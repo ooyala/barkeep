@@ -14,6 +14,7 @@ class ApiTest < Scope::TestCase
     stub(MetaRepo).instance { @@repo }
     @user = User.new(:email => "thebarkeep@barkeep.com", :name => "The Barkeep")
     any_instance_of(BarkeepServer, :current_user => @user)
+    @repo_names = ["my_repo", "base/my_repo"]
   end
 
   context "get commit" do
@@ -24,7 +25,7 @@ class ApiTest < Scope::TestCase
     end
 
     should "return a 404 and human-readable error message when given a bad repo or sha" do
-      ["my_repo", "namespace/my_repo"].each do |repo_name|
+      @repo_names.each do |repo_name|
         stub(@@repo).db_commit(repo_name, "sha1") { nil } # No results
         get "/api/commits/#{repo_name}/sha1"
         assert_status 404
@@ -33,7 +34,7 @@ class ApiTest < Scope::TestCase
     end
 
     should "return the relevant metadata for an unapproved commit as expected" do
-      ["my_repo", "namespace/my_repo"].each do |repo_name|
+      @repo_names.each do |repo_name|
         unapproved_commit = stub_commit(repo_name, "sha1", @user)
         stub_many unapproved_commit, :approved_by_user_id => nil, :comment_count => 0
         stub(Commit).prefix_match(repo_name, "sha1") { unapproved_commit }
@@ -47,7 +48,7 @@ class ApiTest < Scope::TestCase
     end
 
     should "return the relevant metadata for an approved commit as expected" do
-      ["my_repo", "namespace/my_repo"].each do |repo_name|
+      @repo_names.each do |repo_name|
         approved_commit = approved_stub_commit(repo_name, "sha1")
         stub(Commit).prefix_match(repo_name, "sha1") { approved_commit }
         get "/api/commits/#{repo_name}/sha1"
@@ -60,7 +61,7 @@ class ApiTest < Scope::TestCase
     end
 
     should "allow for fetching multiple shas at once using the post route" do
-      ["my_repo", "namespace/my_repo"].each do |repo_name|
+      @repo_names.each do |repo_name|
         commit1 = approved_stub_commit(repo_name, "sha1")
         commit2 = approved_stub_commit(repo_name, "sha2")
         stub(Commit).prefix_match(repo_name, "sha1") { commit1 }
@@ -74,7 +75,7 @@ class ApiTest < Scope::TestCase
     end
 
     should "only return requested fields" do
-      ["my_repo", "namespace/my_repo"].each do |repo_name|
+      @repo_names.each do |repo_name|
         approved_commit = approved_stub_commit(repo_name, "sha1")
         stub(Commit).prefix_match(repo_name, "sha1") { approved_commit }
         get "/api/commits/#{repo_name}/sha1?fields=approved"

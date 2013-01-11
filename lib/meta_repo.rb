@@ -26,7 +26,7 @@ class MetaRepo
   attr_reader :repos
 
   def initialize(repos_root)
-    @repos_root = repos_root
+    @repos_root = Pathname.new(repos_root).realdirpath.to_s
     Thread.abort_on_exception = true
     load_repos
   end
