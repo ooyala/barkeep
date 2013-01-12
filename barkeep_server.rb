@@ -40,7 +40,7 @@ require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
 OPENID_AX_EMAIL_SCHEMA = "http://axschema.org/contact/email"
-UNAUTHENTICATED_ROUTES = ["/signin", "/signout", "/inspire", "/statusz", "/api/"]
+UNAUTHENTICATED_ROUTES = ["/signin", "/signout", "/inspire", "/statusz", "/api/", "/favicon.ico"]
 # NOTE(philc): Currently we let you see previews of individual commits and the code review stats without
 # being logged in, as a friendly UX. When we flesh out our auth model, we should intentionally make this
 # configurable.
