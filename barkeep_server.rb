@@ -625,14 +625,12 @@ class BarkeepServer < Sinatra::Base
   def logged_in?() current_user && !current_user.demo? end
 
   def get_signin_redirect()
-    if LDAP_PROVIDERS.empty?
-      OPENID_PROVIDERS_ARRAY.size == 1 ?
-        get_openid_login_redirect(OPENID_PROVIDERS_ARRAY.first) :
-        "/signin/select_signin_provider"
+    if OPENID_PROVIDERS_ARRAY.size == 1 and LDAP_PROVIDERS.empty?
+      get_openid_login_redirect(OPENID_PROVIDERS_ARRAY.first)
+    elsif OPENID_PROVIDERS_ARRAY.empty? and LDAP_PROVIDERS.size == 1
+      "/signin/signin_using_ldap_provider?provider_id=0"
     else
-      LDAP_PROVIDERS.size == 1 and OPENID_PROVIDERS_ARRAY.empty? ?
-        "/signin/signin_using_ldap_provider?provider_id=0" :
-        "/signin/select_signin_provider"
+      "/signin/select_signin_provider"
     end
   end
 
