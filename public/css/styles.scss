@@ -282,7 +282,7 @@ header {
       list-style-type: none;
       display: inline-block;
       padding-bottom: 6px;
-      margin-right: 20px;
+      margin-right: 12px;
 
       /* This extra div is needed to add a white shadow around the <a> tag. */
       div {
@@ -294,7 +294,7 @@ header {
         border-top: 0;
 
         display: block;
-        width: 120px;
+        width: 90px;
         height: 27px;
 
         background-color: $sunkenColor;
