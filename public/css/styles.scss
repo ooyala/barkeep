@@ -182,14 +182,16 @@ button.resolve {
   cursor: pointer;
   color: white;
 
-  @include linear-gradient(lighten($resolveColor, 3%) 0%, darken($resolveColor, 3%) 95%);
-  box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
+  @include linear-gradient(lighten($resolveColor, 3%) 0%, darken($resolveColor, 15%) 95%,
+    $fallback: darken($resolveColor, 18%));
+
   &:hover {
-    @include linear-gradient(lighten($resolveColor, 4%) 0%, darken($resolveColor, 1%) 95%);
+    border: 1px solid darken(#890128, 25%);
+    @include linear-gradient(lighten($resolveColor, 10%) 0%, darken($resolveColor, 15%) 95%,
+      $fallback: darken($resolveColor, 18%));
   }
-  &:active {
-    @include linear-gradient(darken($resolveColor, 3%), lighten($resolveColor, 3%) 95%);
-  }
+
+  &:active { background-image: none; }
 }
 
 /* jQuery autocomplete styles. */
