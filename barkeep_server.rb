@@ -355,14 +355,14 @@ class BarkeepServer < Sinatra::Base
   end
 
   post "/resolve_comment" do
-    comment = validate_comment(params[:comment_id])
+    comment = validate_comment(params[:comment_id], true)
     comment.mark_resolved
     comment.save
     nil
   end
 
   post "/unresolve_comment" do
-    comment = validate_comment(params[:comment_id])
+    comment = validate_comment(params[:comment_id], true)
     comment.mark_unresolved
     comment.save
     nil
@@ -593,10 +593,12 @@ class BarkeepServer < Sinatra::Base
     comment
   end
 
-  def validate_comment(comment_id)
+  def validate_comment(comment_id, allow_any_user = false)
     comment = Comment[comment_id]
     halt 404, "This comment no longer exists." unless comment
-    halt 403, "Comment not originated from this user." unless comment.user.id == current_user.id
+    if !allow_any_user && comment.user.id != current_user.id
+      halt 403, "Comment not originated from this user."
+    end
     comment
   end
 end
