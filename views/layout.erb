@@ -52,9 +52,11 @@
             <li class="<%= current_page_if_url("commits") %>">
               <div><a href="/commits">Commits</a></div>
             </li>
-            <li class="<%= current_page_if_url("reviews") %>">
-              <div><a href="/reviews">Reviews</a></div>
-            </li>
+            <% unless current_user.nil? || current_user.demo? %>
+              <li class="<%= current_page_if_url("reviews") %>">
+                <div><a href="/reviews">Reviews</a></div>
+              </li>
+            <% end %>
             <li class="<%= current_page_if_url("stats") %>">
               <div><a href="/stats">Stats</a></div>
             </li>
