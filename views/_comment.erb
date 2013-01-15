@@ -10,10 +10,12 @@
         <span class="date"><%= comment.created_at.to_pretty %> </span>
         <div class="buttonContainer">
           <% if current_user %>
-            <% if comment.completed_at %>
-              <button class="unresolve">Unresolve</button>
-            <% else %>
-              <button class="resolve">Resolve</button>
+            <% if current_user.email != comment.commit.grit_commit.author.email %>
+              <% if comment.completed_at %>
+                <button class="unresolve">Unresolve</button>
+              <% else %>
+                <button class="resolve">Resolve</button>
+              <% end %>
             <% end %>
             <% if comment.line_number %>
               <button class="reply standard">Reply</button>
