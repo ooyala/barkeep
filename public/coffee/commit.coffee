@@ -23,6 +23,8 @@ window.Commit =
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
+    $(".resolve").live "click", (e) => @onCommentResolved e
+    $(".unresolve").live "click", (e) => @onCommentUnresolved e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
     $("#requestReviewButton").click (e) => @toggleReviewRequest()
     $("#hideCommentButton").live "click", (e) => @toggleComments()
@@ -384,6 +386,32 @@ window.Commit =
         comment.data("commentRaw", text)
         comment.find(".commentBody").html(html)
         comment.find(".commentCancel").click()
+
+  onCommentResolved: (e) ->
+    commentId = $(e.target).parents(".comment").attr("commentId")
+    $.ajax
+      type: "post",
+      url: "/resolve_comment",
+      data: { comment_id: commentId },
+      success: =>
+        comment = $(".comment[commentId='#{commentId}']")
+        button = comment.find(".resolve")
+        $(button).html("Unresolve")
+        $(button).removeClass("resolve")
+        $(button).addClass("unresolve")
+
+  onCommentUnresolved: (e) ->
+    commentId = $(e.target).parents(".comment").attr("commentId")
+    $.ajax
+      type: "post",
+      url: "/unresolve_comment",
+      data: { comment_id: commentId },
+      success: =>
+        comment = $(".comment[commentId='#{commentId}']")
+        button = comment.find(".unresolve")
+        $(button).html("Resolve")
+        $(button).removeClass("unresolve")
+        $(button).addClass("resolve")
 
   # TODO(caleb): Add a Snippet for comment forms instead of contacting the server (there's no server logic
   # needed here).

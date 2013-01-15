@@ -9,12 +9,19 @@
         <span class="permalink"><a href="#comment-<%= comment.id %>">commented</a></span>
         <span class="date"><%= comment.created_at.to_pretty %> </span>
         <div class="buttonContainer">
-          <% if current_user && comment.line_number %>
-            <button class="reply standard">Reply</button>
-          <% end %>
-          <% if current_user && current_user.id == comment.user_id %>
-            <button class="edit standard">Edit</button>
-            <button class="delete standard">Delete</button>
+          <% if current_user %>
+            <% if comment.completed_at %>
+              <button class="unresolve">Unresolve</button>
+            <% else %>
+              <button class="resolve">Resolve</button>
+            <% end %>
+            <% if comment.line_number %>
+              <button class="reply standard">Reply</button>
+            <% end %>
+            <% if current_user.id == comment.user_id %>
+              <button class="edit standard">Edit</button>
+              <button class="delete standard">Delete</button>
+            <% end %>
           <% end %>
         </div>
       </div>
