@@ -144,7 +144,7 @@ button.fancy {
 }
 
 /* Our standard buttons are flat grey buttons. */
-button.standard, input[type=button], input[type=submit] {
+button.standard, .unresolve, input[type=button], input[type=submit] {
   border-radius: 3px;
   padding: 7px 12px;
   text-shadow: 0px -1px 1px #EEEEEE;
@@ -165,6 +165,34 @@ button.standard, input[type=button], input[type=submit] {
 }
 
 .webkit button.standard { font-weight: bold; }
+
+/* The "Resolve" button needs to stand out a bit from the other buttons because it indicates
+ * the state of the comment and users will want to find all their unresolved comments.
+ * This style is a hybrid between the standard buttons (Reply, Edit, Delete) and the "Approve Commit"
+ * button.
+ */
+button.resolve {
+  $resolveColor: #42C050;
+  border-radius: 3px;
+  padding: 7px 12px;
+  border: 1px solid darken($resolveColor, 20%);
+  border-bottom: 1px solid darken($resolveColor, 25%);
+  text-shadow: 0px -1px 1px darken($resolveColor, 30%);
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+
+  @include linear-gradient(lighten($resolveColor, 3%) 0%, darken($resolveColor, 15%) 95%,
+    $fallback: darken($resolveColor, 18%));
+
+  &:hover {
+    border: 1px solid darken(#890128, 25%);
+    @include linear-gradient(lighten($resolveColor, 10%) 0%, darken($resolveColor, 15%) 95%,
+      $fallback: darken($resolveColor, 18%));
+  }
+
+  &:active { background-image: none; }
+}
 
 /* jQuery autocomplete styles. */
 .ui-widget {
@@ -254,7 +282,7 @@ header {
       list-style-type: none;
       display: inline-block;
       padding-bottom: 6px;
-      margin-right: 20px;
+      margin-right: 12px;
 
       /* This extra div is needed to add a white shadow around the <a> tag. */
       div {
@@ -266,7 +294,7 @@ header {
         border-top: 0;
 
         display: block;
-        width: 120px;
+        width: 90px;
         height: 27px;
 
         background-color: $sunkenColor;

@@ -31,4 +31,12 @@ class Comment < Sequel::Model
 
   # True if this comment pertains to a particular file.
   def file_comment?() !commit_file_id.nil? end
+
+  def mark_resolved
+    self.completed_at = Time.now
+  end
+
+  def mark_unresolved
+    self.completed_at = nil
+  end
 end

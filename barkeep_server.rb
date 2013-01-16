@@ -354,6 +354,20 @@ class BarkeepServer < Sinatra::Base
     nil
   end
 
+  post "/resolve_comment" do
+    comment = validate_comment(params[:comment_id], true)
+    comment.mark_resolved
+    comment.save
+    nil
+  end
+
+  post "/unresolve_comment" do
+    comment = validate_comment(params[:comment_id], true)
+    comment.mark_unresolved
+    comment.save
+    nil
+  end
+
   post "/approve_commit" do
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     halt 400 unless commit
@@ -574,14 +588,17 @@ class BarkeepServer < Sinatra::Base
       :line_number => line_number,
       :user => current_user,
       :text => text,
+      :completed_at => nil,
       :has_been_emailed => current_user.demo?) # Don't email comments made by demo users.
     comment
   end
 
-  def validate_comment(comment_id)
+  def validate_comment(comment_id, allow_any_user = false)
     comment = Comment[comment_id]
     halt 404, "This comment no longer exists." unless comment
-    halt 403, "Comment not originated from this user." unless comment.user.id == current_user.id
+    if !allow_any_user && comment.user.id != current_user.id
+      halt 403, "Comment not originated from this user."
+    end
     comment
   end
 end
