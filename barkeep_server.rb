@@ -247,6 +247,7 @@ class BarkeepServer < Sinatra::Base
         permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
         User.new(:email => email, :name => email, :permission => permission).save
       end
+      link_author_to_user(email)
       redirect session[:login_started_url] || "/"
     end
   end
@@ -556,6 +557,19 @@ class BarkeepServer < Sinatra::Base
       oidreq.add_extension(ax_request)
       host = "#{request.scheme}://#{request.host_with_port}"
       oidreq.redirect_url(host, "#{host}/signin/complete")
+    end
+  end
+
+  # If the email matches an entry in both the authors table and the users table, then create
+  # a link between them by updating the "user_id" field in the authors table.
+  def link_author_to_user(email)
+    author = Author.first(:email => email)
+    if author && author.user_id.nil?
+      user = User.first(:email => email)
+      if user
+        author.user_id = user.id
+        author.save
+      end
     end
   end
 
