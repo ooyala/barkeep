@@ -44,6 +44,7 @@ class DbCommitIngest
 
       page_of_rows_to_insert = commits.map do |commit|
         next if existing_shas.include?(commit.sha)
+        author_id = insert_author_if_new(commit)
 
         {
           :git_repo_id => db_repo.id,
@@ -52,6 +53,7 @@ class DbCommitIngest
           # NOTE(caleb): For some reason, the commit object you get from a remote returns nil for #date (but
           # it does have #authored_date and #committed_date. Bug?
           :date => commit.authored_date,
+          :author_id => author_id,
         }
       end
       page_of_rows_to_insert.compact!
@@ -77,5 +79,19 @@ class DbCommitIngest
       Resque.enqueue(DeliverCommitEmails, repo_name, row[:sha]) if should_send_emails
       Resque.enqueue(GenerateTaggedDiffs, repo_name, row[:sha])
     end
+  end
+
+  # Given a new commit, insert the author into the authors table if the author does not exist.
+  # In any case, returns the author id.
+  def self.insert_author_if_new(commit)
+    email = commit.author.email
+    author = Author.first(:email => email)
+    return author.id if author
+
+    user = User.first(:email => email)
+    user_id = user.id if user
+    Author.insert(:email => email, :name => commit.author.name, :user_id => user_id)
+    author = Author.first(:email => email)
+    author.id
   end
 end
