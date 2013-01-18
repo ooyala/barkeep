@@ -490,8 +490,10 @@ class BarkeepServer < Sinatra::Base
 
   get "/reviews" do
     commits_with_unresolved_comments = Commit.commits_with_unresolved_comments(current_user.email)
+    commits_with_uncompleted_reviews = ReviewRequest.commits_with_uncompleted_reviews(current_user.id)
     erb :reviews, :locals => {
       :commits_with_unresolved_comments => commits_with_unresolved_comments,
+      :commits_with_uncompleted_reviews => commits_with_uncompleted_reviews,
     }
   end
 
