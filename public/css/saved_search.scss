@@ -12,7 +12,7 @@
 
 .handle { cursor: move; }
 
-.savedSearch, .statistic {
+.savedSearch, .statistic, .review {
   position: relative;
   /* We want the background of a saved search to be opaque while we're dragging it around. */
   background-image: url(/assets/images/background.png);
@@ -36,7 +36,7 @@
   }
 }
 
-.savedSearch, .statistic.chattyCommits {
+.savedSearch, .statistic.chattyCommits, .review {
   width: 100%;
 
   .header {

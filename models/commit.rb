@@ -70,4 +70,22 @@ class Commit < Sequel::Model
       commits[0]
     end
   end
+
+  # Fetches the commits with unresolved comments for the given email. The email is used to find
+  # the commits by that user and to exclude comments made by that user.
+  def self.commits_with_unresolved_comments(email)
+    commits = Commit.
+        join(:comments, :commit_id => :id).
+        join(:authors, :id => :commits__author_id).
+        join(:users, :id => :comments__user_id).
+        filter(:authors__email => email, :comments__completed_at => nil).
+        exclude(:users__email => email).
+        group_by(:commits__id).all
+    commits.map! do |commit|
+      grit_commit = MetaRepo.instance.grit_commit(commit.git_repo.name, commit.sha)
+      next unless grit_commit
+      grit_commit
+    end
+    commits.reject(&:nil?)
+  end
 end

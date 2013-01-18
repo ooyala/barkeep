@@ -1,0 +1,8 @@
+<div class="review">
+  <div class="header"><div class="name">Commits with unresolved comments</div></div>
+  <table class="commitsList">
+    <% commits_with_unresolved_comments.each do |commit| %>
+      <%= erb :_unresolved_commit, :layout => false, :locals => { :commit => commit } %>
+    <% end %>
+  </table>
+</div>

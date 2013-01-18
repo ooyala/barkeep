@@ -1,0 +1,35 @@
+<%#
+  A single table row for a commit with unresolved comments.
+  View arguments:
+  - commit: a grit commit.
+ %>
+<% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
+<tr>
+  <td class="selectArrow <%= "approved east" if db_commit.approved? %>"
+      title="Approved" rel="tipsy"></td>
+  <td class="avatarCell">
+    <div class="avatar">
+      <img src="<%= commit.author.gravatar %>"/>
+    </div>
+  </td>
+  <td class="author">
+    <a class="south" rel="tipsy" href="mailto:<%= commit.author.email %>" target="_blank"
+      title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
+  </td>
+  <td class="commitId">
+    <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
+  </td>
+  <td class="commitMessage">
+    <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
+  </td>
+  <td class="commitDate"><%= commit.date.to_pretty %></td>
+  <td class="commitRepo"><%= commit.repo_name %></td>
+  <td class="commentCount">
+    <% comment_count = db_commit.comment_count %>
+    <% if comment_count > 0 %>
+      <a class="noLink west" rel="tipsy" title="<%= StringHelper.pluralize(comment_count, "comment") %>">
+        <span><%= comment_count %></span><img src="<%= asset_url("/assets/images/comment_bubble.png") %>" />
+      </a>
+    <% end %>
+  </td>
+</tr>

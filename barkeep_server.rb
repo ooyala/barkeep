@@ -488,6 +488,13 @@ class BarkeepServer < Sinatra::Base
     redirect "/stats"
   end
 
+  get "/reviews" do
+    commits_with_unresolved_comments = Commit.commits_with_unresolved_comments(current_user.email)
+    erb :reviews, :locals => {
+      :commits_with_unresolved_comments => commits_with_unresolved_comments,
+    }
+  end
+
   get "/profile/:id" do
     user = User[params[:id]]
     halt 404 unless user
