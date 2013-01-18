@@ -11,6 +11,7 @@ class Commit < Sequel::Model
   one_to_many :commit_files
   one_to_many :comments
   many_to_one :approved_by_user, :class => User
+  one_to_many :review_request
 
   # This is really one_to_one, but Sequel requires the table containing the foreign key to be many_to_one.
   many_to_one :author

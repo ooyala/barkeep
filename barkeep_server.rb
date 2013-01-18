@@ -515,6 +515,7 @@ class BarkeepServer < Sinatra::Base
     commit = Commit.first(:sha => params[:sha])
     halt 404 unless commit
     emails = params[:emails].split(",").map(&:strip).reject(&:empty?)
+    insert_review_requests(commit.id, current_user.id, emails)
     Resque.enqueue(DeliverReviewRequestEmails, commit.git_repo.name, commit.sha, current_user.email, emails)
     nil
   end
@@ -621,6 +622,26 @@ class BarkeepServer < Sinatra::Base
       halt 403, "Comment not originated from this user."
     end
     comment
+  end
+
+  # Tracks the review requests by inserting rows in the "review_requests" table, one for each email.
+  def insert_review_requests(commit_id, requester_id, emails)
+    emails.each do |email|
+      user = User.first(:email => email)
+      if user.nil?
+        # Try harder to find a match. Check if the username contains a "+".
+        username, domain = email.split("@", 2)
+        simple_username, _ = username.split("+", 2)  # ignore stuff after the "+"
+        next if simple_username == username
+        simple_email = "#{simple_username}@#{domain}"
+        user = User.first(:email => simple_email)
+        next if user.nil?  # Skip this review request if we can't find the user
+      end
+      ReviewRequest.insert(:requester_user_id => requester_id,
+          :reviewer_user_id => user.id,
+          :requested_at => Time.now.utc,
+          :commit_id => commit_id)
+    end
   end
 end
 
