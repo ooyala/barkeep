@@ -10,7 +10,7 @@
         <span class="date"><%= comment.created_at.to_pretty %> </span>
         <div class="buttonContainer">
           <% if current_user %>
-            <% if current_user.email != comment.commit.grit_commit.author.email %>
+            <% if comment.user_id != comment.commit.author.user_id %>
               <% if comment.completed_at %>
                 <button class="unresolve">Unresolve</button>
               <% else %>
