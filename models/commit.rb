@@ -12,6 +12,9 @@ class Commit < Sequel::Model
   one_to_many :comments
   many_to_one :approved_by_user, :class => User
 
+  # This is really one_to_one, but Sequel requires the table containing the foreign key to be many_to_one.
+  many_to_one :author
+
   add_association_dependencies :comments => :destroy, :commit_files => :destroy
 
   add_filter(:message) { |message| StringFilter.escape_html(message) }
