@@ -2,6 +2,14 @@
 window.Reviews =
   init: ->
     $(".review .delete").live "click", (e) => @onReviewComplete e
+    $("#reviewLists").sortable
+      placeholder: "savedSearchPlaceholder"
+      handle: ".dragHandle"
+      axis: "y"
+      start: =>
+        $.fn.tipsy.disable()
+      stop: =>
+        $.fn.tipsy.enable()
 
   onReviewComplete: (e) ->
     target = $(e.currentTarget)

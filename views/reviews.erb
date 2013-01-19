@@ -1,7 +1,11 @@
 <%= js_bundle(:reviews_app_js) %>
 
+<div id="reviewLists">
 <div class="review">
-  <div class="header"><div class="name">Code review requests</div></div>
+  <div class="header">
+    <div class="dragHandle"></div>
+    <div class="name">Code review requests</div>
+  </div>
   <table class="commitsList" id="uncompletedReviews"><tbody>
     <% commits_with_uncompleted_reviews.each do |commit| %>
       <%= erb :_review_request, :layout => false, :locals => { :commit => commit } %>
@@ -10,7 +14,10 @@
 </div>
 
 <div class="review">
-  <div class="header"><div class="name">Recently completed code review requests</div></div>
+  <div class="header">
+    <div class="dragHandle"></div>
+    <div class="name">Recently completed code review requests</div>
+  </div>
   <table class="commitsList" id="recentlyReviewed"><tbody>
     <% recently_reviewed_commits.each do |commit| %>
       <%= erb :_review_request, :layout => false, :locals => { :commit => commit } %>
@@ -19,10 +26,14 @@
 </div>
 
 <div class="review">
-  <div class="header"><div class="name">Commits with unresolved comments</div></div>
+  <div class="header">
+    <div class="dragHandle"></div>
+    <div class="name">Commits with unresolved comments</div>
+  </div>
   <table class="commitsList" id="unresolvedCommits">
     <% commits_with_unresolved_comments.each do |commit| %>
       <%= erb :_unresolved_commit, :layout => false, :locals => { :commit => commit } %>
     <% end %>
   </table>
+</div>
 </div>
