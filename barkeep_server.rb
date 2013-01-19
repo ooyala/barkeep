@@ -639,10 +639,20 @@ class BarkeepServer < Sinatra::Base
         user = User.first(:email => simple_email)
         next if user.nil?  # Skip this review request if we can't find the user
       end
-      ReviewRequest.insert(:requester_user_id => requester_id,
+
+      # If the review request does not exist, then insert a new request. Otherwise (the review
+      # request already exists) mark it as not completed.
+      review_request = ReviewRequest.first(:requester_user_id => requester_id,
           :reviewer_user_id => user.id,
-          :requested_at => Time.now.utc,
           :commit_id => commit_id)
+      if review_request.nil?
+        ReviewRequest.insert(:requester_user_id => requester_id,
+            :reviewer_user_id => user.id,
+            :requested_at => Time.now.utc,
+            :commit_id => commit_id)
+      elsif !review_request.completed_at.nil?
+        ReviewRequest.filter(:id => review_request.id).update(:completed_at => nil);
+      end
     end
   end
 end
