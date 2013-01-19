@@ -15,6 +15,20 @@ class ReviewRequest < Sequel::Model
     commits
   end
 
+  def self.recently_reviewed_commits(user_id)
+    recently_reviewed = ReviewRequest.filter(:reviewer_user_id => user_id).
+        exclude(:completed_at => nil).
+        group_by(:commit_id).
+        reverse_order(:completed_at).limit(5).all
+    commits = recently_reviewed.map do |review|
+      grit_commit = MetaRepo.instance.grit_commit(review.commit.git_repo.name, review.commit.sha)
+      next unless grit_commit
+      grit_commit
+    end
+    commits.reject!(&:nil?)
+    commits
+  end
+
   def self.complete_requests(commit_id)
     ReviewRequest.filter(:commit_id => commit_id).update(:completed_at => Time.now.utc)
   end

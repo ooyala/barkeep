@@ -171,6 +171,15 @@
   }
 }
 
+.review {
+  a.delete {
+    padding-right: 5px;
+    float: right;
+    color: red;
+    @include closeLinks;
+  }
+}
+
 /* The actual commit search box. */
 #commitSearch {
   padding: 10px 8px;

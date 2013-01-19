@@ -91,6 +91,7 @@ class BarkeepServer < Sinatra::Base
       "/vendor/flot/jquery.flot.min.js",
       "/vendor/flot/jquery.flot.pie.min.js"
     ]
+    pinion.create_bundle :reviews_app_js, :concatenate_and_uglify_js, ["/coffee/reviews.js"]
     pinion.create_bundle :user_settings_app_js, :concatenate_and_uglify_js, ["/coffee/user_settings.js"]
   end
 
@@ -385,6 +386,13 @@ class BarkeepServer < Sinatra::Base
     nil
   end
 
+  post "/complete_review_request" do
+    commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
+    halt 400 unless commit
+    ReviewRequest.complete_requests(commit.id)
+    nil
+  end
+
   # Saves changes to the user-level search options.
   post "/user_search_options" do
     saved_search_time_period = params[:saved_search_time_period].to_i
@@ -493,9 +501,11 @@ class BarkeepServer < Sinatra::Base
   get "/reviews" do
     commits_with_unresolved_comments = Commit.commits_with_unresolved_comments(current_user.email)
     commits_with_uncompleted_reviews = ReviewRequest.commits_with_uncompleted_reviews(current_user.id)
+    recently_reviewed_commits = ReviewRequest.recently_reviewed_commits(current_user.id)
     erb :reviews, :locals => {
       :commits_with_unresolved_comments => commits_with_unresolved_comments,
       :commits_with_uncompleted_reviews => commits_with_uncompleted_reviews,
+     :recently_reviewed_commits => recently_reviewed_commits,
     }
   end
 
