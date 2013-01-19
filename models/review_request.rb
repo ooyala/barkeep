@@ -14,4 +14,8 @@ class ReviewRequest < Sequel::Model
     commits.reject!(&:nil?)
     commits
   end
+
+  def self.complete_requests(commit_id)
+    ReviewRequest.filter(:commit_id => commit_id).update(:completed_at => Time.now.utc)
+  end
 end

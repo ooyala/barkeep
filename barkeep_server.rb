@@ -373,6 +373,7 @@ class BarkeepServer < Sinatra::Base
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     halt 400 unless commit
     commit.approve(current_user)
+    ReviewRequest.complete_requests(commit.id)
     erb :_approved_banner, :layout => false, :locals => { :commit => commit }
   end
 
@@ -380,6 +381,7 @@ class BarkeepServer < Sinatra::Base
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     halt 400 unless commit
     commit.disapprove
+    ReviewRequest.complete_requests(commit.id)
     nil
   end
 
