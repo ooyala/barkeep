@@ -171,13 +171,15 @@
   }
 }
 
-.review {
+#reviewLists {
   a.delete {
     padding-right: 5px;
     float: right;
     color: red;
     @include closeLinks;
   }
+  .tableCellDelete { visibility: hidden; }
+  #uncompleted_reviews .tableCellDelete { visibility: visible; }
 }
 
 /* The actual commit search box. */
