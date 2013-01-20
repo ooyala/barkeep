@@ -5,6 +5,9 @@
  %>
 <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
 <tr>
+  <td class="tableCellDelete">
+    <a href="#" class="delete" data-repo="<%= commit.repo_name %>" data-sha="<%= commit.sha %>">X</a>
+  </td>
   <td class="selectArrow <%= "approved east" if db_commit.approved? %>"
       title="Approved" rel="tipsy"></td>
   <td class="avatarCell">
