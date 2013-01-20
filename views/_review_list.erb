@@ -1,12 +1,15 @@
 
-  <div class="review" data-list-id="<%= list_id %>">
+  <div class="review" id="<%= list_id %>">
     <div class="header">
       <div class="dragHandle"></div>
       <div class="name"><%= header %></div>
     </div>
     <% if requests.empty? %>
       <div class="noResults">None.</div>
+      <table class="commitsList" id="<%= list_id %>Table" style="display:none;"><tbody>
+      </tbody></table>
     <% else %>
+      <div class="noResults" style="display:none;">None.</div>
       <table class="commitsList" id="<%= list_id %>Table"><tbody>
         <% requests.each do |commit| %>
           <%= erb erb_file, :layout => false, :locals => { :commit => commit } %>

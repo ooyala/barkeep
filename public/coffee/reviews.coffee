@@ -14,7 +14,7 @@ window.Reviews =
 
   reorderReviewLists: ->
     state = for reviewList in $("#reviewLists .review")
-      $(reviewList).data("list-id")
+      reviewList.id
     $.ajax
       type: "POST"
       url: "/review_lists/reorder"
@@ -33,7 +33,12 @@ window.Reviews =
       }
       success: =>
         row = target.parents(".reviewRequestRow").detach()
+        $("#recent_reviews .noResults").hide()
+        $("#recent_reviewsTable").show()
         $("#recent_reviewsTable > tbody").prepend(row)
+        if $("#uncompleted_reviewsTable > tbody tr").length == 0
+          $("#uncompleted_reviewsTable").hide()
+          $("#uncompleted_reviews .noResults").show()
     })
     false
 
