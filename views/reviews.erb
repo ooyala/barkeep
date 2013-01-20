@@ -1,48 +1,34 @@
 <%= js_bundle(:reviews_app_js) %>
 
 <div id="reviewLists">
-<% review_list_ids.each do |review_list_id| %>
+<% review_list_ids.each do |list_id| %>
 
-<% if review_list_id == "uncompleted_reviews" %>
-  <div class="review" data-review-list-id="<%= review_list_id %>">
-    <div class="header">
-      <div class="dragHandle"></div>
-      <div class="name">Code review requests</div>
-    </div>
-    <table class="commitsList" id="uncompletedReviews"><tbody>
-      <% commits_with_uncompleted_reviews.each do |commit| %>
-        <%= erb :_review_request, :layout => false, :locals => { :commit => commit } %>
-      <% end %>
-    </tbody></table>
-  </div>
+<% if list_id == "uncompleted_reviews" %>
+  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+      :header => "For me: code review requests",
+      :requests => commits_with_uncompleted_reviews,
+      :erb_file => :_review_request } %>
 <% end %>
 
-<% if review_list_id == "recent_reviews" %>
-  <div class="review" data-review-list-id="<%= review_list_id %>">
-    <div class="header">
-      <div class="dragHandle"></div>
-      <div class="name">Recently completed code review requests</div>
-    </div>
-    <table class="commitsList" id="recentlyReviewed"><tbody>
-      <% recently_reviewed_commits.each do |commit| %>
-        <%= erb :_review_request, :layout => false, :locals => { :commit => commit } %>
-      <% end %>
-    </tbody></table>
-  </div>
+<% if list_id == "recent_reviews" %>
+  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+      :header => "My recently completed code review requests",
+      :requests => recently_reviewed_commits,
+      :erb_file => :_review_request } %>
 <% end %>
 
-<% if review_list_id == "unresolved_comments" %>
-  <div class="review" data-review-list-id="<%= review_list_id %>">
-    <div class="header">
-      <div class="dragHandle"></div>
-      <div class="name">Commits with unresolved comments</div>
-    </div>
-    <table class="commitsList" id="unresolvedCommits">
-      <% commits_with_unresolved_comments.each do |commit| %>
-        <%= erb :_unresolved_commit, :layout => false, :locals => { :commit => commit } %>
-      <% end %>
-    </table>
-  </div>
+<% if list_id == "unresolved_comments" %>
+  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+      :header => "For me: commits with unresolved comments",
+      :requests => commits_with_unresolved_comments,
+      :erb_file => :_unresolved_commit } %>
+<% end %>
+
+<% if list_id == "requests_from_me" %>
+  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+      :header => "From me: code review requests",
+      :requests => requests_from_me,
+      :erb_file => :_review_request } %>
 <% end %>
 
 <% end %>
