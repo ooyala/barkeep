@@ -502,11 +502,21 @@ class BarkeepServer < Sinatra::Base
     commits_with_unresolved_comments = Commit.commits_with_unresolved_comments(current_user.email)
     commits_with_uncompleted_reviews = ReviewRequest.commits_with_uncompleted_reviews(current_user.id)
     recently_reviewed_commits = ReviewRequest.recently_reviewed_commits(current_user.id)
+    default_list = "uncompleted_reviews,recent_reviews,unresolved_comments"
+    review_list_order = (current_user.review_list_order || default_list).split(",")
     erb :reviews, :locals => {
       :commits_with_unresolved_comments => commits_with_unresolved_comments,
       :commits_with_uncompleted_reviews => commits_with_uncompleted_reviews,
-     :recently_reviewed_commits => recently_reviewed_commits,
+      :recently_reviewed_commits => recently_reviewed_commits,
+      :review_list_ids => review_list_order,
     }
+  end
+
+  post "/review_lists/reorder" do
+    review_list_ids = request.body.read
+    User.filter(:id => current_user.id).
+        update(:review_list_order => review_list_ids)
+    nil
   end
 
   get "/profile/:id" do

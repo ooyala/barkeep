@@ -10,6 +10,15 @@ window.Reviews =
         $.fn.tipsy.disable()
       stop: =>
         $.fn.tipsy.enable()
+        @reorderReviewLists()
+
+  reorderReviewLists: ->
+    state = for reviewList in $("#reviewLists .review")
+      $(reviewList).data("review-list-id")
+    $.ajax
+      type: "POST"
+      url: "/review_lists/reorder"
+      data: state.toString()
 
   onReviewComplete: (e) ->
     target = $(e.currentTarget)
