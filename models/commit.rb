@@ -106,4 +106,15 @@ class Commit < Sequel::Model
         reverse_order(:completed_at).limit(5).all
     get_grit_commits(commits)
   end
+
+  def self.commits_with_unresolved_comments_from_me(email)
+    commits = Commit.
+        join(:comments, :commit_id => :id).
+        join(:authors, :id => :commits__author_id).
+        join(:users, :id => :comments__user_id).
+        filter(:users__email => email, :comments__completed_at => nil).
+        exclude(:authors__email => email).
+        group_by(:commits__id).all
+    get_grit_commits(commits)
+  end
 end

@@ -38,5 +38,12 @@
       :erb_file => :_review_request } %>
 <% end %>
 
+<% if list_id == "comments_from_me" %>
+  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+      :header => "From me: commits with unresolved comments",
+      :requests => comments_from_me,
+      :erb_file => :_unresolved_commit } %>
+<% end %>
+
 <% end %>
 </div>
