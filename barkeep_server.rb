@@ -390,7 +390,14 @@ class BarkeepServer < Sinatra::Base
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     halt 400 unless commit
     ReviewRequest.complete_requests(commit.id)
-    nil
+    recently_reviewed_commits = ReviewRequest.recently_reviewed_commits(current_user.id)
+    erb :_review_request_list, :layout => false, :locals => {
+      :list_id => "recent_reviews",
+      :recently_reviewed_commits => recently_reviewed_commits,
+      :header => "My recently completed code review requests",
+      :request_type => "Completed",
+      :review_list => recently_reviewed_commits
+    }
   end
 
   # Saves changes to the user-level search options.

@@ -31,14 +31,12 @@ window.Reviews =
         repo_name: repo
         commit_sha: sha
       }
-      success: =>
-        row = target.parents(".reviewRequestRow").detach()
-        $("#recent_reviews .noResults").hide()
-        $("#recent_reviewsTable").show()
-        $("#recent_reviewsTable > tbody").prepend(row)
+      success: (html) =>
+        target.parents(".reviewRequestRow").remove()
         if $("#uncompleted_reviewsTable > tbody tr").length == 0
           $("#uncompleted_reviewsTable").hide()
           $("#uncompleted_reviews .noResults").show()
+        $("#recent_reviews").html(html)
     })
     false
 
