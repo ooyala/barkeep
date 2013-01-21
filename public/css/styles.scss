@@ -430,6 +430,71 @@ table.commitsList, table.authorList {
   .selected .selectArrow { background: url(/assets/images/right_arrow.png) no-repeat 0px 2px; }
 }
 
+table.innerCommitsList {
+  border-collapse: collapse;
+  border-width: 0px;
+
+  font-size: 14px;
+  a {
+    position: relative;
+    text-decoration: none;
+    color: $textColor;
+    border: 0;
+  }
+  td {
+    padding-right: 7px;
+    a {
+      &:active { background-color: transparent; }
+      &:hover { text-decoration: underline; }
+    }
+    &.commitId {
+      font: 16px $monoFont;
+      a { color: $lightTextColor; }
+      text-align: right;
+      padding-right: 7px;
+    }
+    &.commitMessage {
+      width: 100%;
+      a {
+        display: block;
+        width: 100%;
+        /* A height with overflow implements truncation of commit messages. There may be second and third
+         * lines of text in this element, but they'll be hidden. */
+        overflow: hidden;
+        height: 1.2em;
+      }
+    }
+    &.commitLine2 {
+      font-size: 12px;
+      font-style: italic;
+    }
+    &.commitDate {
+      font-size: 13px;
+      text-align: right;
+    }
+    &.commitDate, &.commitRepo {
+      white-space: nowrap;
+      color: $lightTextColor;
+    }
+    &.commitRepo {
+      text-transform: uppercase;
+      font-size: 10px;
+      padding-right: 5px;
+    }
+    &.commentCount {
+      min-width: 25px;
+      padding-bottom: 2px;
+      white-space: nowrap;
+      text-align: right;
+      a { @include noLink; }
+      span {
+        font-size: 12px;
+        color: $lightTextColor;
+      }
+    }
+  }
+}
+
 
 /*
  * Styles for the stats page.

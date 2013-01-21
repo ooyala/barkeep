@@ -4,6 +4,7 @@
   - list_id: a string that identifies the list
   - header: a string that is displayed above the list
   - review_list: an array where each element is a ReviewListEntry
+  - request_type: either "Requested" or "Completed"
 %>
 
 <div class="review" id="<%= list_id %>">
@@ -19,7 +20,13 @@
     <div class="noResults" style="display:none;">None.</div>
     <table class="commitsList" id="<%= list_id %>Table"><tbody>
       <% review_list.each do |entry| %>
-        <%= erb :_review_request_entry, :layout => false, :locals => { :entry => entry } %>
+        <% if request_type == "Requested" %>
+          <% request_message = "Requested #{entry.review_request.requested_at.to_pretty}" %>
+        <% else %>
+          <% request_message = "Completed #{entry.review_request.completed_at.to_pretty}" %>
+        <% end %>
+        <%= erb :_review_request_entry, :layout => false, :locals => { :entry => entry,
+                :request_message => request_message } %>
       <% end %>
     </tbody></table>
   <% end %>

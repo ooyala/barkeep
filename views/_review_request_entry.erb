@@ -2,6 +2,7 @@
   A single table row for a code review request.
   View arguments:
   - entry: a ReviewListEntry
+  - request_message: the "requested at" or "completed at" message
  %>
 <% commit = entry.grit_commit %>
 <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
@@ -16,24 +17,38 @@
       <img src="<%= commit.author.gravatar %>"/>
     </div>
   </td>
-  <td class="author">
-    <a class="south" rel="tipsy" href="mailto:<%= commit.author.email %>" target="_blank"
-      title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
-  </td>
-  <td class="commitId">
-    <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
-  </td>
-  <td class="commitMessage">
-    <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
-  </td>
-  <td class="commitDate"><%= commit.date.to_pretty %></td>
-  <td class="commitRepo"><%= commit.repo_name %></td>
-  <td class="commentCount">
-    <% comment_count = db_commit.comment_count %>
-    <% if comment_count > 0 %>
-      <a class="noLink west" rel="tipsy" title="<%= StringHelper.pluralize(comment_count, "comment") %>">
-        <span><%= comment_count %></span><img src="<%= asset_url("/assets/images/comment_bubble.png") %>" />
-      </a>
-    <% end %>
-  </td>
+  <td><table class="innerCommitsList"><tbody>
+  <tr>
+    <td class="author">
+      <a class="south" rel="tipsy" href="mailto:<%= commit.author.email %>" target="_blank"
+        title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
+    </td>
+  </tr>
+  <tr><td class="commitLine2">&nbsp;</td></tr>
+  </tbody></table></td>
+  <td><table class="innerCommitsList"><tbody>
+  <tr>
+    <td class="commitId">
+      <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
+    </td>
+    <td class="commitMessage">
+      <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
+    </td>
+    <td class="commitDate"><%= commit.date.to_pretty %></td>
+    <td class="commitRepo"><%= commit.repo_name %></td>
+    <td class="commentCount">
+      <% comment_count = db_commit.comment_count %>
+      <% if comment_count > 0 %>
+        <a class="noLink west" rel="tipsy" title="<%= StringHelper.pluralize(comment_count, "comment") %>">
+          <span><%= comment_count %></span><img src="<%= asset_url("/assets/images/comment_bubble.png") %>" />
+        </a>
+      <% end %>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4" class="commitLine2">
+      <%= request_message %>
+    </td>
+  </tr>
+  </tbody></table></td>
 </tr>

@@ -6,12 +6,14 @@
 <% if list_id == "uncompleted_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :header => "For me: code review requests",
+      :request_type => "Requested",
       :review_list => commits_with_uncompleted_reviews } %>
 <% end %>
 
 <% if list_id == "recent_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :header => "My recently completed code review requests",
+      :request_type => "Completed",
       :review_list => recently_reviewed_commits } %>
 <% end %>
 
@@ -30,6 +32,7 @@
 <% if list_id == "requests_from_me" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :header => "From me: code review requests",
+      :request_type => "Requested",
       :review_list => requests_from_me } %>
 <% end %>
 
