@@ -5,7 +5,7 @@ DB = Sequel.connect(:host => DB_HOST, :database => DB_NAME, :port => DB_PORT, :u
                     :password => DB_PASSWORD, :adapter => "mysql2")
 
 # This plugin gives you the "add_association_dependency" method, which lets you specify other objects to be
-# destroyed when the current model gets destroyed, e.g. when you delete a provider, also delete its movies.
+# destroyed when the current model gets destroyed, e.g. when you delete a git repo, also delete its commits.
 Sequel::Model.plugin :association_dependencies
 
 # Auto-populate "created_at" and "updated_at" fields.
