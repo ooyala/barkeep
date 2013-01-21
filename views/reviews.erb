@@ -24,6 +24,13 @@
       :erb_file => :_unresolved_commit } %>
 <% end %>
 
+<% if list_id == "recent_comments" %>
+  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+      :header => "My commits with recently resolved comments",
+      :requests => recently_resolved_comments,
+      :erb_file => :_unresolved_commit } %>
+<% end %>
+
 <% if list_id == "requests_from_me" %>
   <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
       :header => "From me: code review requests",
