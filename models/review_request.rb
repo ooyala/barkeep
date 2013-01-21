@@ -27,7 +27,6 @@ class ReviewRequest < Sequel::Model
   end
 
   def self.requests_from_me(user_id)
-    p ReviewRequest.filter(:requester_user_id => user_id, :completed_at => nil).group_by(:commit_id).sql
     uncompleted = ReviewRequest.filter(:requester_user_id => user_id, :completed_at => nil).
       group_by(:commit_id).all
     get_grit_commits(uncompleted)
