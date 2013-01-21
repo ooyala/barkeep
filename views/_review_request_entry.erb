@@ -1,10 +1,11 @@
 <%#
-  A single table row for a commit with unresolved comments.
+  A single table row for a code review request.
   View arguments:
-  - commit: a grit commit.
+  - entry: a ReviewListEntry
  %>
+<% commit = entry.grit_commit %>
 <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
-<tr>
+<tr class="reviewRequestRow">
   <td class="tableCellDelete">
     <a href="#" class="delete" data-repo="<%= commit.repo_name %>" data-sha="<%= commit.sha %>">X</a>
   </td>

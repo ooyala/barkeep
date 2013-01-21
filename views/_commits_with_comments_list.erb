@@ -3,8 +3,7 @@
   View arguments:
   - list_id: a string that identifies the list
   - header: a string that is displayed above the list
-  - requests: an array of grit commits
-  - erb_file: the erb file to call for each line
+  - review_list: an array where each element is a ReviewListEntry
 %>
 
 <div class="review" id="<%= list_id %>">
@@ -12,15 +11,15 @@
     <div class="dragHandle"></div>
     <div class="name"><%= header %></div>
   </div>
-  <% if requests.empty? %>
+  <% if review_list.empty? %>
     <div class="noResults">None.</div>
     <table class="commitsList" id="<%= list_id %>Table" style="display:none;"><tbody>
     </tbody></table>
   <% else %>
     <div class="noResults" style="display:none;">None.</div>
     <table class="commitsList" id="<%= list_id %>Table"><tbody>
-      <% requests.each do |commit| %>
-        <%= erb erb_file, :layout => false, :locals => { :commit => commit } %>
+      <% review_list.each do |entry| %>
+        <%= erb :_commit_with_comments_entry, :layout => false, :locals => { :entry => entry } %>
       <% end %>
     </tbody></table>
   <% end %>

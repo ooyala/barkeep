@@ -4,45 +4,39 @@
 <% review_list_ids.each do |list_id| %>
 
 <% if list_id == "uncompleted_reviews" %>
-  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :header => "For me: code review requests",
-      :requests => commits_with_uncompleted_reviews,
-      :erb_file => :_review_request } %>
+      :review_list => commits_with_uncompleted_reviews } %>
 <% end %>
 
 <% if list_id == "recent_reviews" %>
-  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :header => "My recently completed code review requests",
-      :requests => recently_reviewed_commits,
-      :erb_file => :_review_request } %>
+      :review_list => recently_reviewed_commits } %>
 <% end %>
 
 <% if list_id == "unresolved_comments" %>
-  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
       :header => "For me: commits with unresolved comments",
-      :requests => commits_with_unresolved_comments,
-      :erb_file => :_unresolved_commit } %>
+      :review_list => commits_with_unresolved_comments } %>
 <% end %>
 
 <% if list_id == "recent_comments" %>
-  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
       :header => "My commits with recently resolved comments",
-      :requests => recently_resolved_comments,
-      :erb_file => :_unresolved_commit } %>
+      :review_list => recently_resolved_comments } %>
 <% end %>
 
 <% if list_id == "requests_from_me" %>
-  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :header => "From me: code review requests",
-      :requests => requests_from_me,
-      :erb_file => :_review_request } %>
+      :review_list => requests_from_me } %>
 <% end %>
 
 <% if list_id == "comments_from_me" %>
-  <%= erb :_review_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
       :header => "From me: commits with unresolved comments",
-      :requests => comments_from_me,
-      :erb_file => :_unresolved_commit } %>
+      :review_list => comments_from_me } %>
 <% end %>
 
 <% end %>

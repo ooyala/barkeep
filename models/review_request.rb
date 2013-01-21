@@ -3,19 +3,22 @@ class ReviewRequest < Sequel::Model
   many_to_one :requester_user, :class => User
   many_to_one :reviewer_user, :class => User
 
-  def self.get_grit_commits(reviews)
-    grit_commits = reviews.map do |review|
+  def self.create_review_list_entries(reviews)
+    entries = []
+    reviews.each do |review|
       grit_commit = MetaRepo.instance.grit_commit(review.commit.git_repo.name, review.commit.sha)
       next unless grit_commit
-      grit_commit
+      entry = ReviewListEntry.new(grit_commit)
+      entry.review_request = review
+      entries << entry
     end
-    grit_commits.reject(&:nil?)
+    entries
   end
 
   def self.commits_with_uncompleted_reviews(user_id)
     uncompleted = ReviewRequest.filter(:reviewer_user_id => user_id, :completed_at => nil).
       group_by(:commit_id).all
-    get_grit_commits(uncompleted)
+    create_review_list_entries(uncompleted)
   end
 
   def self.recently_reviewed_commits(user_id)
@@ -23,13 +26,13 @@ class ReviewRequest < Sequel::Model
         exclude(:completed_at => nil).
         group_by(:commit_id).
         reverse_order(:completed_at).limit(5).all
-    get_grit_commits(recently_reviewed)
+    create_review_list_entries(recently_reviewed)
   end
 
   def self.requests_from_me(user_id)
     uncompleted = ReviewRequest.filter(:requester_user_id => user_id, :completed_at => nil).
       group_by(:commit_id).all
-    get_grit_commits(uncompleted)
+    create_review_list_entries(uncompleted)
   end
 
   def self.complete_requests(commit_id)

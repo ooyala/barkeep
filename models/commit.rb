@@ -72,13 +72,14 @@ class Commit < Sequel::Model
     end
   end
 
-  def self.get_grit_commits(commits)
-    grit_commits = commits.map do |commit|
+  def self.create_review_list_entries(commits)
+    entries = []
+    commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit.git_repo.name, commit.sha)
       next unless grit_commit
-      grit_commit
+      entries << ReviewListEntry.new(grit_commit)
     end
-    grit_commits.reject(&:nil?)
+    entries
   end
 
   # Fetches the commits with unresolved comments for the given email. The email is used to find
@@ -91,7 +92,7 @@ class Commit < Sequel::Model
         filter(:authors__email => email, :comments__completed_at => nil).
         exclude(:users__email => email).
         group_by(:commits__id).all
-    get_grit_commits(commits)
+    create_review_list_entries(commits)
   end
 
   def self.commits_with_recently_resolved_comments(email)
@@ -104,7 +105,7 @@ class Commit < Sequel::Model
         exclude(:users__email => email).
         group_by(:commits__id).
         reverse_order(:completed_at).limit(5).all
-    get_grit_commits(commits)
+    create_review_list_entries(commits)
   end
 
   def self.commits_with_unresolved_comments_from_me(email)
@@ -115,6 +116,6 @@ class Commit < Sequel::Model
         filter(:users__email => email, :comments__completed_at => nil).
         exclude(:authors__email => email).
         group_by(:commits__id).all
-    get_grit_commits(commits)
+    create_review_list_entries(commits)
   end
 end
