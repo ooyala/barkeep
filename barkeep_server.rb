@@ -394,7 +394,7 @@ class BarkeepServer < Sinatra::Base
     erb :_review_request_list, :layout => false, :locals => {
       :list_id => "recent_reviews",
       :label => "To me",
-      :labelBackgroundColor => "pink",
+      :labelClass => "toMe",
       :recently_reviewed_commits => recently_reviewed_commits,
       :header => "My recently completed code review requests",
       :request_type => "Completed",

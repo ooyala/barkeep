@@ -3,7 +3,7 @@
   View arguments:
   - list_id: a string that identifies the list
   - label: a label in the header, such as "For me"
-  - labelBackgroundColor: the background color for the label
+  - labelClass: the class to use for the label (this determines the css style such as background color)
   - header: a string that is displayed above the list
   - review_list: an array where each element is a ReviewListEntry
   - request_type: either "Requested" or "Completed"
@@ -13,7 +13,7 @@
   <div class="header">
     <div class="dragHandle"></div>
     <div class="name">
-      <span class="headerLabel" style="background:<%= labelBackgroundColor %>"><%= label %></span>
+      <span class="headerLabel <%= labelClass %>"><%= label %></span>
       <%= header %>
     </div>
   </div>

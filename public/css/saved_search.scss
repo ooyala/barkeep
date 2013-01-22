@@ -173,10 +173,17 @@
 
 #reviewLists {
   .headerLabel {
-    padding-left: 2px;
-    padding-right: 2px;
+    padding: 1px 4px;
+    font-size: 12px;
+    line-height: 18px;
+    color: white;
+    text-shadow: -1px -1px 0px black;
+    font-weight: 400;
+    border-radius: 3px;
     margin-right: 4px;
   }
+  .toMe { background: $coreRed; }
+  .fromMe { background: darkgreen; }
   a.delete {
     padding-right: 5px;
     float: right;

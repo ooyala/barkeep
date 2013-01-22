@@ -6,7 +6,7 @@
 <% if list_id == "uncompleted_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :label => "To me",
-      :labelBackgroundColor => "pink",
+      :labelClass => "toMe",
       :header => "Code review requests",
       :request_type => "Requested",
       :review_list => commits_with_uncompleted_reviews } %>
@@ -15,7 +15,7 @@
 <% if list_id == "recent_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :label => "To me",
-      :labelBackgroundColor => "pink",
+      :labelClass => "toMe",
       :header => "Recently completed requests",
       :request_type => "Completed",
       :review_list => recently_reviewed_commits } %>
@@ -24,7 +24,7 @@
 <% if list_id == "unresolved_comments" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
       :label => "To me",
-      :labelBackgroundColor => "pink",
+      :labelClass => "toMe",
       :header => "Unresolved comments",
       :review_list => commits_with_unresolved_comments } %>
 <% end %>
@@ -32,7 +32,7 @@
 <% if list_id == "recent_comments" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
       :label => "To me",
-      :labelBackgroundColor => "pink",
+      :labelClass => "toMe",
       :header => "Recently resolved comments",
       :review_list => recently_resolved_comments } %>
 <% end %>
@@ -40,7 +40,7 @@
 <% if list_id == "requests_from_me" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
       :label => "From me",
-      :labelBackgroundColor => "paleturquoise",
+      :labelClass => "fromMe",
       :header => "Code review requests",
       :request_type => "Requested",
       :review_list => requests_from_me } %>
@@ -49,7 +49,7 @@
 <% if list_id == "comments_from_me" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
       :label => "From me",
-      :labelBackgroundColor => "paleturquoise",
+      :labelClass => "fromMe",
       :header => "Unresolved comments",
       :review_list => comments_from_me } %>
 <% end %>
