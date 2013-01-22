@@ -649,7 +649,7 @@ class BarkeepServer < Sinatra::Base
       :line_number => line_number,
       :user => current_user,
       :text => text,
-      :completed_at => nil,
+      :resolved_at => nil,
       :has_been_emailed => current_user.demo?) # Don't email comments made by demo users.
     comment
   end

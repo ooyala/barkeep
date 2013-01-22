@@ -89,7 +89,7 @@ class Commit < Sequel::Model
         join(:comments, :commit_id => :id).
         join(:authors, :id => :commits__author_id).
         join(:users, :id => :comments__user_id).
-        filter(:authors__email => email, :comments__completed_at => nil).
+        filter(:authors__email => email, :comments__resolved_at => nil).
         exclude(:users__email => email).
         group_by(:commits__id).all
     create_review_list_entries(commits)
@@ -101,10 +101,10 @@ class Commit < Sequel::Model
         join(:authors, :id => :commits__author_id).
         join(:users, :id => :comments__user_id).
         filter(:authors__email => email).
-        exclude(:comments__completed_at => nil).
+        exclude(:comments__resolved_at => nil).
         exclude(:users__email => email).
         group_by(:commits__id).
-        reverse_order(:completed_at).limit(5).all
+        reverse_order(:resolved_at).limit(5).all
     create_review_list_entries(commits)
   end
 
@@ -113,7 +113,7 @@ class Commit < Sequel::Model
         join(:comments, :commit_id => :id).
         join(:authors, :id => :commits__author_id).
         join(:users, :id => :comments__user_id).
-        filter(:users__email => email, :comments__completed_at => nil).
+        filter(:users__email => email, :comments__resolved_at => nil).
         exclude(:authors__email => email).
         group_by(:commits__id).all
     create_review_list_entries(commits)

@@ -11,7 +11,7 @@
         <div class="buttonContainer">
           <% if current_user %>
             <% if comment.user_id != comment.commit.author.user_id %>
-              <% if comment.completed_at %>
+              <% if comment.resolved_at %>
                 <button class="unresolve">Unresolve</button>
               <% else %>
                 <button class="resolve">Resolve</button>
