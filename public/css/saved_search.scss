@@ -172,6 +172,11 @@
 }
 
 #reviewLists {
+  .headerLabel {
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-right: 4px;
+  }
   a.delete {
     padding-right: 5px;
     float: right;

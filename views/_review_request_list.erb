@@ -2,6 +2,8 @@
   This view snippet is used for a list of code review requests or a list of commits with unresolved comments.
   View arguments:
   - list_id: a string that identifies the list
+  - label: a label in the header, such as "For me"
+  - labelBackgroundColor: the background color for the label
   - header: a string that is displayed above the list
   - review_list: an array where each element is a ReviewListEntry
   - request_type: either "Requested" or "Completed"
@@ -10,7 +12,10 @@
 <div class="review" id="<%= list_id %>">
   <div class="header">
     <div class="dragHandle"></div>
-    <div class="name"><%= header %></div>
+    <div class="name">
+      <span class="headerLabel" style="background:<%= labelBackgroundColor %>"><%= label %></span>
+      <%= header %>
+    </div>
   </div>
   <% if review_list.empty? %>
     <div class="noResults">None.</div>

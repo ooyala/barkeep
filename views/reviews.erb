@@ -5,40 +5,52 @@
 
 <% if list_id == "uncompleted_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
-      :header => "For me: code review requests",
+      :label => "To me",
+      :labelBackgroundColor => "pink",
+      :header => "Code review requests",
       :request_type => "Requested",
       :review_list => commits_with_uncompleted_reviews } %>
 <% end %>
 
 <% if list_id == "recent_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
-      :header => "My recently completed code review requests",
+      :label => "To me",
+      :labelBackgroundColor => "pink",
+      :header => "Recently completed requests",
       :request_type => "Completed",
       :review_list => recently_reviewed_commits } %>
 <% end %>
 
 <% if list_id == "unresolved_comments" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
-      :header => "For me: commits with unresolved comments",
+      :label => "To me",
+      :labelBackgroundColor => "pink",
+      :header => "Unresolved comments",
       :review_list => commits_with_unresolved_comments } %>
 <% end %>
 
 <% if list_id == "recent_comments" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
-      :header => "My commits with recently resolved comments",
+      :label => "To me",
+      :labelBackgroundColor => "pink",
+      :header => "Recently resolved comments",
       :review_list => recently_resolved_comments } %>
 <% end %>
 
 <% if list_id == "requests_from_me" %>
   <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
-      :header => "From me: code review requests",
+      :label => "From me",
+      :labelBackgroundColor => "paleturquoise",
+      :header => "Code review requests",
       :request_type => "Requested",
       :review_list => requests_from_me } %>
 <% end %>
 
 <% if list_id == "comments_from_me" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
-      :header => "From me: commits with unresolved comments",
+      :label => "From me",
+      :labelBackgroundColor => "paleturquoise",
+      :header => "Unresolved comments",
       :review_list => comments_from_me } %>
 <% end %>
 
