@@ -17,6 +17,9 @@ require "redis"
 require "lib/redis_manager"
 require "backtrace_shortener"
 
+Resque.redis = Redis.new(:host => REDIS_HOST, :port => REDIS_PORT,
+                         :db => RESQUE_DB)
+
 # Make the developer experience better by shortening backtraces.
 BacktraceShortener.monkey_patch_the_exception_class! unless ENV["RACK_ENV"] == "production"
 
