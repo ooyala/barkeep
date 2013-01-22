@@ -33,10 +33,16 @@ class Comment < Sequel::Model
   def file_comment?() !commit_file_id.nil? end
 
   def mark_resolved
-    self.resolved_at = Time.now
+    self.resolved_at = Time.now.utc
+    self.closed_at = nil
+  end
+
+  def mark_closed
+    self.closed_at = Time.now.utc
   end
 
   def mark_unresolved
     self.resolved_at = nil
+    self.closed_at = nil
   end
 end

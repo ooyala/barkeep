@@ -11,10 +11,12 @@
         <div class="buttonContainer">
           <% if current_user %>
             <% if comment.user_id != comment.commit.author.user_id %>
-              <% if comment.resolved_at %>
-                <button class="unresolve">Unresolve</button>
+              <% if comment.closed_at %>
+                <button class="reopenComment">Reopen</button>
+              <% elsif comment.resolved_at %>
+                <button class="closeComment">Close</button>
               <% else %>
-                <button class="resolve">Resolve</button>
+                <button class="resolveComment">Resolve</button>
               <% end %>
             <% end %>
             <% if comment.line_number %>

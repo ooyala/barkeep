@@ -23,8 +23,9 @@ window.Commit =
     $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
-    $(".resolve").live "click", (e) => @onCommentResolved e
-    $(".unresolve").live "click", (e) => @onCommentUnresolved e
+    $(".resolveComment").live "click", (e) => @onCommentResolved e
+    $(".closeComment").live "click", (e) => @onCommentClosed e
+    $(".reopenComment").live "click", (e) => @onCommentReopened e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
     $("#requestReviewButton").click (e) => @toggleReviewRequest()
     $("#hideCommentButton").live "click", (e) => @toggleComments()
@@ -395,23 +396,36 @@ window.Commit =
       data: { comment_id: commentId },
       success: =>
         comment = $(".comment[commentId='#{commentId}']")
-        button = comment.find(".resolve")
-        $(button).html("Unresolve")
-        $(button).removeClass("resolve")
-        $(button).addClass("unresolve")
+        button = comment.find(".resolveComment")
+        $(button).html("Close")
+        $(button).removeClass("resolveComment")
+        $(button).addClass("closeComment")
 
-  onCommentUnresolved: (e) ->
+  onCommentClosed: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
     $.ajax
       type: "post",
-      url: "/unresolve_comment",
+      url: "/close_comment",
       data: { comment_id: commentId },
       success: =>
         comment = $(".comment[commentId='#{commentId}']")
-        button = comment.find(".unresolve")
+        button = comment.find(".closeComment")
+        $(button).html("Reopen")
+        $(button).removeClass("closeComment")
+        $(button).addClass("reopenComment")
+
+  onCommentReopened: (e) ->
+    commentId = $(e.target).parents(".comment").attr("commentId")
+    $.ajax
+      type: "post",
+      url: "/reopen_comment",
+      data: { comment_id: commentId },
+      success: =>
+        comment = $(".comment[commentId='#{commentId}']")
+        button = comment.find(".reopenComment")
         $(button).html("Resolve")
-        $(button).removeClass("unresolve")
-        $(button).addClass("resolve")
+        $(button).removeClass("reopenComment")
+        $(button).addClass("resolveComment")
 
   # TODO(caleb): Add a Snippet for comment forms instead of contacting the server (there's no server logic
   # needed here).
