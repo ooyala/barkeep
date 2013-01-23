@@ -358,21 +358,28 @@ class BarkeepServer < Sinatra::Base
 
   post "/resolve_comment" do
     comment = validate_comment(params[:comment_id], true)
-    comment.mark_resolved
+    comment.resolve
+    comment.save
+    nil
+  end
+
+  post "/unresolve_comment" do
+    comment = validate_comment(params[:comment_id], true)
+    comment.unresolve
     comment.save
     nil
   end
 
   post "/close_comment" do
     comment = validate_comment(params[:comment_id], true)
-    comment.mark_closed
+    comment.close
     comment.save
     nil
   end
 
   post "/reopen_comment" do
     comment = validate_comment(params[:comment_id], true)
-    comment.mark_unresolved
+    comment.reopen
     comment.save
     nil
   end

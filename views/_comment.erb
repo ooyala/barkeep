@@ -11,6 +11,7 @@
         <div class="buttonContainer">
           <% if current_user %>
             <% if comment.user_id != comment.commit.author.user_id %>
+              <span class="buttonDropDown">
               <% if comment.closed_at %>
                 <button class="reopenComment">Reopen</button>
               <% elsif comment.resolved_at %>
@@ -18,6 +19,8 @@
               <% else %>
                 <button class="resolveComment">Resolve</button>
               <% end %>
+              <button class="unresolveComment">Unresolve</button>
+              </span>
             <% end %>
             <% if comment.line_number %>
               <button class="reply standard">Reply</button>

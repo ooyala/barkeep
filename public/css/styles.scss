@@ -144,7 +144,7 @@ button.fancy {
 }
 
 /* Our standard buttons are flat grey buttons. */
-button.standard, .reopenComment, input[type=button], input[type=submit] {
+button.standard, .reopenComment, .commentButton2, input[type=button], input[type=submit] {
   border-radius: 3px;
   padding: 7px 12px;
   text-shadow: 0px -1px 1px #EEEEEE;
@@ -173,6 +173,7 @@ button.standard, .reopenComment, input[type=button], input[type=submit] {
  */
 button.resolveComment {
   $resolveColor: #42C050;
+  width: 84px;
   border-radius: 3px;
   padding: 7px 12px;
   border: 1px solid darken($resolveColor, 20%);
@@ -196,6 +197,7 @@ button.resolveComment {
 
 button.closeComment {
   $resolveColor: #4250C0;
+  width: 84px;
   border-radius: 3px;
   padding: 7px 12px;
   border: 1px solid darken($resolveColor, 20%);
@@ -215,6 +217,23 @@ button.closeComment {
   }
 
   &:active { background-image: none; }
+}
+
+button.reopenComment {
+  width: 84px;
+}
+
+.buttonDropDown {
+  position: relative;
+  &:hover .unresolveComment { visibility: visible; }
+}
+
+.unresolveComment {
+  position: absolute;
+  width: 84px;
+  top: 23px;
+  left: 0px;
+  visibility: hidden;
 }
 
 /* jQuery autocomplete styles. */

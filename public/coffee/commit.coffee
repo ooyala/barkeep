@@ -24,6 +24,7 @@ window.Commit =
     $(".delete").live "click", (e) => @onCommentDelete e
     $(".edit").live "click", (e) => @onCommentEdit e
     $(".resolveComment").live "click", (e) => @onCommentResolved e
+    $(".unresolveComment").live "click", (e) => @onCommentUnresolved e
     $(".closeComment").live "click", (e) => @onCommentClosed e
     $(".reopenComment").live "click", (e) => @onCommentReopened e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
@@ -401,6 +402,22 @@ window.Commit =
         $(button).removeClass("resolveComment")
         $(button).addClass("closeComment")
 
+  onCommentUnresolved: (e) ->
+    commentId = $(e.target).parents(".comment").attr("commentId")
+    $.ajax
+      type: "post",
+      url: "/unresolve_comment",
+      data: { comment_id: commentId },
+      success: =>
+        comment = $(".comment[commentId='#{commentId}']")
+        button = comment.find(".buttonDropDown button:first")
+        $(button).html("Resolve")
+        if button.hasClass("closeComment")
+          $(button).removeClass("closeComment")
+        else if button.hasClass("reopenComment")
+          $(button).removeClass("reopenComment")
+        $(button).addClass("resolveComment")
+
   onCommentClosed: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
     $.ajax
@@ -423,9 +440,9 @@ window.Commit =
       success: =>
         comment = $(".comment[commentId='#{commentId}']")
         button = comment.find(".reopenComment")
-        $(button).html("Resolve")
+        $(button).html("Close")
         $(button).removeClass("reopenComment")
-        $(button).addClass("resolveComment")
+        $(button).addClass("closeComment")
 
   # TODO(caleb): Add a Snippet for comment forms instead of contacting the server (there's no server logic
   # needed here).
