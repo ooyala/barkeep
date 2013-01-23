@@ -3,7 +3,7 @@
 
 window.Snippets =
   # Comment form html. This handles adding and editing comments
-  commentForm: (inline, edit, hiddenFields) ->
+  commentForm: (inline, edit, action_required, hiddenFields) ->
     className = if edit then "commentEditForm" else "commentForm"
     submitValue = if edit then "Save Edit" else "Post Comment"
     header = if edit then "" else """
@@ -19,7 +19,12 @@ window.Snippets =
         <textarea class='commentText' name='text'></textarea>
         <div class='commentControls'>
           <input class='commentSubmit' type='submit' value='#{submitValue}' />
-          #{if inline then "<input class='commentCancel' type='button' value='Cancel' />"}
+          #{if inline then "<input class='commentCancel' type='button' value='Cancel' />" else ""}
+          <div class='buttonSpacer'>
+            <input class='commentPreview' type='button' value='Preview Comment' />
+            <label><input class='actionRequired' type='checkbox' name='action_required'
+                #{if action_required then 'checked' else ''} />Action required</label>
+          </div>
         </div>
       </form>"
     """

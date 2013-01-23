@@ -11,10 +11,10 @@ window.Commit =
   SIDE_BY_SIDE_CODE_WIDTH: 830
 
   init: ->
-    $(".addCommentButton").click (e) => @onAddCommentMouseAction e
+    $(".addCommentButton").click (e) => @onAddCommentMouseAction(e, true)
     $("a.tipsyCommentCount").tipsy(gravity: "w")
-    $(".diffLine").dblclick (e) => @onAddCommentMouseAction e
-    $(".reply").live "click", (e) => @onAddCommentMouseAction e
+    $(".diffLine").dblclick (e) => @onAddCommentMouseAction(e, true)
+    $(".reply").live "click", (e) => @onAddCommentMouseAction(e, false)
     $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
     $(".commentForm").live "submit", (e) => @onCommentSubmit e
     $(".commentPreview").click (e) => @onCommentPreview e
@@ -330,7 +330,7 @@ window.Commit =
     refreshLine?.hide()
     refreshLine?.show(1)
 
-  onAddCommentMouseAction: (e) ->
+  onAddCommentMouseAction: (e, action_required) ->
     $target = $(e.target)
     unless ($target.parents(".commentBody").size() > 0) ||
         e.target.tagName.toLowerCase() in ["input", "textarea"]
@@ -350,13 +350,14 @@ window.Commit =
     filename = codeLines.parents(".file").attr("filename")
     sha = codeLines.parents("#commit").attr("sha")
     repoName = codeLines.parents("#commit").attr("repo")
-    @createCommentForm(codeLines, repoName, sha, filename, lineNumber)
+    @createCommentForm(codeLines, repoName, sha, filename, lineNumber, action_required)
 
   onCommentEdit: (e) ->
     # Use the comment ID instead of generating form ID since left and right tables have the same comments.
     comment = $(".comment[commentId='#{$(e.target).parents(".comment").attr("commentId")}']")
     if comment.find(".commentEditForm").size() > 0 then return
-    commentEdit = $(Snippets.commentForm(true, true))
+    actionRequired = comment.data("actionRequired")
+    commentEdit = $(Snippets.commentForm(true, true, actionRequired))
     commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
     commentEdit.find(".commentCancel").click @onCommentEditCancel
     comment.append(commentEdit).find(".commentBody").hide()
@@ -375,19 +376,24 @@ window.Commit =
     target = $(e.currentTarget)
     text = target.find(".commentText").val()
     if text == "" then return
-    commentId = target.parents(".comment").attr("commentId")
+    comment = target.parents(".comment")
+    commentId = comment.attr("commentId")
+    actionRequired = comment.find(".actionRequired").is(":checked")
     $.ajax
       type: "post",
       url: e.currentTarget.action,
       data: {
         comment_id: commentId
         text: text
+        action_required: actionRequired
       },
       success: (html) ->
         comment = $(".comment[commentId='#{commentId}']")
-        comment.data("commentRaw", text)
-        comment.find(".commentBody").html(html)
+        container = comment.parents(".commentAndAnchorContainer")
+        container.before(html)
+        container.remove()
         comment.find(".commentCancel").click()
+
 
   onCommentResolved: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
@@ -446,7 +452,7 @@ window.Commit =
 
   # TODO(caleb): Add a Snippet for comment forms instead of contacting the server (there's no server logic
   # needed here).
-  createCommentForm: (codeLine, repoName, sha, filename, lineNumber) ->
+  createCommentForm: (codeLine, repoName, sha, filename, lineNumber, action_required) ->
     $.ajax
       type: "get"
       url: "/comment_form"
@@ -455,6 +461,7 @@ window.Commit =
         sha: sha
         filename: filename
         line_number: lineNumber
+        action_required: action_required
       success: (html) =>
         comment = $(html)
         commentForm = comment.find(".commentForm")
@@ -500,6 +507,7 @@ window.Commit =
     form = if file.size() > 0 then file.find(".commentForm[form-id='" + formId + "']") else target
     data = {}
     target.find("input, textarea").each (i,e) -> data[e.name] = e.value if e.name
+    data["action_required"] = form.find(".actionRequired").is(":checked")
     $.ajax
       type: "POST",
       data: data,

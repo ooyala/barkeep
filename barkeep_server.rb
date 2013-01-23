@@ -323,7 +323,8 @@ class BarkeepServer < Sinatra::Base
       :repo_name => params[:repo_name],
       :sha => params[:sha],
       :filename => params[:filename],
-      :line_number => params[:line_number]
+      :line_number => params[:line_number],
+      :action_required => params[:action_required] == "true",
     }
   end
 
@@ -339,13 +340,16 @@ class BarkeepServer < Sinatra::Base
     if params[:comment_id]
       comment = validate_comment(params[:comment_id])
       comment.text = params[:text]
+      comment.action_required = params[:action_required] == "true"
       comment.save
-      next comment.filter_text
-    end
-    begin
-      comment = create_comment(*[:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] })
-    rescue RuntimeError => e
-      halt 400, e.message
+    else
+      begin
+        values = [:repo_name, :sha, :filename, :line_number, :text].map { |f| params[f] }
+        values << (params[:action_required] == "true")
+        comment = create_comment(*values)
+      rescue RuntimeError => e
+        halt 400, e.message
+      end
     end
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
@@ -648,7 +652,7 @@ class BarkeepServer < Sinatra::Base
     end
   end
 
-  def create_comment(repo_name, sha, filename, line_number_string, text)
+  def create_comment(repo_name, sha, filename, line_number_string, text, action_required)
     commit = MetaRepo.instance.db_commit(repo_name, sha)
     raise "No such commit." unless commit
     file = nil
@@ -664,6 +668,7 @@ class BarkeepServer < Sinatra::Base
       :user => current_user,
       :text => text,
       :resolved_at => nil,
+      :action_required => action_required,
       :has_been_emailed => current_user.demo?) # Don't email comments made by demo users.
     comment
   end

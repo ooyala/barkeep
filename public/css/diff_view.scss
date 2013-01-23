@@ -388,6 +388,12 @@
         @include box-flex(1);
         @include box-ordinal-group(1);
         margin-left: 10px;
+
+        label {
+          font-size: 14px;
+          margin-left: 20px;
+          input[type=checkbox] { margin-right: 5px; }
+        }
       }
       .commentCancel {
         @include display-box;

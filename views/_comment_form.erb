@@ -13,7 +13,11 @@
       <% if line_number %>
         <input class="commentCancel" type="button" value="Cancel" />
       <% end %>
-      <div class="buttonSpacer"><input class="commentPreview" type="button" value="Preview Comment" /></div>
+      <div class="buttonSpacer">
+        <input class="commentPreview" type="button" value="Preview Comment" />
+        <label><input class="actionRequired" type="checkbox" name="action_required"
+            <%= "checked" if action_required %> />Response required</label>
+      </div>
     </div>
   </form>
 </div>

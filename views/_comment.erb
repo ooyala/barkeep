@@ -1,8 +1,10 @@
 <% if comment %>
+  <div class="commentAndAnchorContainer">
   <a name="comment-<%= comment.id %>"></a>
   <div class="commentContainer">
     <div class="comment" commentId="<%= comment.id %>"
-         data-comment-raw="<%= CGI::escape_html(comment.text)%>">
+         data-comment-raw="<%= CGI::escape_html(comment.text)%>"
+         data-action-required="<%= comment.action_required %>">
       <div class="heading">
         <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
         <span class="name"><%= CGI::escape_html(comment.user.name) %></span>
@@ -10,7 +12,7 @@
         <span class="date"><%= comment.created_at.to_pretty %> </span>
         <div class="buttonContainer">
           <% if current_user %>
-            <% if comment.user_id != comment.commit.author.user_id %>
+            <% if comment.action_required %>
               <span class="buttonDropDown">
               <% if comment.closed_at %>
                 <button class="reopenComment">Reopen</button>
@@ -34,5 +36,6 @@
       </div>
       <div class="commentBody"> <%= comment.filter_text %> </div>
     </div>
+  </div>
   </div>
 <% end %>
