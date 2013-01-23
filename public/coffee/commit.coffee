@@ -360,6 +360,7 @@ window.Commit =
     commentEdit = $(Snippets.commentForm(true, true, actionRequired))
     commentEdit.find(".commentText").html($(e.target).parents(".comment").data("commentRaw"))
     commentEdit.find(".commentCancel").click @onCommentEditCancel
+    commentEdit.find(".commentPreview").click @onCommentPreview
     comment.append(commentEdit).find(".commentBody").hide()
     textarea = comment.find(".commentText")
     KeyboardShortcuts.createShortcutContext textarea
@@ -552,7 +553,7 @@ window.Commit =
   # Toggle preview/editing mode
   onCommentPreview: (e) ->
     e.stopPropagation()
-    comment = $(e.target).parents(".commentForm")
+    comment = $(e.target).parents(".commentForm,.commentEditForm")
     preview = comment.find(".commentPreviewText")
     textarea = comment.find(".commentText")
     previewButton = comment.find(".commentPreview")

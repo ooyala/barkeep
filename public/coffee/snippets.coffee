@@ -17,6 +17,7 @@ window.Snippets =
       <form class='#{className}' action='/comment' type='POST'>
         #{header}
         <textarea class='commentText' name='text'></textarea>
+        <div class='commentBody commentPreviewText'></div>
         <div class='commentControls'>
           <input class='commentSubmit' type='submit' value='#{submitValue}' />
           #{if inline then "<input class='commentCancel' type='button' value='Cancel' />" else ""}
