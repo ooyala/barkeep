@@ -381,13 +381,6 @@ class BarkeepServer < Sinatra::Base
     erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
-  post "/reopen_comment" do
-    comment = validate_comment(params[:comment_id], true)
-    comment.reopen
-    comment.save
-    erb :_comment, :layout => false, :locals => { :comment => comment }
-  end
-
   post "/approve_commit" do
     commit = MetaRepo.instance.db_commit(params[:repo_name], params[:commit_sha])
     halt 400 unless commit

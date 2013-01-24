@@ -3,10 +3,8 @@
   <% if comment.action_required %>
     <% if comment.resolved_at.nil? %>
       <% state = "newComment" %>
-    <% elsif comment.closed_at.nil? %>
-      <% state = "resolvedComment" %>
     <% else %>
-      <% state = "closedComment" %>
+      <% state = "resolvedComment" %>
     <% end %>
   <% end %>
   <div class="commentAndAnchorContainer">
@@ -23,16 +21,11 @@
         <div class="buttonContainer">
           <% if current_user %>
             <% if comment.action_required %>
-              <span class="buttonDropDown">
-              <% if comment.closed_at %>
-                <button class="reopenComment">Reopen</button>
-              <% elsif comment.resolved_at %>
-                <button class="closeComment">Close</button>
+              <% if comment.resolved_at %>
+                <button class="unresolveComment">Reopen</button>
               <% else %>
                 <button class="resolveComment">Resolve</button>
               <% end %>
-              <button class="unresolveComment">Unresolve</button>
-              </span>
             <% end %>
             <% if comment.line_number %>
               <button class="reply standard">Reply</button>

@@ -409,17 +409,10 @@
     }
   }
 
-.comment div.heading {
-  &.newComment {
-    $color: #FFDDDD;
-    @include linear-gradient(lighten($color, 3%) 0%, darken($color, 15%) 95%,
-        $fallback: darken($color, 18%));
-   }
-  &.resolvedComment {
-    $color: #E0FFFF;
-    @include linear-gradient(lighten($color, 3%) 0%, darken($color, 15%) 95%,
-        $fallback: darken($color, 18%));
-   }
+.comment div.heading.newComment {
+  $color: #FFDDDD;
+  @include linear-gradient(lighten($color, 3%) 0%, darken($color, 15%) 95%,
+      $fallback: darken($color, 18%));
 }
 
   // Comment edit form is not a panel, so doesn't need panel CSS

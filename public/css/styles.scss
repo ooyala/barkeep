@@ -144,7 +144,7 @@ button.fancy {
 }
 
 /* Our standard buttons are flat grey buttons. */
-button.standard, .reopenComment, .resolveComment, .closeComment, input[type=button], input[type=submit] {
+button.standard, .resolveComment, .unresolveComment, input[type=button], input[type=submit] {
   border-radius: 3px;
   padding: 7px 12px;
   text-shadow: 0px -1px 1px #EEEEEE;
@@ -165,28 +165,6 @@ button.standard, .reopenComment, .resolveComment, .closeComment, input[type=butt
 }
 
 .webkit button.standard { font-weight: bold; }
-
-/* The "Resolve" button needs to stand out a bit from the other buttons because it indicates
- * the state of the comment and users will want to find all their unresolved comments.
- * This style is a hybrid between the standard buttons (Reply, Edit, Delete) and the "Approve Commit"
- * button.
- */
-button.resolveComment, button.closeComment, button.reopenComment {
-  width: 84px;
-}
-
-.buttonDropDown {
-  position: relative;
-  &:hover .unresolveComment { visibility: visible; }
-}
-
-.unresolveComment {
-  position: absolute;
-  width: 84px;
-  top: 23px;
-  left: 0px;
-  visibility: hidden;
-}
 
 /* jQuery autocomplete styles. */
 .ui-widget {

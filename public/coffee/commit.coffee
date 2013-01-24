@@ -25,8 +25,6 @@ window.Commit =
     $(".edit").live "click", (e) => @onCommentEdit e
     $(".resolveComment").live "click", (e) => @onCommentResolved e
     $(".unresolveComment").live "click", (e) => @onCommentUnresolved e
-    $(".closeComment").live "click", (e) => @onCommentClosed e
-    $(".reopenComment").live "click", (e) => @onCommentReopened e
     $("#sideBySideButton").live "click", => @toggleSideBySide true
     $("#requestReviewButton").click (e) => @toggleReviewRequest()
     $("#hideCommentButton").live "click", (e) => @toggleComments()
@@ -413,30 +411,6 @@ window.Commit =
     $.ajax
       type: "post",
       url: "/unresolve_comment",
-      data: { comment_id: commentId },
-      success: (html) =>
-        comment = $(".comment[commentId='#{commentId}']")
-        container = comment.parents(".commentAndAnchorContainer")
-        container.before(html)
-        container.remove()
-
-  onCommentClosed: (e) ->
-    commentId = $(e.target).parents(".comment").attr("commentId")
-    $.ajax
-      type: "post",
-      url: "/close_comment",
-      data: { comment_id: commentId },
-      success: (html) =>
-        comment = $(".comment[commentId='#{commentId}']")
-        container = comment.parents(".commentAndAnchorContainer")
-        container.before(html)
-        container.remove()
-
-  onCommentReopened: (e) ->
-    commentId = $(e.target).parents(".comment").attr("commentId")
-    $.ajax
-      type: "post",
-      url: "/reopen_comment",
       data: { comment_id: commentId },
       success: (html) =>
         comment = $(".comment[commentId='#{commentId}']")
