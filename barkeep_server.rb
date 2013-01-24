@@ -364,28 +364,28 @@ class BarkeepServer < Sinatra::Base
     comment = validate_comment(params[:comment_id], true)
     comment.resolve
     comment.save
-    nil
+    erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
   post "/unresolve_comment" do
     comment = validate_comment(params[:comment_id], true)
     comment.unresolve
     comment.save
-    nil
+    erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
   post "/close_comment" do
     comment = validate_comment(params[:comment_id], true)
     comment.close
     comment.save
-    nil
+    erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
   post "/reopen_comment" do
     comment = validate_comment(params[:comment_id], true)
     comment.reopen
     comment.save
-    nil
+    erb :_comment, :layout => false, :locals => { :comment => comment }
   end
 
   post "/approve_commit" do

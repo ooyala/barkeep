@@ -402,12 +402,11 @@ window.Commit =
       type: "post",
       url: "/resolve_comment",
       data: { comment_id: commentId },
-      success: =>
+      success: (html) =>
         comment = $(".comment[commentId='#{commentId}']")
-        button = comment.find(".resolveComment")
-        $(button).html("Close")
-        $(button).removeClass("resolveComment")
-        $(button).addClass("closeComment")
+        container = comment.parents(".commentAndAnchorContainer")
+        container.before(html)
+        container.remove()
 
   onCommentUnresolved: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
@@ -415,15 +414,11 @@ window.Commit =
       type: "post",
       url: "/unresolve_comment",
       data: { comment_id: commentId },
-      success: =>
+      success: (html) =>
         comment = $(".comment[commentId='#{commentId}']")
-        button = comment.find(".buttonDropDown button:first")
-        $(button).html("Resolve")
-        if button.hasClass("closeComment")
-          $(button).removeClass("closeComment")
-        else if button.hasClass("reopenComment")
-          $(button).removeClass("reopenComment")
-        $(button).addClass("resolveComment")
+        container = comment.parents(".commentAndAnchorContainer")
+        container.before(html)
+        container.remove()
 
   onCommentClosed: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
@@ -431,12 +426,11 @@ window.Commit =
       type: "post",
       url: "/close_comment",
       data: { comment_id: commentId },
-      success: =>
+      success: (html) =>
         comment = $(".comment[commentId='#{commentId}']")
-        button = comment.find(".closeComment")
-        $(button).html("Reopen")
-        $(button).removeClass("closeComment")
-        $(button).addClass("reopenComment")
+        container = comment.parents(".commentAndAnchorContainer")
+        container.before(html)
+        container.remove()
 
   onCommentReopened: (e) ->
     commentId = $(e.target).parents(".comment").attr("commentId")
@@ -444,12 +438,11 @@ window.Commit =
       type: "post",
       url: "/reopen_comment",
       data: { comment_id: commentId },
-      success: =>
+      success: (html) =>
         comment = $(".comment[commentId='#{commentId}']")
-        button = comment.find(".reopenComment")
-        $(button).html("Close")
-        $(button).removeClass("reopenComment")
-        $(button).addClass("closeComment")
+        container = comment.parents(".commentAndAnchorContainer")
+        container.before(html)
+        container.remove()
 
   # TODO(caleb): Add a Snippet for comment forms instead of contacting the server (there's no server logic
   # needed here).
