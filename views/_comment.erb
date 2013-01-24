@@ -1,11 +1,21 @@
 <% if comment %>
+  <% state = "" %>
+  <% if comment.action_required %>
+    <% if comment.resolved_at.nil? %>
+      <% state = "newComment" %>
+    <% elsif comment.closed_at.nil? %>
+      <% state = "resolvedComment" %>
+    <% else %>
+      <% state = "closedComment" %>
+    <% end %>
+  <% end %>
   <div class="commentAndAnchorContainer">
   <a name="comment-<%= comment.id %>"></a>
   <div class="commentContainer">
     <div class="comment" commentId="<%= comment.id %>"
          data-comment-raw="<%= CGI::escape_html(comment.text)%>"
          data-action-required="<%= comment.action_required %>">
-      <div class="heading">
+      <div class="heading <%= state %>">
         <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
         <span class="name"><%= CGI::escape_html(comment.user.name) %></span>
         <span class="permalink"><a href="#comment-<%= comment.id %>">commented</a></span>
