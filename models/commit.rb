@@ -118,4 +118,21 @@ class Commit < Sequel::Model
         group_by(:commits__id).all
     create_review_list_entries(commits)
   end
+
+  # Selects for the given user all the commits with "actionable" comments, that is, comments that
+  # match the following conditions:
+  #  1. Comments that have "action_required" and are not closed, and
+  #  2a. Comments that were made on one of this user's commits (including any comments by this user),
+  #      and are not resolved (and not closed), or
+  #  2b. Comments that this user made on some commit that are resolved (but not closed).
+  def self.commits_with_actionable_comments_for_user(user_id)
+    commits = Commit.
+        join(:comments, :commit_id => :id).
+        join(:authors, :id => :commits__author_id).
+        filter(:action_required => true, :comments__closed_at => nil).
+        where({ :authors__user_id => user_id, :comments__resolved_at => nil } |
+              { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).
+        group_by(:commits__id).all
+    create_review_list_entries(commits)
+  end
 end
