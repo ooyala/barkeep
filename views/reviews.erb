@@ -4,7 +4,8 @@
 <% review_list_ids.each do |list_id| %>
 
 <% if list_id == "uncompleted_reviews" %>
-  <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_review_request_list, :layout => false, :locals => {
+      :list_id => list_id,
       :label => "For me",
       :labelClass => "toMe",
       :header => "Code review requests",
@@ -13,7 +14,8 @@
 <% end %>
 
 <% if list_id == "actionable_comments" %>
-  <%= erb :_commits_with_comments_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_commits_with_comments_list, :layout => false, :locals => {
+      :list_id => list_id,
       :label => "For me",
       :labelClass => "toMe",
       :header => "Actionable comments",
@@ -21,7 +23,8 @@
 <% end %>
 
 <% if list_id == "recent_reviews" %>
-  <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_review_request_list, :layout => false, :locals => {
+      :list_id => list_id,
       :label => "For me",
       :labelClass => "toMe",
       :header => "Recently completed requests",
@@ -30,7 +33,8 @@
 <% end %>
 
 <% if list_id == "requests_from_me" %>
-  <%= erb :_review_request_list, :layout => false, :locals => { :list_id => list_id,
+  <%= erb :_review_request_list, :layout => false, :locals => {
+      :list_id => list_id,
       :label => "From me",
       :labelClass => "fromMe",
       :header => "Code review requests",
