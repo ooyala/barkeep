@@ -32,6 +32,24 @@ class Comment < Sequel::Model
   # True if this comment pertains to a particular file.
   def file_comment?() !commit_file_id.nil? end
 
+  def state
+    return "New" if self.resolved_at.nil?
+    return "Resolved" if self.closed_at.nil?
+    "Closed"
+  end
+
+  def isNew
+    self.resolved_at.nil?
+  end
+
+  def isResolved
+    !self.resolved_at.nil? && self.closed_at.nil?
+  end
+
+  def isClosed
+    !self.resolved_at.nil? && !self.closed_at.nil?
+  end
+
   def resolve
     self.resolved_at = Time.now.utc
     self.closed_at = nil
