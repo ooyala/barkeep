@@ -6,16 +6,24 @@
   - labelClass: the class to use for the label (this determines the css style such as background color)
   - header: a string that is displayed above the list
   - review_list: an array where each element is a ReviewListEntry
+  - current_user_id: the current user id
+  - collapsed: true if list should be shown in the collapsed state (only header is displayed)
 %>
 
 <div class="review" id="<%= list_id %>">
   <div class="header">
     <div class="dragHandle"></div>
     <div class="name">
-      <span class="headerLabel <%= labelClass %>"><%= label %></span>
+      <% if collapsed %>
+        <span class="expandCollapseListIcon">+</span>
+      <% else %>
+        <span class="expandCollapseListIcon">-</span>
+      <% end %>
+      <span class="tagLabel <%= labelClass %>"><%= label %></span>
       <%= header %>
     </div>
   </div>
+  <div class="reviewListBody <%= collapsed ? 'collapsedList' : '' %>">
   <% if review_list.empty? %>
     <div class="noResults">None.</div>
     <table class="commitsList" id="<%= list_id %>Table" style="display:none;"><tbody>
@@ -24,8 +32,10 @@
     <div class="noResults" style="display:none;">None.</div>
     <table class="commitsList" id="<%= list_id %>Table"><tbody>
       <% review_list.each do |entry| %>
-        <%= erb :_commit_with_comments_entry, :layout => false, :locals => { :entry => entry } %>
+        <%= erb :_commit_with_comments_entry, :layout => false, :locals => { :entry => entry,
+            :current_user_id => current_user_id } %>
       <% end %>
     </tbody></table>
   <% end %>
+  </div>
 </div>

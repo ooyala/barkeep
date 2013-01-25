@@ -172,7 +172,7 @@
 }
 
 #reviewLists {
-  .headerLabel {
+  .tagLabel {
     padding: 1px 4px;
     font-size: 12px;
     line-height: 18px;
@@ -184,14 +184,24 @@
   }
   .toMe { background: $coreRed; }
   .fromMe { background: darkgreen; }
-  a.delete {
+  a.deleteRequestRow, a.deleteCommentRow {
     padding-right: 5px;
-    float: right;
     color: red;
     @include closeLinks;
   }
-  .tableCellDelete { visibility: hidden; }
-  #uncompleted_reviews .tableCellDelete { visibility: visible; }
+  .tableCellDeleteHidden { visibility: hidden; }
+  .tableCellDelete { visibility: visible; }
+  span.expandCollapseListIcon {
+    // TODO(jack): use an image instead of a plus or minus sign
+    cursor: pointer;
+    color: navy;
+    padding: 1px 4px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 3px;
+    Background: lightgray;
+  }
+  div.collapsedList { display: none; }
 }
 
 /* The actual commit search box. */

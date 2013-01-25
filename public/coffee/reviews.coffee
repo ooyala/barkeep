@@ -1,7 +1,9 @@
 
 window.Reviews =
   init: ->
-    $(".review .delete").live "click", (e) => @onReviewComplete e
+    $(".review .deleteRequestRow").live "click", (e) => @onReviewComplete e
+    $(".review .deleteCommentRow").live "click", (e) => @onCommentComplete e
+    $(".review .expandCollapseListIcon").click (e) => @onExpandCollapseList e
     $("#reviewLists").sortable
       placeholder: "savedSearchPlaceholder"
       handle: ".dragHandle"
@@ -19,6 +21,31 @@ window.Reviews =
       type: "POST"
       url: "/review_lists/reorder"
       data: state.toString()
+
+  onExpandCollapseList: (e) ->
+    console.log("onCollapseList")
+    target = $(e.currentTarget)
+    if target.html() == "+"
+      target.html("-")
+    else
+      target.html("+")
+    target.parents(".review").find(".reviewListBody").toggleClass("collapsedList")
+    false
+
+  onCommentComplete: (e) ->
+    target = $(e.currentTarget)
+    commentId = target.data("commentId")
+    $.ajax({
+      type: "post",
+      url: "/close_comment",
+      data: {
+        comment_id: commentId
+      }
+      success: (html) =>
+        target.parents(".commentRow").remove()
+        # TODO(jack): if no more comments, then remove commit line too
+    })
+    false
 
   onReviewComplete: (e) ->
     target = $(e.currentTarget)

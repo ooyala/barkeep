@@ -7,16 +7,23 @@
   - header: a string that is displayed above the list
   - review_list: an array where each element is a ReviewListEntry
   - request_type: either "Requested" or "Completed"
+  - collapsed: true if list should be shown in the collapsed state (only header is displayed)
 %>
 
 <div class="review" id="<%= list_id %>">
   <div class="header">
     <div class="dragHandle"></div>
     <div class="name">
-      <span class="headerLabel <%= labelClass %>"><%= label %></span>
+      <% if collapsed %>
+        <span class="expandCollapseListIcon">+</span>
+      <% else %>
+        <span class="expandCollapseListIcon">-</span>
+      <% end %>
+      <span class="tagLabel <%= labelClass %>"><%= label %></span>
       <%= header %>
     </div>
   </div>
+  <div class="reviewListBody <%= collapsed ? 'collapsedList' : '' %>">
   <% if review_list.empty? %>
     <div class="noResults">None.</div>
     <table class="commitsList" id="<%= list_id %>Table" style="display:none;"><tbody>
@@ -35,4 +42,5 @@
       <% end %>
     </tbody></table>
   <% end %>
+  </div>
 </div>

@@ -73,30 +73,27 @@ class Commit < Sequel::Model
   end
 
   def self.create_review_list_entries(commits)
-    entries = []
+    comments = Hash.new { |hash, key| hash[key] = [] }
     commits.each do |commit|
-      grit_commit = MetaRepo.instance.grit_commit(commit.git_repo.name, commit.sha)
+      comments[commit[:id]] << Comment[commit[:comment_id]]
+    end
+
+    entries = []
+    commit_processed = {}
+    commits.each do |commit|
+      next if commit_processed[commit[:id]]
+      commit_processed[commit[:id]] = true
+      grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
       next unless grit_commit
-      entries << ReviewListEntry.new(grit_commit)
+      entry = ReviewListEntry.new(grit_commit)
+      entry.comments = comments[commit[:id]]
+      entries << entry
     end
     entries
   end
 
-  # Fetches the commits with unresolved comments for the given email. The email is used to find
-  # the commits by that user and to exclude comments made by that user.
-  def self.commits_with_unresolved_comments(email)
-    commits = Commit.
-        join(:comments, :commit_id => :id).
-        join(:authors, :id => :commits__author_id).
-        join(:users, :id => :comments__user_id).
-        filter(:authors__email => email, :comments__resolved_at => nil).
-        exclude(:users__email => email).
-        group_by(:commits__id).all
-    create_review_list_entries(commits)
-  end
-
   def self.commits_with_recently_resolved_comments(email)
-    commits = Commit.
+    commits = Commit.select(:commits__id, :git_repo_id, :sha).
         join(:comments, :commit_id => :id).
         join(:authors, :id => :commits__author_id).
         join(:users, :id => :comments__user_id).
@@ -108,17 +105,6 @@ class Commit < Sequel::Model
     create_review_list_entries(commits)
   end
 
-  def self.commits_with_unresolved_comments_from_me(email)
-    commits = Commit.
-        join(:comments, :commit_id => :id).
-        join(:authors, :id => :commits__author_id).
-        join(:users, :id => :comments__user_id).
-        filter(:users__email => email, :comments__resolved_at => nil).
-        exclude(:authors__email => email).
-        group_by(:commits__id).all
-    create_review_list_entries(commits)
-  end
-
   # Selects for the given user all the commits with "actionable" comments, that is, comments that
   # match the following conditions:
   #  1. Comments that have "action_required" and are not closed, and
@@ -126,13 +112,13 @@ class Commit < Sequel::Model
   #      and are not resolved (and not closed), or
   #  2b. Comments that this user made on some commit that are resolved (but not closed).
   def self.commits_with_actionable_comments_for_user(user_id)
-    commits = Commit.
+    commits = Commit.select(:commits__id, :git_repos__name, :sha, :comments__id___comment_id).
         join(:comments, :commit_id => :id).
         join(:authors, :id => :commits__author_id).
+        join(:git_repos, :id => :commits__git_repo_id).
         filter(:action_required => true, :comments__closed_at => nil).
         where({ :authors__user_id => user_id, :comments__resolved_at => nil } |
-              { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).
-        group_by(:commits__id).all
+              { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).all
     create_review_list_entries(commits)
   end
 end

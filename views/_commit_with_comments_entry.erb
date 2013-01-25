@@ -2,12 +2,14 @@
   A single table row for a commit with unresolved comments.
   View arguments:
   - entry: a ReviewListEntry
+  - current_user_id: the current user id
  %>
 <% commit = entry.grit_commit %>
+<% comments = entry.comments %>
 <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
 <tr>
-  <td class="tableCellDelete">
-    <a href="#" class="delete" data-repo="<%= commit.repo_name %>" data-sha="<%= commit.sha %>">X</a>
+  <td class="tableCellDeleteHidden">
+    <a href="#" class="delete">X</a>
   </td>
   <td class="selectArrow <%= "approved east" if db_commit.approved? %>"
       title="Approved" rel="tipsy"></td>
@@ -20,20 +22,36 @@
     <a class="south" rel="tipsy" href="mailto:<%= commit.author.email %>" target="_blank"
       title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
   </td>
-  <td class="commitId">
-    <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
-  </td>
-  <td class="commitMessage">
-    <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
-  </td>
-  <td class="commitDate"><%= commit.date.to_pretty %></td>
-  <td class="commitRepo"><%= commit.repo_name %></td>
-  <td class="commentCount">
-    <% comment_count = db_commit.comment_count %>
-    <% if comment_count > 0 %>
-      <a class="noLink west" rel="tipsy" title="<%= StringHelper.pluralize(comment_count, "comment") %>">
-        <span><%= comment_count %></span><img src="<%= asset_url("/assets/images/comment_bubble.png") %>" />
-      </a>
-    <% end %>
-  </td>
+  <td><table class="innerCommitsList"><tbody>
+  <tr>
+    <td class="commitId">
+      <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
+    </td>
+    <td class="commitMessage">
+      <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
+    </td>
+    <td class="commitDate"><%= commit.date.to_pretty %></td>
+    <td class="commitRepo"><%= commit.repo_name %></td>
+    <td class="commentCount">
+      <% comment_count = db_commit.comment_count %>
+      <% if comment_count > 0 %>
+        <a class="noLink west" rel="tipsy" title="<%= StringHelper.pluralize(comment_count, "comment") %>">
+          <span><%= comment_count %></span><img src="<%= asset_url("/assets/images/comment_bubble.png") %>" />
+        </a>
+      <% end %>
+    </td>
+  </tr>
+  <% comments.each do |comment| %>
+  <tr class="commentRow">
+    <td colspan="4">
+      <span class="<%= comment.isResolved ? 'tableCellDelete' : 'tableCellDeleteHidden' %>">
+        <a href="#" class="deleteCommentRow" data-comment-id="<%= comment.id %>">x</a>
+      </span>
+      <% label_class, label = TagHelper.get_label_and_class(current_user_id, comment) %>
+      <span class="tagLabel <%= label_class %>"><%= label %></span>
+      <%= comment.text[0..100] %>
+    </td>
+  </tr>
+  <% end %>
+  </tbody></table></td>
 </tr>

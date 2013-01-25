@@ -35,6 +35,7 @@ require "lib/inspire"
 require "lib/redis_manager"
 require "lib/redcarpet_extensions"
 require "lib/mustache_renderer"
+require "lib/tag_helper"
 require "resque_jobs/deliver_review_request_emails.rb"
 
 NODE_MODULES_BIN_PATH = "./node_modules/.bin"
@@ -531,6 +532,7 @@ class BarkeepServer < Sinatra::Base
       :recently_reviewed_commits => recently_reviewed_commits,
       :requests_from_me => requests_from_me,
       :review_list_ids => review_list_order,
+      :current_user_id => current_user.id,
     }
   end
 
