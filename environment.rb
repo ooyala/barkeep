@@ -4,10 +4,25 @@ DB_NAME = "barkeep"
 DB_USER = "root"
 DB_PASSWORD = ""
 
-# These are the credentials of the Gmail account that you want to send mail as.
-# NOTE(philc): We may want to make configuration variables which generically support SMTP.
-GMAIL_ADDRESS = ""
-GMAIL_PASSWORD = ""
+# These are the credentials of the email account that you want to send mail as.
+MAIL_USER = ""
+MAIL_DOMAIN = ""
+
+# These settings are from the Pony documentation and work with Gmail's SMTP TLS server.
+PONY_OPTIONS = {
+  :address => "smtp.gmail.com",
+  :port => "587",
+  :enable_starttls_auto => true,
+  :user_name => "#{MAIL_USER}@#{MAIL_DOMAIN}",
+  :password => "",
+  :authentication => :plain,
+  # the HELO domain provided by the client to the server
+  :domain => "localhost.localdomain"
+}
+
+REQUESTS_OUTGOING_ADDRESS = "#{MAIL_USER}+requests@#{MAIL_DOMAIN}"
+COMMENTS_OUTGOING_ADDRESS = "#{MAIL_USER}+comments@#{MAIL_DOMAIN}"
+COMMITS_OUTGOING_ADDRESS  = "#{MAIL_USER}+commits@#{MAIL_DOMAIN}"
 
 # This a list of paths to git repos we should watch.
 REPOS_ROOT = "#{ENV["HOME"]}/barkeep_repos"
