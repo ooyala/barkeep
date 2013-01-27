@@ -521,16 +521,20 @@ class BarkeepServer < Sinatra::Base
 
   get "/reviews" do
     uncompleted_reviews = ReviewRequest.commits_with_uncompleted_reviews(current_user.id)
-    actionable_comments = Commit.commits_with_actionable_comments_for_user(current_user.id)
+    actionable_comments = Commit.commits_with_actionable_comments(current_user.id)
+    pending_comments = Commit.commits_with_pending_comments(current_user.id)
+    closed_comments = Commit.commits_with_closed_comments(current_user.id)
     recently_reviewed_commits = ReviewRequest.recently_reviewed_commits(current_user.id)
     requests_from_me = ReviewRequest.requests_from_me(current_user.id)
-    default_list = "uncompleted_reviews,actionable_comments,recent_reviews,recent_comments,requests_from_me,comments_from_me"
+    default_list = "uncompleted_reviews,actionable_comments,recent_reviews,,requests_from_me,pending_comments,closed_comments"
     review_list_order = (current_user.review_list_order || default_list).split(",")
     erb :reviews, :locals => {
       :commits_with_uncompleted_reviews => uncompleted_reviews,
       :commits_with_actionable_comments => actionable_comments,
       :recently_reviewed_commits => recently_reviewed_commits,
       :requests_from_me => requests_from_me,
+      :commits_with_pending_comments => pending_comments,
+      :commits_with_closed_comments => closed_comments,
       :review_list_ids => review_list_order,
       :current_user_id => current_user.id,
     }

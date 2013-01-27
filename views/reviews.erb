@@ -47,5 +47,27 @@
       :review_list => requests_from_me } %>
 <% end %>
 
+<% if list_id == "pending_comments" %>
+  <%= erb :_commits_with_comments_list, :layout => false, :locals => {
+      :list_id => list_id,
+      :collapsed => true,
+      :label => "",
+      :labelClass => "",
+      :header => "Pending comments",
+      :review_list => commits_with_pending_comments,
+      :current_user_id => current_user_id } %>
+<% end %>
+
+<% if list_id == "closed_comments" %>
+  <%= erb :_commits_with_comments_list, :layout => false, :locals => {
+      :list_id => list_id,
+      :collapsed => true,
+      :label => "",
+      :labelClass => "",
+      :header => "Closed comments",
+      :review_list => commits_with_closed_comments,
+      :current_user_id => current_user_id } %>
+<% end %>
+
 <% end %>
 </div>

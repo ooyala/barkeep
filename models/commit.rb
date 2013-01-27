@@ -106,12 +106,13 @@ class Commit < Sequel::Model
   end
 
   # Selects for the given user all the commits with "actionable" comments, that is, comments that
-  # match the following conditions:
-  #  1. Comments that have "action_required" and are not closed, and
-  #  2a. Comments that were made on one of this user's commits (including any comments by this user),
-  #      and are not resolved (and not closed), or
-  #  2b. Comments that this user made on some commit that are resolved (but not closed).
-  def self.commits_with_actionable_comments_for_user(user_id)
+  # are New and for user, or Resolved and from user.
+  def self.commits_with_actionable_comments(user_id)
+    # The SQL query selects comments that match the following conditions:
+    #  1. Comments that have "action_required" and are not closed, and
+    #  2a. Comments that were made on one of this user's commits (including any comments by this user),
+    #      and are not resolved (and not closed), or
+    #  2b. Comments that this user made on some commit that are resolved (but not closed).
     commits = Commit.select(:commits__id, :git_repos__name, :sha, :comments__id___comment_id).
         join(:comments, :commit_id => :id).
         join(:authors, :id => :commits__author_id).
@@ -119,6 +120,42 @@ class Commit < Sequel::Model
         filter(:action_required => true, :comments__closed_at => nil).
         where({ :authors__user_id => user_id, :comments__resolved_at => nil } |
               { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).all
+    create_review_list_entries(commits)
+  end
+
+  # Selects for the given user all the commits with comments waiting on someone else's action,
+  # that is, comments that are New and from user, or Resolved and for user.
+  def self.commits_with_pending_comments(user_id)
+    # The SQL query selects comments that match the following conditions:
+    #  1. Comments that have "action_required" and are not closed, and
+    #  2a. Comments that were made on one of this user's commits (including any comments by this user),
+    #      and are resolved, or
+    #  2b. Comments that this user made on some commit that are new.
+    commits = Commit.select(:commits__id, :git_repos__name, :sha, :comments__id___comment_id).
+        join(:comments, :commit_id => :id).
+        join(:authors, :id => :commits__author_id).
+        join(:git_repos, :id => :commits__git_repo_id).
+        filter(:action_required => true, :comments__closed_at => nil).
+        where({ :comments__user_id => user_id, :comments__resolved_at => nil } |
+              { :authors__user_id => user_id } & ~{ :comments__resolved_at => nil }).all
+    create_review_list_entries(commits)
+  end
+
+  # Selects for the given user all the commits with closed comments related to the given user,
+  # that is, comments that are Closed and from user, or Closed and for user.
+  def self.commits_with_closed_comments(user_id)
+    # The SQL query selects comments that match the following conditions:
+    #  1. Comments that have "action_required" and are closed, and
+    #  2a. Comments that were made on one of this user's commits (including any comments by this user),
+    #      or
+    #  2b. Comments that this user made on some commit.
+    commits = Commit.select(:commits__id, :git_repos__name, :sha, :comments__id___comment_id).
+        join(:comments, :commit_id => :id).
+        join(:authors, :id => :commits__author_id).
+        join(:git_repos, :id => :commits__git_repo_id).
+        filter(:action_required => true).
+        where( ~{ :comments__closed_at => nil } &
+              ({ :comments__user_id => user_id } | { :authors__user_id => user_id })).all
     create_review_list_entries(commits)
   end
 end
