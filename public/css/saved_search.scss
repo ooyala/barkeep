@@ -202,6 +202,7 @@
     Background: lightgray;
   }
   div.collapsedList { display: none; }
+  .commitsWithCommentsList > tbody > tr:nth-child(even) { background: #fcf8dc; }
 }
 
 /* The actual commit search box. */

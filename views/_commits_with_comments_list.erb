@@ -30,7 +30,7 @@
     </tbody></table>
   <% else %>
     <div class="noResults" style="display:none;">None.</div>
-    <table class="commitsList" id="<%= list_id %>Table"><tbody>
+    <table class="commitsList commitsWithCommentsList" id="<%= list_id %>Table"><tbody>
       <% review_list.each do |entry| %>
         <%= erb :_commit_with_comments_entry, :layout => false, :locals => { :entry => entry,
             :current_user_id => current_user_id } %>
