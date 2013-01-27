@@ -38,16 +38,24 @@ class Comment < Sequel::Model
     "Closed"
   end
 
-  def isNew
+  def is_new
     self.resolved_at.nil?
   end
 
-  def isResolved
+  def is_resolved
     !self.resolved_at.nil? && self.closed_at.nil?
   end
 
-  def isClosed
+  def is_closed
     !self.resolved_at.nil? && !self.closed_at.nil?
+  end
+
+  def is_for_user(user_id)
+    self.commit.author.user_id == user_id
+  end
+
+  def is_by_user(user_id)
+    self.user_id == user_id
   end
 
   def resolve

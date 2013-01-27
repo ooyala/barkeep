@@ -44,7 +44,7 @@
   <% comments.each do |comment| %>
   <tr class="commentRow">
     <td colspan="4">
-      <span class="<%= comment.isResolved ? 'tableCellDelete' : 'tableCellDeleteHidden' %>">
+      <span class="<%= (comment.is_resolved && comment.is_by_user(current_user_id)) ? 'tableCellDelete' : 'tableCellDeleteHidden' %>">
         <a href="#" class="deleteCommentRow" data-comment-id="<%= comment.id %>">x</a>
       </span>
       <% label_class, label = TagHelper.get_label_and_class(current_user_id, comment) %>
