@@ -49,7 +49,7 @@
       </span>
       <% label_class, label = TagHelper.get_label_and_class(current_user_id, comment) %>
       <span class="tagLabel <%= label_class %>"><%= label %></span>
-      <%= comment.text[0..100] %>
+      <a href='<%= "#{commit.link}#comment-#{comment.id}" %>' target="_blank"><%= comment.text[0..100] %></a>
     </td>
   </tr>
   <% end %>
