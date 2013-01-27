@@ -7,7 +7,7 @@
 <% commit = entry.grit_commit %>
 <% comments = entry.comments %>
 <% db_commit = MetaRepo.instance.db_commit(commit.repo_name, commit.sha) %>
-<tr>
+<tr class="commentEntryRow">
   <td class="tableCellDeleteHidden">
     <a href="#" class="delete">X</a>
   </td>
@@ -41,8 +41,8 @@
       <% end %>
     </td>
   </tr>
-  <% comments.each do |comment| %>
-  <tr class="commentRow">
+  <% comments.each_with_index do |comment, index| %>
+  <tr class='commentRow <%= (index >= 2 && comments.length >= 4) ? "overflowCommentRow" : "" %>'>
     <td colspan="4">
       <span class="<%= (comment.is_resolved && comment.is_by_user(current_user_id)) ? 'tableCellDelete' : 'tableCellDeleteHidden' %>">
         <a href="#" class="deleteCommentRow" data-comment-id="<%= comment.id %>">x</a>
@@ -50,6 +50,13 @@
       <% label_class, label = TagHelper.get_label_and_class(current_user_id, comment) %>
       <span class="tagLabel <%= label_class %>"><%= label %></span>
       <a href='<%= "#{commit.link}#comment-#{comment.id}" %>' target="_blank"><%= comment.text[0..100] %></a>
+    </td>
+  </tr>
+  <% end %>
+  <% if comments.length >= 4 %>
+  <tr class="overflowButtonRow">
+    <td colspan="4" class="centerText">
+      <a href="#" class="showOverflowComments">Show all <%= comments.length %> comments</a>
     </td>
   </tr>
   <% end %>

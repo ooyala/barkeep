@@ -203,6 +203,13 @@
   }
   div.collapsedList { display: none; }
   .commitsWithCommentsList > tbody > tr:nth-child(even) { background: #fcf8dc; }
+  .overflowCommentRow { display: none; }
+  .showOverflowComments {
+    padding: 2px 4px;
+    background: lightgrey;
+    border-radius: 3px;
+  }
+  .centerText { text-align: center; }
 }
 
 /* The actual commit search box. */

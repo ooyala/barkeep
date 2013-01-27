@@ -4,6 +4,7 @@ window.Reviews =
     $(".review .deleteRequestRow").live "click", (e) => @onReviewComplete e
     $(".review .deleteCommentRow").live "click", (e) => @onCommentComplete e
     $(".review .expandCollapseListIcon").click (e) => @onExpandCollapseList e
+    $(".review .showOverflowComments").click (e) => @onExpandCommentsList e
     $("#reviewLists").sortable
       placeholder: "savedSearchPlaceholder"
       handle: ".dragHandle"
@@ -22,8 +23,13 @@ window.Reviews =
       url: "/review_lists/reorder"
       data: state.toString()
 
+  onExpandCommentsList: (e) ->
+    target = $(e.currentTarget)
+    target.parents(".commentEntryRow").find(".overflowCommentRow").show()
+    target.parents(".overflowButtonRow").hide()
+    false
+
   onExpandCollapseList: (e) ->
-    console.log("onCollapseList")
     target = $(e.currentTarget)
     if target.html() == "+"
       target.html("-")
