@@ -72,6 +72,7 @@ gem "therubyracer"
 gem "terraform"
 
 gem "nokogiri"
+gem "fezzik"
 
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
@@ -82,7 +83,6 @@ group :test do
 end
 
 group :development do
-  gem "fezzik"
   gem "pry"
   gem "awesome_print"
   gem "vagrant", "~> 1.0.5" # For testing deployments
