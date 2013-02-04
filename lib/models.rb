@@ -11,6 +11,7 @@ Sequel::Model.plugin :association_dependencies
 # Auto-populate "created_at" and "updated_at" fields.
 Sequel::Model.plugin :timestamps
 
+require "models/author"
 require "models/git_repo"
 require "models/git_branch"
 require "models/user"

@@ -12,6 +12,7 @@ require "digest/md5"
 class User < Sequel::Model
   one_to_many :saved_searches, :order => [:user_order.desc]
   one_to_many :comments
+  one_to_one :author
 
   ONE_YEAR = 365
 
