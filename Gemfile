@@ -71,12 +71,13 @@ gem "therubyracer"
 # For scripting system setup.
 gem "terraform"
 
+gem "nokogiri"
+
 group :test do
   # NOTE(caleb): require rr >= 1.0.3 and scope >= 0.2.3 for mutual compatibility
   gem "rr", ">= 1.0.3"
   gem "scope", ">= 0.2.3"
   gem "rack-test"
-  gem "nokogiri"
   gem "pry"
 end
 
