@@ -6,7 +6,8 @@ class RedisManager
   def self.redis_instance
     return @@redis if @@redis
     begin
-      @@redis = Redis.new(:host => REDIS_HOST, :port => REDIS_PORT)
+      @@redis = Redis.new(:host => REDIS_HOST, :port => REDIS_PORT,
+                          :db => REDIS_DB)
       timeout(4) { @@redis.ping }
     rescue Timeout::Error
       warn "Timed out while connecting to Redis."
