@@ -5,7 +5,13 @@
          data-comment-raw="<%= CGI::escape_html(comment.text)%>">
       <div class="heading">
         <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
-        <span class="name"><%= CGI::escape_html(comment.user.name) %></span>
+        <% if !!comment.user.deleted_at %>
+          <span class="name north deleted" rel="tipsy" title="deleted user">
+        <% else %>
+          <span class="name">
+        <% end %>
+          <%= CGI::escape_html(comment.user.name) %>
+        </span>
         <span class="permalink"><a href="#comment-<%= comment.id %>">commented</a></span>
         <span class="date"><%= comment.created_at.to_pretty %> </span>
         <div class="buttonContainer">

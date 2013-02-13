@@ -321,6 +321,12 @@
         font-weight: bold;
         color: #333333;
       }
+      .name.deleted {
+        color: #888;
+        span {
+          font-weight: normal;
+        }
+      }
 
       .permalink a { color: $lightTextColor; }
 
