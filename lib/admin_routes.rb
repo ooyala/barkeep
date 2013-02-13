@@ -38,15 +38,29 @@ class BarkeepServer < Sinatra::Base
   end
 
   get "/admin/users/?" do
-    # Don't show the demo user. It's confusing.
-    users = User.filter("permission != 'demo'").order_by(:name).all
+    # Don't show deleted users or the demo user.
+    users = User.filter(:deleted_at => nil).exclude(:permission => "demo").order_by(:name).all
     admin_erb :manage_users, :locals => { :users => users }
   end
 
   post "/admin/users/update_permissions" do
     user = User.first(:id => params[:user_id])
+    halt 400 unless user
     halt 400 unless ["normal", "admin"].include? params[:permission]
     user.permission = params[:permission]
+    user.save
+    nil
+  end
+
+  delete "/admin/users/:user_id" do
+    user = User.first(:id => params[:user_id])
+    halt 400 unless user
+    # Delete all the user's saved searches
+    SavedSearch.where(:user_id => user.id).delete
+    # Disassociate any authors
+    Author.where(:user_id => user.id).update(:user_id => nil)
+    # Mark the user as deleted
+    user.deleted_at = Time.now
     user.save
     nil
   end

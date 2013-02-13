@@ -15,17 +15,21 @@
     </tr>
 
     <% users.each do |user| %>
-      <tr>
+      <tr data-user-id="<%= user.id %>">
         <td><%= user.name %></td>
         <td><%= user.email %></td>
         <td>
           <div class="userPermissionControl">
-            <input id="user_<%= user.id %>_admin" data-user-id="<%= user.id %>" type="radio" value="admin"
-            name="user_<%= user.id %>" <%= user.permission == "admin" ? "checked='checked'" : "" %> />
-            <label for="user_<%= user.id %>_admin">admin</label>
-            <input id="user_<%= user.id %>_normal" data-user-id="<%= user.id %>" type="radio" value="normal"
-                name="user_<%= user.id %>" <%= user.permission == "normal" ? "checked='checked'" : "" %> />
-            <label for="user_<%= user.id %>_normal">normal</label>
+            <label>
+              <% admin = user.permission == "admin" %>
+              <% name = "user_#{user.id}" %>
+              <input type="radio" name="<%= name %>" value="admin" <%= "checked='checked'" if admin %> />
+              admin
+            </label>
+            <label>
+              <input type="radio" name="<%= name %>" value="normal" <%= "checked='checked'" unless admin %> />
+              normal
+            </label>
           </div>
         </td>
         <td><div class="trash"</div></td>

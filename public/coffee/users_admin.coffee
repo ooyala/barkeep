@@ -9,6 +9,12 @@ window.UserAdmin =
         user_id: userId,
         permission: permission
 
+  deleteUser: (userId) ->
+    $.ajax
+      type: "DELETE"
+      url: "/admin/users/#{userId}"
+      success: -> $("tr[data-user-id=#{userId}]").fadeOut()
+
   confirmOwnDemotion: ->
     confirm("You are about to demote yourself! If you continue you will be redirected and unable " +
         "to view this page. Would you like to continue?")
@@ -17,7 +23,7 @@ window.UserAdmin =
 
 $ ->
   $("input[type=radio]").click ->
-    targetUserId = $(event.target).attr("data-user-id")
+    targetUserId = $(event.target).parents("tr").attr("data-user-id")
     permission = $(event.target).val()
 
     # Prevent demoting the last admin.
@@ -34,3 +40,10 @@ $ ->
     # Redirect a user if they demote themself.
     if UserAdmin.currentUserId() == targetUserId
       window.location = "/"
+
+  $(".trash").click (e) ->
+    $row = $(e.target).parents("tr")
+    userId = $row.attr("data-user-id")
+    [name, email] = ($(td).text() for td in $row.find("td"))[0..1]
+    return unless confirm("Are you sure you want to delete the user #{name} (#{email})?")
+    UserAdmin.deleteUser(userId)
