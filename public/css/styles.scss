@@ -295,10 +295,7 @@ header {
   #signInBox {
     a {
       font-weight: bold;
-      &.currentPage {
-        color: #8B0000;
-        text-decoration: underline;
-      }
+      &.currentPage { text-decoration: underline; }
     }
     font-size: 13px;
     margin-top: 17px;
