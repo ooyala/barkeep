@@ -1,56 +1,8 @@
 <% # A dashboard to add users and manage user permissions. %>
 
-<script type="text/javascript">
-  window.Barkeep || (window.Barkeep = {})
-  Barkeep.UserAdmin = {
-    currentUserId: <%= current_user.id %>,
+<%= js_bundle(:users_admin_js) %>
 
-    updatePermission: function(userId, permission) {
-      $.ajax({
-        type: "POST",
-        url: "/admin/users/update_permissions",
-        data: {
-          user_id: userId,
-          permission: permission
-        }
-      });
-    },
-
-    confirmOwnDemotion: function() {
-      return confirm("You are about to demote yourself! If you continue you will be redirected and unable " +
-          "to view this page. Would you like to continue?");
-    },
-
-    numberOfAdminUsers: function() { return $("input[type=radio][value=admin]:checked").size(); }
-  }
-
-  $(document).ready(function() {
-    $("input[type=radio]").click(function(event) {
-      var targetUserId = $(event.target).attr("data-user-id");
-      var permission = $(event.target).val();
-
-      // Prevent demoting the last admin.
-      if (Barkeep.UserAdmin.numberOfAdminUsers() === 0) {
-        alert("Unable to demote the last admin user.");
-        return false;
-      }
-
-      // Confirm user demoting themself.
-      if (Barkeep.UserAdmin.currentUserId === targetUserId && !Barkeep.UserAdmin.confirmOwnDemotion()) {
-        return false;
-      }
-
-      Barkeep.UserAdmin.updatePermission(targetUserId, permission)
-
-      // Redirect a user if they demote themself.
-      if (Barkeep.UserAdmin.currentUserId === targetUserId) {
-        window.location = "/"
-      }
-    });
-  });
-</script>
-
-<div id="manageUsers">
+<div id="manageUsers" data-user-id="<%= current_user.id %>">
 
   <%= admin_page_breadcrumb "Manage users" %>
 
@@ -59,6 +11,7 @@
       <th>Username</th>
       <th>Email</th>
       <th>Permission</th>
+      <th>Delete</th>
     </tr>
 
     <% users.each do |user| %>
@@ -75,6 +28,7 @@
             <label for="user_<%= user.id %>_normal">normal</label>
           </div>
         </td>
+        <td><div class="trash"</div></td>
       </tr>
     <% end %>
   </table>

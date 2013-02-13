@@ -44,10 +44,7 @@ class BarkeepServer < Sinatra::Base
   end
 
   post "/admin/users/update_permissions" do
-    # Don't allow a user to remove their own admin privileges, because then you can no longer use the
-    # admin pages. It's a confusing experience.
     user = User.first(:id => params[:user_id])
-    next if current_user == user
     halt 400 unless ["normal", "admin"].include? params[:permission]
     user.permission = params[:permission]
     user.save

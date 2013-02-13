@@ -74,6 +74,7 @@ class BarkeepServer < Sinatra::Base
       "/coffee/snippets.js"
     ]
     pinion.create_bundle :repo_app_js, :concatenate_and_uglify_js, ["/coffee/repos.js"]
+    pinion.create_bundle :users_admin_js, :concatenate_and_uglify_js, ["/coffee/users_admin.js"]
     pinion.create_bundle :commit_app_js, :concatenate_and_uglify_js, ["/coffee/commit.js"]
     pinion.create_bundle :commit_vendor_js, :concatenate_and_uglify_js, [
       "/vendor/jquery.easing.1.3.js",
