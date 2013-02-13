@@ -43,6 +43,8 @@
     }
 
     td:first-of-type { font-weight: bold; }
+    td.newestFetched { width: 200px; }
+    td.delete { width: 45px; }
 
     .commitSha {
       display: inline-block;

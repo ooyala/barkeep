@@ -42,7 +42,7 @@
         <% else %>
           <td>(No origin -- repo is likely in a bad state)</td>
         <% end %>
-        <td>
+        <td class="newestFetched">
           <% grit_commit = repo_hash[:newest_commit] ? repo_hash[:newest_commit].grit_commit : nil %>
           <% if grit_commit %>
             <a href="<%= grit_commit.link %>" class="commitSha"><%= grit_commit.id_abbrev %></a>
@@ -50,7 +50,7 @@
             <%= grit_commit.author %>
           <% end %>
         </td>
-        <td><div class="trash"></div></td>
+        <td class="delete"><div class="trash"></div></td>
       </tr>
     <% end %>
 
