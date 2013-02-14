@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "pathological"
+require "set"
 require "test/test_helper"
 require "test/integration_test_helper"
 require "resque_jobs/deliver_comment_emails"
@@ -13,7 +14,10 @@ class DeliverCommentEmailsIntegrationTest < Scope::TestCase
     Commit.filter(:sha => commit.sha).destroy
     @@commit = create_commit(commit, integration_test_user, GitRepo.first(:name => TEST_REPO_NAME))
 
-    @@comments = [create_comment(@@commit, integration_test_user, Time.now, :has_been_emailed => true)]
+    @@comments = [
+      create_comment(@@commit, integration_test_user, Time.now, :has_been_emailed => true),
+      create_comment(@@commit, deleted_test_user, Time.now, :has_been_emailed => true),
+    ]
   end
 
   teardown_once do
@@ -22,17 +26,22 @@ class DeliverCommentEmailsIntegrationTest < Scope::TestCase
   end
 
   setup do
-    @mail_options = nil
-    stub(Pony).mail { |options| @mail_options = options }
+    @mail_options = []
+    stub(Pony).mail { |options| @mail_options << options }
     any_instance_of(SavedSearch) do
       stub(SavedSearch).matches_commit? { false }
     end
   end
 
   should "deliver an email containing all comments" do
-    DeliverCommentEmails.perform(@@comments.map(&:id))
-    assert_equal @@commit.grit_commit.author.email, @mail_options[:to]
-    assert @mail_options[:subject].include?(@@commit.grit_commit.id_abbrev)
-    assert @mail_options[:html_body].include?(@@comments.first.text)
+    @@comments.each { |comment| DeliverCommentEmails.perform(comment.id) }
+    assert_equal 2, @mail_options.length
+    # Deleted user should be ignored.
+    expected_emails = [@@commit.grit_commit.author, integration_test_user].map(&:email).sort
+    @mail_options.each do |options|
+      assert_equal expected_emails, options[:to].sort
+      assert options[:subject].include?(@@commit.grit_commit.id_abbrev)
+      assert options[:html_body].include?(@@comments.first.text)
+    end
   end
 end
