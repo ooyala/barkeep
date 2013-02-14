@@ -724,7 +724,7 @@ window.Commit =
       unless $.trim(textarea.value) == ""
         return "You have an unsaved comment."
 
-$(document).ready(-> Commit.init())
+$ -> Commit.init()
 # This needs to happen on page load because we need the styles to be rendered.
 $(window).load(-> Commit.calculateMarginSize())
 $(window).bind "beforeunload", -> Commit.confirmNavigation()

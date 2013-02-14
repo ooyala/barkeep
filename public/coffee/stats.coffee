@@ -31,4 +31,4 @@ window.Stats =
       }
     })
 
-$(document).ready(-> Stats.init())
+$ -> Stats.init()

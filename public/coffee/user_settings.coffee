@@ -42,4 +42,4 @@ window.Settings =
     Util.saveUserPreference preference, value, =>
       $displayText.css { opacity: "1.0" }
 
-$(document).ready -> Settings.init()
+$ -> Settings.init()
