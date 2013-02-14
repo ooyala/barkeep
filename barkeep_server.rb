@@ -189,7 +189,9 @@ class BarkeepServer < Sinatra::Base
       next
     end
 
-    unless current_user
+    if current_user
+      halt 401, "This account has been deleted." if current_user.deleted?
+    else
       # TODO(philc): Revisit this UX. Dumping the user into Google with no explanation is not what we want.
 
       # Save url to return to it after login completes.
