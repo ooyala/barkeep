@@ -5,7 +5,7 @@
          data-comment-raw="<%= CGI::escape_html(comment.text)%>">
       <div class="heading">
         <div class="avatar"><img src="<%= comment.user.gravatar %>" /></div>
-        <% if !!comment.user.deleted_at %>
+        <% if comment.user.deleted_at %>
           <span class="name north deleted" rel="tipsy" title="deleted user">
         <% else %>
           <span class="name">

@@ -323,9 +323,7 @@
       }
       .name.deleted {
         color: #888;
-        span {
-          font-weight: normal;
-        }
+        span { font-weight: normal; }
       }
 
       .permalink a { color: $lightTextColor; }
