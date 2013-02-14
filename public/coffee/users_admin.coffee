@@ -21,7 +21,7 @@ window.UserAdmin =
 
   numberOfAdminUsers: -> $("input[type=radio][value=admin]:checked").size()
 
-$ ->
+$(document).ready ->
   $("input[type=radio]").click ->
     targetUserId = $(event.target).parents("tr").attr("data-user-id")
     permission = $(event.target).val()

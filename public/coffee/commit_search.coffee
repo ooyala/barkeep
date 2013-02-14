@@ -369,4 +369,4 @@ window.CommitSearch =
   afterSync: ->
     @syncing = false
 
-$ -> CommitSearch.init()
+$(document).ready(-> CommitSearch.init())

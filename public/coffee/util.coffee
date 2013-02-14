@@ -119,6 +119,6 @@ window.KeyboardShortcuts =
     @registerPageShortcut "s", -> window.location.href = "/stats"
     @registerPageShortcut "i", -> window.location.href = "/inspire"
 
-$ ->
+$(document).ready ->
   ShortcutOverlay.init()
   KeyboardShortcuts.init()

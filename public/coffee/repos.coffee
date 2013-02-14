@@ -26,4 +26,4 @@ window.Repos =
     $("#confirmationMessage").show()
     $("#confirmationMessage").html(message)
 
-$ -> Repos.init()
+$(document).ready -> Repos.init()
