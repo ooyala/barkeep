@@ -9,6 +9,10 @@ module IntegrationTestHelper
     @integration_test_user ||= User.first(:email => "integration_test@example.com")
   end
 
+  def deleted_test_user
+    @deleted_test_user ||= User.first(:email => "deleted_for_tests@example.com")
+  end
+
   def test_repo
     unless @test_repo
       # Import this test repo fresh. A common annoyance is that you move your barkeep checkout, and this

@@ -69,6 +69,7 @@ class User < Sequel::Model
 
   def demo?() permission == "demo" end
   def admin?() permission == "admin" end
+  def deleted?() deleted_at != nil end
 
   def saved_searches
     if demo?
