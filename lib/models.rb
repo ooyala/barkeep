@@ -13,6 +13,7 @@ Sequel::Model.plugin :timestamps
 
 require "models/git_repo"
 require "models/git_branch"
+require "models/author"
 require "models/user"
 require "models/saved_search"
 require "models/commit"

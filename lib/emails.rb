@@ -53,20 +53,25 @@ class Emails
     subject = subject_for_commit_email(grit_commit)
     html_body = comment_email_body(commit, comments)
 
-    all_previous_commenters = commit.comments.map(&:user).reject(&:demo?)
-    to = commit.grit_commit.author.email
-    cc = (users_with_saved_searches_matching(commit, :email_comments => true).map(&:email) +
-          all_previous_commenters.map(&:email)).uniq
+    to = []
+    all_previous_commenters = commit.comments.map(&:user).reject(&:demo?).reject(&:deleted?)
+    author = commit.grit_commit.author
+    user = User.find(:email => author.email)
+    to << author.email if user && !user.deleted?
+    # There shouldn't be deleted users with saved searches, but filter them out in case.
+    cc = (users_with_saved_searches_matching(commit, :email_comments => true).reject(&:deleted?) +
+          all_previous_commenters).map(&:email).uniq
+    to += cc
+    return if to.empty?
 
-    completed_email = CompletedEmail.new(:to => ([to] + cc).join(","), :subject => subject,
+    completed_email = CompletedEmail.new(:to => to.join(","), :subject => subject,
         :result => "success", :comment_ids => comments.map(&:id).join(","))
 
     user, domain = GMAIL_ADDRESS.split("@")
-    pony_options = pony_options_for_commit(commit).merge({
-      :cc => cc.join(","),
+    pony_options = pony_options_for_commit(commit).merge(
       # Make the From: address e.g. "barkeep+comments@gmail.com" so it's easily filterable.
       :from => "#{user}+comments@#{domain}"
-    })
+    )
 
     begin
       deliver_mail(to, subject, html_body, pony_options)
@@ -87,7 +92,9 @@ class Emails
     grit_commit = commit.grit_commit
     subject = subject_for_commit_email(grit_commit)
     html_body = commit_email_body(commit)
-    to = users_with_saved_searches_matching(commit, :email_commits => true).map(&:email).uniq
+    # Shouldn't be any saved searches for deleted users, but remove them just in case.
+    to = users_with_saved_searches_matching(commit, :email_commits => true).
+        reject(&:deleted?).map(&:email).uniq
 
     return if to.empty? # Sometimes... there's just nobody listening.
 

@@ -1,7 +1,7 @@
-# Scans for comments which haven't had emails sent for them yet, and enqueues a Resque job to later
-# send an email notification for each of those comments. For any given commit that's been commented on, we wait
-# for 2 minutes before queueing up emails for that commit, in anticipation that more comments on that same
-# commit will soon follow. This allows us to batch multiple comments on the same commit together. If there's a
+# Scans for comments which haven't had emails sent for them yet, and enqueues a Resque job to later send an
+# email notification for each of those comments. For any given commit that's been commented on, we wait for 2
+# minutes before queueing up emails for that commit, in anticipation that more comments on that same commit
+# will soon follow. This allows us to batch multiple comments on the same commit together. If there's a
 # continuous stream of comments being made on a commit, then we will wait up to a max of 4 minutes before we
 # send all comments made thus far. This is so emails don't become noticably delayed.
 

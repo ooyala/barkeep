@@ -12,6 +12,8 @@ require "digest/md5"
 class User < Sequel::Model
   one_to_many :saved_searches, :order => [:user_order.desc]
   one_to_many :comments
+  one_to_many :authors
+  add_association_dependencies :authors => :destroy
 
   ONE_YEAR = 365
 
@@ -67,6 +69,7 @@ class User < Sequel::Model
 
   def demo?() permission == "demo" end
   def admin?() permission == "admin" end
+  def deleted?() deleted_at != nil end
 
   def saved_searches
     if demo?

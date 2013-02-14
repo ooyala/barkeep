@@ -2,6 +2,24 @@
 
 #failedEmails { width: 100%; }
 
+#manageUsers, #repos {
+  div.trash {
+    margin-top: 3px;
+    margin-bottom: -3px;
+    display: inline-block;
+    width: 20px;
+    height: 25px;
+    cursor: pointer;
+    background: url(/assets/images/trash.png) no-repeat;
+    opacity: 0.3;
+    &:hover { opacity: 1.0; }
+  }
+
+  table {
+    td:last-child { text-align: center; }
+  }
+}
+
 #manageUsers {
   table {
     margin-top: 20px;
@@ -51,16 +69,6 @@
       width: 90px;
     }
     .commitDate { color: #777; }
-
-    .trash {
-      margin-left: 13px;
-      width: 20px;
-      height: 25px;
-      cursor: pointer;
-      background: url(/assets/images/trash.png) no-repeat;
-      opacity: 0.3;
-      &:hover { opacity: 1.0; }
-    }
   }
 
   #cloneForm {
