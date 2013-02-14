@@ -57,8 +57,6 @@ class BarkeepServer < Sinatra::Base
     halt 400 unless user
     # Delete all the user's saved searches
     SavedSearch.where(:user_id => user.id).delete
-    # Disassociate any authors
-    Author.where(:user_id => user.id).update(:user_id => nil)
     # Mark the user as deleted
     user.deleted_at = Time.now
     user.save
