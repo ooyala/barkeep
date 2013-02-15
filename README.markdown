@@ -54,7 +54,7 @@ around developing Barkeep. You can email the group at
 
 ### Credits
 
-Barkeep was written by the following Ooyala engineers:
+Barkeep was written by the following engineers at Ooyala:
 
 * Bo Chen ([bo-chen](https://github.com/bo-chen))
 * Caleb Spare ([cespare](https://github.com/cespare))
@@ -62,22 +62,26 @@ Barkeep was written by the following Ooyala engineers:
 * Kevin Le ([bkad](https://github.com/bkad))
 * Phil Crosby ([philc](https://github.com/philc))
 
-and with contributions from other Ooyala engineers:
-
-* Brian Zhou ([zdyn](https://github.com/zdyn))
-* Manish Khettry ([mkhettry](https://github.com/mkhettry))
-* Noah Gibbs ([noahgibbs](https://github.com/noahgibbs))
-
-and community members:
+and with contributions from other Ooyalans and community members:
 
 * Alberto Leal ([albertoleal](https://github.com/albertoleal))
+* Alek Storm ([alekstorm](https://github.com/alekstorm))
 * Alice Kærast ([kaerast](https://github.com/kaerast))
+* Arturs Meisters ([kalifs](https://github.com/kalifs))
+* Brian Zhou ([zdyn](https://github.com/zdyn))
 * Dann Luciano ([dannluciano](https://github.com/dannluciano))
 * Dylan Tack ([dylantack](https://github.com/dylantack))
 * Fabio Kenji ([fkenji](https://github.com/fkenji))
+* Florian Unglaub ([funglaub](https://github.com/funglaub))
 * Guzmán Brasó ([guzmanbraso](https://github.com/guzmanbraso))
+* Jack Veenstra ([veenstra](https://github.com/veenstra))
+* Kazuhiro Yamada ([k-yamada](https://github.com/k-yamada))
 * Liron Yahdav ([lyahdav](https://github.com/lyahdav))
+* Manish Khettry ([mkhettry](https://github.com/mkhettry))
 * Michael Quinn ([mikejquinn](https://github.com/mikejquinn))
+* Michael Storm ([michaelstorm](https://github.com/michaelstorm))
+* Niklas Hambüchen ([nh2](https://github.com/nh2))
+* Noah Gibbs ([noahgibbs](https://github.com/noahgibbs))
 * Ron Toland ([mindbat](https://github.com/mindbat))
 
 Barkeep is released under [the MIT license](http://www.opensource.org/licenses/mit-license.php).
