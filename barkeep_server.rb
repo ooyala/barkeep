@@ -405,10 +405,11 @@ class BarkeepServer < Sinatra::Base
     recently_reviewed_commits = ReviewRequest.recently_reviewed_commits(current_user.id)
     erb :_review_request_list, :layout => false, :locals => {
       :list_id => "recent_reviews",
+      :collapsed => true,
       :label => "For me",
       :labelClass => "toMe",
       :recently_reviewed_commits => recently_reviewed_commits,
-      :header => "My recently completed code review requests",
+      :header => "Recently completed requests",
       :request_type => "Completed",
       :review_list => recently_reviewed_commits
     }
@@ -526,8 +527,7 @@ class BarkeepServer < Sinatra::Base
     closed_comments = Commit.commits_with_closed_comments(current_user.id)
     recently_reviewed_commits = ReviewRequest.recently_reviewed_commits(current_user.id)
     requests_from_me = ReviewRequest.requests_from_me(current_user.id)
-    default_list = "uncompleted_reviews,actionable_comments,recent_reviews,,requests_from_me,pending_comments,closed_comments"
-    review_list_order = (current_user.review_list_order || default_list).split(",")
+    review_list_order = (current_user.review_list_order || ReviewList::DEFAULT_LIST).split(",")
     erb :reviews, :locals => {
       :commits_with_uncompleted_reviews => uncompleted_reviews,
       :commits_with_actionable_comments => actionable_comments,
@@ -538,6 +538,40 @@ class BarkeepServer < Sinatra::Base
       :review_list_ids => review_list_order,
       :current_user_id => current_user.id,
     }
+  end
+
+  # Gets the next or previous page for a review list
+  # - name: a name specifying the review list
+  # - token: a paging token containing info on how to fetch the next or previous page
+  get "/review_list/:name" do
+    MetaRepo.instance.scan_for_new_repos
+    token = params[:token]
+    direction = params[:direction]
+    locals = {
+      :review_list_ids => [params[:name]],
+      :current_user_id => current_user.id,
+    }
+    case params[:name]
+    when "uncompleted_reviews"
+      review_list = ReviewRequest.commits_with_uncompleted_reviews(current_user.id, token, direction)
+      locals[:commits_with_uncompleted_reviews] = review_list
+    when "actionable_comments"
+      review_list = Commit.commits_with_actionable_comments(current_user.id, token, direction)
+      locals[:commits_with_actionable_comments] = review_list
+    when "pending_comments"
+      review_list = Commit.commits_with_pending_comments(current_user.id, token, direction)
+      locals[:commits_with_pending_comments] = review_list
+    when "closed_comments"
+      review_list = Commit.commits_with_closed_comments(current_user.id, token, direction)
+      locals[:commits_with_closed_comments] = review_list
+    when "recent_reviews"
+      review_list = ReviewRequest.recently_reviewed_commits(current_user.id, token, direction)
+      locals[:recently_reviewed_commits] = review_list
+    when "requests_from_me"
+      review_list = ReviewRequest.requests_from_me(current_user.id, token, direction)
+      locals[:requests_from_me] = review_list
+    end
+    erb :reviews, :layout => false, :locals => locals
   end
 
   post "/review_lists/reorder" do

@@ -1,6 +1,9 @@
-<%= js_bundle(:reviews_app_js) %>
+<% # If there is just one review list, it must be a snippet %>
+<% if review_list_ids.length > 1 %>
+  <%= js_bundle(:reviews_app_js) %>
+  <div id="reviewLists">
+<% end %>
 
-<div id="reviewLists">
 <% review_list_ids.each do |list_id| %>
 
 <% if list_id == "uncompleted_reviews" %>
@@ -28,7 +31,7 @@
 <% if list_id == "recent_reviews" %>
   <%= erb :_review_request_list, :layout => false, :locals => {
       :list_id => list_id,
-      :collapsed => true,
+      :collapsed => review_list_ids.length > 1,
       :label => "For me",
       :labelClass => "toMe",
       :header => "Recently completed requests",
@@ -39,7 +42,7 @@
 <% if list_id == "requests_from_me" %>
   <%= erb :_review_request_list, :layout => false, :locals => {
       :list_id => list_id,
-      :collapsed => true,
+      :collapsed => review_list_ids.length > 1,
       :label => "From me",
       :labelClass => "fromMe",
       :header => "Code review requests",
@@ -50,7 +53,7 @@
 <% if list_id == "pending_comments" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => {
       :list_id => list_id,
-      :collapsed => true,
+      :collapsed => review_list_ids.length > 1,
       :label => "",
       :labelClass => "",
       :header => "Pending comments",
@@ -61,7 +64,7 @@
 <% if list_id == "closed_comments" %>
   <%= erb :_commits_with_comments_list, :layout => false, :locals => {
       :list_id => list_id,
-      :collapsed => true,
+      :collapsed => review_list_ids.length > 1,
       :label => "",
       :labelClass => "",
       :header => "Closed comments",
@@ -70,4 +73,4 @@
 <% end %>
 
 <% end %>
-</div>
+<%= review_list_ids.length > 1 ? "</div>" : "" %>

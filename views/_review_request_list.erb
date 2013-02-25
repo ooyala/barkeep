@@ -5,11 +5,14 @@
   - label: a label in the header, such as "For me"
   - labelClass: the class to use for the label (this determines the css style such as background color)
   - header: a string that is displayed above the list
-  - review_list: an array where each element is a ReviewListEntry
+  - review_list: a ReviewList containing an array of ReviewListEntry's
   - request_type: either "Requested" or "Completed"
   - collapsed: true if list should be shown in the collapsed state (only header is displayed)
 %>
 
+<% entries = review_list.entries %>
+<% token = review_list.token %>
+<% page_number = review_list.page_number %>
 <div class="review" id="<%= list_id %>">
   <div class="header">
     <div class="dragHandle"></div>
@@ -24,14 +27,14 @@
     </div>
   </div>
   <div class="reviewListBody <%= collapsed ? 'collapsedList' : '' %>">
-  <% if review_list.empty? %>
+  <% if entries.empty? %>
     <div class="noResults">None.</div>
     <table class="commitsList" id="<%= list_id %>Table" style="display:none;"><tbody>
     </tbody></table>
   <% else %>
     <div class="noResults" style="display:none;">None.</div>
     <table class="commitsList" id="<%= list_id %>Table"><tbody>
-      <% review_list.each do |entry| %>
+      <% entries.each do |entry| %>
         <% if request_type == "Requested" %>
           <% request_message = "Requested #{entry.review_request.requested_at.to_pretty}" %>
         <% else %>
@@ -41,6 +44,12 @@
                 :request_message => request_message } %>
       <% end %>
     </tbody></table>
+
+    <div class="pageControls" data-token="<%= token %>">
+      <a href="#" class="pageLeftButton pageButton">&laquo;</a>
+      <span class="pageNumber"><%= page_number %></span>
+      <a href="#" class="pageRightButton pageButton">&raquo;</a>
+    </div>
   <% end %>
   </div>
 </div>
