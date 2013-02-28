@@ -194,7 +194,7 @@ namespace :fezzik do
         if response_code < 200 || response_code >= 500
           raise "The remote server at #{url} is either not responding or giving 500's. " +
             "It may have had trouble starting. You can start troubleshooting by checking the logs in " +
-            "#{hostname}:#{deploy_to}/logs and #{hostname}/var/log/#{app}"
+            "#{hostname}:#{deploy_to}/current/logs and #{hostname}:/var/log/#{app}"
         end
       end
     rescue StandardError => error
