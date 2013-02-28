@@ -17,6 +17,7 @@ require "sass"
 require "sinatra/base"
 require "sinatra/reloader"
 require "uglifier"
+require "set"
 
 require "environment"
 require "lib/ruby_extensions"
@@ -518,16 +519,16 @@ class BarkeepServer < Sinatra::Base
   # Branch autocompletion only works if the query is already scoped to a repo via the "repo:" keyword.
   get "/autocomplete/branches" do
     branch_names = Set.new
-    repo_names = params[:repos].split(',')
+    repo_names = params[:repos].split(",").map(&:strip)
     repo_names.each do |repo_name|
       repo = MetaRepo.instance.get_grit_repo(repo_name)
       next unless repo
       repo.remotes.each do |remote|
-        branch_name = remote.name.match(/.+?\/(.+)/)[1] # removes "origin/" from beginning of branch name
-        branch_names.add(branch_name) if branch_name != 'HEAD'
+        branch_name = remote.name.sub("origin/", "")
+        branch_names.add(branch_name) unless branch_name == "HEAD"
       end
     end
-    {:values => branch_names.to_a.select { |name| name.include?(params[:substring]) }}.to_json
+    { :values => branch_names.to_a.select { |name| name.include?(params[:substring]) }}.to_json
   end
 
   #
