@@ -25,5 +25,7 @@ BacktraceShortener.monkey_patch_the_exception_class! unless ENV["RACK_ENV"] == "
 unless ENV["RACK_ENV"] == "test"
   logger = Logger.new(STDOUT)
   logger.level = Logger::DEBUG
-  MetaRepo.configure(logger, REPOS_ROOT)
+  unless ENV["BARKEEP_INIT"] == "true"
+    MetaRepo.configure(logger, REPOS_ROOT)
+  end
 end
