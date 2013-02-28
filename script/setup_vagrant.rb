@@ -32,7 +32,7 @@ end
 
 def setup_ssh_config
   ssh_config_path = File.expand_path("~/.ssh/config")
-  FileUtils.touch(ssh_config_path)
+  FileUtils.touch(ssh_config_path) unless File.exists?(ssh_config_path)
 
   unless File.read(ssh_config_path).include?(hostname)
     # Create an entry in our ~/.ssh/config which allows us to ssh into this vagrant box by hostname.
