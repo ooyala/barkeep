@@ -515,6 +515,7 @@ class BarkeepServer < Sinatra::Base
     { :values => repo_names.select{ |name| name.include?(params[:substring]) } }.to_json
   end
 
+  # Branch autocompletion only works if the query is already scoped to a repo via the "repo:" keyword.
   get "/autocomplete/branches" do
     branch_names = Set.new
     repo_names = params[:repos].split(',')
