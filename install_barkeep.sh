@@ -6,8 +6,8 @@
 # - redis
 # - git 1.7.6+
 # - ruby 1.9.3-p194
-# As long as these dependencies are met, you can immediately start with the "Clone Barkeep" step.
-# If you don't care about setting up a reverse proxy, you can skip that step.
+# As long as these dependencies are met, you can proceed to the "Clone Barkeep" step.
+# If you don't want to set up a reverse proxy you can skip installing and configuring nginx.
 
 # Install core dependencies
 sudo apt-get update
@@ -34,7 +34,7 @@ rbenv rehash
 git clone git://github.com/ooyala/barkeep.git ~/barkeep
 cd ~/barkeep && bundle install && rbenv rehash
 
-# Configure a reverse proxy to Barkeep
+# Configure a reverse proxy webserver (nginx) to Barkeep
 sudo rm /etc/nginx/sites-enabled/default
 sudo cp ~/barkeep/config/system_setup_files/nginx_site.prod.conf /etc/nginx/sites-enabled/barkeep
 sudo /etc/init.d/nginx restart
@@ -53,6 +53,6 @@ cp environment.prod.rb environment.rb
 cp environment.prod.sh environment.sh
 echo "******************************"
 echo "To configure sending emails from Barkeep, edit GMAIL_ADDRESS and GMAIL_PASSWORD\
-in environment.rb and run: sudo restart barkeep"
+ in environment.rb and run: sudo restart barkeep"
 echo "******************************"
 sudo start barkeep
