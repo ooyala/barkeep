@@ -16,6 +16,7 @@ module BarkeepDeploy
     # Note that these options use the "deploy_to" and "hostname" vars, so those must have been defined prior
     # to calling this function (e.g. via set :deploy_to, "path").
     common_options = {
+      barkeep_port: 8040,
       db_host: "localhost",
       db_port: 3306,
       db_name: "barkeep",

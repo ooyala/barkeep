@@ -46,7 +46,7 @@ namespace :fezzik do
         :default_encoding => "utf-8")
     nginx_conf = template.render(Object.new,
         :hostname => hostname,
-        :unicorn_socket => env_settings[:unicorn_socket])
+        :port => env_settings[:barkeep_port])
     File.write("/tmp/#{app}/staged/config/system_setup_files/nginx_site.conf", nginx_conf)
   end
 
