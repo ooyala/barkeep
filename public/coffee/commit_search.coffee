@@ -59,6 +59,7 @@ window.CommitSearch =
         @reorderSearches()
     $("#savedSearches .savedSearch .delete").live "click", (e) => @onSavedSearchDelete e
     $("#savedSearches .savedSearch .pageLeftButton").live "click", (e) => @showNextPage "after", e
+    $("#savedSearches .savedSearch .pageFirstButton").live "click", (e) => @showFirstPage e
     $("#savedSearches .savedSearch .pageRightButton").live "click", (e) => @showNextPage "before", e
 
     # We save separate event handlers for these checkboxes, even though they're related, because
@@ -134,9 +135,12 @@ window.CommitSearch =
       return true
     @selectNewGroup(next)
 
+  showFirstPage: (event = null) ->
+    @showNextPage("before", event, true)
+
   # Shows the next page of a commit search.
   # direction: "before" or "after"
-  showNextPage: (direction = "before", event = null) ->
+  showNextPage: (direction = "before", event = null, show_first_page = false) ->
     return if @searching
 
     if event? # Triggered by click
@@ -160,7 +164,10 @@ window.CommitSearch =
       button.addClass("active")
       Util.setTimeout 70, => button.removeClass("active")
 
-    token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
+    if show_first_page
+      token = ''
+    else
+      token = savedSearch.attr(if direction == "before" then "from-token" else "to-token")
     currentPageNumber = parseInt(savedSearchElement.find(".pageNumber").text())
     if isNaN(currentPageNumber)
       # Something is wrong
@@ -169,7 +176,7 @@ window.CommitSearch =
       return
 
     # If we're on page 1 and trying to go "after", then do a refresh instead of the normal sliding paging.
-    if currentPageNumber == 1 && direction == "after"
+    if currentPageNumber == 1 && (direction == "after" || show_first_page)
       if @refreshing
         @searching = false
         return
@@ -203,7 +210,7 @@ window.CommitSearch =
 
       newSavedSearchElement.find(".commitsList").animate({ "opacity": 1 }, { duration: 150 })
 
-    animateTo = (if direction == "before" then -1 else 1) * $(".commitsList").width()
+    animateTo = (if (direction == "before" && !show_first_page) then -1 else 1) * $(".commitsList").width()
     savedSearchElement.find(".commitsList").animate { "margin-left": animateTo },
       duration: 400,
       complete: =>

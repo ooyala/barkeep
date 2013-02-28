@@ -411,6 +411,7 @@ class BarkeepServer < Sinatra::Base
     direction = params[:direction] || "before"
     page_number = params[:current_page_number].to_i + (direction == "before" ? 1 : -1)
     page_number = [page_number, 1].max
+    page_number = 1 if token == nil
     erb :_saved_search, :layout => false, :locals => { :current_user => current_user,
       :saved_search => saved_search, :token => token, :direction => direction, :page_number => page_number }
   end
