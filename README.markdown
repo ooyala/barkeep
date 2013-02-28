@@ -9,21 +9,12 @@ number of git repos available on the internet. It's designed to be easy to run o
 
 ### Getting started
 
-Since Barkeep is a web app with dependencies like MySQL, Redis, and others, the easiest way to get it
-running quickly is to run it inside a virtual machine using Vagrant:
+If you're ready to install Barkeep, see the
+[Installing Barkeep](https://github.com/ooyala/barkeep/wiki/Installing-Barkeep) wiki page for instructions and
+a one-step shell script.
 
-    $ cd barkeep
-    $ git submodule init && git submodule update
-    $ script/vagrant_quick_start.rb
-
-You will need a few dependencies (like VirtualBox) before you can set up Barkeep inside of Vagrant, but this
-script will help you get them. It will take a few minutes and once it's done, Barkeep will be running inside
-of Vagrant. You can then browse to **http://localhost:8080** to play with it.
-
-You can shut it all down later using `bundle exec vagrant halt`.
-
-Once you decide to use Barkeep for your team, you should deploy it to an Ubuntu web server. See the [Deploying
-Barkeep](https://github.com/ooyala/barkeep/wiki/Deploying-Barkeep) wiki page for more information.
+If you'd like to take Barkeep for a test-drive first you can run quickly install it on a Vagrant VM. See the
+[Vagrant](https://github.com/ooyala/barkeep/wiki/Vagrant) wiki page for details.
 
 ### Docs
 
