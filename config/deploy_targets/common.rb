@@ -23,6 +23,8 @@ module BarkeepDeploy
       db_password: "",
       redis_host: "localhost",
       redis_port: 6379,
+      redis_db: 0,
+      redis_db_for_resque: 1,
       # This can be a comma-separated list of OPENID providers.
       openid_providers: "https://www.google.com/accounts/o8/ud",
       # This hostname is used when generating URLs to commits in emails.
