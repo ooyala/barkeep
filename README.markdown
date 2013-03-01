@@ -13,8 +13,9 @@ If you're ready to install Barkeep, see the
 [Installing Barkeep](https://github.com/ooyala/barkeep/wiki/Installing-Barkeep) wiki page for instructions and
 a one-step shell script.
 
-If you'd like to take Barkeep for a test-drive first you can run quickly install it on a Vagrant VM. See the
-[Vagrant](https://github.com/ooyala/barkeep/wiki/Vagrant) wiki page for details.
+If you'd like to take Barkeep for a test-drive first or set up local development on your own machine you can
+quickly install it on a Vagrant VM. See the [Vagrant](https://github.com/ooyala/barkeep/wiki/Vagrant) wiki
+page for details.
 
 ### Docs
 
