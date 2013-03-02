@@ -202,7 +202,7 @@
     Background: lightgray;
   }
   div.collapsedList { display: none; }
-  .commitsWithCommentsList > tbody > tr:nth-child(even) { background: #fcf8dc; }
+  .commitRow { background: #fcf8dc; }
   .overflowCommentRow { display: none; }
   .showOverflowComments {
     padding: 2px 4px;

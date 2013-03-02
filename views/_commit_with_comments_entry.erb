@@ -23,7 +23,7 @@
       title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
   </td>
   <td><table class="innerCommitsList"><tbody>
-  <tr>
+  <tr class="commitRow">
     <td class="commitId">
       <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
     </td>
@@ -60,5 +60,6 @@
     </td>
   </tr>
   <% end %>
+  <tr> <td colspan="4"> &nbsp; </td> </tr>
   </tbody></table></td>
 </tr>
