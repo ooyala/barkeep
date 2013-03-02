@@ -50,8 +50,12 @@ window.Reviews =
         comment_id: commentId
       }
       success: (html) =>
+        table = target.parents(".innerCommitsList")
+        count = table.find(".commentRow").size()
         target.parents(".commentRow").remove()
-        # TODO(jack): if no more comments, then remove commit line too
+        # if that was the last comment, then remove the commit line too
+        if count == 1
+          table.parents(".commentEntryRow").remove()
     })
     false
 
