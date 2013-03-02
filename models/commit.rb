@@ -87,7 +87,6 @@ class Commit < Sequel::Model
     major_op = args[:major_op]
     minor_op = args[:minor_op]
     values = args[:values]
-    group_by_col = args[:group_by_col]
     page_size = args[:page_size]
     if major_col != minor_col
       if values[1].to_s != "0"
@@ -100,10 +99,10 @@ class Commit < Sequel::Model
       dataset = dataset.filter("#{minor_col} #{minor_op} ?", values[0]).
           order(Sequel.send(minor_sort, minor_col))
     end
-    rows = dataset.group_by(group_by_col).limit(page_size).all
+    rows = dataset.limit(page_size).all
   end
 
-  def self.paginate_dataset(dataset, page_by_cols, group_by_col, token, direction, page_size)
+  def self.paginate_dataset(dataset, page_by_cols, token, direction, page_size)
     page_number, from_values, to_values, is_partial = ReviewList.parse_token(token)
     if page_by_cols.length != from_values.length || page_by_cols.length != to_values.length
       raise ArgumentError.new "page_by_cols.length (#{page_by_cols.length}) does not match token"
@@ -114,8 +113,7 @@ class Commit < Sequel::Model
     major_sort = :asc if major_sort.nil?
     minor_sort = :asc
     args = { :dataset => dataset, :major_col => major_col, :minor_col => minor_col,
-        :major_sort => major_sort, :minor_sort => minor_sort,
-        :group_by => group_by_col, :page_size => page_size }
+        :major_sort => major_sort, :minor_sort => minor_sort, :page_size => page_size }
     if direction == "next"
       if is_partial
         args[:major_op] = :<
@@ -199,9 +197,10 @@ class Commit < Sequel::Model
         join(:git_repos, :id => :commits__git_repo_id).
         filter(:action_required => true, :comments__closed_at => nil).
         where({ :authors__user_id => user_id, :comments__resolved_at => nil } |
-              { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil })
+              { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).
+        group_by(:commits__id)
 
-    commits, token = paginate_dataset(dataset, ["commits.id"], "commits.id", token, direction, page_size)
+    commits, token = paginate_dataset(dataset, ["commits.id"], token, direction, page_size)
     entries = []
     commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
@@ -237,9 +236,10 @@ class Commit < Sequel::Model
         join(:git_repos, :id => :commits__git_repo_id).
         filter(:action_required => true, :comments__closed_at => nil).
         where({ :comments__user_id => user_id, :comments__resolved_at => nil } |
-              { :authors__user_id => user_id } & ~{ :comments__resolved_at => nil })
+              { :authors__user_id => user_id } & ~{ :comments__resolved_at => nil }).
+        group_by(:commits__id)
 
-    commits, token = paginate_dataset(dataset, ["commits.id"], "commits.id", token, direction, page_size)
+    commits, token = paginate_dataset(dataset, ["commits.id"], token, direction, page_size)
     entries = []
     commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
@@ -275,9 +275,10 @@ class Commit < Sequel::Model
         join(:git_repos, :id => :commits__git_repo_id).
         filter(:action_required => true).
         where( ~{ :comments__closed_at => nil } &
-              ({ :comments__user_id => user_id } | { :authors__user_id => user_id }))
+              ({ :comments__user_id => user_id } | { :authors__user_id => user_id })).
+        group_by(:commits__id)
 
-    commits, token = paginate_dataset(dataset, ["commits.id"], "commits.id", token, direction, page_size)
+    commits, token = paginate_dataset(dataset, ["commits.id"], token, direction, page_size)
     entries = []
     commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
