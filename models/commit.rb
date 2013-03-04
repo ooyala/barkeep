@@ -96,7 +96,7 @@ class Commit < Sequel::Model
       dataset = dataset.order(Sequel.send(major_sort, major_col)).
           order_append(Sequel.send(minor_sort, minor_col))
     else
-      dataset = dataset.filter("#{minor_col} #{minor_op} ?", values[0]).
+      dataset = dataset.filter("? #{minor_op} ?", minor_col, values[0]).
           order(Sequel.send(minor_sort, minor_col))
     end
     rows = dataset.limit(page_size).all
@@ -170,6 +170,9 @@ class Commit < Sequel::Model
       to_values = [0, 0]
     else
       is_partial = rows.length < page_size
+      # Strip off the table name, if any
+      major_col = major_col.to_s.split("__").last.to_sym
+      minor_col = minor_col.to_s.split("__").last.to_sym
       if major_col == minor_col
         from_values = [rows.first[minor_col]]
         to_values = [rows.last[minor_col]]
@@ -200,7 +203,7 @@ class Commit < Sequel::Model
               { :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).
         group_by(:commits__id)
 
-    commits, token = paginate_dataset(dataset, ["commits.id"], token, direction, page_size)
+    commits, token = paginate_dataset(dataset, [:commits__id], token, direction, page_size)
     entries = []
     commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
@@ -239,7 +242,7 @@ class Commit < Sequel::Model
               { :authors__user_id => user_id } & ~{ :comments__resolved_at => nil }).
         group_by(:commits__id)
 
-    commits, token = paginate_dataset(dataset, ["commits.id"], token, direction, page_size)
+    commits, token = paginate_dataset(dataset, [:commits__id], token, direction, page_size)
     entries = []
     commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
@@ -278,7 +281,7 @@ class Commit < Sequel::Model
               ({ :comments__user_id => user_id } | { :authors__user_id => user_id })).
         group_by(:commits__id)
 
-    commits, token = paginate_dataset(dataset, ["commits.id"], token, direction, page_size)
+    commits, token = paginate_dataset(dataset, [:commits__id], token, direction, page_size)
     entries = []
     commits.each do |commit|
       grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
