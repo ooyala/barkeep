@@ -1,11 +1,13 @@
 class AlbinoFiletype
   EXTENSION_TO_FILETYPE = {
     ".as"         => :actionscript,
+    ".aspx"       => :"aspx-cs",
     ".c"          => :c,
     ".cc"         => :cpp,
     ".clj"        => :clojure,
     ".coffee"     => :coffeescript,
     ".cpp"        => :cpp,
+    ".cs"         => :csharp,
     ".css"        => :css,
     ".erb"        => :rhtml,
     ".go"         => :go,
@@ -25,6 +27,7 @@ class AlbinoFiletype
     ".scala"      => :scala,
     ".scss"       => :scss,
     ".sh"         => :bash,
+    ".vb"         => :vbnet,
     ".xml"        => :xml,
     "Cakefile"    => :coffeescript,
     "Capfile"     => :ruby,
