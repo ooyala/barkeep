@@ -41,3 +41,13 @@ RESQUE_WORKERS = 2
 # A comma-separated list of permitted users, to restrict access to barkeep. If unset, any user can log in
 # via their Gmail account. This feature is a work in progress and not ready for general use; see #361.
 PERMITTED_USERS = ""
+
+# Github is the default issue tracker
+ISSUE_TRACKER = Proc.new do |username, repo, number|
+  "https://github.com/#{username}/#{repo}/issues/#{number}"
+end
+
+# Example for Redmine usage
+# ISSUE_TRACKER = Proc.new do |username, repo, number|
+#   "https://redmine.example.com/issues/#{number}"
+# end

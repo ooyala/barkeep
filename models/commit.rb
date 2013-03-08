@@ -20,7 +20,7 @@ class Commit < Sequel::Model
   end
   add_filter(:message) { |message| StringFilter.newlines_to_html(message) }
   add_filter(:message) do |message, commit|
-    StringFilter.link_github_issue(message, "ooyala", commit.git_repo.name)
+    StringFilter.link_to_issue_tracker(message, "ooyala", commit.git_repo.name)
   end
   add_filter(:message) { |message| StringFilter.link_jira_issue(message) }
   add_filter(:message) { |message| StringFilter.emoji(message) }

@@ -43,7 +43,7 @@ class StringFilterTest < Scope::TestCase
     end
 
     should "link github issue" do
-      filtered = StringFilter.link_github_issue("issue #42", "ooyala", "test_repo")
+      filtered = StringFilter.link_to_issue_tracker("issue #42", "ooyala", "test_repo")
       assert filtered.include?("github.com/ooyala/test_repo/issues/42")
     end
 
