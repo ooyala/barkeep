@@ -27,7 +27,7 @@ window.Reviews =
 
   onExpandCommentsList: (e) ->
     target = $(e.currentTarget)
-    target.parents(".commentEntryRow").find(".overflowCommentRow").show()
+    target.parents(".commentEntryRow").find(".commentHidden").show()
     target.parents(".overflowButtonRow").hide()
     false
 
@@ -43,19 +43,19 @@ window.Reviews =
   onCommentComplete: (e) ->
     target = $(e.currentTarget)
     commentId = target.data("commentId")
+    expanded = (target.parents(".commentEntryRow").find(".overflowCommentRow").css("display") != "none")
     $.ajax({
       type: "post",
       url: "/close_comment",
       data: {
         comment_id: commentId
+        expand_comments: expanded
       }
       success: (html) =>
-        table = target.parents(".innerCommitsList")
-        count = table.find(".commentRow").size()
-        target.parents(".commentRow").remove()
-        # if that was the last comment, then remove the commit line too
-        if count == 1
-          table.parents(".commentEntryRow").remove()
+        if html.length == 0
+          target.parents(".commentEntryRow").remove()
+        else
+          target.parents(".commentEntryRow").replaceWith(html)
     })
     false
 

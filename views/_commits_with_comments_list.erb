@@ -8,6 +8,7 @@
   - review_list: a ReviewList containing an array of ReviewListEntry's
   - current_user_id: the current user id, passed to the next erb file
   - collapsed: true if list should be shown in the collapsed state (only header is displayed)
+  - expand_comments: if true, then mark overflow comments as visible, passed to the next erb file
 %>
 
 <% entries = review_list.entries %>
@@ -36,7 +37,7 @@
     <table class="commitsList commitsWithCommentsList" id="<%= list_id %>Table"><tbody>
       <% entries.each do |entry| %>
         <%= erb :_commit_with_comments_entry, :layout => false, :locals => { :entry => entry,
-            :current_user_id => current_user_id } %>
+            :current_user_id => current_user_id, :expand_comments => expand_comments } %>
       <% end %>
     </tbody></table>
 

@@ -3,6 +3,7 @@
   View arguments:
   - entry: a ReviewListEntry
   - current_user_id: the current user id
+  - expand_comments: if true, then mark overflow comments as visible
  %>
 <% commit = entry.grit_commit %>
 <% comments = entry.comments %>
@@ -41,8 +42,9 @@
       <% end %>
     </td>
   </tr>
+  <% overflow_class = expand_comments ? "overflowCommentRow" : "overflowCommentRow commentHidden" %>
   <% comments.each_with_index do |comment, index| %>
-  <tr class='commentRow <%= (index >= 2 && comments.length >= 4) ? "overflowCommentRow" : "" %>'>
+  <tr class='commentRow <%= (index >= 2 && comments.length >= 4) ? overflow_class : "" %>'>
     <td colspan="4">
       <span class="<%= (comment.is_resolved && comment.is_by_user(current_user_id)) ? 'tableCellDelete' : 'tableCellDeleteHidden' %>">
         <a href="#" class="deleteCommentRow" data-comment-id="<%= comment.id %>">x</a>
@@ -53,7 +55,7 @@
     </td>
   </tr>
   <% end %>
-  <% if comments.length >= 4 %>
+  <% if comments.length >= 4 && !expand_comments %>
   <tr class="overflowButtonRow">
     <td colspan="4" class="centerText">
       <a href="#" class="showOverflowComments">Show all <%= comments.length %> comments</a>

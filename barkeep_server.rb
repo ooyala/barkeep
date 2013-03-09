@@ -376,10 +376,17 @@ class BarkeepServer < Sinatra::Base
   end
 
   post "/close_comment" do
+    expand_comments = (params[:expand_comments] == "true")
     comment = validate_comment(params[:comment_id], true)
     comment.close
     comment.save
-    erb :_comment, :layout => false, :locals => { :comment => comment }
+    entry = Commit.actionable_comments(comment.commit, current_user.id)
+    if entry.nil?
+      nil
+    else
+      erb :_commit_with_comments_entry, :layout => false, :locals => {
+          :entry => entry, :current_user_id => current_user.id, :expand_comments => expand_comments }
+    end
   end
 
   post "/approve_commit" do
@@ -537,6 +544,7 @@ class BarkeepServer < Sinatra::Base
       :commits_with_closed_comments => closed_comments,
       :review_list_ids => review_list_order,
       :current_user_id => current_user.id,
+      :expand_comments => false,
     }
   end
 
@@ -550,6 +558,7 @@ class BarkeepServer < Sinatra::Base
     locals = {
       :review_list_ids => [params[:name]],
       :current_user_id => current_user.id,
+      :expand_comments => false,
     }
     case params[:name]
     when "uncompleted_reviews"

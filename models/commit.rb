@@ -185,6 +185,24 @@ class Commit < Sequel::Model
     [rows, token]
   end
 
+  def self.actionable_comments(commit, user_id)
+    grit_commit = MetaRepo.instance.grit_commit(commit.git_repo.name, commit[:sha])
+    return nil unless grit_commit
+    if commit.author && commit.author.user_id == user_id
+      comments = Comment.filter(:commit_id => commit[:id]).
+        filter(:action_required => true, :comments__closed_at => nil).
+        where({ :comments__resolved_at => nil } | { :comments__user_id => user_id }).all
+    else
+      comments = Comment.filter(:commit_id => commit[:id]).
+        filter(:action_required => true, :comments__closed_at => nil).
+        where({ :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).all
+    end
+    return nil if comments.empty?
+    entry = ReviewListEntry.new(grit_commit)
+    entry.comments = comments
+    entry
+  end
+
   # Selects for the given user the commits with "actionable" comments, that is, comments that
   # are New and for user, or Resolved and from user.
   def self.commits_with_actionable_comments(user_id, token = nil, direction = "next", page_size = PAGE_SIZE)

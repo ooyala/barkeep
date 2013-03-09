@@ -25,6 +25,7 @@
       :labelClass => "",
       :header => "Actionable comments",
       :review_list => commits_with_actionable_comments,
+      :expand_comments => expand_comments,
       :current_user_id => current_user_id } %>
 <% end %>
 
@@ -58,6 +59,7 @@
       :labelClass => "",
       :header => "Pending comments",
       :review_list => commits_with_pending_comments,
+      :expand_comments => expand_comments,
       :current_user_id => current_user_id } %>
 <% end %>
 
@@ -69,6 +71,7 @@
       :labelClass => "",
       :header => "Closed comments",
       :review_list => commits_with_closed_comments,
+      :expand_comments => expand_comments,
       :current_user_id => current_user_id } %>
 <% end %>
 
