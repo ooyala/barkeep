@@ -186,9 +186,11 @@ class Commit < Sequel::Model
   end
 
   def self.actionable_comments(commit, user_id)
-    grit_commit = MetaRepo.instance.grit_commit(commit.git_repo.name, commit[:sha])
+    git_repo_name = commit[:git_repo_name] || commit.git_repo.name
+    grit_commit = MetaRepo.instance.grit_commit(git_repo_name, commit[:sha])
     return nil unless grit_commit
-    if commit.author && commit.author.user_id == user_id
+    author_user_id = commit[:author_user_id] || (commit.author && commit.author.user_id)
+    if author_user_id == user_id
       comments = Comment.filter(:commit_id => commit[:id]).
         filter(:action_required => true, :comments__closed_at => nil).
         where({ :comments__resolved_at => nil } | { :comments__user_id => user_id }).all
@@ -212,7 +214,8 @@ class Commit < Sequel::Model
     #      and are not resolved (and not closed), or
     #  2b. Comments that this user made on some commit that are resolved (but not closed).
     token = ReviewList.make_token(0, 0, 0, false) if token.nil?
-    dataset = Commit.select(:commits__id, :git_repos__name, :sha, :authors__user_id___authors_user_id).
+    dataset = Commit.select(:commits__id, :git_repos__name___git_repo_name, :sha,
+        :authors__user_id___author_user_id).
         join(:comments, :commit_id => :id).
         join(:authors, :id => :commits__author_id).
         join(:git_repos, :id => :commits__git_repo_id).
@@ -224,19 +227,8 @@ class Commit < Sequel::Model
     commits, token = paginate_dataset(dataset, [:commits__id], token, direction, page_size)
     entries = []
     commits.each do |commit|
-      grit_commit = MetaRepo.instance.grit_commit(commit[:name], commit[:sha])
-      next unless grit_commit
-      if commit[:authors_user_id] == user_id
-        comments = Comment.filter(:commit_id => commit[:id]).
-            filter(:action_required => true, :comments__closed_at => nil).
-            where({ :comments__resolved_at => nil } | { :comments__user_id => user_id }).all
-      else
-        comments = Comment.filter(:commit_id => commit[:id]).
-            filter(:action_required => true, :comments__closed_at => nil).
-            where({ :comments__user_id => user_id } & ~{ :comments__resolved_at => nil }).all
-      end
-      entry = ReviewListEntry.new(grit_commit)
-      entry.comments = comments
+      entry = actionable_comments(commit, user_id)
+      next if entry.nil?
       entries << entry
     end
     ReviewList.new(entries, token)
