@@ -209,6 +209,20 @@
     background: lightgrey;
     border-radius: 3px;
   }
+  .innerCommitsWithCommentsList {
+    margin-bottom: 10px;
+    td.leftBorderCell {
+      border-left: solid 1px;
+      padding-left: 5px;
+    }
+    td.topBorderCell {
+      border-top: solid 1px;
+    }
+    td.bottomBorderCell {
+      border-bottom: solid 1px;
+      padding-bottom: 5px;
+    }
+  }
   .centerText { text-align: center; }
 }
 

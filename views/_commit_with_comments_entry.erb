@@ -23,16 +23,16 @@
     <a class="south" rel="tipsy" href="mailto:<%= commit.author.email %>" target="_blank"
       title="<%= commit.author.email %>"><%= commit.author.to_s[0..25] %></a>
   </td>
-  <td><table class="innerCommitsList"><tbody>
+  <td><table class="innerCommitsList innerCommitsWithCommentsList"><tbody>
   <tr class="commitRow">
-    <td class="commitId">
+    <td class="commitId leftBorderCell topBorderCell">
       <a href="<%= commit.link %>" target="_blank" class="commitLink"><%= commit.id_abbrev %></a>
     </td>
-    <td class="commitMessage">
+    <td class="commitMessage topBorderCell">
       <a href="<%= commit.link %>" target="_blank"><%= CGI::escapeHTML(commit.short_message) %></a>
     </td>
-    <td class="commitDate"><%= commit.date.to_pretty %></td>
-    <td class="commitRepo"><%= commit.repo_name %></td>
+    <td class="commitDate topBorderCell"><%= commit.date.to_pretty %></td>
+    <td class="commitRepo topBorderCell"><%= commit.repo_name %></td>
     <td class="commentCount">
       <% comment_count = db_commit.comment_count %>
       <% if comment_count > 0 %>
@@ -45,7 +45,7 @@
   <% overflow_class = expand_comments ? "overflowCommentRow" : "overflowCommentRow commentHidden" %>
   <% comments.each_with_index do |comment, index| %>
   <tr class='commentRow <%= (index >= 2 && comments.length >= 4) ? overflow_class : "" %>'>
-    <td colspan="4">
+    <td colspan="4" class="leftBorderCell <%= (index == comments.length - 1) ? 'bottomBorderCell' : '' %>">
       <span class="<%= (comment.is_resolved && comment.is_by_user(current_user_id)) ? 'tableCellDelete' : 'tableCellDeleteHidden' %>">
         <a href="#" class="deleteCommentRow" data-comment-id="<%= comment.id %>">x</a>
       </span>
@@ -57,11 +57,10 @@
   <% end %>
   <% if comments.length >= 4 && !expand_comments %>
   <tr class="overflowButtonRow">
-    <td colspan="4" class="centerText">
+    <td colspan="4" class="centerText leftBorderCell bottomBorderCell">
       <a href="#" class="showOverflowComments">Show all <%= comments.length %> comments</a>
     </td>
   </tr>
   <% end %>
-  <tr> <td colspan="4"> &nbsp; </td> </tr>
   </tbody></table></td>
 </tr>
