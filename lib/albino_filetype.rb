@@ -10,6 +10,7 @@ class AlbinoFiletype
     ".cs"         => :csharp,
     ".css"        => :css,
     ".erb"        => :rhtml,
+    ".feature"    => :cucumber,
     ".go"         => :go,
     ".god"        => :ruby,
     ".h"          => :cpp,
