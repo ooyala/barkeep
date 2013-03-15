@@ -59,6 +59,16 @@ class BarkeepServer < Sinatra::Base
     format_commit_data(commit, params[:repo_name], fields).to_json
   end
 
+  post "/api/approve/:repo_name/:sha" do
+    begin
+      commit = Commit.prefix_match params[:repo_name], params[:sha]
+      commit.approve(current_user)
+      status 204
+    rescue RuntimeError => e
+      api_error 404, e.message
+    end
+  end
+
   # NOTE(caleb): Large GET requests are rejected by the Ruby web servers we use. (Unicorn, in particular,
   # doesn't seem to like paths > 1k and rejects them silently.) Hence, to batch-request commit data, we must
   # use a POST.
