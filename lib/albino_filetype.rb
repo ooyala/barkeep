@@ -24,6 +24,7 @@ class AlbinoFiletype
     ".py"         => :python,
     ".rake"       => :ruby,
     ".rb"         => :ruby,
+    ".sass"       => :sass,
     ".sbt"        => :scala,
     ".scala"      => :scala,
     ".scss"       => :scss,
