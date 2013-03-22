@@ -13,7 +13,7 @@ class BarkeepServer < Sinatra::Base
   end
 
   # API routes that don't require authentication
-  AUTHENTICATION_WHITELIST_ROUTES = ["/api/commits/"]
+  AUTHENTICATION_WHITELIST_ROUTES = { :get => ['/api/commits/'] }
   # API routes that require admin
   ADMIN_ROUTES = ["/api/add_repo"]
   # How out of date an API call may be before it is rejected
@@ -21,7 +21,11 @@ class BarkeepServer < Sinatra::Base
 
   before "/api/*" do
     content_type :json
-    next if AUTHENTICATION_WHITELIST_ROUTES.any? { |route| request.path =~ /^#{route}/ }
+    method = request.request_method.downcase.to_sym
+    next if AUTHENTICATION_WHITELIST_ROUTES.has_key?(method) && \
+            AUTHENTICATION_WHITELIST_ROUTES[method].any? do |route|
+      request.path =~ /^#{route}/
+    end
     user = ensure_properly_signed(request, params)
     if ADMIN_ROUTES.any? { |route| request.path =~ /^#{route}/ }
       api_error 403, "Admin only." unless user.admin?
@@ -59,19 +63,28 @@ class BarkeepServer < Sinatra::Base
     format_commit_data(commit, params[:repo_name], fields).to_json
   end
 
-  post "/api/approve/:repo_name/:sha" do
+  # TODO: use patch instead of post
+  post "/api/commits/:repo_name/:sha" do
     begin
       commit = Commit.prefix_match params[:repo_name], params[:sha]
-      commit.approve(current_user)
+      case params[:approved]
+      when 'true'
+        commit.approve(current_user)
+      when 'false'
+        commit.disapprove
+      else
+        raise "Missing parameter 'approved'"
+      end
       status 204
     rescue RuntimeError => e
       api_error 404, e.message
     end
   end
 
-  # NOTE(caleb): Large GET requests are rejected by the Ruby web servers we use. (Unicorn, in particular,
-  # doesn't seem to like paths > 1k and rejects them silently.) Hence, to batch-request commit data, we must
-  # use a POST.
+  # NOTE(caleb): Large GET requests are rejected by the Ruby web servers we
+  #              use. (Unicorn, in particular, doesn't seem to like paths > 1k
+  #              and rejects them silently.) Hence, to batch-request commit
+  #              data, we must use a POST.
   post "/api/commits/:repo_name" do
     shas = params[:shas].split(",")
     fields = params[:fields] ? params[:fields].split(",") : nil
