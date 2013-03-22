@@ -160,7 +160,7 @@ class BarkeepServer < Sinatra::Base
     def ensure_required_params(*required_params)
       required_params.each do |param|
         unless params[param] && !params[param].strip.empty?
-          message = "Missing required parameter '{param}'."
+          message = "Missing required parameter '#{param}'."
           if content_type == "application/json"
             halt 400, { :error => message }.to_json
           else
