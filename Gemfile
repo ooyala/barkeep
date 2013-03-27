@@ -69,7 +69,7 @@ gem "mustache"
 gem "therubyracer"
 
 # For scripting system setup.
-gem "terraform"
+gem "terraform", "= 0.0.7.rc1" # Specific version to work with Precise
 
 gem "nokogiri"
 gem "fezzik"

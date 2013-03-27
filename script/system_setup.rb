@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # This sets up the system software on Ubuntu needed for a deploy.
 
-# terraform_dsl.rb gets written to disk at deploy time. It comes from the Terraform gem.
-require File.expand_path(File.join(File.dirname(__FILE__), "terraform_dsl"))
+# dsl.rb gets written to disk at deploy time. It comes from the Terraform gem.
+require File.expand_path(File.join(File.dirname(__FILE__), "dsl"))
 
 include Terraform::DSL
 
@@ -43,7 +43,7 @@ end
 ensure_rbenv_ruby_fixed(File.read(".rbenv-version").strip)
 
 ensure_run_once("nginx site-enabled has correct permissions") do
-  shell "sudo chgrp admin -R /etc/nginx/sites-enabled", :silent => true
+  shell "sudo chgrp sudo -R /etc/nginx/sites-enabled", :silent => true
   shell "sudo chmod g+w -R /etc/nginx/sites-enabled", :silent => true
 end
 

@@ -32,7 +32,7 @@ namespace :fezzik do
         config_lines.each { |line| file.write(line) }
       end
     end
-    Terraform.write_dsl_file("#{staging_dir}/script/")
+    Terraform.write_terraform_files("#{staging_dir}/script/")
     Rake::Task["fezzik:evaluate_conf_file_templates"].invoke
     Rake::Task["fezzik:write_statusz_file"].invoke
   end
@@ -62,12 +62,12 @@ namespace :fezzik do
       # Make a user which has the same authorized keys as our root user, so we can ssh in as that user.
       run_commands(
           "sudo useradd --create-home --shell /bin/bash #{deploy_user}",
-          "sudo adduser #{deploy_user} --add_extra_groups admin",
+          "sudo adduser #{deploy_user} --add_extra_groups sudo",
           "sudo mkdir -p /home/#{deploy_user}/.ssh/",
           "sudo cp ~/.ssh/authorized_keys /home/#{deploy_user}/.ssh",
           "sudo chown -R #{deploy_user} /home/#{deploy_user}/.ssh")
-      # Ensure users in the "admin" group can passwordless sudo.
-      sudoers_line = "'%admin ALL=NOPASSWD:ALL'"
+      # Ensure users in the "sudo" group can passwordless sudo.
+      sudoers_line = "'%sudo ALL=NOPASSWD:ALL'"
       run "if test -f /etc/sudoers.local; then " +
           # # NOTE(philc): We can't do a simple "echo xyz > file" using sudo, so use tee to output instead.
           "echo #{sudoers_line} | sudo tee /etc/sudoers.local; " +
