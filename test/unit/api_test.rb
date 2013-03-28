@@ -95,7 +95,11 @@ class ApiTest < Scope::TestCase
     setup do
       # Temporarily make every api route require authentication
       @whitelist_routes = BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.dup
-      @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.delete route }
+      @whitelist_routes.keys.each do |method|
+        @whitelist_routes[method].each do |route|
+          BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES[method].delete route
+        end
+      end
 
       approved_commit = stub_commit("sha1", @user)
       stub_many approved_commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
@@ -108,7 +112,11 @@ class ApiTest < Scope::TestCase
     end
 
     teardown do
-      @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES << route }
+      @whitelist_routes.keys.each do |method|
+        @whitelist_routes[method].each do |route|
+          BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES[:method] << route
+        end
+      end
     end
 
     should "return proper result for up-to-date, correctly signed request" do
