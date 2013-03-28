@@ -124,6 +124,42 @@ class ApiTest < Scope::TestCase
       check_response
     end
 
+    context "commit approval" do
+      def generate_post_signature(path, params)
+        OpenSSL::HMAC.hexdigest "sha1", "apisecret", "POST #{create_request_url(path, params)}"
+      end
+
+      def post_commit_approval(status)
+        # Attention: approved=true can't be appended here directly, since the
+        #            the signature generation requires lexicographical sorting
+        path = "/api/commits/my_repo/sha1"
+        params = { :approved => status, :api_key => 'apikey',
+                   :timestamp => Time.now.to_i }
+        params.keys.sort!
+        params.merge!(:signature => generate_post_signature(path, params))
+        post path, params
+      end
+
+      should "return 204 on successful approval" do
+        stub_commit("sha1", @user)
+        post_commit_approval("true")
+        assert_status 204
+      end
+
+      should "return 204 on successful disapproval" do
+        commit = stub_commit("sha1", @user)
+        commit.approve(@user)
+        post_commit_approval("false")
+        assert_status 204
+      end
+
+      should "return 404 for incorrect approval parameters" do
+        stub_commit("sha1", @user)
+        post_commit_approval("foo")
+        assert_status 404
+      end
+    end
+
     should "reject requests without all the required fields" do
       [:timestamp, :api_key].each do |missing_field|
         params = @params.dup
