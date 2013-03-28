@@ -12,7 +12,8 @@ class BarkeepServer < Sinatra::Base
     end
   end
 
-  # API routes that don't require authentication
+  # API routes that don't require authentication. This is a Hash with the HTTP
+  # verb as key and an array of path fragments as value
   AUTHENTICATION_WHITELIST_ROUTES = { :get => ['/api/commits/'] }
   # API routes that require admin
   ADMIN_ROUTES = ["/api/add_repo"]
