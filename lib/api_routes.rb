@@ -22,7 +22,7 @@ class BarkeepServer < Sinatra::Base
   before "/api/*" do
     content_type :json
     method = request.request_method.downcase.to_sym
-    next if AUTHENTICATION_WHITELIST_ROUTES.has_key?(method) && \
+    next if AUTHENTICATION_WHITELIST_ROUTES.has_key?(method) &&
             AUTHENTICATION_WHITELIST_ROUTES[method].any? do |route|
       request.path =~ /^#{route}/
     end
