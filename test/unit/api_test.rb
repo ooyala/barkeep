@@ -129,7 +129,7 @@ class ApiTest < Scope::TestCase
         OpenSSL::HMAC.hexdigest "sha1", "apisecret", "POST #{create_request_url(path, params)}"
       end
 
-      def post_commit_approval(status)
+      def perform_commit_approval_request(status)
         # Attention: approved=true can't be appended here directly, since the
         #            the signature generation requires lexicographical sorting
         path = "/api/commits/my_repo/sha1"
@@ -142,20 +142,20 @@ class ApiTest < Scope::TestCase
 
       should "return 204 on successful approval" do
         stub_commit("sha1", @user)
-        post_commit_approval("true")
+        perform_commit_approval_request("true")
         assert_status 204
       end
 
       should "return 204 on successful disapproval" do
         commit = stub_commit("sha1", @user)
         commit.approve(@user)
-        post_commit_approval("false")
+        perform_commit_approval_request("false")
         assert_status 204
       end
 
       should "return 404 for incorrect approval parameters" do
         stub_commit("sha1", @user)
-        post_commit_approval("foo")
+        response = perform_commit_approval_request("foo")
         assert_status 404
       end
     end
