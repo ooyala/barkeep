@@ -57,7 +57,7 @@ class Emails
     all_previous_commenters = commit.comments.map(&:user).reject(&:demo?).reject(&:deleted?)
     author = commit.grit_commit.author
     user = User.find(:email => author.email)
-    to << author.email if user && !user.deleted?
+    to << author.email if ALWAYS_EMAIL_COMMENTS_TO_COMMITER || (user && !user.deleted?)
     # There shouldn't be deleted users with saved searches, but filter them out just in case.
     cc = (users_with_saved_searches_matching(commit, :email_comments => true).reject(&:deleted?) +
           all_previous_commenters).map(&:email).uniq

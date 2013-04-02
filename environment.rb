@@ -41,3 +41,7 @@ RESQUE_WORKERS = 2
 # A comma-separated list of permitted users, to restrict access to barkeep. If unset, any user can log in
 # via their Gmail account. This feature is a work in progress and not ready for general use; see #361.
 PERMITTED_USERS = ""
+
+# If set to true, comments to a commit will be sent to the author email even if a user with such email
+# does not exists in user database
+ALWAYS_EMAIL_COMMENTS_TO_COMMITER = false
