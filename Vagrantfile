@@ -1,7 +1,7 @@
 Vagrant::Config.run do |config|
-  config.vm.box = "lucid64"
+  config.vm.box = "precise64"
   config.vm.host_name = "barkeep-vagrant"
-  config.vm.box_url = "http://files.vagrantup.com/lucid64.box"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.provision :shell, :inline =>
       "sudo mkdir -p /root/.ssh && sudo cp /home/vagrant/.ssh/authorized_keys /root/.ssh/"
 
