@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Barkeep</title>
+  <title><% if defined?(commit) %><%= commit.message[0...80] %> | <% end %>Barkeep</title>
   <link href='//fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic' \
         rel='stylesheet' type='text/css' />
   <%= css_url("/css/styles.css") %>
