@@ -47,7 +47,9 @@ class SyntaxHighlighter
   # NOTE(caleb): It might be possible/better to do this in Python. However, that will probably involve
   # modifying Pygments (monkey-patching isn't so simple in Python) and in general will be more work.
   def self.global_highlighting(pygmentized_text)
-    pygmentized_text.gsub(/[ \t]+$/) { |whitespace| "<span class='trailingWhitespace'>#{whitespace}</span>" }
+    unless pygmentized_text.nil?
+      pygmentized_text.gsub(/[ \t]+$/) { |whitespace| "<span class='trailingWhitespace'>#{whitespace}</span>" }
+    end
   end
 
   def self.redis_cache_key(repo_name, blob)
