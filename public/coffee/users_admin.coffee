@@ -22,9 +22,9 @@ window.UserAdmin =
   numberOfAdminUsers: -> $("input[type=radio][value=admin]:checked").size()
 
 $(document).ready ->
-  $("input[type=radio]").click ->
-    targetUserId = $(event.target).parents("tr").attr("data-user-id")
-    permission = $(event.target).val()
+  $("input[type=radio]").click (e) ->
+    targetUserId = $(e.target).parents("tr").attr("data-user-id")
+    permission = $(e.target).val()
 
     # Prevent demoting the last admin.
     if UserAdmin.numberOfAdminUsers() == 0
