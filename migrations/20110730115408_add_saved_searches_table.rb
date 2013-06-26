@@ -4,7 +4,7 @@ Sequel.migration do
   up do
     create_table(:saved_searches) do
       primary_key :id
-      datetime :created_at
+      DateTime :created_at
       boolean :email_changes, :default => false
     end
 

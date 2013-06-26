@@ -10,8 +10,8 @@ Sequel.migration do
       text :text
       int :line_number
       String :file_version
-      datetime :created_at
-      datetime :updated_at
+      DateTime :created_at
+      DateTime :updated_at
     end
   end
 

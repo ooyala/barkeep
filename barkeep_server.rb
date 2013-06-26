@@ -506,8 +506,8 @@ class BarkeepServer < Sinatra::Base
   #
 
   get "/autocomplete/authors" do
-    users = User.filter("`email` LIKE ?", "%#{params[:substring]}%").
-        or("`name` LIKE ?", "%#{params[:substring]}%").distinct(:email).limit(10)
+    users = User.filter("email LIKE ?", "%#{params[:substring]}%").
+        or("name LIKE ?", "%#{params[:substring]}%").distinct(:email).limit(10)
     { :values => users.map { |user| "#{user.name} <#{user.email}>" } }.to_json
   end
 

@@ -5,11 +5,11 @@ require "time"
 
 Sequel.migration do
   up do
-    DB[:users].insert(:name => "Deleted user", :email => "deleted_for_tests@example.com",
+    self[:users].insert(:name => "Deleted user", :email => "deleted_for_tests@example.com",
                       :deleted_at => Time.parse("2013-01-02"))
   end
 
   down do
-    DB[:users].filter(:email => "deleted_for_tests@example.com").delete
+    self[:users].filter(:email => "deleted_for_tests@example.com").delete
   end
 end

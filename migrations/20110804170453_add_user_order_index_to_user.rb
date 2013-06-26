@@ -7,9 +7,9 @@ Sequel.migration do
     end
 
     # Keep the current ordering (created_at)
-    DB[:users].each do |user|
-      DB[:saved_searches].filter(:user_id => user[:id]).order(:created_at).each_with_index do |search, i|
-        DB[:saved_searches].filter(:id => search[:id]).update(:user_order => i)
+    self[:users].each do |user|
+      self[:saved_searches].filter(:user_id => user[:id]).order(:created_at).each_with_index do |search, i|
+        self[:saved_searches].filter(:id => search[:id]).update(:user_order => i)
       end
     end
 

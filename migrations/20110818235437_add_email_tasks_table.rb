@@ -4,8 +4,8 @@ Sequel.migration do
   up do
     create_table(:email_tasks) do
       primary_key :id
-      datetime :created_at
-      datetime :last_attempted
+      DateTime :created_at
+      DateTime :last_attempted
 
       String :to, :size => 256
       String :subject, :size => 256

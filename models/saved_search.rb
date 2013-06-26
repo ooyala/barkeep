@@ -120,7 +120,7 @@ class SavedSearch < Sequel::Model
   def map_authors_names(authors_list)
     authors_list.map do |author|
       if author =~ /^<.*>$/
-        users = User.filter("`email`=?", author.gsub(/^<|>$/,"")).limit(10).all
+        users = User.filter("email=?", author.gsub(/^<|>$/,"")).limit(10).all
         next users[0].name if users.length > 0
       end
       author
