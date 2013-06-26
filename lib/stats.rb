@@ -31,7 +31,7 @@ module Stats
         join(:comments, :commit_id => :id).
         filter("comments.created_at > ?", since).
         join(:git_repos, :id => :commits__git_repo_id).
-        group_and_count(:commits__sha, :git_repos__name___repo).order(:count.desc).limit(10)
+        group_and_count(:commits__sha, :git_repos__name___repo).order(Sequel.desc(:count)).limit(10)
     commits_sha_repo_count = dataset.all
     commits_and_counts = commits_sha_repo_count.map do |sha_repo_count|
       grit_commit = MetaRepo.instance.grit_commit(sha_repo_count[:repo], sha_repo_count[:sha])
@@ -44,7 +44,7 @@ module Stats
   def self.top_reviewers(since)
     user_ids_and_counts = User.join(:comments, :user_id => :id).
         filter("comments.created_at > ?", since).
-        group_and_count(:users__id).order(:count.desc).limit(10).all
+        group_and_count(:users__id).order(Sequel.desc(:count)).limit(10).all
     user_ids_and_counts.map do |id_and_count|
       [User[id_and_count[:id]], id_and_count[:count]]
     end
@@ -53,7 +53,7 @@ module Stats
   def self.top_approvers(since)
     user_ids_and_counts = User.join(:commits, :approved_by_user_id => :id).
       filter("commits.approved_at > ?", since).
-      group_and_count(:users__id).order(:count.desc).limit(10).all
+      group_and_count(:users__id).order(Sequel.desc(:count)).limit(10).all
     user_ids_and_counts.map do |id_and_count|
       [User[id_and_count[:id]], id_and_count[:count]]
     end

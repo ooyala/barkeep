@@ -26,13 +26,13 @@ class BarkeepServer < Sinatra::Base
 
   get "/admin/diagnostics?" do
     admin_erb :diagnostics, :locals => {
-      :most_recent_commit => Commit.order(:id.desc).first,
-      :most_recent_comment => Comment.order(:id.desc).first,
+      :most_recent_commit => Commit.order(Sequel.desc(:id)).first,
+      :most_recent_comment => Comment.order(Sequel.desc(:id)).first,
       :repos => MetaRepo.instance.repos.map(&:name),
       :failed_email_count => CompletedEmail.filter(:result => "failure").count,
       :recently_failed_emails =>
-          CompletedEmail.filter(:result => "failure").order(:created_at.desc).limit(10).all,
-      :pending_comments => Comment.filter(:has_been_emailed => false).order(:id.asc).limit(10).all,
+          CompletedEmail.filter(:result => "failure").order(Sequel.desc(:created_at)).limit(10).all,
+      :pending_comments => Comment.filter(:has_been_emailed => false).order(Sequel.asc(:id)).limit(10).all,
       :pending_comments_count => Comment.filter(:has_been_emailed => false).count,
     }
   end
@@ -78,7 +78,7 @@ class BarkeepServer < Sinatra::Base
         :name => git_repo.name,
         :exists_on_disk => !!grit_repo,
         :origin_url => origin,
-        :newest_commit => git_repo.commits_dataset.order(:date.desc).first
+        :newest_commit => git_repo.commits_dataset.order(Sequel.desc(:date)).first
       }
     end
 

@@ -538,7 +538,7 @@ class BarkeepServer < Sinatra::Base
   # For testing and styling emails.
   # - send_email: set to true to actually send the email for this comment.
   get "/dev/latest_comment_email_preview" do
-    comment = Comment.order(:id.desc).first
+    comment = Comment.order(Sequel.desc(:id)).first
     next "No comments have been created yet." unless comment
     Emails.send_comment_email(comment.commit, [comment]) if params[:send_email] == "true"
     Emails.comment_email_body(comment.commit, [comment])
@@ -548,7 +548,7 @@ class BarkeepServer < Sinatra::Base
   # - send_email: set to true to actually send the email for this commit.
   # - commit: the sha of the commit you want to preview.
   get "/dev/latest_commit_email_preview" do
-    commit = params[:commit] ? Commit.first(:sha => params[:commit]) : Commit.order(:id.desc).first
+    commit = params[:commit] ? Commit.first(:sha => params[:commit]) : Commit.order(Sequel.desc(:id)).first
     next "No commits have been created yet." unless commit
     Emails.send_commit_email(commit) if params[:send_email] == "true"
     Emails.commit_email_body(commit)
