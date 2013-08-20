@@ -79,11 +79,9 @@ group :test do
   gem "rr", ">= 1.0.3"
   gem "scope", ">= 0.2.3"
   gem "rack-test"
-  gem "pry"
 end
 
 group :development do
-  gem "pry"
   gem "awesome_print"
   gem "statusz" # For the deploy information status page
 end
