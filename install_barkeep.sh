@@ -16,7 +16,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y g++ build-essential libxs
 
 # Install git 1.7.6+
 sudo apt-get -y install python-software-properties
-sudo add-apt-repository ppa:git-core/ppa && sudo apt-get update
+sudo add-apt-repository -y ppa:git-core/ppa && sudo apt-get update
 sudo apt-get install -y git
 
 # Install ruby 1.9.3-p194
