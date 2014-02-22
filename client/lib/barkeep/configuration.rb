@@ -25,7 +25,9 @@ module BarkeepClient
     end
 
     # Tweak parameters for backwards compatibility:
-    configuration["barkeep_server"].sub! %r{^http://}, ""
+    unless configuration["barkeep_server"] =~ %r{^https?://}
+      configuration["barkeep_server"].prepend "http://"
+    end
 
     configuration
   end

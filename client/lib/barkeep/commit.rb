@@ -60,9 +60,9 @@ module BarkeepClient
     params = { :shas => shas.join(",") }
     params[:fields] = fields.join(",") unless fields.empty?
     begin
-      response = RestClient.post "http://#{configuration["barkeep_server"]}/api/commits/#{repo}", params
+      response = RestClient.post "#{configuration["barkeep_server"]}/api/commits/#{repo}", params
     rescue SocketError
-      raise "Cannot connect to the Barkeep server at http:#{configuration["barkeep_server"]}."
+      raise "Cannot connect to the Barkeep server at #{configuration["barkeep_server"]}."
     end
     if response.code != 200
       error = JSON.parse(response.body)["message"] rescue nil
