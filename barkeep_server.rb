@@ -103,6 +103,9 @@ class BarkeepServer < Sinatra::Base
   set :views, "views"
   enable :sessions
 
+  # Session hijacking protection breaks Chrome sessions and offers little protection anyway
+  set :protection, except: :session_hijacking
+
   raise "You must have an OpenID provider defined in OPENID_PROVIDERS." if OPENID_PROVIDERS.empty?
 
   configure :development do
