@@ -61,7 +61,7 @@
         <div id="signInBox">
           <% if current_user %>
             <img class="signInGravatar" src="<%= current_user.gravatar %>" />
-            <span class="userEmail"><%= current_user.email %></span> |
+            <span class="userEmail"><%= current_user.name %></span> |
             <% if current_user.admin? %>
               <a href="/admin" class="<%= current_page_if_url("admin") %>">Admin</a> |
             <% end %>

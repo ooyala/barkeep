@@ -1,0 +1,33 @@
+<%#
+  View params:
+   - openid_providers: a list of OpenID provider URLs
+ %>
+<div id="selectOpenIdProvider">
+  <h2>Select one of these services to sign in with:</h2>
+
+  <% if not openid_providers.empty? %>
+    <h4>OpenID</h4>
+    <ol id="openIdProviders">
+      <% openid_providers.each_with_index do |provider_url, index| %>
+        <li>
+          <a href="/signin/signin_using_openid_provider?provider_id=<%= index %>">
+            <%= URI.parse(provider_url).host %>
+          </a>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+
+  <% if not ldap_providers.empty? %>
+    <h4>LDAP</h4>
+    <ol id="ldapProviders">
+      <% ldap_providers.each_with_index do |provider, index| %>
+        <li>
+          <a href="/signin/signin_using_ldap_provider?provider_id=<%= index %>">
+            <%= provider.has_key?(:name) ? provider[:name] : provider[:host] %>
+          </a>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+</div>
