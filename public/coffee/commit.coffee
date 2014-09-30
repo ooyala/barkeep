@@ -15,7 +15,8 @@ window.Commit =
     $("a.tipsyCommentCount").tipsy(gravity: "w")
     $(document).on("dblclick", ".diffLine", (e) => @onAddCommentMouseAction e)
     $(document).on("click", ".reply", (e) => @onAddCommentMouseAction e)
-    $(document).on("hover", ".diffLine", (((e) => @selectLine(e)), ((e) => @clearSelectedLine())))
+    $(document).on("mouseenter", ".diffLine", (e) => @selectLine(e))
+    $(document).on("mouseleave", ".diffLine", (e) => @clearSelectedLine())
     $(document).on("submit", ".commentForm", (e) => @onCommentSubmit e)
     $(document).on("click", ".commentPreview", (e) => @onCommentPreview e)
     $(document).on("submit", ".commentEditForm", (e) => @onCommentEditSubmit e)
@@ -315,9 +316,9 @@ window.Commit =
   createContextExpander: (codeLines, attachDirection, top, bottom, incremental, refreshLine) ->
     renderedExpander = Snippets.contextExpander(top, bottom, codeLines.attr("diff-line-number"), incremental)
     contextExpander = $(renderedExpander)
-    contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
-    contextExpander.find(".expandLink.above").click (e) => @expandContext(e, 10, "above")
-    contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
+    contextExpander.on("click", ".expandLink.all", (e) => @expandContextAll(e))
+    contextExpander.on("click", ".expandLink.above", (e) => @expandContext(e, 10, "above"))
+    contextExpander.on("click", ".expandLink.below", (e) => @expandContext(e, 10, "below"))
     codeLines.before(contextExpander) if attachDirection == "above"
     codeLines.after(contextExpander) if attachDirection == "below"
     expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
