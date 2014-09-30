@@ -41,6 +41,8 @@ class GitDiffUtils
           data.special_case = "This is an empty file."
         elsif diff.renamed_file && diff.diff.empty?
           data.special_case = "File was renamed, but no other changes were made."
+        elsif diff.a_blob.data.length > 50000 || diff.b_blob.data.length > 50000
+          data.special_case = "File is too big to show diff."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
             begin
