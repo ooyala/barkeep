@@ -23,6 +23,7 @@ class GitDiffUtils
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
     repo = MetaRepo.instance.get_grit_repo(repo_name)
     begin
+      total_size = 0
       GitDiffUtils.show(repo, commit).map do |diff|
         a_path = diff.a_path
         b_path = diff.b_path
@@ -41,7 +42,9 @@ class GitDiffUtils
           data.special_case = "This is an empty file."
         elsif diff.renamed_file && diff.diff.empty?
           data.special_case = "File was renamed, but no other changes were made."
-        elsif diff.a_blob.data.length > 50000 || diff.b_blob.data.length > 50000
+        elsif total_size > 1000000
+	  data.special_case = "Maximum diff size reached."
+        elsif !diff.a_blob.nil? && diff.a_blob.data.length > 200000 || !diff.b_blob.nil? && diff.b_blob.data.length > 200000
           data.special_case = "File is too big to show diff."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
@@ -59,6 +62,7 @@ class GitDiffUtils
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
+          total_size += [before.length, after.length].max
           raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
 
           unless options[:warm_the_cache]
