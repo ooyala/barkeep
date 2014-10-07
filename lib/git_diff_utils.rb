@@ -46,7 +46,7 @@ class GitDiffUtils
           data.special_case = "File was renamed, but no other changes were made."
         elsif total_size > 1000000
 	  data.special_case = "Maximum diff size reached."
-        elsif !diff.a_blob.nil? && diff.a_blob.data.length > 200000 || !diff.b_blob.nil? && diff.b_blob.data.length > 200000
+        elsif !diff.a_blob.nil? && diff.a_blob.data.length > 2000000 || !diff.b_blob.nil? && diff.b_blob.data.length > 2000000
           data.special_case = "File is too big to show diff."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
