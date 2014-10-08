@@ -34,7 +34,7 @@ class GitDiffUtils
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data.binary = true
           data.special_case = "This is a binary file."
-	elsif !(a_path =~ /\.(gen|properties|relations|functions|[dD]esigner)\.cs/).nil?
+	elsif !(a_path =~ /\.(gen|properties|relations|functions)\.cs/).nil? || !(a_path =~ /PI_/).nil? || !(a_path =~ /DBSchema.xml$/).nil?
           data.special_case = "Generated File - not showing diff."
 	elsif data.submodule?
           data.special_case = data.submodule_special_case_message
