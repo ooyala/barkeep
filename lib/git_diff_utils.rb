@@ -65,7 +65,10 @@ class GitDiffUtils
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
           total_size += [before.length, after.length].max
-          raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
+	
+          raw_diff = diff.diff
+          raw_diff.gsub! "\r", ""
+          raw_diff.sub %r{[^@]*}, ""
 
           unless options[:warm_the_cache]
             new_data = GitDiffUtils.tag_file(before, after, diff, raw_diff)
@@ -197,10 +200,10 @@ class GitDiffUtils
 
   def self.show(repo, commit)
     if commit.parents.size > 0
-      diff = repo.git.native(:diff, { :full_index => true, :find_renames => true }, commit.parents[0].id,
+      diff = repo.git.native(:diff, { :ignore_all_space=> true, :full_index => true, :find_renames => true }, commit.parents[0].id,
           commit.id)
     else
-      raw_diff = repo.git.native(:show, { :full_index => true, :pretty => "raw" }, commit.id)
+      raw_diff = repo.git.native(:show, { :ignore_all_space=> true, :full_index => true, :pretty => "raw" }, commit.id)
       # git show has a lot of headers in the diff, we try to strip it out here
       cutpoint = raw_diff.index("diff --git a")
       diff = cutpoint ? raw_diff[cutpoint, raw_diff.length] : ""
