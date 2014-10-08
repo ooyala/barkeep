@@ -23,7 +23,6 @@ class GitDiffUtils
   def self.get_tagged_commit_diffs(repo_name, commit, options = {})
     repo = MetaRepo.instance.get_grit_repo(repo_name)
     begin
-      total_size = 0
       GitDiffUtils.show(repo, commit).map do |diff|
         a_path = diff.a_path
         b_path = diff.b_path
@@ -44,10 +43,6 @@ class GitDiffUtils
           data.special_case = "This is an empty file."
         elsif diff.renamed_file && diff.diff.empty?
           data.special_case = "File was renamed, but no other changes were made."
-        elsif total_size > 1000000
-	  data.special_case = "Maximum diff size reached."
-        elsif !diff.a_blob.nil? && diff.a_blob.data.length > 2000000 || !diff.b_blob.nil? && diff.b_blob.data.length > 2000000
-          data.special_case = "File is too big to show diff."
         else
           if options[:use_syntax_highlighting] || options[:warm_the_cache]
             begin
@@ -64,7 +59,6 @@ class GitDiffUtils
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
-          total_size += [before.length, after.length].max
 	
           raw_diff = diff.diff
           raw_diff.gsub! "\r", ""
@@ -98,26 +92,9 @@ class GitDiffUtils
     chunks = tag_diff(diff, raw_diff, before_lines, after_lines)
 
     chunks.each_with_index do |chunk, i|
-      if chunk.original_line_start && chunk.original_line_start > orig_line
-        tagged_lines += before_lines[orig_line...chunk.original_line_start].map do |data|
-          diff_line += 1
-          orig_line += 1
-          LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
-        end
-        chunk_breaks << tagged_lines.size
-      end
       tagged_lines += chunk.tagged_lines
       orig_line += chunk.original_lines_changed
       diff_line += chunk.new_lines_changed
-    end
-
-    if !before_lines.empty? && orig_line <= before_lines.count
-      chunk_breaks << tagged_lines.size
-      tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
-        diff_line += 1
-        orig_line += 1
-        LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line )
-      end
     end
     lines_added = tagged_lines.select { |line| line.tag == :added }.count
     lines_removed = tagged_lines.select { |line| line.tag == :removed }.count
@@ -200,10 +177,10 @@ class GitDiffUtils
 
   def self.show(repo, commit)
     if commit.parents.size > 0
-      diff = repo.git.native(:diff, { :ignore_all_space=> true, :full_index => true, :find_renames => true }, commit.parents[0].id,
+      diff = repo.git.native(:diff, { :inter_hunk_context => 33, :unified => 9, :ignore_all_space => true, :full_index => true, :find_renames => true }, commit.parents[0].id,
           commit.id)
     else
-      raw_diff = repo.git.native(:show, { :ignore_all_space=> true, :full_index => true, :pretty => "raw" }, commit.id)
+      raw_diff = repo.git.native(:show, { :inter_hunk_context => 33, :unified => 9, :ignore_all_space => true, :full_index => true, :pretty => "raw" }, commit.id)
       # git show has a lot of headers in the diff, we try to strip it out here
       cutpoint = raw_diff.index("diff --git a")
       diff = cutpoint ? raw_diff[cutpoint, raw_diff.length] : ""
