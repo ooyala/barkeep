@@ -5,6 +5,7 @@ class AlbinoFiletype
     ".c"          => :c,
     ".cc"         => :cpp,
     ".clj"        => :clojure,
+    ".cljs"       => :clojure,
     ".coffee"     => :coffeescript,
     ".cpp"        => :cpp,
     ".cs"         => :csharp,
