@@ -13,7 +13,7 @@ class BarkeepServer < Sinatra::Base
   end
 
   # API routes that don't require authentication
-  AUTHENTICATION_WHITELIST_ROUTES = ["/api/commits/"]
+  AUTHENTICATION_WHITELIST_ROUTES = ["/api/commits/", "/api/stats"]
   # API routes that require admin
   ADMIN_ROUTES = ["/api/add_repo"]
   # How out of date an API call may be before it is rejected
@@ -59,6 +59,11 @@ class BarkeepServer < Sinatra::Base
     format_commit_data(commit, params[:repo_name], fields).to_json
   end
 
+  get "/api/stats" do
+    since = params[:since] ? params[:since] : Time.now - 60 * 60 * 24 * 30
+    format_stats(since).to_json
+  end
+
   # NOTE(caleb): Large GET requests are rejected by the Ruby web servers we use. (Unicorn, in particular,
   # doesn't seem to like paths > 1k and rejects them silently.) Hence, to batch-request commit data, we must
   # use a POST.
@@ -89,6 +94,44 @@ class BarkeepServer < Sinatra::Base
       :link => "http://#{BARKEEP_HOSTNAME}/commits/#{params[:repo_name]}/#{commit.sha}"
     }
     fields ? commit_data.select { |key, value| fields.include? key.to_s } : commit_data
+  end
+
+  def format_user_data(user_ids_and_counts)
+    user_ids_and_counts.map do |id_and_count|
+      {:count => id_and_count[1],
+        :name => id_and_count[0].name,
+        :email => id_and_count[0].email}
+    end
+  end
+
+  def format_stats(since)
+    dataset = Commit.
+      join(:comments, :commit_id => :id).
+      filter("`comments`.`created_at` > ?", since).
+      join(:git_repos, :id => :commits__git_repo_id).
+      group_and_count(:commits__sha, :git_repos__name___repo).order(:count.desc).limit(10)
+    chatty_commits = dataset.all
+    chatty_commits.map! do |commit|
+      {:sha => commit.sha,
+        :comment_count => commit[:count],
+        :repo_name => commit[:repo]
+        }
+    end
+    chatty_commits.map! do |commit|
+      commit_obj = Commit.prefix_match commit[:repo_name], commit[:sha]
+      {:sha => commit_obj.sha,
+        :comment_count => commit_obj.comment_count,
+        :message => commit_obj.message,
+        :repo_name => commit[:repo_name],
+        :approved => commit_obj.approved?}
+    end
+    data = {"num_commits" => Stats.num_commits(since),
+            "num_unreviewed_commits" => Stats.num_unreviewed_commits(since),
+            "num_reviewed_without_lgtm_commits" => Stats.num_reviewed_without_lgtm_commits(since),
+            "num_lgtm_commits" => Stats.num_lgtm_commits(since),
+            "chatty_commits" => chatty_commits,
+            "top_reviewers" => format_user_data(Stats.top_reviewers(since)),
+            "top_approvers" => format_user_data(Stats.top_approvers(since))}
   end
 
   # Check that an authenticated request is properly formed and correctly signed. Returns the user if
