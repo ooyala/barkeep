@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# force script to stop on error
+set -e
+
 # This script is tested for a clean Ubuntu 10.04 image. It's a starting point for a fresh Barkeep install,
 # but the important dependencies are:
 # - mysql
