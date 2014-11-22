@@ -22,6 +22,14 @@ body {
 
 strong { font-weight: bold; }
 
+.confirmationMessage {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #FFF7B1;
+  border: 1px dashed #333;
+  display: none;
+}
+
 // There are cases where we want focus for tooltips but we don't want to show an outline
 .noFocusOutline {
   // FF
@@ -607,5 +615,26 @@ table.commitsList, table.authorList {
       margin: 3px 0;
       a { text-decoration: underline; }
     }
+  }
+}
+
+
+#ldapSignin {
+  width: 500px;
+  margin: 0 auto;
+  form {
+    margin-top: 12px;
+  }
+  label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  input.text {
+    width: 200px;
+    font-size: 18px;
+    margin: 0 0 8px 4px;
+  }
+  input.standard {
+    margin-top: 8px;
   }
 }

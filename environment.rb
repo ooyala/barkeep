@@ -27,6 +27,9 @@ REDIS_DB_FOR_RESQUE = 1
 # Besides Google, another popular OpenID endpoint is https://me.yahoo.com
 OPENID_PROVIDERS = "https://www.google.com/accounts/o8/ud"
 
+# A list of hashes of LDAP parameters for signing in your users. For documentation, see doc/ldap.markdown.
+LDAP_PROVIDERS = []
+
 # This is the read-only demo mode which is used in the Barkeep demo linked from getbarkeep.com.
 # Most production deployments will not want to enable the demo mode, but we want it while developing.
 ENABLE_READONLY_DEMO_MODE = true

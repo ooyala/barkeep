@@ -1,0 +1,14 @@
+<%= js_bundle(:ldap_signin_app_js) %>
+
+<div id="ldapSignin">
+  <h2>Sign in with LDAP on <%= name %></h2>
+  <form id="ldapSigninForm">
+    <input type="hidden" value="<%= provider_id %>" id="providerId">
+    <label>User name:</label><br>
+    <input type="text" id="userName" class="text"><br>
+    <label>Password:</label><br>
+    <input type="password" id="password" class="text"><br>
+    <div id="errorMessage" class="confirmationMessage"></div>
+    <input type="submit" class="standard" value="Sign in">
+  </form>
+</div>
