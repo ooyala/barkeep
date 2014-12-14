@@ -176,7 +176,7 @@ class BarkeepServer < Sinatra::Base
 
   before do
     # When running in read-only demo mode, if the user is not logged in, treat them as a demo user.
-    self.current_user ||= User.find(:email => session[:email])
+    self.current_user ||= User.find(:login => session[:login])
     if current_user.nil? && (defined?(ENABLE_READONLY_DEMO_MODE) && ENABLE_READONLY_DEMO_MODE)
       self.current_user = User.first(:permission => "demo")
       current_user.rack_session = session
@@ -248,11 +248,11 @@ class BarkeepServer < Sinatra::Base
           halt 401, "Your email #{email} is not authorized to login to Barkeep."
         end
       end
-      session[:email] = email
-      unless User.find(:email => email)
+      session[:login] = email
+      unless User.find(:login => email)
         # If there are no admin users yet, make the first user to log in the first admin.
         permission = User.find(:permission => "admin").nil? ? "admin" : "normal"
-        User.new(:email => email, :name => email, :permission => permission).save
+        User.new(:login => email, :email => email, :name => email, :permission => permission).save
       end
       redirect session[:login_started_url] || "/"
     end
@@ -267,7 +267,10 @@ class BarkeepServer < Sinatra::Base
 
   put "/settings/:preference" do
     preference = params[:preference]
-    if preference == "displayname"
+    if preference == "email"
+      current_user.email = params[:value]
+      current_user.save
+    elsif preference == "displayname"
       current_user.name = params[:value]
       current_user.save
     elsif ["line_length", "default_to_side_by_side"].include? preference

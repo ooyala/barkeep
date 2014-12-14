@@ -13,7 +13,15 @@
           </span>
         </td>
       </tr>
-      <tr><td>Email</td><td><%= current_user.email %></td></tr>
+      <tr><td>Login</td><td><%= current_user.login %></td></tr>
+      <tr>
+        <td>Email</td>
+        <td>
+          <span id="editEmail" class="editable west" rel="tipsy" title="Edit">
+            <%= current_user.email %>
+          </span>
+        </td>
+      </tr>
       <tr>
         <td>Gravatar</td>
         <td>
