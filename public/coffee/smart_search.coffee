@@ -8,8 +8,9 @@ class window.SmartSearch
     author: "authors"
     branch: "branches"
     repo: "repos"
+    message: "messages"
 
-  KEYS = ["repos:", "authors:", "paths:", "branches:"]
+  KEYS = ["repos:", "authors:", "paths:", "branches:", "messages:"]
 
   # fetches autocomplete suggestions and returns it through the onSuggestionReceived callback with an array of
   # labels and values

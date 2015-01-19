@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # A saved search represents a list of commits, some read and some unread.
 #
 # Columns:
@@ -15,6 +16,7 @@ class SavedSearch < Sequel::Model
       :branches => branches_list,
       :authors => authors_list,
       :paths => paths_list,
+      :grep => messages,
       :token => token,
       :direction => direction,
       :commit_filter_proc => self.unapproved_only ?
@@ -50,6 +52,7 @@ class SavedSearch < Sequel::Model
     message << "by #{comma_separated_list(map_authors_names(authors_list))}" unless authors_list.empty?
     message << "in #{comma_separated_list(paths_list)}" unless paths_list.empty?
     message << "on #{comma_separated_list(branches_list)}" unless branches_list.empty?
+    message << "containing ‘#{messages}’" unless messages.nil? || messages.empty?
     unless repos_list.empty?
       message << "in the #{comma_separated_list(repos_list)} #{english_quantity("repo", repos_list.size)}"
     end
