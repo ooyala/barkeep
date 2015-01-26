@@ -11,7 +11,7 @@ class DeliverCommitEmailsIntegrationTest < Scope::TestCase
     @@commit = create_commit(commit, integration_test_user, GitRepo.first(:name => TEST_REPO_NAME))
 
     @@saved_search = SavedSearch.create(:user_id => integration_test_user.id, :repos => TEST_REPO_NAME,
-        :email_commits => true)
+        :email_commits => true, :user_order => 0)
   end
 
   teardown_once do
