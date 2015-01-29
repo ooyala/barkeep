@@ -22,8 +22,8 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 REDIS_DB_FOR_RESQUE = 1
 
-# Choose authentication protocol, currently only 'openid' is supported.
-AUTHENTICATION_PROTOCOL = "openid"
+# Choose authentication protocol, currently only 'openid' or 'google_oauth2' is supported.
+AUTHENTICATION_PROTOCOL = "google_oauth2"
 
 # A comma-separate list of OpenID provider URLs for signing in your users.
 # If you provide more than one, users will receive a UI allowing to pick which service to use to authenticate.

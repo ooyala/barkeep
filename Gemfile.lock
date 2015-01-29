@@ -29,6 +29,8 @@ GEM
     eventmachine (0.12.10)
     execjs (1.2.4)
       multi_json (~> 1.0)
+    faraday (0.9.1)
+      multipart-post (>= 1.2, < 3)
     fezzik (0.7.2)
       colorize (>= 0.5.8)
       rake-remote_task (~> 2.0.2)
@@ -37,7 +39,7 @@ GEM
     i18n (0.6.0)
     json (1.5.3)
     kgio (2.7.4)
-    libv8 (3.16.14.3)
+    libv8 (3.16.14.7)
     mail (2.3.0)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -46,6 +48,7 @@ GEM
     mime-types (1.17.2)
     minitest (2.4.0)
     multi_json (1.1.0)
+    multipart-post (2.0.0)
     mustache (0.99.4)
     mysql2 (0.3.11)
     nokogiri (1.5.0)
@@ -134,6 +137,7 @@ DEPENDENCIES
   coffee-script
   dedent
   diff-lcs
+  faraday
   fezzik
   foreman
   grit!
