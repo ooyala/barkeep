@@ -20,7 +20,7 @@ require "environment"
 require "lib/ruby_extensions"
 require "lib/git_helper"
 require "lib/git_diff_utils"
-require "lib/oauth2_providers/google_oauth2"
+require "lib/oauth2_provider"
 require "lib/keyboard_shortcuts"
 require "lib/meta_repo"
 require "lib/openid_provider"
@@ -138,7 +138,7 @@ class BarkeepServer < Sinatra::Base
   end
 
   # Register the authentication provider specified by AUTHENTICATION_PROTOCOL.
-  AUTHENTICATION_PROVIDERS = {"openid" => OpenidProvider, "google_oauth2" => GoogleOAuth2 }
+  AUTHENTICATION_PROVIDERS = {"openid" => OpenidProvider, "oauth2" => OAuth2Provider }
   authentication_provider = AUTHENTICATION_PROVIDERS[AUTHENTICATION_PROTOCOL]
   register authentication_provider
 

@@ -9,7 +9,7 @@ credentials_filename = File.expand_path(File.join(File.dirname(__FILE__),
                                                   "../../config/google-oauth2-credentials.json"))
 CREDENTIALS = (File.exist?(credentials_filename) ? JSON.parse(File.read(credentials_filename)) : nil)
 
-module GoogleOAuth2
+module OAuth2Provider
   def self.validate_configuration
     if CREDENTIALS.nil?
       raise "No credentials file found"
@@ -33,6 +33,7 @@ module GoogleOAuth2
     identity_response = Faraday.get(IDENTITY_ENDPOINT, { :access_token => tokens["access_token"] })
     userinfo = JSON.parse(identity_response.body)
 
+    # If you are not using google's oauth2, change how to access user email here.
     userinfo["email"]
   end
 
@@ -56,7 +57,7 @@ module GoogleOAuth2
   # registered.
   def self.registered(app)
     app.get "/signin/complete" do
-      email = GoogleOAuth2::fetch_email(params["code"])
+      email = OAuth2Provider::fetch_email(params["code"])
 
       session[:email] = email
       unless User.find(:email => email)
