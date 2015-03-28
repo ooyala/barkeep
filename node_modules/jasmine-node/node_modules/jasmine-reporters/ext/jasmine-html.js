@@ -34,7 +34,7 @@ jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
   this.outerDiv = this.createDom('div', { className: 'jasmine_reporter' },
       this.createDom('div', { className: 'banner' },
         this.createDom('div', { className: 'logo' },
-            this.createDom('a', { href: 'http://pivotal.github.com/jasmine/', target: "_blank" }, "Jasmine"),
+            this.createDom('span', { className: 'title' }, "Jasmine"),
             this.createDom('span', { className: 'version' }, runner.env.versionString())),
         this.createDom('div', { className: 'options' },
             "Show ",
@@ -70,16 +70,16 @@ jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
   this.startedAt = new Date();
 
   var self = this;
-  showPassed.onchange = function(evt) {
-    if (evt.target.checked) {
+  showPassed.onclick = function(evt) {
+    if (showPassed.checked) {
       self.outerDiv.className += ' show-passed';
     } else {
       self.outerDiv.className = self.outerDiv.className.replace(/ show-passed/, '');
     }
   };
 
-  showSkipped.onchange = function(evt) {
-    if (evt.target.checked) {
+  showSkipped.onclick = function(evt) {
+    if (showSkipped.checked) {
       self.outerDiv.className += ' show-skipped';
     } else {
       self.outerDiv.className = self.outerDiv.className.replace(/ show-skipped/, '');
@@ -110,7 +110,7 @@ jasmine.TrivialReporter.prototype.reportRunnerResults = function(runner) {
 jasmine.TrivialReporter.prototype.reportSuiteResults = function(suite) {
   var results = suite.results();
   var status = results.passed() ? 'passed' : 'failed';
-  if (results.totalCount == 0) { // todo: change this to check results.skipped
+  if (results.totalCount === 0) { // todo: change this to check results.skipped
     status = 'skipped';
   }
   this.suiteDivs[suite.id].className += " " + status;
@@ -162,7 +162,13 @@ jasmine.TrivialReporter.prototype.reportSpecResults = function(spec) {
 
 jasmine.TrivialReporter.prototype.log = function() {
   var console = jasmine.getGlobal().console;
-  if (console && console.log) console.log.apply(console, arguments);
+  if (console && console.log) {
+    if (console.log.apply) {
+      console.log.apply(console, arguments);
+    } else {
+      console.log(arguments); // ie fix: console.log.apply doesn't exist on ie
+    }
+  }
 };
 
 jasmine.TrivialReporter.prototype.getLocation = function() {
@@ -177,6 +183,8 @@ jasmine.TrivialReporter.prototype.specFilter = function(spec) {
     paramMap[decodeURIComponent(p[0])] = decodeURIComponent(p[1]);
   }
 
-  if (!paramMap["spec"]) return true;
-  return spec.getFullName().indexOf(paramMap["spec"]) == 0;
+  if (!paramMap.spec) {
+    return true;
+  }
+  return spec.getFullName().indexOf(paramMap.spec) === 0;
 };

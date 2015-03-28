@@ -22,6 +22,9 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 REDIS_DB_FOR_RESQUE = 1
 
+# Choose authentication protocol, currently only 'openid' or 'google_oauth2' is supported.
+AUTHENTICATION_PROTOCOL = "oauth2"
+
 # A comma-separate list of OpenID provider URLs for signing in your users.
 # If you provide more than one, users will receive a UI allowing to pick which service to use to authenticate.
 # Besides Google, another popular OpenID endpoint is https://me.yahoo.com
@@ -29,7 +32,7 @@ OPENID_PROVIDERS = "https://www.google.com/accounts/o8/ud"
 
 # This is the read-only demo mode which is used in the Barkeep demo linked from getbarkeep.com.
 # Most production deployments will not want to enable the demo mode, but we want it while developing.
-ENABLE_READONLY_DEMO_MODE = true
+# ENABLE_READONLY_DEMO_MODE = true
 
 # If specified, this will be used as the session secret in development mode.
 # This prevents the session being cleared when sinatra reloads changes.

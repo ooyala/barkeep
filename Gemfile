@@ -23,6 +23,7 @@ gem "uglifier"
 
 # We're pulling in our own grit fork with bugfixes.
 gem "grit", :git => "http://github.com/ooyala/grit.git", :ref => "38d0e6660b78bff97499280fae09a78b087c50b4"
+gem "faraday"
 gem "json"
 gem "sequel"
 gem "mysql2"
