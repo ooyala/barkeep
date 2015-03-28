@@ -6,7 +6,7 @@ TOKEN_ENDPOINT = "https://www.googleapis.com/oauth2/v3/token"
 IDENTITY_ENDPOINT = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 credentials_filename = File.expand_path(File.join(File.dirname(__FILE__),
-                                                  "../../config/google-oauth2-credentials.json"))
+                                                  "../config/google-oauth2-credentials.json"))
 CREDENTIALS = (File.exist?(credentials_filename) ? JSON.parse(File.read(credentials_filename)) : nil)
 
 module OAuth2Provider
