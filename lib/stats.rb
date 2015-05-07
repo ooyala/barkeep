@@ -13,7 +13,7 @@ module Stats
   end
 
   def self.num_unreviewed_commits(since)
-    Commit.filter("`commits`.`date` > ?", since).
+    Commit.filter("`commits`.`date` > ?", since).filter(:approved_by_user_id => nil).
         left_join(:comments, :commit_id => :commits__id).filter(:comments__id => nil).count
   end
 
