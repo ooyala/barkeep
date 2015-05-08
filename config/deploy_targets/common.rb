@@ -35,7 +35,8 @@ module BarkeepDeploy
       unicorn_socket: "/tmp/barkeep-unicorn.sock",
       unicorn_workers: 4,
       resque_workers: 4,
-      rack_env: "production"
+      rack_env: "production",
+      authentication_protocol: "oauth2"
     }
   end
 
