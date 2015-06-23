@@ -57,6 +57,8 @@ module OAuth2Provider
   # registered.
   def self.registered(app)
     app.get "/signin/complete" do
+      redirect "/signin" unless params["code"]
+
       email = OAuth2Provider::fetch_email(params["code"])
 
       session[:email] = email
