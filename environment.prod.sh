@@ -18,3 +18,4 @@ export GMAIL_PASSWORD="password!"
 export COOKIE_SESSION_SECRET="This should be a long, random, secret string."
 export REDIS_DB="0"
 export REDIS_DB_FOR_RESQUE="1"
+export ALWAYS_EMAIL_COMMENTS_TO_COMMITER=false

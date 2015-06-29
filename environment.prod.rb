@@ -18,3 +18,4 @@ GMAIL_PASSWORD = "password!"
 COOKIE_SESSION_SECRET = "This should be a long, random, secret string."
 REDIS_DB = 0
 REDIS_DB_FOR_RESQUE = 1
+ALWAYS_EMAIL_COMMENTS_TO_COMMITER = false
