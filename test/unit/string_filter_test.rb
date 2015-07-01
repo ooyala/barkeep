@@ -5,22 +5,41 @@ require "dedent"
 
 class StringFilterTest < Scope::TestCase
   context "filters" do
+    setup do
+      @sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
+      # StringFilter.replace_shas_with_links checks each sha-like string against the DB,
+      # so stub out the relevant ORM methods
+      stub(GitRepo).[](anything) { GitRepo.new }
+      stub(Commit).prefix_match do |repo_name, sha, options = {}|
+        @sha.start_with?(sha) ? Commit.new(:sha => @sha) : nil
+      end
+    end
+
     should "render markdown" do
       filtered = StringFilter.markdown("[text](http://example.com)")
       assert filtered.include?("<a href")
     end
 
     should "replace shas with links" do
-      sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
-      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{sha}", "test_repo")
-      assert filtered.include?("/commits/test_repo/#{sha}")
+      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{@sha}", "test_repo")
+      assert_equal "Fixed in commit [#{@sha[0..6]}](/commits/test_repo/#{@sha})", filtered
+    end
+
+    should "replace sha prefixes with links" do
+      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{@sha[0..6]}", "test_repo")
+      assert_equal "Fixed in commit [#{@sha[0..6]}](/commits/test_repo/#{@sha})", filtered
+    end
+
+    should "not replace nonexistent shas" do
+      bad_sha = "d8b17cd56ed95dbf006c9b1cb78c4da21858e6c9"
+      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{bad_sha}", "test_repo")
+      assert_equal "Fixed in commit #{bad_sha}", filtered
     end
 
     should "replace shas prepended with repo: with cross repo links" do
       repo = "foo-bar_90"
-      sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
-      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{repo}:#{sha}", "test_repo")
-      assert filtered.include?("/commits/#{repo}/#{sha}")
+      filtered = StringFilter.replace_shas_with_links("Fixed in commit #{repo}:#{@sha}", "test_repo")
+      assert_equal "Fixed in commit [#{repo}:#{@sha[0..6]}](/commits/#{repo}/#{@sha})", filtered
     end
 
     should "link jira issues" do
@@ -62,75 +81,73 @@ class StringFilterTest < Scope::TestCase
       filtered = StringFilter.escape_html(html)
       assert filtered.include?("&lt;")
     end
-  end
 
-  context "class filters" do
-    context "comments" do
-      setup do
-        text = <<-EOF.dedent
-          Comment comment **comment**.
-          Here's an embedded image: ![the_image](http://example.com/image.png)
-          Referencing APP-1234
-          With a sha 46b37313bab07c3528e75a2acaf2ca36e44b18f1.
-        EOF
-        comment = Comment.new(:text => text)
-        commit = Commit.new
-        stub(commit).git_repo { stub(GitRepo.new).name { "test_repo" }}
-        stub(comment).commit { commit }
-        @filtered_comment = comment.filter_text
+    context "class filters" do
+      context "comments" do
+        setup do
+          text = <<-EOF.dedent
+            Comment comment **comment**.
+            Here's an embedded image: ![the_image](http://example.com/image.png)
+            Referencing APP-1234
+            With a sha #{@sha}.
+          EOF
+          comment = Comment.new(:text => text)
+          commit = Commit.new
+          stub(commit).git_repo { stub(GitRepo.new).name { "test_repo" }}
+          stub(comment).commit { commit }
+          @filtered_comment = comment.filter_text
+        end
+
+        should "link embedded images" do
+          image_link = "http://example.com/image.png"
+          assert @filtered_comment.include?("href=\"#{image_link}\"")
+        end
+
+        should "render markdown" do
+          assert @filtered_comment.include?("<strong>")
+        end
+
+        should "link jira issue" do
+          assert @filtered_comment.include?("jira.corp.ooyala.com/browse/APP-1234")
+        end
+
+        should "replace shas with links" do
+          assert @filtered_comment.include?("/commits/test_repo/#{@sha}")
+        end
       end
 
-      should "link embedded images" do
-        image_link = "http://example.com/image.png"
-        assert @filtered_comment.include?("href=\"#{image_link}\"")
-      end
+      context "commit messages" do
+        setup do
+          message = <<-EOF.dedent
+            <script>
+            Fixes #42
+            APP-1234
+            #{@sha}
+          EOF
+          commit = Commit.new(:message => message)
+          stub(commit).git_repo { stub(GitRepo.new).name { "test_repo" }}
+          @filtered_message = commit.filter_message
+        end
 
-      should "render markdown" do
-        assert @filtered_comment.include?("<strong>")
-      end
+        should "escape html" do
+          assert @filtered_message.include?("&lt;")
+        end
 
-      should "link jira issue" do
-        assert @filtered_comment.include?("jira.corp.ooyala.com/browse/APP-1234")
-      end
+        should "convert newlines to html" do
+          assert @filtered_message.include?("<br/>")
+        end
 
-      should "replace shas with links" do
-        sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
-        assert @filtered_comment.include?("/commits/test_repo/#{sha}")
-      end
-    end
+        should "link github issues" do
+          assert @filtered_message.include?("github.com/ooyala/test_repo/issues/42")
+        end
 
-    context "commit messages" do
-      setup do
-        message = <<-EOF.dedent
-          <script>
-          Fixes #42
-          APP-1234
-          46b37313bab07c3528e75a2acaf2ca36e44b18f1
-        EOF
-        commit = Commit.new(:message => message)
-        stub(commit).git_repo { stub(GitRepo.new).name { "test_repo" }}
-        @filtered_message = commit.filter_message
-      end
+        should "link jira issues" do
+          assert @filtered_message.include?("jira.corp.ooyala.com/browse/APP-1234")
+        end
 
-      should "escape html" do
-        assert @filtered_message.include?("&lt;")
-      end
-
-      should "convert newlines to html" do
-        assert @filtered_message.include?("<br/>")
-      end
-
-      should "link github issues" do
-        assert @filtered_message.include?("github.com/ooyala/test_repo/issues/42")
-      end
-
-      should "link jira issues" do
-        assert @filtered_message.include?("jira.corp.ooyala.com/browse/APP-1234")
-      end
-
-      should "replace shas with links" do
-        sha = "46b37313bab07c3528e75a2acaf2ca36e44b18f1"
-        assert @filtered_message.include?("/commits/test_repo/#{sha}")
+        should "replace shas with links" do
+          assert @filtered_message.include?("/commits/test_repo/#{@sha}")
+        end
       end
     end
   end

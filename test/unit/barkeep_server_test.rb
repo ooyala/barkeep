@@ -78,7 +78,7 @@ class BarkeepServerTest < Scope::TestCase
     end
 
     should "search all repos and find a matching commit" do
-      mock(Commit).prefix_match("repo1", "sha", true) { nil }
+      mock(Commit).prefix_match("repo1", "sha", :allow_no_match => true) { nil }
       mock(@@repo).db_commit("repo1", "sha") { nil }
       mock(@@repo).db_commit("repo2", "sha") { @commit }
 
@@ -90,7 +90,7 @@ class BarkeepServerTest < Scope::TestCase
 
     should "try prefix match on commits" do
       stub(@@repo).db_commit("repo1", "sha") {  }
-      mock(Commit).prefix_match("repo1", "sha", true) { @commit }
+      mock(Commit).prefix_match("repo1", "sha", :allow_no_match => true) { @commit }
       dont_allow(@@repo).db_commit("repo2", "sha")
 
       get "/commits/search/by_sha", :sha => "sha"

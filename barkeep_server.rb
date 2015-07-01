@@ -145,11 +145,11 @@ class BarkeepServer < Sinatra::Base
   helpers do
     def current_page_if_url(text) request.url.include?(text) ? "currentPage" : "" end
 
-    def find_commit(repo_name, sha, zero_commits_ok)
+    def find_commit(repo_name, sha, options = {})
       commit = MetaRepo.instance.db_commit(repo_name, sha)
       unless commit
         begin
-          commit = Commit.prefix_match(repo_name, sha, zero_commits_ok)
+          commit = Commit.prefix_match(repo_name, sha, options)
         rescue RuntimeError => e
           halt 404, e.message
         end
@@ -244,7 +244,7 @@ class BarkeepServer < Sinatra::Base
     repos = MetaRepo.instance.repos.map(&:name)
 
     repo_name, sha = repos.each do |repo|
-      commit = find_commit(repo, partial_sha, true)
+      commit = find_commit(repo, partial_sha, :allow_no_match => true)
       if commit
         break [repo, commit.sha]
       end
