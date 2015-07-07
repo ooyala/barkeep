@@ -33,7 +33,9 @@ class GitDiffUtils
         if GitHelper.blob_binary?(diff.a_blob) || GitHelper.blob_binary?(diff.b_blob)
           data.binary = true
           data.special_case = "This is a binary file."
-        elsif data.submodule?
+	elsif !(a_path =~ /\.(gen|properties|relations|functions)\.cs/).nil? || !(a_path =~ /PI_/).nil? || !(a_path =~ /DBSchema.xml$/).nil?
+          data.special_case = "Generated File - not showing diff."
+	elsif data.submodule?
           data.special_case = data.submodule_special_case_message
         elsif diff.diff.nil? && (data.file_mode_before != data.file_mode_after)
           data.special_case = "File mode changed: #{data.file_mode_before} → #{data.file_mode_after}"
@@ -57,7 +59,10 @@ class GitDiffUtils
             # Diffs can be missing a_blob or b_blob if the change is an added or removed file.
             before, after = [diff.a_blob, diff.b_blob].map { |blob| blob ? blob.data : "" }
           end
-          raw_diff = GitDiffUtils.diff(diff.a_blob, diff.b_blob)
+	
+          raw_diff = diff.diff
+          raw_diff.gsub! "\r", ""
+          raw_diff.sub %r{[^@]*}, ""
 
           unless options[:warm_the_cache]
             new_data = GitDiffUtils.tag_file(before, after, diff, raw_diff)
@@ -87,26 +92,9 @@ class GitDiffUtils
     chunks = tag_diff(diff, raw_diff, before_lines, after_lines)
 
     chunks.each_with_index do |chunk, i|
-      if chunk.original_line_start && chunk.original_line_start > orig_line
-        tagged_lines += before_lines[orig_line...chunk.original_line_start].map do |data|
-          diff_line += 1
-          orig_line += 1
-          LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line)
-        end
-        chunk_breaks << tagged_lines.size
-      end
       tagged_lines += chunk.tagged_lines
       orig_line += chunk.original_lines_changed
       diff_line += chunk.new_lines_changed
-    end
-
-    if !before_lines.empty? && orig_line <= before_lines.count
-      chunk_breaks << tagged_lines.size
-      tagged_lines += before_lines[orig_line..before_lines.count].map do |data|
-        diff_line += 1
-        orig_line += 1
-        LineDiff.new(:same, before_lines[orig_line - 1], orig_line, diff_line )
-      end
     end
     lines_added = tagged_lines.select { |line| line.tag == :added }.count
     lines_removed = tagged_lines.select { |line| line.tag == :removed }.count
@@ -189,10 +177,10 @@ class GitDiffUtils
 
   def self.show(repo, commit)
     if commit.parents.size > 0
-      diff = repo.git.native(:diff, { :full_index => true, :find_renames => true }, commit.parents[0].id,
+      diff = repo.git.native(:diff, { :inter_hunk_context => 33, :unified => 9, :ignore_all_space => true, :full_index => true, :find_renames => true }, commit.parents[0].id,
           commit.id)
     else
-      raw_diff = repo.git.native(:show, { :full_index => true, :pretty => "raw" }, commit.id)
+      raw_diff = repo.git.native(:show, { :inter_hunk_context => 33, :unified => 9, :ignore_all_space => true, :full_index => true, :pretty => "raw" }, commit.id)
       # git show has a lot of headers in the diff, we try to strip it out here
       cutpoint = raw_diff.index("diff --git a")
       diff = cutpoint ? raw_diff[cutpoint, raw_diff.length] : ""

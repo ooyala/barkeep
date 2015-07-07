@@ -11,28 +11,29 @@ window.Commit =
   SIDE_BY_SIDE_CODE_WIDTH: 830
 
   init: ->
-    $(".addCommentButton").click (e) => @onAddCommentMouseAction e
+    $(document).on("click", ".addCommentButton", (e) => @onAddCommentMouseAction e)
     $("a.tipsyCommentCount").tipsy(gravity: "w")
-    $(".diffLine").dblclick (e) => @onAddCommentMouseAction e
-    $(".reply").live "click", (e) => @onAddCommentMouseAction e
-    $(".diffLine").hover(((e) => @selectLine(e)), ((e) => @clearSelectedLine()))
-    $(".commentForm").live "submit", (e) => @onCommentSubmit e
-    $(".commentPreview").click (e) => @onCommentPreview e
-    $(".commentEditForm").live "submit", (e) => @onCommentEditSubmit e
-    $("#approveButton").live "click", (e) => @onApproveClicked e
-    $("#disapproveButton").live "click", (e) => @onDisapproveClicked e
-    $(".delete").live "click", (e) => @onCommentDelete e
-    $(".edit").live "click", (e) => @onCommentEdit e
-    $("#sideBySideButton").live "click", => @toggleSideBySide true
-    $("#requestReviewButton").click (e) => @toggleReviewRequest()
-    $("#hideCommentButton").live "click", (e) => @toggleComments()
-    $(".diffCommentCount > a").live "click", (e) => @toggleSingleComment(e)
-    $("#requestInput button").click (e) => @submitReviewRequest()
-    $(".expandLink.all").click (e) => @expandContextAll(e)
-    $(".expandLink.below").click (e) => @expandContext(e, 10, "below")
-    $(".expandLink.above").click (e) => @expandContext(e, 10, "above")
-    $("#commit .file").on("mouseenter", ".contextExpander", @expandContextHoverIn)
-    $("#commit .file").on("mouseleave", ".contextExpander", @expandContextHoverOut)
+    $(document).on("dblclick", ".diffLine", (e) => @onAddCommentMouseAction e)
+    $(document).on("click", ".reply", (e) => @onAddCommentMouseAction e)
+    $(document).on("mouseenter", ".diffLine", (e) => @selectLine(e))
+    $(document).on("mouseleave", ".diffLine", (e) => @clearSelectedLine())
+    $(document).on("submit", ".commentForm", (e) => @onCommentSubmit e)
+    $(document).on("click", ".commentPreview", (e) => @onCommentPreview e)
+    $(document).on("submit", ".commentEditForm", (e) => @onCommentEditSubmit e)
+    $(document).on("click", "#approveButton", (e) => @onApproveClicked e)
+    $(document).on("click", "#disapproveButton", (e) => @onDisapproveClicked e)
+    $(document).on("click", ".delete", (e) => @onCommentDelete e)
+    $(document).on("click", ".edit", (e) => @onCommentEdit e)
+    $(document).on("click", "#sideBySideButton", => @toggleSideBySide true)
+    $(document).on("click", "#requestReviewButton", (e) => @toggleReviewRequest())
+    $(document).on("click", "#hideCommentButton", (e) => @toggleComments())
+    $(document).on("click", ".diffCommentCount > a", (e) => @toggleSingleComment(e))
+    $(document).on("click", "#requestInput button", (e) => @submitReviewRequest())
+    $(document).on("click", ".expandLink.all", (e) => @expandContextAll(e))
+    $(document).on("click", ".expandLink.below", (e) => @expandContext(e, 10, "below"))
+    $(document).on("click", ".expandLink.above", (e) => @expandContext(e, 10, "above"))
+    $(document).on("mouseenter", "#commit .file .contextExpander", @expandContextHoverIn)
+    $(document).on("mouseleave", "#commit .file .contextExpander", @expandContextHoverOut)
 
     @currentlyScrollingTimer = null
 
@@ -315,9 +316,9 @@ window.Commit =
   createContextExpander: (codeLines, attachDirection, top, bottom, incremental, refreshLine) ->
     renderedExpander = Snippets.contextExpander(top, bottom, codeLines.attr("diff-line-number"), incremental)
     contextExpander = $(renderedExpander)
-    contextExpander.find(".expandLink.all").click (e) => @expandContextAll(e)
-    contextExpander.find(".expandLink.above").click (e) => @expandContext(e, 10, "above")
-    contextExpander.find(".expandLink.below").click (e) => @expandContext(e, 10, "below")
+    contextExpander.on("click", ".expandLink.all", (e) => @expandContextAll(e))
+    contextExpander.on("click", ".expandLink.above", (e) => @expandContext(e, 10, "above"))
+    contextExpander.on("click", ".expandLink.below", (e) => @expandContext(e, 10, "below"))
     codeLines.before(contextExpander) if attachDirection == "above"
     codeLines.after(contextExpander) if attachDirection == "below"
     expander = if attachDirection == "above" then codeLines.prev() else codeLines.next()
