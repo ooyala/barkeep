@@ -15,6 +15,12 @@ class MetaRepoTest < Scope::TestCase
     @third_commit_on_master = "9f9c5d8"
 
     @repo_name = "test_git_repo"
+    @compound_repo_name = "base/test_git_repo"
+
+    @repo_results = [{ :name => @repo_name,          :first_commit =>        "65a0045", :second_commit =>       "17de311",
+                                                     :third_master_commit => "9f9c5d8", :first_cheese_commit => "4a7d3e5"},
+                     { :name => @compound_repo_name, :first_commit =>        "cdf4874", :second_commit =>       "6282db5",
+                                                     :third_master_commit => "30bcea6", :first_cheese_commit => "c7fb18d"}]
   end
 
   setup_once do
@@ -28,7 +34,7 @@ class MetaRepoTest < Scope::TestCase
     @@repo = MetaRepo.instance
 
     # Access the private git repo inside MetaRepo.
-    @@grit_repo = @@repo.send(:repos)[0]
+    @@grit_repo = @@repo.get_grit_repo("test_git_repo")
   end
 
   context "grit_commit" do
@@ -103,31 +109,36 @@ class MetaRepoTest < Scope::TestCase
     should "find commits matching an author" do
       assert_equal [], @@repo.find_commits(@options.merge(:authors => ["nonexistant author"]))[:commits]
 
-      result = @@repo.find_commits(@options.merge(:authors => ["Phil Crosby"]))
-      assert_equal 2, result[:commits].size
-      assert_equal ["Phil Crosby"], result[:commits].map { |commit| commit.author.name }.uniq
+      @repo_results.each do |repo_result|
+        result = @@repo.find_commits(@options.merge(:repos => [repo_result[:name]], :authors => ["Phil Crosby"]))
+        assert_equal 2, result[:commits].size
+        assert_equal ["Phil Crosby"], result[:commits].map { |commit| commit.author.name }.uniq
 
-      # TODO(philc): the test below should work, but it's 1, not 2. Fix that bug.
-      # assert_equal 2, results[:count]
+        # TODO(philc): the test below should work, but it's 1, not 2. Fix that bug.
+        # assert_equal 2, results[:count]
+      end
     end
 
     should "find commits matching a branch" do
       assert_equal [], @@repo.find_commits(@options.merge(:branches => ["nonexistant_branch"]))[:commits]
 
-      first_commit_on_cheese_branch = "4a7d3e5"
-
-      result = @@repo.find_commits(@options.merge(:branches => ["cheese"]))
-      assert_equal [first_commit_on_cheese_branch, @first_commit], result[:commits].map(&:id_abbrev)
+      @repo_results.each do |repo_result|
+        result = @@repo.find_commits(@options.merge(:branches => ["cheese"], :repos => [repo_result[:name]]))
+        assert_equal [repo_result[:first_cheese_commit], repo_result[:first_commit]], result[:commits].map(&:id_abbrev)
+      end
     end
 
     should "filter out commits olrder than min_commit_date" do
-      min_commit_date = @@grit_repo.commit(@second_commit).date
+      min_commit_date = @@repo.get_grit_repo("test_git_repo").commit(@second_commit).date
       options = @options.merge(:after => min_commit_date, :branches => ["master"], :limit => 100)
-      commit_ids = @@repo.find_commits(options)[:commits].map(&:id_abbrev)
 
-      # The first commit in the repo should be omitted, because it'so lder than min_commit_date.
-      expected = [@third_commit_on_master, @second_commit].sort
-      assert_equal expected, (commit_ids & (expected + [@first_commit])).sort
+      @repo_results.each do |repo_result|
+        commit_ids = @@repo.find_commits(options.merge(:repos => [repo_result[:name]]))[:commits].map(&:id_abbrev)
+
+        # The first commit in the repo should be omitted, because it'so lder than min_commit_date.
+        expected = [repo_result[:third_master_commit], repo_result[:second_commit]].sort
+        assert_equal expected, (commit_ids & (expected + [repo_result[:first_comit]])).sort
+      end
     end
 
     context "commits_from_repo" do
@@ -136,30 +147,36 @@ class MetaRepoTest < Scope::TestCase
       end
 
       should "use a commit_filter_proc to filter out commits from the list of results" do
-        # This search should include the first_commit and second_commit.
-        commit_ids = @@repo.commits_from_repo(@@grit_repo,  @git_options, 100, :first).map(&:id_abbrev)
-        assert commit_ids.include?(@first_commit)
-        assert commit_ids.include?(@second_commit)
+        @repo_results.each do |repo_result|
+          grit_repo = @@repo.get_grit_repo(repo_result[:name])
 
-        # This search uses a filter_proc to eliminate all commits but the first one.
-        commit_filter_proc = proc { |commits| commits.select { |commit| commit.id_abbrev == @first_commit } }
-        commit_ids = @@repo.commits_from_repo(@@grit_repo, @git_options, 2, :first, commit_filter_proc).
-            map(&:id_abbrev)
-        assert_equal [@first_commit], commit_ids
+          # This search should include the first_commit and second_commit.
+          commit_ids = @@repo.commits_from_repo(grit_repo,  @git_options, 100, :first).map(&:id_abbrev)
+          assert commit_ids.include?(repo_result[:first_commit])
+          assert commit_ids.include?(repo_result[:second_commit])
+
+          # This search uses a filter_proc to eliminate all commits but the first one.
+          commit_filter_proc = proc { |commits| commits.select { |commit| commit.id_abbrev == repo_result[:first_commit] } }
+          commit_ids = @@repo.commits_from_repo(grit_repo, @git_options, 2, :first, commit_filter_proc).
+              map(&:id_abbrev)
+          assert_equal [repo_result[:first_commit]], commit_ids
+        end
       end
 
       should "page through commits and pass each page to commit_filter_proc" do
-        commits_being_filtered = []
-        commit_filter_proc = Proc.new do |commits|
-          commits_being_filtered.push(commits.map(&:id_abbrev))
-          commits.select { |commit| commit.id_abbrev == @first_commit }
-        end
-        commit_ids = @@repo.commits_from_repo(@@grit_repo, @git_options, 1, :first, commit_filter_proc).
-            map(&:id_abbrev)
+        @repo_results.each do |repo_result|
+          commits_being_filtered = []
+          commit_filter_proc = Proc.new do |commits|
+            commits_being_filtered.push(commits.map(&:id_abbrev))
+            commits.select { |commit| commit.id_abbrev == repo_result[:first_commit] }
+          end
+          commit_ids = @@repo.commits_from_repo(@@repo.get_grit_repo(repo_result[:name]), @git_options, 1, :first, commit_filter_proc).
+              map(&:id_abbrev)
 
-        # commits_from_repo() pages through commits in pages of 2*limit at a time.
-        assert_equal [[@third_commit_on_master, @second_commit], [@first_commit]], commits_being_filtered
-        assert_equal [@first_commit], commit_ids
+          # commits_from_repo() pages through commits in pages of 2*limit at a time.
+          assert_equal [[repo_result[:third_master_commit], repo_result[:second_commit]], [repo_result[:first_commit]]], commits_being_filtered
+          assert_equal [repo_result[:first_commit]], commit_ids
+        end
       end
     end
   end

@@ -9,7 +9,7 @@ class EmailsTest < Scope::TestCase
 
   setup do
     @user = User.new(:name => "jimbo")
-    @commit = stub_commit("commit_id", @user)
+    @commit = stub_commit("my_repo", "commit_id", @user)
   end
 
   context "strip_unchanged_blank_lines" do

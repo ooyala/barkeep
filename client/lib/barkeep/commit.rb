@@ -40,8 +40,8 @@ module BarkeepClient
 
     def self.parse_commit(commit_specification)
       case commit_specification
-      when %r{^[^/]+/#{SHA_REGEX}$} # foo/abc123
-        commit_specification.split "/"
+      when %r{^(\S+)/(#{SHA_REGEX})$} # foo/abc123
+        [$1, $2]
       when /^#{SHA_REGEX}$/ # abc123
         repo = File.basename(`git rev-parse --show-toplevel`).strip
         if repo.empty?

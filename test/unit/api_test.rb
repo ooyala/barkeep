@@ -14,65 +14,76 @@ class ApiTest < Scope::TestCase
     stub(MetaRepo).instance { @@repo }
     @user = User.new(:email => "thebarkeep@barkeep.com", :name => "The Barkeep")
     any_instance_of(BarkeepServer, :current_user => @user)
+    @repo_names = ["my_repo", "base/my_repo"]
   end
 
   context "get commit" do
-    def approved_stub_commit(sha)
-      commit = stub_commit(sha, @user)
+    def approved_stub_commit(repo_name, sha)
+      commit = stub_commit(repo_name, sha, @user)
       stub_many commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
       commit
     end
 
     should "return a 404 and human-readable error message when given a bad repo or sha" do
-      stub(@@repo).db_commit("my_repo", "sha1") { nil } # No results
-      get "/api/commits/my_repo/sha1"
-      assert_status 404
-      assert JSON.parse(last_response.body).include? "error"
+      @repo_names.each do |repo_name|
+        stub(@@repo).db_commit(repo_name, "sha1") { nil } # No results
+        get "/api/commits/#{repo_name}/sha1"
+        assert_status 404
+        assert JSON.parse(last_response.body).include? "error"
+      end
     end
 
     should "return the relevant metadata for an unapproved commit as expected" do
-      unapproved_commit = stub_commit("sha1", @user)
-      stub_many unapproved_commit, :approved_by_user_id => nil, :comment_count => 0
-      stub(Commit).prefix_match("my_repo", "sha1") { unapproved_commit }
-      get "/api/commits/my_repo/sha1"
-      assert_status 200
-      result = JSON.parse(last_response.body)
-      refute result["approved"]
-      assert_equal 0, result["comment_count"]
-      assert_match %r[commits/my_repo/sha1$], result["link"]
+      @repo_names.each do |repo_name|
+        unapproved_commit = stub_commit(repo_name, "sha1", @user)
+        stub_many unapproved_commit, :approved_by_user_id => nil, :comment_count => 0
+        stub(Commit).prefix_match(repo_name, "sha1") { unapproved_commit }
+        get "/api/commits/#{repo_name}/sha1"
+        assert_status 200
+        result = JSON.parse(last_response.body)
+        refute result["approved"]
+        assert_equal 0, result["comment_count"]
+        assert_match %r[commits/#{repo_name}/sha1$], result["link"]
+      end
     end
 
     should "return the relevant metadata for an approved commit as expected" do
-      approved_commit = approved_stub_commit("sha1")
-      stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
-      get "/api/commits/my_repo/sha1"
-      assert_status 200
-      result = JSON.parse(last_response.body)
-      assert result["approved"]
-      assert_equal 155, result["comment_count"]
-      assert_equal "The Barkeep <thebarkeep@barkeep.com>", result["approved_by"]
+      @repo_names.each do |repo_name|
+        approved_commit = approved_stub_commit(repo_name, "sha1")
+        stub(Commit).prefix_match(repo_name, "sha1") { approved_commit }
+        get "/api/commits/#{repo_name}/sha1"
+        assert_status 200
+        result = JSON.parse(last_response.body)
+        assert result["approved"]
+        assert_equal 155, result["comment_count"]
+        assert_equal "The Barkeep <thebarkeep@barkeep.com>", result["approved_by"]
+      end
     end
 
     should "allow for fetching multiple shas at once using the post route" do
-      commit1 = approved_stub_commit("sha1")
-      commit2 = approved_stub_commit("sha2")
-      stub(Commit).prefix_match("my_repo", "sha1") { commit1 }
-      stub(Commit).prefix_match("my_repo", "sha2") { commit2 }
-      post "/api/commits/my_repo", :shas => "sha1,sha2"
-      assert_status 200
-      result = JSON.parse(last_response.body)
-      assert_equal 2, result.size
-      ["sha1", "sha2"].each { |sha| assert_equal 155, result[sha]["comment_count"] }
+      @repo_names.each do |repo_name|
+        commit1 = approved_stub_commit(repo_name, "sha1")
+        commit2 = approved_stub_commit(repo_name, "sha2")
+        stub(Commit).prefix_match(repo_name, "sha1") { commit1 }
+        stub(Commit).prefix_match(repo_name, "sha2") { commit2 }
+        post "/api/commits/#{repo_name}", :shas => "sha1,sha2"
+        assert_status 200
+        result = JSON.parse(last_response.body)
+        assert_equal 2, result.size
+        ["sha1", "sha2"].each { |sha| assert_equal 155, result[sha]["comment_count"] }
+      end
     end
 
     should "only return requested fields" do
-      approved_commit = approved_stub_commit("sha1")
-      stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
-      get "/api/commits/my_repo/sha1?fields=approved"
-      assert_status 200
-      result = JSON.parse(last_response.body)
-      assert result["approved"]
-      assert_equal 1, result.size
+      @repo_names.each do |repo_name|
+        approved_commit = approved_stub_commit(repo_name, "sha1")
+        stub(Commit).prefix_match(repo_name, "sha1") { approved_commit }
+        get "/api/commits/#{repo_name}/sha1?fields=approved"
+        assert_status 200
+        result = JSON.parse(last_response.body)
+        assert result["approved"]
+        assert_equal 1, result.size
+      end
     end
   end
 
@@ -97,7 +108,7 @@ class ApiTest < Scope::TestCase
       @whitelist_routes = BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.dup
       @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.delete route }
 
-      approved_commit = stub_commit("sha1", @user)
+      approved_commit = stub_commit("my_repo", "sha1", @user)
       stub_many approved_commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
       stub(Commit).prefix_match("my_repo", "sha1") { approved_commit }
 

@@ -19,7 +19,7 @@ class BarkeepServerTest < Scope::TestCase
       @comment = Comment.new(:text => "howdy ho", :created_at => Time.now)
       stub(@comment).user { @user }
       stub(@comment).filter_text { "fancified" }
-      @commit = stub_commit("commit_id", @user)
+      @commit = stub_commit("my_repo", "commit_id", @user)
       stub(@@repo).db_commit { @commit }
     end
 
@@ -52,7 +52,7 @@ class BarkeepServerTest < Scope::TestCase
       # There are two repos in our system.
       @repo1 = setup_repo("repo1")
       @repo2 = setup_repo("repo2")
-      @commit = stub_commit("sha_123", @user)
+      @commit = stub_commit("my_repo", "sha_123", @user)
       stub(@@repo).repos { [@repo1, @repo2] }
     end
 

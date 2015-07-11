@@ -74,9 +74,11 @@
   #cloneForm {
     label { font-weight: bold; }
     input {
-      width: 450px;
       font-size: 18px;
       margin: 8px 0;
+    }
+    #newRepoUrl {
+      width: 450px;
     }
     button {
       padding: 4px 6px;

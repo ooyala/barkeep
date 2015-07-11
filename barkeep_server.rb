@@ -257,10 +257,10 @@ class BarkeepServer < Sinatra::Base
     end
   end
 
-  get "/commits/:repo_name/:sha" do
+  get %r{^/commits/(.+)/(.+)$} do
     MetaRepo.instance.scan_for_new_repos
-    repo_name = params[:repo_name]
-    sha = params[:sha]
+    repo_name = params[:captures][0]
+    sha = params[:captures][1]
     halt 404, "No such repository: #{repo_name}" unless GitRepo[:name => repo_name]
     commit = MetaRepo.instance.db_commit(repo_name, sha)
     unless commit

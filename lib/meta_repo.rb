@@ -26,7 +26,7 @@ class MetaRepo
   attr_reader :repos
 
   def initialize(repos_root)
-    @repos_root = repos_root
+    @repos_root = Pathname.new(repos_root).realdirpath.to_s
     Thread.abort_on_exception = true
     load_repos
   end
@@ -34,19 +34,33 @@ class MetaRepo
   # Loads in any new repos from the repos_root.
   def scan_for_new_repos() load_repos if repos_out_of_date? end
 
+  def all_repo_names_recurse(path)
+    if File.exist?("#{path}/.git")
+      [Pathname.new(path).relative_path_from(Pathname.new(@repos_root)).to_s]
+    else
+      names = []
+      repo_paths = Dir.glob("#{path}/*/")
+      repo_paths.each do |sub_path|
+        names += all_repo_names_recurse(sub_path)
+      end
+      names
+    end
+  end
+
+  def all_repo_names
+    all_repo_names_recurse(@repos_root)
+  end
+
   def load_repos
     @repos = []
     @repo_names_and_ids_to_repos = {}
     @repo_name_to_id = {}
 
-    repo_paths = Dir.glob("#{@repos_root}/*/")
-
-    repo_paths.each do |path|
-      path = Pathname.new(path).realpath.to_s # Canonical path
-      name = File.basename(path)
+    all_repo_names.each do |name|
+      path = Pathname.new("#{@repos_root}/#{name}").realpath.to_s # Canonical path
       id = GitRepo.find_or_create(:name => name, :path => path).id
       grit_repo = create_grit_repo_for_name(name)
-      next unless grit_repo && grit_repo.has_refs?
+      return unless grit_repo && grit_repo.has_refs?
       @repos << grit_repo
       @repo_name_to_id[name] = id
       @repo_names_and_ids_to_repos[name] = grit_repo
@@ -70,7 +84,7 @@ class MetaRepo
     grit_commit = grit_repo.commit(sha)
     return nil unless grit_commit
 
-    grit_commit.repo_name = File.basename(grit_repo.working_dir)
+    grit_commit.repo_name = Pathname.new(grit_repo.working_dir).relative_path_from(Pathname.new(@repos_root)).to_s
     grit_commit
   end
 
@@ -353,8 +367,7 @@ class MetaRepo
   private
 
   def repos_out_of_date?
-    repo_names = Dir.glob("#{@repos_root}/*/").map { |path| File.basename(path) }
-    Set.new(repo_names) != Set.new(@repos.map(&:name))
+    Set.new(all_repo_names) != Set.new(@repos.map(&:name))
   end
 
   # Creates a new Grit::Repo object for the given path.
