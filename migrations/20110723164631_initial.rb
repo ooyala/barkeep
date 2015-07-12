@@ -19,7 +19,7 @@ Sequel.migration do
       unique [:git_repo_id, :sha], :name => "sha_is_unique_per_repo"
       text :message
       foreign_key :user_id, :users, :key => :id
-      datetime :date
+      DateTime :date
       boolean :approved, :default => false
     end
     create_table(:commit_files) do

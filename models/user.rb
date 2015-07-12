@@ -10,7 +10,7 @@ require "digest/md5"
 # A logged-in user, or the demo user.
 # For demo users, we store their saved searches in their cookie instead of the database.
 class User < Sequel::Model
-  one_to_many :saved_searches, :order => [:user_order.desc]
+  one_to_many :saved_searches, :order => [Sequel.desc(:user_order)]
   one_to_many :comments
   one_to_many :authors
   add_association_dependencies :authors => :destroy

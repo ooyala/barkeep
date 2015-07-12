@@ -10,8 +10,8 @@ Sequel.migration do
       add_column :api_secret, String, :default => "", :null => false
     end
     # Assign a key and secret to all existing users.
-    DB[:users].all do |user|
-      DB[:users][:id => user[:id]] = {
+    self[:users].all do |user|
+      self[:users][:id => user[:id]] = {
         :api_key => Api.generate_user_key,
         :api_secret => Api.generate_user_key
       }
