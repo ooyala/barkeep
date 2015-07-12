@@ -95,7 +95,11 @@ class ApiTest < Scope::TestCase
     setup do
       # Temporarily make every api route require authentication
       @whitelist_routes = BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.dup
-      @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES.delete route }
+      @whitelist_routes.keys.each do |method|
+        @whitelist_routes[method].each do |route|
+          BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES[method].delete route
+        end
+      end
 
       approved_commit = stub_commit("sha1", @user)
       stub_many approved_commit, :approved_by_user_id => 42, :approved_by_user => @user, :comment_count => 155
@@ -108,12 +112,52 @@ class ApiTest < Scope::TestCase
     end
 
     teardown do
-      @whitelist_routes.each { |route| BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES << route }
+      @whitelist_routes.keys.each do |method|
+        @whitelist_routes[method].each do |route|
+          BarkeepServer::AUTHENTICATION_WHITELIST_ROUTES[:method] << route
+        end
+      end
     end
 
     should "return proper result for up-to-date, correctly signed request" do
       get_with_signature @base_url, @params
       check_response
+    end
+
+    context "commit approval" do
+      def generate_post_signature(path, params)
+        OpenSSL::HMAC.hexdigest "sha1", "apisecret", "POST #{create_request_url(path, params)}"
+      end
+
+      def perform_commit_approval_request(status)
+        # Attention: approved=true can't be appended here directly, since the
+        #            the signature generation requires lexicographical sorting
+        path = "/api/commits/my_repo/sha1"
+        params = { :approved => status, :api_key => 'apikey',
+                   :timestamp => Time.now.to_i }
+        params.keys.sort!
+        params.merge!(:signature => generate_post_signature(path, params))
+        post path, params
+      end
+
+      should "return 204 on successful approval" do
+        stub_commit("sha1", @user)
+        perform_commit_approval_request("true")
+        assert_status 204
+      end
+
+      should "return 204 on successful disapproval" do
+        commit = stub_commit("sha1", @user)
+        commit.approve(@user)
+        perform_commit_approval_request("false")
+        assert_status 204
+      end
+
+      should "return 404 for incorrect approval parameters" do
+        stub_commit("sha1", @user)
+        response = perform_commit_approval_request("foo")
+        assert_status 404
+      end
     end
 
     should "reject requests without all the required fields" do
