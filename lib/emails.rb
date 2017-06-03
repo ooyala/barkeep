@@ -143,14 +143,22 @@ class Emails
     }
   end
 
-  # Sends an email using Pony.
-  # pony_options: extra options to pass through to Pony. Used for setting mail headers like
-  # "message-ID" to enable threading.
-  # Subject forced to utf-8 to avoid issues with mail encodings (ooyala/barkeep#285)
-  def self.deliver_mail(to, subject, html_body, pony_options = {})
-    options = { :to => to, :via => :smtp, :subject => subject.force_encoding("utf-8"), :html_body => html_body,
+  def self.get_mail_via
+    case MAIL_DELIVERY_METHOD
+    when "sendmail"
+      :sendmail
+    else
+      :smtp
+    end
+  end
+
+  def self.get_mail_via_options
+    case MAIL_DELIVERY_METHOD
+    when "sendmail"
+      {}
+    when "gmail"
       # These settings are from the Pony documentation and work with Gmail's SMTP TLS server.
-      :via_options => {
+      {
         :address => "smtp.gmail.com",
         :port => "587",
         :enable_starttls_auto => true,
@@ -160,6 +168,18 @@ class Emails
         # the HELO domain provided by the client to the server
         :domain => "localhost.localdomain"
       }
+    else
+      {}  
+    end
+  end
+
+  # Sends an email using Pony.
+  # pony_options: extra options to pass through to Pony. Used for setting mail headers like
+  # "message-ID" to enable threading.
+  # Subject forced to utf-8 to avoid issues with mail encodings (ooyala/barkeep#285)
+  def self.deliver_mail(to, subject, html_body, pony_options = {})
+    options = { :to => to, :via => get_mail_via, :subject => subject.force_encoding("utf-8"), :html_body => html_body,
+      :via_options => get_mail_via_options
     }
     begin
       Pony.mail(options.merge(pony_options))
