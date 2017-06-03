@@ -32,7 +32,7 @@ class BarkeepServer < Sinatra::Base
   post "/api/add_repo" do
     ensure_required_params :url
     begin
-      add_repo params[:url]
+      add_repo params[:url], params[:name]
     rescue RuntimeError => e
       api_error 400, e.message
     end

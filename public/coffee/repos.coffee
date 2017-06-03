@@ -2,10 +2,11 @@ window.Repos =
   init: ->
     $("button#clone").click =>
       repoUrl = $("#newRepoUrl").val()
+      repoName = $("#newRepoName").val()
       $.ajax
         type: "post"
         url: "/admin/repos/create_new_repo"
-        data: { url: repoUrl }
+        data: { url: repoUrl, name: repoName }
         dataType: "json"
         success: => @showConfirmationMessage("#{repoUrl} has been scheduled to be cloned.")
         error: (response) => @showConfirmationMessage(response.responseText)

@@ -15,9 +15,12 @@
   <h2>Add new repo</h2>
   <div id="cloneForm">
     <label for="newRepoUrl">Repo url</label><br/>
-    <input type="text" id="newRepoUrl" />
+    <input type="text" id="newRepoUrl" /><br>
+    <label for="newRepoName">Repo Name</label><br/>
+    <input type="text" id="newRepoName" />
     <button id="clone" class="standard">Add repo</button><br/>
     <span class="note">e.g. http://github.com/ooyala/barkeep.git</span><br/>
+    <span class="note">Repo name should be letters and number - no spaces or punctuation </span><br>
     <p class="note">This repo will be cloned into <code><%= REPOS_ROOT %></code></p>
   </div>
 
