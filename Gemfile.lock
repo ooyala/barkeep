@@ -73,7 +73,7 @@ GEM
     rake-remote_task (2.0.6)
       open4 (~> 1.0)
       rake (~> 0.8)
-    redcarpet (2.0.0b3)
+    redcarpet (3.5.1)
     redis (2.2.2)
     redis-namespace (1.0.3)
       redis (< 3.0.0)
@@ -153,7 +153,7 @@ DEPENDENCIES
   rack
   rack-test
   rake
-  redcarpet (= 2.0.0b3)
+  redcarpet (= 3.5.1)
   redis
   resque
   rr (>= 1.0.3)
